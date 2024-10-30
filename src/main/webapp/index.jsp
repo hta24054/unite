@@ -6,6 +6,8 @@
 </head>
 <body>
 <h1><%= "Hello World!" %></h1>
+<h1>아이디 : ${member.id}</h1>
+<h1>나이 : ${member.age}</h1>
 <br/>
 <a href="hello-servlet">Hello Servlet</a>
 </body>

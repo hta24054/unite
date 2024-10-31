@@ -1,11 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html>
-<head>
 	<meta charset="UTF-8">
-	<title>Insert title here</title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <%--<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script> --%>
     <script src="${pageContext.request.contextPath }/js/jquery-3.7.1.js"></script> 
@@ -41,6 +36,7 @@
 			location.href = "${pageContext.request.contextPath}/members/login";
 		</script>
 	</c:if>--%>
+
 	<%--<c:if test="${!empty id }"> --%>
 		<nav class="navbar navbar-expand-sm right-block navbar-dark">
 			<ul class="navbar-nav">
@@ -50,10 +46,10 @@
 				</li>
 			 --%>
 				<li class="nav-item1">
-					<a class="nav-link" href="#"><img src="${pageContext.request.contextPath}/image/logo_header.png" style="width:80px;"></a>
+					<a class="nav-link" href="${pageContext.request.contextPath}/emp/login"><img src="${pageContext.request.contextPath}/image/logo_header.png "style="width:80px;"></a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link a1" href="#">&nbsp;근태관리&nbsp;</a>
+					<a class="nav-link a1" href="${pageContext.request.contextPath}/attend?">&nbsp;근태관리&nbsp;</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link a1" href="#">&nbsp;인사정보&nbsp;</a>
@@ -71,7 +67,7 @@
 					<a class="nav-link a1" href="#">&nbsp;전자문서&nbsp;</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link a1" href="#">&nbsp;프로젝트&nbsp;</a>
+					<a class="nav-link a1" href="${pageContext.request.contextPath}/project/main">&nbsp;프로젝트&nbsp;</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link a1" href="#">&nbsp;자원예약&nbsp;</a>
@@ -86,7 +82,7 @@
 					<a class="nav-link a1" href="#">&nbsp;관리자&nbsp;</a>
 				</li>
 				<li class="nav-item2">
-					<a class="nav-link" href="#"><img src="${pageContext.request.contextPath}/image/profile_white.png "style="width:30px;"></a>
+					<a class="nav-link" href="#"><img src="${pageContext.request.contextPath}/image/profile_white.png" style="width:30px;"></a>
 				</li>
 				<li class="nav-item3" style="line-height: 10px;">
 					<%--${.name} --%><span class="nav-link">홍길동님</span><a class="nav-link" href="#">로그아웃</a>
@@ -104,9 +100,3 @@
 			</ul>
 		</nav>
 	<%--</c:if> --%>
-	
-</head>
-<body>
-	
-</body>
-</html>

@@ -61,7 +61,7 @@
 					<a class="nav-link a1" href="#">&nbsp;캘린더&nbsp;</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link a1" href="#">&nbsp;게시판&nbsp;</a>
+					<a class="nav-link a1" href="board">&nbsp;게시판&nbsp;</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link a1" href="#">&nbsp;전자문서&nbsp;</a>
@@ -100,5 +100,3 @@
 			</ul>
 		</nav>
 	<%--</c:if> --%>
-	
-</head>

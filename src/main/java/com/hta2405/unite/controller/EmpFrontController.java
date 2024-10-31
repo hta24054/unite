@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 
-@WebServlet("/members/*")
+@WebServlet("/emp/*")
 public class EmpFrontController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     HashMap<String, Action> actionMap = new HashMap<>();
@@ -33,7 +33,7 @@ public class EmpFrontController extends HttpServlet {
         String contextPath = req.getContextPath();
         System.out.println("contextPath = " + contextPath);
 
-        String command = requestURI.substring(contextPath.length() + "/members".length());
+        String command = requestURI.substring(contextPath.length() + "/emp".length());
         System.out.println("command = " + command);
 
         //등록된 URL이 아닌경우 404에러페이지 보여줌

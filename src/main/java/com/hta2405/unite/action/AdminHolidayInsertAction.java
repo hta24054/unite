@@ -37,6 +37,14 @@ public class AdminHolidayInsertAction implements Action {
                 holidayDao.insertHoliday(localDate, map.get(localDate));
             }
         }
+        System.out.println("공휴일 추가 성공");
+        resp.setContentType("text/html;charset=utf-8");
+        PrintWriter out = resp.getWriter();
+        out.print("<script>");
+        out.print("alert('향후 1년간의 공휴일이 업데이트 되었습니다.');");
+        out.print("location.href='list';");
+        out.print("</script>");
+        out.close();
         return null;
     }
 

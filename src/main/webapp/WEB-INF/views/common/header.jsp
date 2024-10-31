@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,11 +25,11 @@
 		    transition: all 0.3s ease; /* 부드러운 전환 효과 */
 		}
 		
-		.a1:hover,
+		<%--.a1:hover,
 		.a1.active {
 		    font-size: 1.2em; /* 글자 크기 증가 */
 		    font-weight: bold; /* 글자 굵게 */
-		}
+		}--%>
 				
 		textarea{resize: none;}
 		.nav-item1{position: absolute; left: 15px; top: 2px;}
@@ -50,7 +51,7 @@
 				</li>
 			 --%>
 				<li class="nav-item1">
-					<a class="nav-link" href="#"><img src="${pageContext.request.contextPath}/image/logo_header.png "style="width:80px;"></a>
+					<a class="nav-link" href="${pageContext.request.contextPath}/emp/login"><img src="${pageContext.request.contextPath}/image/logo_header.png "style="width:80px;"></a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link a1" href="#">&nbsp;근태관리&nbsp;</a>
@@ -71,7 +72,7 @@
 					<a class="nav-link a1" href="#">&nbsp;전자문서&nbsp;</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link a1" href="#">&nbsp;프로젝트&nbsp;</a>
+					<a class="nav-link a1" href="${pageContext.request.contextPath}/project/main">&nbsp;프로젝트&nbsp;</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link a1" href="#">&nbsp;자원예약&nbsp;</a>

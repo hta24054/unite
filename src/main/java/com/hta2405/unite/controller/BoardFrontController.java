@@ -5,7 +5,11 @@ import java.util.HashMap;
 
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
-import com.hta2405.unite.action.EmpLoginAction;
+import com.hta2405.unite.action.BoardHomeAction;
+import com.hta2405.unite.action.BoardMenu1Action;
+import com.hta2405.unite.action.BoardMenu2Action;
+import com.hta2405.unite.action.BoardMenu3Action;
+import com.hta2405.unite.action.BoardWriteAction;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -14,15 +18,19 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/emp/*")
-public class EmpFrontController extends HttpServlet {
+@WebServlet("/board/*")
+public class BoardFrontController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     HashMap<String, Action> actionMap = new HashMap<>();
 
     //아래에 URL, Action 추가
     @Override
     public void init() throws ServletException {
-        actionMap.put("/login", new EmpLoginAction());
+        actionMap.put("", new BoardHomeAction());//게시판 홈
+        actionMap.put("/write", new BoardWriteAction());
+        actionMap.put("/menu1", new BoardMenu1Action());
+        actionMap.put("/menu2", new BoardMenu2Action());
+        actionMap.put("/menu3", new BoardMenu3Action());
     }
 
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -34,7 +42,7 @@ public class EmpFrontController extends HttpServlet {
         String contextPath = req.getContextPath();
         System.out.println("contextPath = " + contextPath);
 
-        String command = requestURI.substring(contextPath.length() + "/emp".length());
+        String command = requestURI.substring(contextPath.length() + "/board".length());
         System.out.println("command = " + command);
 
         //등록된 URL이 아닌경우 404에러페이지 보여줌

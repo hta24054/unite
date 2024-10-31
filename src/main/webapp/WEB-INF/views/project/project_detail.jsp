@@ -15,10 +15,9 @@
 	<style>
 		.table { width: 100%; margin-bottom: 30px; }
 		table, td, th { border-collapse: collapse; }
-		h3 { display: inline; }
 		.notification { height: 100%; }
 		caption { caption-side: top; }
-		.notification-content { border: 1px solid #ccc; border-radius: 8px; padding: 10px; }
+		.notification-content { border: 1px solid #ccc; border-radius: 8px; padding: 10px; height: 480px;}<%--height--%>
 	</style>
 </head>
 <body>

@@ -9,10 +9,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class EmpDao {
+public class ProjectDAO {
     private DataSource ds;
 
-    public EmpDao() {
+    public ProjectDAO() {
         try {
             InitialContext init = new InitialContext();
             ds = (DataSource) init.lookup("java:comp/env/jdbc/OracleDB");
@@ -24,7 +24,7 @@ public class EmpDao {
     public Emp getEmpById(String id) {
         System.out.println(1234);
         String sql = """
-                    SELECT * FROM EMP
+                    SELECT * FROM project
                     WHERE EMP_ID = ?
                 """;
         try (Connection conn = ds.getConnection();
@@ -35,8 +35,8 @@ public class EmpDao {
                 return new Emp(rs.getString("emp_id"),
                         rs.getString("password"),
                         rs.getString("ename"),
-                        rs.getLong("job_id"),
-                        rs.getLong("dept_id"),
+                        rs.getInt("job_id"),
+                        rs.getInt("dept_id"),
                         rs.getString("gender"),
                         rs.getString("email"),
                         rs.getString("tel"),
@@ -53,6 +53,4 @@ public class EmpDao {
         }
         return null;
     }
-    
-    
 }

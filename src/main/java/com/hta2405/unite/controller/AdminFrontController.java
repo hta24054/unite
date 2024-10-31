@@ -1,12 +1,6 @@
 package com.hta2405.unite.controller;
 
-import java.io.IOException;
-import java.util.HashMap;
-
-import com.hta2405.unite.action.Action;
-import com.hta2405.unite.action.ActionForward;
-import com.hta2405.unite.action.EmpLoginAction;
-
+import com.hta2405.unite.action.*;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,15 +8,20 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/emp/*")
-public class EmpFrontController extends HttpServlet {
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+
+@WebServlet("/admin/*")
+public class AdminFrontController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     HashMap<String, Action> actionMap = new HashMap<>();
 
     //아래에 URL, Action 추가
     @Override
     public void init() throws ServletException {
-        actionMap.put("/login", new EmpLoginAction());
+//        actionMap.put("/holiday", new AdminHolidayAction());
+        actionMap.put("/holiday/insert", new AdminHolidayInsertAction());
     }
 
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -34,7 +33,7 @@ public class EmpFrontController extends HttpServlet {
         String contextPath = req.getContextPath();
         System.out.println("contextPath = " + contextPath);
 
-        String command = requestURI.substring(contextPath.length() + "/emp".length());
+        String command = requestURI.substring(contextPath.length() + "/admin".length());
         System.out.println("command = " + command);
 
         //등록된 URL이 아닌경우 404에러페이지 보여줌

@@ -11,8 +11,8 @@ public class Emp {
     private String empId;
     private String password;
     private String ename;
-    private int deptId;
-    private int jobId;
+    private Long deptId;
+    private Long jobId;
     private String gender; //"남", "여"
     private String email;
     private String tel;

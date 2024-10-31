@@ -89,17 +89,21 @@
 				        </div>
           				<div class="form-group">
           					<div class="row mr-0">
-          						<p>색상</p>
+          						색상 :
 					            <select name="bgColor" id="bgColor">
-									<option value="">색상선택</option>
-									<option value="blue">blue</option>
+									<option value="red">빨강색</option>
+						            <option value="orange">주황색</option>
+						            <option value="yellow">노랑색</option>
+						            <option value="green">초록색</option>
+						            <option value="blue">파랑색</option>
+						            <option value="indigo">남색</option>
+						            <option value="purple">보라색</option>
 								</select>
           					</div>
-          					
 				        </div>
           				
 						<button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>
-						<button type="submit" class="btn btn-info">등록</button>
+						<button type="submit" class="btn btn-info" id="btnAdd">등록</button>
 					<%-- </form> --%>
 				</div>
 			</div>

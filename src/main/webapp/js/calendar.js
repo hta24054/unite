@@ -1,6 +1,9 @@
 $(document).ready(function(){	
 	const events = [];
-	const calendarEl = document.getElementById('calendar');
+	
+	// calendar element 취득
+    const calendarEl = $('#calendar')[0];
+	
 	const calendar = new FullCalendar.Calendar(calendarEl, {
 	    height: '700px', // calendar 높이 설정
         expandRows: true, // 화면에 맞게 높이 재설정
@@ -30,7 +33,7 @@ $(document).ready(function(){
          	console.log(obj);
         },
         select: function(arg) { // 캘린더에서 드래그로 이벤트를 생성할 수 있다.
-			var title = prompt('Event Title:');
+			const title = prompt('Event Title:');
 			if (title) {
 		        calendar.addEvent({
 		          title: title,
@@ -44,7 +47,9 @@ $(document).ready(function(){
 	    events: function(info, successCallback, failureCallback) {
 			successCallback(events);
 	    },
-	
+		eventClick: function(info) {  
+			
+		}
 	  });
 	
 	function showCalendar() {
@@ -53,7 +58,8 @@ $(document).ready(function(){
 		
 	showCalendar();
 	
-	$(".btn-info").on("click", function() {
+	/*
+	$("#btnAdd").on("click", function() {
 		  events.push({
 		    title: $("#schedule_name").val(),
 		    start: $("#startAt").val(),
@@ -62,6 +68,39 @@ $(document).ready(function(){
 		  });
 		
 		  calendar.refetchEvents();
+	});
+	*/
+	
+	//모달창 이벤트
+	$("#btnAdd").on("click", function () {
+		  const eventData = {
+		    scheduleName: $("#schedule_name").val(),
+		    start: $("#startAt").val(),
+		    end: $("#endAt").val(),
+		    allday: $("#allDay").val(),
+		    bgColor: $("#bgColor").val(),
+		  };
+		  //빈값입력시 오류
+		  if (
+			    eventData.scheduleName == "" ||
+			    eventData.start == "" ||
+			    eventData.end == "" ||
+			    eventData.bgColor
+		  ) {
+		    	alert("입력하지 않은 값이 있습니다.");
+		    //끝나는 날짜가 시작하는 날짜보다 값이 크면 안됨
+		  } else if ($("#startAt").val() > $("#endAt").val()) {
+		   		alert("시간을 잘못입력 하셨습니다.");
+		  } else {
+			    // 이벤트 추가
+			    calendar.addEvent(eventData);
+			    $("#scheduleModal").modal("hide");
+			    $("#schedule_name").val("");
+			    $("#startAt").val("");
+			    $("#endAt").val("");
+			    $("#allDay").val("");
+			    $("#bgColor").val("");
+		  }
 	});
 });
 

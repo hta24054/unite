@@ -1,37 +1,23 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<html>
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>프로젝트 생성</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
         $(document).ready(function() {
-            // 아이콘 클릭 시 조직도 열기
-            $('.org-chart-icon').on('click', function(event) {
-                event.preventDefault(); // 기본 링크 클릭 방지
-                const inputId = $(this).data('input'); // 클릭한 아이콘의 data-input 속성에서 ID 가져오기
-                window.selectedInputId = inputId; // 부모 창에서 선택된 input ID 설정
-                window.open('orgChart.jsp', 'orgChart', 'width=800,height=600'); // 조직도 열기
+        	$('.orgChartIcon').on('click', function(event) {
+                event.preventDefault();
+                const targetId = $(this).data('target');
+                localStorage.setItem('selectedInputId', targetId); // 로컬 저장소에 ID 저장
+                $('#orgChartModal').modal('show');
             });
 
-            $('#projectForm').on('submit', function(event) {
-                event.preventDefault(); // 기본 폼 제출 방지
-                $.ajax({
-                    url: 'ProjectServlet', // 서블릿 URL
-                    method: 'POST',
-                    data: $(this).serialize(), // 폼 데이터 직렬화
-                    success: function(response) {
-                        alert('프로젝트가 생성되었습니다.');
-                        // 추가 처리 (예: 페이지 이동, 데이터 갱신 등)
-                    },
-                    error: function() {
-                        alert('프로젝트 생성에 실패했습니다.');
-                    }
-                });
-            });
         });
     </script>
 </head>
@@ -41,13 +27,13 @@
 
     <div class="container mt-4">
         <h2>프로젝트 생성</h2>
-        <form id="projectForm" action="ProjectServlet" method="post">
-            <div class="form-group row" style="margin-top: 30px;">
+        <form id="projectForm" action="doCreate" method="post">
+            <%--<div class="form-group row" style="margin-top: 30px;">
                 <label for="code" class="col-sm-3 col-form-label">코드명</label>
                 <div class="col-sm-9">
                     <input type="text" class="form-control" id="code" name="code" required>
-                </div>
-            </div>
+                </div> 
+            </div>--%>
             <div class="form-group row">
                 <label for="name" class="col-sm-3 col-form-label">프로젝트명</label>
                 <div class="col-sm-9">
@@ -69,8 +55,8 @@
             <div class="form-group row">
                 <label for="manager" class="col-sm-3 col-form-label">책임자</label>
                 <div class="col-sm-9 d-flex align-items-center">
-                    <input type="text" class="form-control" id="manager" name="manager" required>
-                    <a href="#" class="org-chart-icon" data-input="manager">
+                    <input type="text" class="form-control" id="manager" name="manager" required readOnly>
+                    <a href="#" class="mr-2 orgChartIcon" data-target="manager">
                         <img src="${pageContext.request.contextPath}/image/profile_navy.png" alt="조직도" width="20" height="20">
                     </a>
                 </div>
@@ -78,8 +64,8 @@
             <div class="form-group row">
                 <label for="participants" class="col-sm-3 col-form-label">참여자</label>
                 <div class="col-sm-9 d-flex align-items-center">
-                    <input type="text" class="form-control" id="participants" name="participants" required>
-                    <a href="#" class="org-chart-icon" data-input="participants">
+                    <input type="text" class="form-control" id="participants" name="participants" required readOnly>
+                    <a href="#" class="mr-2 orgChartIcon" data-target="participants">
                         <img src="${pageContext.request.contextPath}/image/profile_navy.png" alt="조직도" width="20" height="20">
                     </a>
                 </div>
@@ -87,8 +73,8 @@
             <div class="form-group row">
                 <label for="viewers" class="col-sm-3 col-form-label">열람자</label>
                 <div class="col-sm-9 d-flex align-items-center">
-                    <input type="text" class="form-control" id="viewers" name="viewers" required>
-                    <a href="#" class="org-chart-icon" data-input="viewers">
+                    <input type="text" class="form-control" id="viewers" name="viewers" required readOnly>
+                    <a href="#" class="mr-2 orgChartIcon" data-target="viewers">
                         <img src="${pageContext.request.contextPath}/image/profile_navy.png" alt="조직도" width="20" height="20">
                     </a>
                 </div>
@@ -106,5 +92,23 @@
             </div>
         </form>
     </div>
+
+    <!-- 조직도 모달 -->
+	<div class="modal fade" id="orgChartModal" tabindex="-1" role="dialog" aria-labelledby="orgChartModalLabel" aria-hidden="true">
+	    <div class="modal-dialog modal-lg" role="document">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="orgChartModalLabel">조직도</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+	            <div class="modal-body">
+	                <iframe src="${pageContext.request.contextPath}/project/orgchart" style="width: 100%; height: 400px;" frameborder="0"></iframe>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+
 </body>
 </html>

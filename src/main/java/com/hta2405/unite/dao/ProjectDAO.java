@@ -32,20 +32,20 @@ public class ProjectDAO {
             ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return new Emp(rs.getString("emp_id"),
-                        rs.getString("password"),
-                        rs.getString("ename"),
-                        rs.getInt("job_id"),
-                        rs.getInt("dept_id"),
-                        rs.getString("gender"),
-                        rs.getString("email"),
-                        rs.getString("tel"),
-                        rs.getString("mobile"),
-                        rs.getString("img_path"),
-                        rs.getString("img_original"),
-                        rs.getString("img_uuid"),
-                        rs.getString("img_type"),
-                        rs.getBoolean("hired"));
+//                return new Emp(rs.getString("emp_id"),
+//                        rs.getString("password"),
+//                        rs.getString("ename"),
+//                        rs.getInt("job_id"),
+//                        rs.getInt("dept_id"),
+//                        rs.getString("gender"),
+//                        rs.getString("email"),
+//                        rs.getString("tel"),
+//                        rs.getString("mobile"),
+//                        rs.getString("img_path"),
+//                        rs.getString("img_original"),
+//                        rs.getString("img_uuid"),
+//                        rs.getString("img_type"),
+//                        rs.getBoolean("hired"));
             }
         } catch (SQLException e) {
             System.out.println("회원 정보 가져오기 오류");

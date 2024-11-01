@@ -6,13 +6,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class BoardMenu2Action implements Action {
+public class EmpHomeAction implements Action {
 
 	@Override
 	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		return null;
+		ActionForward forward = new ActionForward();
+		forward.setRedirect(false);
+		forward.setPath("/WEB-INF/views/emp/home.jsp");
+		return forward;
 	}
 
 }

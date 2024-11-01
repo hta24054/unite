@@ -6,6 +6,8 @@ import java.util.HashMap;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.action.EmpLoginAction;
+import com.hta2405.unite.action.EmpLoginProcessAction;
+import com.hta2405.unite.action.EmpHomeAction;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -23,6 +25,8 @@ public class EmpFrontController extends HttpServlet {
     @Override
     public void init() throws ServletException {
         actionMap.put("/login", new EmpLoginAction());
+        actionMap.put("/loginProcess", new EmpLoginProcessAction());
+        actionMap.put("/home", new EmpHomeAction());
     }
 
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

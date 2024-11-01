@@ -3,8 +3,6 @@ package com.hta2405.unite.action;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import com.hta2405.unite.dao.EmpDao;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,11 +15,11 @@ public class EmpLoginProcessAction implements Action {
 	public ActionForward execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
-		String id = request.getParameter("id");
-		String pass = request.getParameter("pass");
+//		String id = request.getParameter("id");
+//		String pass = request.getParameter("pass");
 		ActionForward forward = new ActionForward();
 		
-		EmpDao mdao = new EmpDao();
+//		EmpDao mdao = new EmpDao();
 //		int result = mdao.isId(id, pass);
 //		System.out.println("결과는 "+result);
 //		
@@ -43,9 +41,9 @@ public class EmpLoginProcessAction implements Action {
 //				cookie.setMaxAge(0);
 //			}
 //			response.addCookie(cookie);
-//			forward.setRedirect(true);
-//			forward.setPath("../boards/list");
-//			return forward;
+			forward.setRedirect(true);
+			forward.setPath("../emp/home");
+			return forward;
 //		}else {//로그인 실패
 //			String message = "비밀번호가 일치하지 않습니다.";
 //			if(result == -1) {
@@ -60,7 +58,7 @@ public class EmpLoginProcessAction implements Action {
 //			out.print("history.back();");
 //			out.print("</script>");
 //			out.close();
-			return null;
+//			return null;
 //		}
 		
 	}

@@ -1,6 +1,6 @@
 package com.hta2405.unite.dto;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +14,6 @@ public class Schedule {
 	private String empId;			//일정등록자
 	private String scheduleName;	//일정명
 	private String scheduleContent; //일정내용
-	private Date scheduleStart;		//시작일시
-	private Date scheduleEnd;		//종료일시
+	private LocalDateTime scheduleStart;//시작일시
+	private LocalDateTime scheduleEnd;//종료일시
 }

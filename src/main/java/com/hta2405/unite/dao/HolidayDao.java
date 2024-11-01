@@ -24,16 +24,12 @@ public class HolidayDao {
     public int insertHoliday(LocalDate localDate, String holidayName) {
         String sql = """
                     INSERT INTO HOLIDAY (HOLIDAY_DATE, HOLIDAY_NAME)
-                                       SELECT ?, ? FROM DUAL
-                                       WHERE NOT EXISTS (
-                                           SELECT 1 FROM HOLIDAY WHERE HOLIDAY_DATE = ?
-                                       )
+                                       VALUES (?, ?)
                 """;
         try (Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setDate(1, Date.valueOf(localDate));
             ps.setString(2, holidayName);
-            ps.setDate(3, Date.valueOf(localDate));
 
             return ps.executeUpdate();
         } catch (SQLException e) {

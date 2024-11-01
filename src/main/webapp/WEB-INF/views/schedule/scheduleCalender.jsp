@@ -78,10 +78,10 @@
 						<input type="hidden" id="scheduleId" name="scheduleId" value="${param.id}">
 						
 						<div class="form-group">
-							<label for="title">일정명</label>
+							<label for="schedule_name">일정명</label>
 							<input type="text"
 								   class="form-control" placeholder="일정명을 입력하세요"
-								   name="title" id="title">
+								   name="schedule_name" id="schedule_name">
 						</div>
 						<div class="form-group">
 							<label for="startAt">시작날짜/시간</label>

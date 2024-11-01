@@ -18,37 +18,74 @@
 		h2 { text-align: left; color: black; margin: 0; } /* h2의 기본 여백 제거 */
         caption { caption-side: top; margin-bottom: 30px; } /* 캡션과 테이블 간격 설정 */
 	</style>
+	<script>
+		$(document).ready(function() {
+		    // 페이지 로딩 시 진행 중인 프로젝트 데이터 가져오기
+		    $.ajax({
+		        url: "${pageContext.request.contextPath}/project/getOngoingProjects",
+		        type: "GET",
+		        success: function(data) {
+		            // 테이블에 데이터 추가
+		            var tbody = $(".table tbody");
+		            tbody.empty(); // 기존 데이터 제거
+		            $.each(data, function(index, project) {
+		                tbody.append("<tr>" +
+		                    "<td>" + project.projectId + "</td>" +
+		                    //"<td><a href='${pageContext.request.contextPath}/project/detail/id=?" + project.projectName + "'>" + project.projectName + "</a></td>" +
+		                    "<td><a href='${pageContext.request.contextPath}/project/detail'>" + project.projectName + "</a></td>" +
+		                    "<td>" + project.memberCount + "명</td>" +
+		                    "<td>" + project.progressRate + "</td>" +
+		                    "<td>" + project.endDate + "</td>" +
+		                    "</tr>");
+		            });
+		        },
+		        error: function() {
+		            alert("프로젝트 데이터를 불러오는 데 실패했습니다.");
+		        }
+		    });
+		});
+	</script>
 </head>
 <body>
-	
-	<!-- 임시. 폼 -->
 	<table class="table">
 		<caption><h2>진행 중 프로젝트<h2></caption>
 		<thead>
 			<tr>
-				<th>코드명</th>
-				<th>프로젝트이름</th>
+				<th>프로젝트 코드</th>
+				<th>프로젝트 이름</th>
 				<th>참여자</th>
 				<th>진행률</th>
 				<th>마감일</th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr>
-				<td>#001</td>
-				<td><a href="${pageContext.request.contextPath}/project/detail">홈페이지</a></td>
-				<td>홍길동 책임 외 2명</td>
-				<td>60%</td>
-				<td>2024-02-05</td>
-			</tr>
-			<tr>
-				<td>#002</td>
-				<td>앱 프로젝트</td>
-				<td>홍길동 책임 외 2명</td>
-				<td>40%</td>
-				<td>2024-02-05</td>
-			</tr>
+		    <c:forEach var="project" items="${ongoingProjects}">
+		        <tr>
+		            <td>${project.projectId}</td>
+		            <td><a href="${pageContext.request.contextPath}/project/detail/${project.projectId}">${project.projectName}</a></td>
+		            <td>${project.memberCount}명</td>
+		            <td>${project.progressRate}</td>
+		            <td>${project.endDate}</td>
+		        </tr>
+		    </c:forEach>
 		</tbody>
 	</table>
+	
+	<!-- 수정 -->
+	<div class = "center-block">
+		<ul class="pagination justify-content-center">
+			<li class="page-item">
+				<a ${page > 1 ? 'href=list?page=' += (page-1) : '' } class="page-link ${page <= 1 ? 'gray' : '' }">이전&nbsp;</a>
+			</li>
+			<c:forEach var="a" begin="${startpage }" end="${endpage }">
+				<li class="page-item ${a == page ? 'active' : '' }">
+					<a ${a == page ? '' : 'href=list?page=' += a } class="page-link">${a }</a>
+				</li>
+			</c:forEach>
+			<li class="page-item">
+				<a ${page < maxpage ? 'href=list?page=' += (page+1) : '' } class="page-link ${page >= maxpage ? 'gray' : '' }">&nbsp;다음</a>
+			</li>
+		</ul>
+	</div>
 </body>
 </html>

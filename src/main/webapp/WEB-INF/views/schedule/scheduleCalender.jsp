@@ -69,12 +69,7 @@
 			<div class="modal-content">
 				<div class="modal-header">일정등록</div>
 				<div class="modal-body">
-					<%-- <form name="scheduleAddForm" action="scheduleAdd" method="post"> --%>
-						<%--
-							http://localhost:8088/Board_Ajax2/boards/detail?num=22
-							주소를 보면 num을 파라미터로 넘기고 있습니다.
-							이 값을 가져와서 ${param.num}을 사용 또는 ${boarddata.board_num}
-						--%>
+					<%-- <form name="scheduleForm" action="scheduleForm" method="post"> --%>
 						<input type="hidden" id="scheduleId" name="scheduleId" value="${param.id}">
 						
 						<div class="form-group">
@@ -99,19 +94,19 @@
           					<div class="color-group">
           						<p>색상 :</p>
 					            <select name="bgColor" id="bgColor">
-									<option value="red">빨강색</option>
-						            <option value="orange">주황색</option>
-						            <option value="yellow">노랑색</option>
-						            <option value="green">초록색</option>
-						            <option value="blue">파랑색</option>
-						            <option value="indigo">남색</option>
-						            <option value="purple">보라색</option>
+									<option value="red" style="color:red;">빨강</option>
+						            <option value="orange" style="color:orange;">주황</option>
+						            <option value="yellow" style="color:yellow;">노랑</option>
+						            <option value="green" style="color:green;">초록</option>
+						            <option value="blue" style="color:blue;">파랑</option>
+						            <option value="indigo" style="color:indigo;">남</option>
+						            <option value="purple" style="color:purple;">보라</option>
 								</select>
           					</div>
 				        </div>
 				        <div>
 				        	<p>내용</p>
-				        	<textarea rows="10" name="contents" id="contents"></textarea>
+				        	<textarea rows="10" name="description" id="description"></textarea>
 				        </div>
           				
 						<button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>

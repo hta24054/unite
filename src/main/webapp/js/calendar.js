@@ -39,7 +39,8 @@ $(document).ready(function(){
 		          title: title,
 		          start: arg.start,
 		          end: arg.end,
-		          allDay: arg.allDay
+		          allDay: arg.allDay,
+		          contents: arg.contents
 		        })
 			}
 			calendar.unselect()
@@ -58,48 +59,36 @@ $(document).ready(function(){
 		
 	showCalendar();
 	
-	/*
-	$("#btnAdd").on("click", function() {
-		  events.push({
-		    title: $("#schedule_name").val(),
-		    start: $("#startAt").val(),
-		    end: $("#endAt").val(),
-		    allday: $("#allDay").val(),
-		  });
-		
-		  calendar.refetchEvents();
-	});
-	*/
-	
 	//모달창 이벤트
-	$("#btnAdd").on("click", function () {
+	$("#btnRegister").on("click", function () {
 		  const eventData = {
-		    scheduleName: $("#schedule_name").val(),
+		    title: $("#title").val(),
 		    start: $("#startAt").val(),
 		    end: $("#endAt").val(),
 		    allday: $("#allDay").val(),
 		    bgColor: $("#bgColor").val(),
+		    contents: $("#contents").val()
 		  };
 		  //빈값입력시 오류
 		  if (
-			    eventData.scheduleName == "" ||
+			    eventData.title == "" ||
 			    eventData.start == "" ||
 			    eventData.end == "" ||
-			    eventData.bgColor
+			    eventData.contents
 		  ) {
 		    	alert("입력하지 않은 값이 있습니다.");
-		    //끝나는 날짜가 시작하는 날짜보다 값이 크면 안됨
-		  } else if ($("#startAt").val() > $("#endAt").val()) {
+		  } else if ($("#startAt").val() > $("#endAt").val()) { //끝나는 날짜가 시작하는 날짜보다 값이 클 경우
 		   		alert("시간을 잘못입력 하셨습니다.");
 		  } else {
 			    // 이벤트 추가
 			    calendar.addEvent(eventData);
 			    $("#scheduleModal").modal("hide");
-			    $("#schedule_name").val("");
+			    $("#title").val("");
 			    $("#startAt").val("");
 			    $("#endAt").val("");
 			    $("#allDay").val("");
 			    $("#bgColor").val("");
+			    $("#contents").val("");
 		  }
 	});
 });

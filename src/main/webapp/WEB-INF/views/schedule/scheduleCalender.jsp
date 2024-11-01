@@ -33,10 +33,18 @@
 		  color: blue;
 		  text-decoration: none;
 		}
+		
+		.color-group {
+			display: flex;
+		}
+		
+		.color-group > p {
+			margin: 0 10px 0 0;
+		}
 	</style>
 </head>
 <body>
-	<div class="container">
+	<div class="container pb-8">
 		<div class="row">
 			<div class="col-sm-2">
 				<aside>
@@ -70,10 +78,10 @@
 						<input type="hidden" id="scheduleId" name="scheduleId" value="${param.id}">
 						
 						<div class="form-group">
-							<label for="schedule_name">일정명</label>
+							<label for="title">일정명</label>
 							<input type="text"
 								   class="form-control" placeholder="일정명을 입력하세요"
-								   name="schedule_name" id="schedule_name">
+								   name="title" id="title">
 						</div>
 						<div class="form-group">
 							<label for="startAt">시작날짜/시간</label>
@@ -88,8 +96,8 @@
 				             <label for="allDay" class="custom-control-label">하루종일</label>
 				        </div>
           				<div class="form-group">
-          					<div class="row mr-0">
-          						색상 :
+          					<div class="color-group">
+          						<p>색상 :</p>
 					            <select name="bgColor" id="bgColor">
 									<option value="red">빨강색</option>
 						            <option value="orange">주황색</option>
@@ -101,9 +109,13 @@
 								</select>
           					</div>
 				        </div>
+				        <div>
+				        	<p>내용</p>
+				        	<textarea rows="10" name="contents" id="contents"></textarea>
+				        </div>
           				
 						<button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>
-						<button type="submit" class="btn btn-info" id="btnAdd">등록</button>
+						<button type="submit" class="btn btn-info" id="btnRegister">등록</button>
 					<%-- </form> --%>
 				</div>
 			</div>

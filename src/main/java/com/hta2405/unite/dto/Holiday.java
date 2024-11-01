@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @ToString
 public class Holiday {
-    private Long holiday_id;
+    private Long holidayId;
     private LocalDate holidayDate;
     private String holidayName;
 }

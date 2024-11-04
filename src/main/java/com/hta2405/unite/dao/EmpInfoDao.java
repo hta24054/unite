@@ -10,9 +10,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class EmpInfoDao {
-    private DataSource ds;
+	private DataSource ds;
 
-    public EmpInfoDao() {
+	public EmpInfoDao() {
+		try {
+	        InitialContext init = new InitialContext();
+	        ds = (DataSource) init.lookup("java:comp/env/jdbc/OracleDB");
+	    } catch (Exception e) {
+	        System.out.println("DB연결 실패 " + e.getMessage());
+	    }
+	}
+
 	public EmpInfo getEmpInfoById(String empId) {
 		EmpInfo empInfo = null;
 		String sql = """
@@ -39,7 +47,7 @@ public class EmpInfoDao {
 				empInfo.setDeptId(rs.getString("dept_id"));
 				empInfo.setJobName(rs.getString("job_id"));
 				empInfo.setMobile(rs.getString("mobile"));
-				
+
 				empInfo.setHireDate(rs.getDate("hiredate"));
 				empInfo.setHireType(rs.getString("hiretype"));
 				empInfo.setBirthDate(rs.getDate("birthday"));
@@ -51,8 +59,8 @@ public class EmpInfoDao {
 				empInfo.setMarried(rs.getBoolean("married"));
 				empInfo.setEtype(rs.getString("etype"));
 				empInfo.setMobile2(rs.getString("mobile2"));
-				//empInfo.setCertName(rs.getString("certName"));
-				//empInfo.setLangName(rs.getString("langName"));
+				// empInfo.setCertName(rs.getString("certName"));
+				// empInfo.setLangName(rs.getString("langName"));
 				empInfo.setChild(rs.getInt("child"));
 			} else {
 				System.out.println("No employee found with ID: " + empId); // 디버그 출력
@@ -63,22 +71,21 @@ public class EmpInfoDao {
 		return empInfo;
 	}
 
-    public boolean updateEmpInfo(EmpInfo empInfo) throws SQLException {
-        boolean update = false;
-        String sql = """
-                UPDATE emp_info
-                SET email=?, tel=?, mobile=?,
-                mobile2=?, address=?, married=?
-                """;
-		try (Connection conn = ds.getConnection(); 
-         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	public boolean updateEmpInfo(EmpInfo empInfo) throws SQLException {
+		boolean update = false;
+		String sql = """
+				UPDATE emp_info
+				SET email=?, tel=?, mobile=?,
+				mobile2=?, address=?, married=?
+				""";
+		try (Connection conn = ds.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, empInfo.getEmail());
 			pstmt.setString(2, empInfo.getTel());
 			pstmt.setString(3, empInfo.getMobile());
 			pstmt.setString(4, empInfo.getMobile2());
 			pstmt.setString(5, empInfo.getAddress());
 			pstmt.setBoolean(6, empInfo.getMarried());
-        }
-        return update;
-    }
+		}
+		return update;
+	}
 }

@@ -85,7 +85,7 @@
 					<a class="nav-link" href="#"><img src="${pageContext.request.contextPath}/image/profile_white.png" style="width:30px;"></a>
 				</li>
 				<li class="nav-item3" style="line-height: 10px;">
-					<%--${.name} --%><span class="nav-link">홍길동님</span><a class="nav-link" href="#">로그아웃</a>
+					<%--${.name} --%><span class="nav-link">${id}님</span><a class="nav-link" href="${pageContext.request.contextPath}/emp/logout">로그아웃</a>
 				</li>
 				<%--<c:if test="${id=='admin' }">
 				Drop down

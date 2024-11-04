@@ -7,6 +7,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Unite Login</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/login.css">
+  <script src="${pageContext.request.contextPath}/js/jquery-3.7.1.js"></script>
+  <script>
+	$(function(){
+		const id = '${cookieId}';
+		if(id){
+			$("#id").val(id);
+			$("#remember").prop('checked',true);
+		}
+	})
+  </script>
 </head>
 <body>
   <div class="login-container">
@@ -24,7 +34,7 @@
           	<input type="checkbox" name='remember' id="remember" value="store">
           	아이디 저장
           </label>
-          <a href="#">비밀번호 찾기</a>
+          <a href="${pageContext.request.contextPath}/emp/pwInquiry">비밀번호 찾기</a>
         </div>
         <button type="submit">Login</button>
       </form>

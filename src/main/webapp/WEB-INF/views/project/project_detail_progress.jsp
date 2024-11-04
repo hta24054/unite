@@ -48,7 +48,7 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td>#001</td>
+					<td><input type="checkbox">#001</td>
 					<td>홍길동 책임 외 2명</td>
 					<td>홍길동 책임 외 2명</td>
 					<td>60%</td>
@@ -57,7 +57,7 @@
 					<td>파일1.txt</td>
 				</tr>
 				<tr>
-					<td>#002</td>
+					<td><input type="checkbox">#002</td>
 					<td>홍길동 책임 외 2명</td>
 					<td>앱 프로젝트</td>
 					<td>40%</td>

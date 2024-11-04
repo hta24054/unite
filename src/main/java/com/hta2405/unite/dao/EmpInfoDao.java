@@ -57,9 +57,9 @@ public class EmpInfoDao {
 				empInfo.setAddress(rs.getString("address"));
 				empInfo.setSchool(rs.getString("school"));
 				empInfo.setMarried(rs.getBoolean("married"));
-				empInfo.setCertName(rs.getString("certName"));
+				//empInfo.setCertName(rs.getString("certName"));
 				empInfo.setMajor(rs.getString("major"));
-				empInfo.setLangName(rs.getString("langName"));
+				//empInfo.setLangName(rs.getString("langName"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

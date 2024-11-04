@@ -33,7 +33,6 @@ public class EmpInfoDao {
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, empId);
             ResultSet rs = ps.executeQuery();
-
             if (rs.next()) {
                 empInfo = new EmpInfo();
                 empInfo.setEname(rs.getString("ename"));

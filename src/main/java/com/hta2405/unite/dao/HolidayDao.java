@@ -1,5 +1,6 @@
 package com.hta2405.unite.dao;
 
+import com.hta2405.unite.dto.Attend;
 import com.hta2405.unite.dto.Holiday;
 
 import javax.naming.InitialContext;
@@ -7,6 +8,7 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class HolidayDao {
@@ -20,6 +22,7 @@ public class HolidayDao {
             System.out.println("DB연결 실패 " + e.getMessage());
         }
     }
+
 
     public int insertHoliday(LocalDate localDate, String holidayName) {
         String sql = """
@@ -53,5 +56,48 @@ public class HolidayDao {
             throw new RuntimeException(e);
         }
         return null;
+    }
+
+    public List<Holiday> getMonthlyHoliday(LocalDate startDate, LocalDate endDate) {
+        ArrayList<Holiday> HolidayList = new ArrayList<>();
+        String sql = """
+                    SELECT * FROM HOLIDAY
+                    WHERE HOLIDAY_DATE BETWEEN ? and ?
+                    ORDER BY HOLIDAY_DATE
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, Date.valueOf(startDate));
+            ps.setDate(2, Date.valueOf(endDate));
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Holiday holiday = new Holiday(rs.getLong("holiday_id"),
+                        rs.getDate("holiday_date").toLocalDate(),
+                        rs.getString("holiday_name"));
+
+                HolidayList.add(holiday);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return HolidayList;
+    }
+
+    public int updateHoliday(String holidayName, LocalDate holidayDate) {
+        String sql = """
+                   UPDATE HOLIDAY
+                   SET HOLIDAY_NAME = ?
+                   WHERE HOLIDAY_DATE = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, Date.valueOf(holidayDate));
+            ps.setString(2, holidayName);
+
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

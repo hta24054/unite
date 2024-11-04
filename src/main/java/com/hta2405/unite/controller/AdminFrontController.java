@@ -20,8 +20,8 @@ public class AdminFrontController extends HttpServlet {
     //아래에 URL, Action 추가
     @Override
     public void init() throws ServletException {
-//        actionMap.put("/holiday", new AdminHolidayAction());
-        actionMap.put("/holiday/insert", new AdminHolidayInsertAction());
+        actionMap.put("/holiday/api", new AdminHolidayInsertAction()); //공휴일 api로 받아와서 DB 업데이트
+        actionMap.put("/holiday/weekend", new AdminHolidayWeekendAction()); //주말 DB에 업데이트
     }
 
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

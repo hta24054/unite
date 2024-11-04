@@ -60,21 +60,20 @@ $(document).ready(function(){
 		},
 		
 	    events: function(info, successCallback, failureCallback) {
-			successCallback(events);
+			// successCallback(events);
+			
 	    },
 	    
 	    dateClick: function(info) { // 일자셀 클릭 함수
                 console.log("dateClick", info)
         },
 	    
-	    
 		eventClick: function(info) {  
 			console.log("info", info)
 			if (info) {
-				
 				$scheduleName.val(info.event.title);
-				$bgColor.val(info.event.extendedProps.bgColor);
 				$description.val(info.event.extendedProps.contents);
+				$bgColor.val(info.event.extendedProps.bgColor);
 				$scheduleModal.modal('show');
 			}
 		}
@@ -124,12 +123,30 @@ $(document).ready(function(){
 
 		// 끝나는 날짜가 시작하는 날짜보다 이전인지 검증
 		if (eventData.start > eventData.end) {
-			alert("시간을 잘못입력 하셨습니다.");
+			alert("날짜/시간을 잘못입력 하셨습니다.");
 			return false;
 		}
 		
 		// 이벤트 추가
 		calendar.addEvent(eventData);
+		
+		const eventsFromCalendar = $('#calendar').fullCalendar('clientEvents');
+        alert(eventsFromCalendar);
+        
+	    $.ajax({
+			type: "post",
+            url: "${pageContext.request.contextPath}/schedule/ScheduleAddProcessAction",
+            dataType: "json",
+            data: { 
+				 eventsJson: JSON.stringify(eventsFromCalendar) 
+			},
+            success: function(data) {
+                console.log("일정이 추가되었습니다.", data);
+            },
+            error: function(){
+				console.log('에러');
+			}
+	    });
 		
 		// 모달 닫기 및 입력 필드 초기화
 		$scheduleModal.modal("hide");

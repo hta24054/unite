@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
+import com.hta2405.unite.action.ProjectCancelAction;
 import com.hta2405.unite.action.ProjectChartAction;
 import com.hta2405.unite.action.ProjectCompleteAction;
 import com.hta2405.unite.action.ProjectCreateAction;
@@ -30,9 +31,10 @@ public class ProjectFrontController extends HttpServlet {
     //아래에 URL, Action 추가
     @Override
     public void init() throws ServletException {
-        actionMap.put("/main", new ProjectMainAction());
-        actionMap.put("/create", new ProjectCreateAction());
+        actionMap.put("/main", new ProjectMainAction()); //메인
+        actionMap.put("/create", new ProjectCreateAction()); 
         actionMap.put("/complete", new ProjectCompleteAction());
+        actionMap.put("/cancel", new ProjectCancelAction());
         actionMap.put("/detail", new ProjectDetailAction());
         actionMap.put("/progress", new ProjectProgressAction());
         actionMap.put("/orgchart", new ProjectChartAction());

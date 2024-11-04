@@ -1,3 +1,6 @@
+
+
+
 CREATE TABLE attend
 (
   attend_id   NUMBER       NOT NULL,

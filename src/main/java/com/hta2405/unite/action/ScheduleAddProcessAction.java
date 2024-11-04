@@ -1,7 +1,6 @@
 package com.hta2405.unite.action;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -41,24 +40,8 @@ public class ScheduleAddProcessAction implements Action {
 		
 		ScheduleDAO sdao = new ScheduleDAO();
 		
-		int result = sdao.scheduleInsert(s);
-		
-		//result=0; //일정 추가 실패 확인 위한 명령
-		if (result == 0) {
-			System.out.println("일정 추가 실패입니다.");
-			ActionForward forward = new ActionForward();
-			forward.setRedirect(false);
-			request.setAttribute("message", "일정 추가 실패입니다.");
-			forward.setPath("/WEB-INF/views/error/error.jsp");
-			return forward;
-		}
-		
-		response.setContentType("text/html;charset=utf-8");
-		PrintWriter out = response.getWriter();
-		out.print("<script>");
-		out.print("location.href='../schedule/calender';");
-		out.print("</script>");
-		out.close();
+		int ok = sdao.scheduleInsert(s);
+		response.getWriter().print(ok);
 		return null;
 	}
 }

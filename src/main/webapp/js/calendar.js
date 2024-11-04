@@ -142,6 +142,7 @@ $(document).ready(function(){
 			},
             success: function(data) {
                 console.log("일정이 추가되었습니다.", data);
+                showCalendar();
             },
             error: function(){
 				console.log('에러');

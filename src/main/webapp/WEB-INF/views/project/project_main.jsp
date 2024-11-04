@@ -34,7 +34,7 @@
                             "<td><a href='" + "${pageContext.request.contextPath}/project/detail?projectId=" + project.projectId + "'>" + project.projectName + "</a></td>" + 
                             <%--"<td><a href='${pageContext.request.contextPath}/project/detail'>" + project.projectName + "</a></td>" +--%>
                             "<td>" + project.memberCount + "명</td>" +
-                            "<td>" + project.progressRate + "</td>" +
+                            "<td>" + project.progressRate + " %</td>" +
                             "<td>" + project.endDate + "</td>" +
                             "<td>" +
                             "<select class='form-control project-status' data-project-id='" + project.projectId + "'>" +

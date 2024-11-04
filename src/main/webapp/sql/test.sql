@@ -134,7 +134,7 @@ NOCACHE;
 
 
 
-
+select * from project_member;
 
 
 
@@ -155,6 +155,7 @@ select e.ename, m.member_designated, m.member_progress_rate
 				join emp e on m.member_id = e.ename
 				where p.project_id = 17
 				--where p.project_id = ?
+update project_member set member_progress_rate = 60 where project_id = 18 and member_id = '헤헤'; --진행률 테스트
 
 
 

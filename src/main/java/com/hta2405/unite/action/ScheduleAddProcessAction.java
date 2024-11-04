@@ -18,7 +18,6 @@ public class ScheduleAddProcessAction implements Action {
 	public ActionForward execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
 		
-		//int scheduleId = Integer.parseInt(request.getParameter("schedule_id"));
 		String empId = request.getParameter("emp_id");
 		String scheduleName = request.getParameter("schedule_name");
 		String scheduleContent = request.getParameter("schedule_content");
@@ -28,7 +27,6 @@ public class ScheduleAddProcessAction implements Action {
 		
 		Schedule s = new Schedule();
 		
-		//s.setScheduleId(scheduleId);
 		s.setEmpId(empId);
 		s.setScheduleName(scheduleName);
 		s.setScheduleContent(scheduleContent);
@@ -42,7 +40,8 @@ public class ScheduleAddProcessAction implements Action {
 		s.setScheduleColor(scheduleColor);
 		
 		ScheduleDAO sdao = new ScheduleDAO();
-		int result = sdao.insert(s);
+		
+		int result = sdao.scheduleInsert(s);
 		
 		//result=0; //일정 추가 실패 확인 위한 명령
 		if (result == 0) {

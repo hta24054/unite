@@ -85,7 +85,7 @@
 				<div class="modal-header">일정등록</div>
 				<div class="modal-body">
 					<form action="${pageContext.request.contextPath}/schedule/ScheduleAddProcessAction" name="schedulAdd" method="post">
-						<input type="hidden" id="scheduleId" name="scheduleId" value="${param.id}">
+						<input type="hidden" id="schedule_id" name="schedule_id" value="${param.id}">
 						
 						<div class="form-group">
 							<label for="schedule_name">일정명</label>

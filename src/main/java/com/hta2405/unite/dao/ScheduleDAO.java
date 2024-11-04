@@ -23,32 +23,32 @@ public class ScheduleDAO {
 	}
 
 	//일정 등록
-	public int insert(Schedule s) {
+	public int scheduleInsert(Schedule s) {
 		int result = 0;
 		String sql = """
 				INSERT INTO schedule
-				(schedule_id, emp_id, schedule_name, schedule_content, schedule_start, schedule_end, schedule_color)
-				VALUES(SEQ_schedule.NEXTVAL, ?, ?, ?, ?, ?)
+				(schedule_id, emp_id, schedule_name, schedule_start, schedule_end, schedule_color, schedule_content) 
+				VALUES(SEQ_schedule.NEXTVAL, ?, ?, ?, ?, ?, ?)
 				""";
 		
 		try(Connection con = ds.getConnection();
 			PreparedStatement pstmt = con.prepareStatement(sql);) {
+			
 			pstmt.setString(1, s.getEmpId());
 			pstmt.setString(2, s.getScheduleName());
-			pstmt.setString(3, s.getScheduleContent());
-            pstmt.setTimestamp(4, Timestamp.valueOf(s.getScheduleStart())); 
-            pstmt.setTimestamp(5, Timestamp.valueOf(s.getScheduleEnd()));   
+			pstmt.setTimestamp(3, Timestamp.valueOf(s.getScheduleStart())); 
+	        pstmt.setTimestamp(4, Timestamp.valueOf(s.getScheduleEnd()));
+			pstmt.setString(5, s.getScheduleContent());
 			pstmt.setString(6, s.getScheduleColor());
 			
 			result = pstmt.executeUpdate();//삽입 성공시 result는 1
-			System.out.println("삽입 성공: " + result); // 성공 메시지 출력
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("insert() 에러 : " + e);
+			System.out.println("scheduleInsert() 에러 : " + e);
 		}
 		return result;
-	}//insert end
+	}//scheduleInsert end
 	
 	
 	

@@ -8,6 +8,8 @@ import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.action.EmpInfoUpdateAction;
 
 import com.hta2405.unite.action.EmpViewAction;
+import com.hta2405.unite.action.EmpViewDeptAction;
+import com.hta2405.unite.action.EmpViewOtherDeptAction;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -26,6 +28,8 @@ public class EmpInfoFrontController extends HttpServlet {
     public void init() throws ServletException {
         actionMap.put("/view", new EmpViewAction());
         actionMap.put("/update", new EmpInfoUpdateAction());
+        actionMap.put("/viewdept", new EmpViewDeptAction());
+        actionMap.put("/viewotherdept", new EmpViewOtherDeptAction());
     }
 
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

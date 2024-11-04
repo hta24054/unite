@@ -16,11 +16,11 @@ public class EmpInfo {
 	private String email; // 이메일 주소
 	private String tel; // 내선 번호
 	private String deptId; // 부서id
-	private String jobId; // 직위id
+	private String jobName; // 직위id
 	private String mobile; // 휴대폰 번호
 	private String company; // 회사명
-	private Date hiredate; // 입사일
-	private String hiretype; // 채용 구분 (경력, 신입, 인턴 등)
+	private Date hireDate; // 입사일
+	private String hireType; // 채용 구분 (경력, 신입, 인턴 등)
 	private String bank; // 은행
 	private String account; // 계좌 번호
 	private String mobile2; // 긴급 연락처
@@ -29,7 +29,8 @@ public class EmpInfo {
 	private String address; // 주소
 	private String school; // 최종 학력
 	private Boolean married; // 혼인 여부
-	private String certId; // 자격증 id
+	private String certName; // 자격증 id
 	private String major; // 전공
-	private String langId;// 외국어 id
+	private String langName;// 외국어 id
+	private Integer child;
 }

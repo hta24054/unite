@@ -16,4 +16,5 @@ public class Schedule {
 	private String scheduleContent; //일정내용
 	private LocalDateTime scheduleStart;//시작일시
 	private LocalDateTime scheduleEnd;//종료일시
+	private String scheduleColor;    //일정색상
 }

@@ -10,10 +10,17 @@
 	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.8.0/main.min.js'></script>  
 	<!-- fullcalendar 언어 CDN -->  
 	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.8.0/locales-all.min.js'></script>
+	<!-- fullcalendar 날짜 DataFormat 적용 -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
 	<script src="${pageContext.request.contextPath}/js/calendar.js"></script>
 	<style>
 		.container {
 			max-width: 1900px;
+		}
+		
+		#calendar a {
+			text-decoration: none;
+			color: #000;
 		}
 		
 		.fc-header-toolbar {
@@ -24,14 +31,12 @@
 		
 		/* 일요일 날짜 빨간색 */
 		.fc-day-sun a {
-		  color: red;
-		  text-decoration: none;
+		  color: red !important;
 		}
 		
 		/* 토요일 날짜 파란색 */
 		.fc-day-sat a {
-		  color: blue;
-		  text-decoration: none;
+		  color: blue !important;
 		}
 		
 		.color-group {
@@ -41,12 +46,22 @@
 		.color-group > p {
 			margin: 0 10px 0 0;
 		}
+		
+		textarea {
+			width: 100%;
+			height: 100px;
+			margin-bottom: 10px;
+		}
+		
+		.btn_wrap {
+			text-align: center;
+		}
 	</style>
 </head>
 <body>
-	<div class="container pb-8">
+	<div class="container">
 		<div class="row">
-			<div class="col-sm-2">
+			<div class="col-sm-2 px-5">
 				<aside>
 					<h3>캘린더</h3>
 					<button class="btn btn-info" data-toggle="modal" data-target="#scheduleModal">일정등록</button>
@@ -55,7 +70,7 @@
 					</div>
 				</aside>
 			</div>
-			<div class="col-sm-10">
+			<div class="col-sm-10 px-5">
 				<div id="calendar-container">
 					<div id="calendar"></div>
 				</div>
@@ -69,8 +84,8 @@
 			<div class="modal-content">
 				<div class="modal-header">일정등록</div>
 				<div class="modal-body">
-					<%-- <form name="scheduleForm" action="scheduleForm" method="post"> --%>
-						<input type="hidden" id="scheduleId" name="scheduleId" value="${param.id}">
+					<form action="${pageContext.request.contextPath}/schedule/ScheduleAddProcessAction" name="schedulAdd" method="post">
+						<input type="hidden" id="schedule_id" name="schedule_id" value="${param.id}">
 						
 						<div class="form-group">
 							<label for="schedule_name">일정명</label>
@@ -92,7 +107,7 @@
 				        </div>
           				<div class="form-group">
           					<div class="color-group">
-          						<p>색상 :</p>
+          						<p>색상</p>
 					            <select name="bgColor" id="bgColor">
 									<option value="red" style="color:red;">빨강</option>
 						            <option value="orange" style="color:orange;">주황</option>
@@ -108,10 +123,12 @@
 				        	<p>내용</p>
 				        	<textarea rows="10" name="description" id="description"></textarea>
 				        </div>
-          				
-						<button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>
-						<button type="submit" class="btn btn-info" id="btnRegister">등록</button>
-					<%-- </form> --%>
+				        
+          				<div class="btn_wrap">
+          					<button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>
+							<button type="submit" class="btn btn-info" id="btnRegister">등록</button>
+          				</div>
+					</form>
 				</div>
 			</div>
 		</div>

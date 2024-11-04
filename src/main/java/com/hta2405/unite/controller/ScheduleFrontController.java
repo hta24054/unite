@@ -1,7 +1,11 @@
 package com.hta2405.unite.controller;
 
+import java.io.IOException;
+import java.util.HashMap;
+
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
+import com.hta2405.unite.action.ScheduleAddProcessAction;
 import com.hta2405.unite.action.ScheduleCalenderAction;
 
 import jakarta.servlet.RequestDispatcher;
@@ -10,9 +14,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
-import java.util.HashMap;
 
 @WebServlet("/schedule/*")
 public class ScheduleFrontController extends HttpServlet {
@@ -23,6 +24,8 @@ public class ScheduleFrontController extends HttpServlet {
     @Override
     public void init() throws ServletException {
         actionMap.put("/calender", new ScheduleCalenderAction());
+        actionMap.put("/ScheduleAddProcessAction", new ScheduleAddProcessAction());
+        
     }
     
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -39,7 +42,7 @@ public class ScheduleFrontController extends HttpServlet {
 
         //등록된 URL이 아닌경우 404에러페이지 보여줌
         if (!actionMap.containsKey(command)) {
-            RequestDispatcher dispatcher = req.getRequestDispatcher("/error/404.jsp");
+            RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/views/error/error.jsp");
             dispatcher.forward(req, resp);
             return;
         }

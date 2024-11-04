@@ -21,7 +21,7 @@ BEFORE INSERT ON attend
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_attend.NEXTVAL
-  INTO :NEW.attend_id
+  INTO: NEW.attend_id
   FROM DUAL;
 END;
 
@@ -57,7 +57,7 @@ BEFORE INSERT ON board
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_board.NEXTVAL
-  INTO :NEW.board_id
+  INTO: NEW.board_id
   FROM DUAL;
 END;
 
@@ -91,7 +91,7 @@ BEFORE INSERT ON buy_list
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_buy_list.NEXTVAL
-  INTO :NEW.buy_list_id
+  INTO: NEW.buy_list_id
   FROM DUAL;
 END;
 
@@ -126,7 +126,7 @@ BEFORE INSERT ON cert
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_cert.NEXTVAL
-  INTO :NEW.cert_id
+  INTO: NEW.cert_id
   FROM DUAL;
 END;
 
@@ -175,7 +175,7 @@ BEFORE INSERT ON doc
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_doc.NEXTVAL
-  INTO :NEW.doc_id
+  INTO: NEW.doc_id
   FROM DUAL;
 END;
 
@@ -211,7 +211,7 @@ BEFORE INSERT ON doc_buy
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_doc_buy.NEXTVAL
-  INTO :NEW.doc_buy_id
+  INTO: NEW.doc_buy_id
   FROM DUAL;
 END;
 
@@ -245,7 +245,7 @@ BEFORE INSERT ON doc_trip
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_doc_trip.NEXTVAL
-  INTO :NEW.doc_trip_id
+  INTO: NEW.doc_trip_id
   FROM DUAL;
 END;
 
@@ -294,7 +294,7 @@ BEFORE INSERT ON doc_vacation
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_doc_vacation.NEXTVAL
-  INTO :NEW.doc_vacation_id
+  INTO: NEW.doc_vacation_id
   FROM DUAL;
 END;
 
@@ -433,7 +433,7 @@ BEFORE INSERT ON holiday
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_holiday.NEXTVAL
-  INTO :NEW.holiday_id
+  INTO: NEW.holiday_id
   FROM DUAL;
 END;
 
@@ -462,7 +462,7 @@ BEFORE INSERT ON job
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_job.NEXTVAL
-  INTO :NEW.job_id
+  INTO: NEW.job_id
   FROM DUAL;
 END;
 
@@ -491,7 +491,7 @@ BEFORE INSERT ON lang
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_lang.NEXTVAL
-  INTO :NEW.lang_id
+  INTO: NEW.lang_id
   FROM DUAL;
 END;
 
@@ -520,7 +520,7 @@ BEFORE INSERT ON notice
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_notice.NEXTVAL
-  INTO :NEW.notice_id
+  INTO: NEW.notice_id
   FROM DUAL;
 END;
 
@@ -557,7 +557,7 @@ BEFORE INSERT ON post
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_post.NEXTVAL
-  INTO :NEW.post_id
+  INTO: NEW.post_id
   FROM DUAL;
 END;
 
@@ -612,7 +612,7 @@ BEFORE INSERT ON post_comment
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_post_comment.NEXTVAL
-  INTO :NEW.comment_id
+  INTO: NEW.comment_id
   FROM DUAL;
 END;
 
@@ -664,7 +664,7 @@ BEFORE INSERT ON post_file
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_post_file.NEXTVAL
-  INTO :NEW.post_file_id
+  INTO: NEW.post_file_id
   FROM DUAL;
 END;
 
@@ -708,7 +708,7 @@ BEFORE INSERT ON project
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_project.NEXTVAL
-  INTO :NEW.project_id
+  INTO: NEW.project_id
   FROM DUAL;
 END;
 
@@ -760,7 +760,7 @@ BEFORE INSERT ON project_member
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_project_member.NEXTVAL
-  INTO :NEW.project_member_id
+  INTO: NEW.project_member_id
   FROM DUAL;
 END;
 
@@ -801,7 +801,7 @@ BEFORE INSERT ON resc
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_resc.NEXTVAL
-  INTO :NEW.resc_id
+  INTO: NEW.resc_id
   FROM DUAL;
 END;
 
@@ -837,7 +837,7 @@ BEFORE INSERT ON reservation
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_reservation.NEXTVAL
-  INTO :NEW.reservation_id
+  INTO: NEW.reservation_id
   FROM DUAL;
 END;
 
@@ -859,10 +859,11 @@ CREATE TABLE schedule
 (
   schedule_id      NUMBER       NOT NULL,
   emp_id           VARCHAR2(10) NOT NULL,
-  schedule_name    VARCHAR2(50),
+  schedule_name    VARCHAR2(50) NOT NULL,
   schedule_content VARCHAR(255),
-  schedule_start   DATE        ,
-  schedule_end     DATE        ,
+  schedule_start   DATE         NOT NULL,
+  schedule_end     DATE         NOT NULL,
+  schedule_color   VARCHAR2(30) NOT NULL,
   CONSTRAINT PK_schedule PRIMARY KEY (schedule_id)
 );
 
@@ -875,7 +876,7 @@ BEFORE INSERT ON schedule
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_schedule.NEXTVAL
-  INTO :NEW.schedule_id
+  INTO: NEW.schedule_id
   FROM DUAL;
 END;
 
@@ -892,6 +893,8 @@ COMMENT ON COLUMN schedule.schedule_content IS '일정내용';
 COMMENT ON COLUMN schedule.schedule_start IS '시작일시';
 
 COMMENT ON COLUMN schedule.schedule_end IS '종료일시';
+
+COMMENT ON COLUMN schedule.schedule_color IS '일정색상';
 
 CREATE TABLE schedule_share
 (
@@ -910,7 +913,7 @@ BEFORE INSERT ON schedule_share
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_schedule_share.NEXTVAL
-  INTO :NEW.schedule_share_id
+  INTO: NEW.schedule_share_id
   FROM DUAL;
 END;
 
@@ -940,7 +943,7 @@ BEFORE INSERT ON sign
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_sign.NEXTVAL
-  INTO :NEW.sign_id
+  INTO: NEW.sign_id
   FROM DUAL;
 END;
 
@@ -979,7 +982,7 @@ BEFORE INSERT ON task
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_task.NEXTVAL
-  INTO :NEW.task_id
+  INTO: NEW.task_id
   FROM DUAL;
 END;
 
@@ -1031,7 +1034,7 @@ BEFORE INSERT ON task_commnet
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
   SELECT SEQ_task_commnet.NEXTVAL
-  INTO :NEW.task_commnet_id
+  INTO: NEW.task_commnet_id
   FROM DUAL;
 END;
 

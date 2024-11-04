@@ -22,7 +22,10 @@
 </head>
 <body>
 	<div class="container">
-		<h3>홈페이지 프로젝트</h3> 
+		<div class="d-flex justify-content-between align-items-center">
+			<h3>홈페이지 프로젝트</h3>
+			<button class="btn btn-primary">관리</button>
+		</div>
 		<hr style="margin-top: 40px;"> <!-- 진행률과의 간격 추가 -->
 		<div class="row">
 			<div class="col-md-8">
@@ -36,21 +39,13 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
-							<td>#001</td>
-							<td>홍길동 책임 외 2명</td>
-							<td>60%</td>
-						</tr>
-						<tr>
-							<td>#002</td>
-							<td>이순신 책임 외 3명</td>
-							<td>80%</td>
-						</tr>
-						<tr>
-							<td>#003</td>
-							<td>강감찬 책임 외 1명</td>
-							<td>50%</td>
-						</tr>
+						<c:forEach var="project" items="${project}">
+						    <tr>
+						        <td>${project.participantNames}</td>
+						        <td>${project.memberDesign}</td>
+						        <td>${project.memberProgressRate}</td>
+						    </tr>
+						</c:forEach>
 					</tbody>
 				</table>
 				<table class="table">
@@ -64,17 +59,17 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td><input type="checkbox">#001</td>
+							<td>#001</td>
 							<td>홍길동 책임</td>
 							<td>파일1.txt</td>
 						</tr>
 						<tr>
-							<td><input type="checkbox">#002</td>
+							<td>#002</td>
 							<td>이순신 책임</td>
 							<td>파일2.txt</td>
 						</tr>
 						<tr>
-							<td><input type="checkbox">#003</td>
+							<td>#003</td>
 							<td>강감찬 책임</td>
 							<td>파일3.txt</td>
 						</tr>

@@ -1,7 +1,6 @@
 package com.hta2405.unite.action;
 
 import com.hta2405.unite.dao.HolidayDao;
-import com.hta2405.unite.dto.Holiday;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,9 +15,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.UUID;
 
 public class AdminHolidayInsertAction implements Action {
 
@@ -30,11 +29,13 @@ public class AdminHolidayInsertAction implements Action {
 
         HolidayDao holidayDao = new HolidayDao();
 
-        //기존에 등록된 휴일은 추가 안함, 혹시 등록된 날짜여도 이름이 다른 휴일이면 등록함(일요일+공휴일 등)
+        //기존에 등록된 휴일은 추가 안함, 토/일요일로 등록된 휴일은 공휴일명으로 이름 업데이트함
         for (LocalDate localDate : map.keySet()) {
-            String holidayName = holidayDao.getHolidayName(localDate);
-            if (holidayName == null || !holidayName.equals(map.get(localDate))) {
+            String holidayName = holidayDao.getHolidayName(localDate); //날짜로 DB에 공휴일 정보 있는지 확인
+            if (holidayName == null) {
                 holidayDao.insertHoliday(localDate, map.get(localDate));
+            }else if(!holidayName.equals(map.get(localDate))){
+                holidayDao.updateHoliday(map.get(localDate), localDate);
             }
         }
         System.out.println("공휴일 추가 성공");

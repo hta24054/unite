@@ -134,17 +134,28 @@ NOCACHE;
 
 
 
+select * from project_member;
 
 
 
 
 
+--테스트
+SELECT p.project_id, p.project_name, m.member_id, e.ename, p.project_start_date, p.project_end_date, p.project_file_path FROM project p 
+                     JOIN project_member m ON p.project_id = m.project_id
+                     JOIN emp e ON m.member_id = e.ename
+                     WHERE p.project_finished = 1;
 
-
-
-
-
-
+SELECT p.project_id, p.project_name, m.member_role, e.ename, p.project_start_date, p.project_end_date, p.project_file_path FROM project p 
+                JOIN project_member m ON p.project_id = m.project_id
+                JOIN emp e ON m.member_id = e.ename
+                WHERE p.project_canceled = 1;
+select e.ename, m.member_designated, m.member_progress_rate
+				from project p join project_member m on p.project_id = m.project_id
+				join emp e on m.member_id = e.ename
+				where p.project_id = 17
+				--where p.project_id = ?
+update project_member set member_progress_rate = 60 where project_id = 18 and member_id = '헤헤'; --진행률 테스트
 
 
 

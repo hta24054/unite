@@ -1,30 +1,18 @@
 package com.hta2405.unite.dao;
 
+import com.hta2405.unite.dto.EmpInfo;
+
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
-
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import com.hta2405.unite.dto.*;
-import com.hta2405.unite.dao.*;
-import java.sql.ResultSet;
 
 public class EmpInfoDao {
-	private DataSource ds;
+    private DataSource ds;
 
-	public EmpInfoDao() {
-
-		try {
-			InitialContext init = new InitialContext();
-			ds = (DataSource) init.lookup("java:comp/env/jdbc/OracleDB");
-		} catch (Exception e) {
-			System.out.println("DB연결 실패 " + e.getMessage());
-		}
-	}
-
+    public EmpInfoDao() {
 	public EmpInfo getEmpInfoById(String empId) {
 		EmpInfo empInfo = null;
 		String sql = """
@@ -75,23 +63,22 @@ public class EmpInfoDao {
 		return empInfo;
 	}
 
-	public boolean updateEmpInfo(EmpInfo empInfo) throws SQLException {
-		boolean update = false;
-		String sql = """
-				UPDATE emp_info
-				SET email=?, tel=?, mobile=?,
-				mobile2=?, address=?, married=?
-				""";
-
-		try (Connection conn = ds.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    public boolean updateEmpInfo(EmpInfo empInfo) throws SQLException {
+        boolean update = false;
+        String sql = """
+                UPDATE emp_info
+                SET email=?, tel=?, mobile=?,
+                mobile2=?, address=?, married=?
+                """;
+		try (Connection conn = ds.getConnection(); 
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, empInfo.getEmail());
 			pstmt.setString(2, empInfo.getTel());
 			pstmt.setString(3, empInfo.getMobile());
 			pstmt.setString(4, empInfo.getMobile2());
 			pstmt.setString(5, empInfo.getAddress());
 			pstmt.setBoolean(6, empInfo.getMarried());
-
-		}
-		return update;
-	}
+        }
+        return update;
+    }
 }

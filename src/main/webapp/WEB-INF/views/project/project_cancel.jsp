@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>완료 프로젝트</title>
+    <title>취소 프로젝트</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -20,7 +20,7 @@
 </head>
 <body>
     <table class="table">
-        <caption><h2>완료 프로젝트</h2></caption>
+        <caption><h2>취소 프로젝트</h2></caption>
         <thead>
             <tr>
                 <th>코드명</th>
@@ -28,12 +28,12 @@
                 <th>책임자</th>
                 <th>참여자</th>
                 <th>시작일</th>
-                <th>마감일</th>
+                <th>취소일</th>
                 <th>첨부파일</th>
             </tr>
         </thead>
         <tbody>
-            <c:forEach var="project" items="${completedProjects}">
+            <c:forEach var="project" items="${cancelProjects}">
             <tr>
                 <td>${project.projectId}</td>
                 <td>${project.projectName}</td>

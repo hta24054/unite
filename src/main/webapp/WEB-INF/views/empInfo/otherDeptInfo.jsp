@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <html>
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,11 +30,9 @@ table {
 	border-collapse: collapse;
 	margin: auto;
 }
-
 .table {
 	
 }
-
 td, th {
 	border-collapse: collapse;
 	border: 1px solid black;
@@ -54,42 +53,53 @@ caption {
 	margin-bottom: 30px;
 } /* 캡션과 테이블 간격 설정 */
 </style>
+
 </head>
 <body>
 	<div class="main-container">
 		<div class="content">
 			<table class="table">
 				<caption>
-					<h2>나의 인사정보</h2>
+					<h2>타 부서 인사정보</h2>
 				</caption>
+
 				<tr>
 					<td rowspan="4" width="10%"></td>
 					<th>이름</th>
+
 					<th>성별</th>
+
 					<th>이메일</th>
+
 					<th>내선번호</th>
+
 				</tr>
 				<tr>
 					<td>${empinfo.ename}</td>
 					<td>${empinfo.gender}</td>
 					<td>${empinfo.email}</td>
 					<td>${empinfo.tel}</td>
+
+
 				</tr>
 				<tr>
 					<th>소속</th>
 					<th>사번</th>
 					<th>부서/직책</th>
 					<th>휴대폰번호</th>
+
 				</tr>
 				<tr>
 					<td>${empinfo.company}</td>
-					<td>${empinfo.empId}</td>
-					<td>${empinfo.deptId}/ ${empinfo.jobName}</td>
+					<td>${empinfo.deptId}</td>
+					<td>${empinfo.deptName}${empinfo.jobName}</td>
 					<td>${empinfo.mobile}</td>
+
 				</tr>
 			</table>
 
-			<table>
+
+			<table class="">
 				<tr>
 					<th>입사일</th>
 					<td>${empinfo.hireDate}</td>
@@ -98,6 +108,7 @@ caption {
 					<th>긴급연락처</th>
 					<td>${empinfo.mobile2}</td>
 				</tr>
+
 				<tr>
 					<th>채용구분</th>
 					<td>${empinfo.hireType}</td>
@@ -106,26 +117,28 @@ caption {
 				</tr>
 				<tr>
 					<th>생년월일</th>
-					<td>${empinfo.birthDate}</td>
+					<td>${birthDay}</td>
 					<th>주소</th>
-					<td>${empinfo.address}</td>
+					<td>${address}</td>
 					<th rowspan="2">자격증</th>
-					<td rowspan="2">${empinfo.certName}</td>
+					<td rowspan="2">${certName}</td>
 				</tr>
 				<tr>
 					<th>최종학력</th>
-					<td>${empinfo.school}</td>
+					<td>${school}</td>
 					<th>결혼여부</th>
-					<td>${empinfo.married}</td>
+					<td>${married }</td>
 				</tr>
 				<tr>
 					<th>전공</th>
-					<td>${empinfo.major}</td>
+					<td>${major }</td>
 					<th>자녀</th>
-					<td>${empinfo.child}</td>
+					<td>${child }</td>
 					<th>외국어능력</th>
-					<td>${empinfo.langName}</td>
+					<td>${langName }</td>
 				</tr>
+
+
 			</table>
 
 			<form action="updateInfo" method="post">

@@ -92,8 +92,8 @@ public class HolidayDao {
                 """;
         try (Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setDate(1, Date.valueOf(holidayDate));
-            ps.setString(2, holidayName);
+            ps.setString(1, holidayName);
+            ps.setDate(2, Date.valueOf(holidayDate));
 
             return ps.executeUpdate();
         } catch (SQLException e) {

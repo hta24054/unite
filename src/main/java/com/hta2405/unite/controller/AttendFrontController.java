@@ -2,6 +2,7 @@ package com.hta2405.unite.controller;
 
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
+import com.hta2405.unite.action.DeptAttendAction;
 import com.hta2405.unite.action.MyAttendAction;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -23,6 +24,7 @@ public class AttendFrontController extends HttpServlet {
     @Override
     public void init() throws ServletException {
         actionMap.put("/myattend", new MyAttendAction());
+        actionMap.put("/dept-attend", new DeptAttendAction());
     }
 
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

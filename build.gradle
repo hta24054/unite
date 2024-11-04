@@ -28,8 +28,7 @@ dependencies {
   compileOnly 'org.projectlombok:lombok:1.18.34' //lombok
   annotationProcessor 'org.projectlombok:lombok:1.18.34'//lombok
 
-  implementation group: 'jakarta.servlet.jsp.jstl', name: 'jakarta.servlet.jsp.jstl-api', version: '3.0.2' //jstl-api
-//  implementation group: 'org.glassfish.web', name: 'jakarta.servlet.jsp.jstl', version: '3.0.1' //jstl
+  implementation 'javax.servlet:jstl:1.2'
 
   compileOnly group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.1.0' //servlet
   compileOnly group: 'jakarta.servlet.jsp', name: 'jakarta.servlet.jsp-api', version: '4.0.0' //servlet-api

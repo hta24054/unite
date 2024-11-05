@@ -30,9 +30,6 @@ public class EmpEmailVerificationProcessAction implements Action {
 		 * 로그인 상태에선 접근 못하게 설정 */
 		HttpSession session = req.getSession(true);
 		if((String)session.getAttribute("id") != null) {
-			// 로그인된 상태
-			session.invalidate();
-			
 			resp.setContentType("text/html;charset=utf-8");
 			PrintWriter out = resp.getWriter();
 			out.println("<script>");
@@ -42,7 +39,7 @@ public class EmpEmailVerificationProcessAction implements Action {
 		}
 		
 		
-		String emailCheck = (String) req.getAttribute("email");
+		String emailCheck = (String) req.getSession().getAttribute("email");
 		String receiverName = req.getParameter("name");
 		String receiverEmail = req.getParameter("email");
 		
@@ -50,16 +47,17 @@ public class EmpEmailVerificationProcessAction implements Action {
 		EmpDao dao = new EmpDao();
 		Emp emp = dao.getEmpByNameAndEmail(receiverName,receiverEmail);
 		
-		
 		if(emp == null || !emp.getEmail().equals(emailCheck)) {
 			// 회원 정보가 일치하지 않은 경우
 			resp.setContentType("text/html;charset=utf-8");
 			PrintWriter out = resp.getWriter();
 			out.println("<script>");
-			out.println(emp == null ? "alert('회원 정보가 존재하지 않습니다.');" : "alert('이메일이 일치하지 않습니다.');");
+			out.println("alert('회원 정보가 존재하지 않습니다.');");
 			out.println("history.back(-1);");
 			out.println("</script>");
+			return null;
 		} else {
+			System.out.println("일치");
 			/* 메일 전송 */
 			String authenCode = sendEmail(receiverEmail);
 			
@@ -67,17 +65,18 @@ public class EmpEmailVerificationProcessAction implements Action {
 			session.setAttribute("authenCode", authenCode);
 			session.setAttribute("id", emp.getEmpId());
 
+			System.out.println(authenCode);
 			forward = new ActionForward();
-			forward.setPath("/changePw");
+			forward.setPath("../emp/changePw");
 			forward.setRedirect(true);
+			return forward;
 		}
-		return forward;
 	}
 
 	//이메일 발송
 	public String sendEmail(String receiverEmail){
 		String authenCode = null;
-		
+		System.out.println("sendEmail");
 		try {
 			// 인증번호 생성
        	    authenCode = makeAuthenticationCode();
@@ -98,7 +97,7 @@ public class EmpEmailVerificationProcessAction implements Action {
 			
 			//받는 주소를 설정합니다.
 			Address receiverAddress = new InternetAddress(receiverEmail);
-			
+			System.out.println(s!=null);
 			//메일을 보내기 위한 정보를 입력하기 위해 Message객체를 생성합니다.
 			Message message = new MimeMessage(s);
 			
@@ -139,7 +138,8 @@ public class EmpEmailVerificationProcessAction implements Action {
 			//out.println("SMTP 서버가 잘목 설정되었거나, 서비스에 문제가 있습니다.");
 			e.printStackTrace();
 		}
-		return null;
+		System.out.println("sendEmail end");
+		return authenCode;
 	}
 	
 	private static String makeAuthenticationCode() throws Exception {

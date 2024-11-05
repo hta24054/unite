@@ -135,7 +135,23 @@ label[for="emailCheck"]{
 }
 </style>
 <script>
-	$("button:button").on('click', function(){
+$(function(){
+	$(".verify-btn").on('click', function(){
+		
+		const $name = $("#name");
+		if($name.val().trim() == ""){
+			alert("이름을 입력하세요");
+			$name.focus();
+			return false;
+		}
+		
+		const $email = $("#email");
+		if($email.val().trim() == ""){
+			alert("이메일을 입력하세요");
+			$email.focus();
+			return false;
+		}
+		
 		$.ajax({
 			type:"post",
 			url:"../emp/emailVerificationProcess",
@@ -145,10 +161,13 @@ label[for="emailCheck"]{
 			},
 			dataType:"json",
 			success:function(rdata){
-				$("input:text").val(rdata);
+				alert("이메일로 인증번호가 전송되었습니다.");
+				
 			}
 		})
 	})
+})
+	
 </script>
 </head>
 <body>
@@ -162,7 +181,7 @@ label[for="emailCheck"]{
         </div>
         <div class="emailVerification"><h2>이메일 인증</h2><label for="emailCheck">(${email})</label></div>
         <p class="instruction">입력하신 이메일 주소와 같아야 이메일을 받을 수 있습니다.</p>
-        <form action='${pageContext.request.contextPath}/emp/emailVerificationProcess' method='get' 
+        <form action='${pageContext.request.contextPath}/emp/emailVerificationProcess' method='post' 
 			name="emailVerificationProcess">
             <label for="name">이름</label>
             <input type="text" id="name" name="name" placeholder="이름" required>

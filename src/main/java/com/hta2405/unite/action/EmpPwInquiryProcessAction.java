@@ -29,7 +29,7 @@ public class EmpPwInquiryProcessAction implements Action {
 			
 			ActionForward forward = new ActionForward();
 			forward.setRedirect(true);
-			forward.setPath("EmailVerification");
+			forward.setPath("emailVerification");
 			return forward;
 		}
 		resp.setContentType("text/html;charset=utf-8");

@@ -1,7 +1,5 @@
 package com.hta2405.unite.dao;
 
-
-
 import com.hta2405.unite.dto.EmpInfo;
 
 import javax.naming.InitialContext;
@@ -10,7 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList; 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EmpInfoDao {
@@ -58,7 +56,7 @@ public class EmpInfoDao {
 				empInfo.setMobile(rs.getString("mobile"));
 				empInfo.setHireDate(rs.getDate("hiredate"));
 				empInfo.setHireType(rs.getString("hiretype"));
-				empInfo.setBirthDate(rs.getDate("birthday"));
+				empInfo.setBirthDay(rs.getDate("birthday"));
 				empInfo.setBirthdayType(rs.getString("birthdayType"));
 				empInfo.setSchool(rs.getString("school"));
 				empInfo.setMajor(rs.getString("major"));
@@ -68,8 +66,8 @@ public class EmpInfoDao {
 				empInfo.setMarried(rs.getBoolean("married"));
 				empInfo.setEtype(rs.getString("etype"));
 				empInfo.setMobile2(rs.getString("mobile2"));
-				// empInfo.setCertName(rs.getString("certName"));
-				// empInfo.setLangName(rs.getString("langName"));
+				// empInfo.setCertName(rs.getString("cert_name"));
+				// empInfo.setLangName(rs.getString("lang_name"));
 				empInfo.setChild(rs.getBoolean("child"));
 			} else {
 				System.out.println("No employee found with ID: " + empId); // 디버그 출력
@@ -99,26 +97,48 @@ public class EmpInfoDao {
 
 	public boolean updateEmpInfo(EmpInfo empInfo) throws SQLException {
 		boolean update = false;
-		String sql = """
-				UPDATE emp_info
-				SET email=?, tel=?, mobile=?,
-				mobile2=?, address=?, married=?
+		String sqlEmp = """
+				UPDATE emp
+				SET email = ?, tel = ?, mobile = ?
+				WHERE emp_id = ?
 				""";
-		try (Connection conn = ds.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, empInfo.getEmail());
-			pstmt.setString(2, empInfo.getTel());
-			pstmt.setString(3, empInfo.getMobile());
-			pstmt.setString(4, empInfo.getMobile2());
-			pstmt.setString(5, empInfo.getAddress());
-			pstmt.setBoolean(6, empInfo.getMarried());
+		String sqlEmpInfo = """
+				UPDATE emp_info
+				SET mobile2 = ?, address = ?, married = ?
+				WHERE emp_id = ?
+				""";
+
+		try (Connection conn = ds.getConnection()) {
+			conn.setAutoCommit(false);
+
+			try (PreparedStatement pstmtEmp = conn.prepareStatement(sqlEmp);
+					PreparedStatement pstmtEmpInfo = conn.prepareStatement(sqlEmpInfo)) {
+				// emp 테이블 업데이트
+				pstmtEmp.setString(1, empInfo.getEmail());
+				pstmtEmp.setString(2, empInfo.getTel());
+				pstmtEmp.setString(3, empInfo.getMobile());
+				pstmtEmp.setString(4, empInfo.getEmpId());
+				int rowsEmp = pstmtEmp.executeUpdate();
+
+				// emp_info 테이블 업데이트
+				pstmtEmpInfo.setString(1, empInfo.getMobile2());
+				pstmtEmpInfo.setString(2, empInfo.getAddress());
+				pstmtEmpInfo.setInt(3, empInfo.getMarried() ? 1 : 0); // boolean을 NUMBER로 변환
+				pstmtEmpInfo.setString(4, empInfo.getEmpId());
+				int rowsEmpInfo = pstmtEmpInfo.executeUpdate();
+
+				if (rowsEmp > 0 && rowsEmpInfo > 0) {
+					conn.commit();
+					update = true;
+				} else {
+					conn.rollback();
+				}
+			} catch (SQLException e) {
+				conn.rollback();
+				e.printStackTrace();
+			}
 		}
 		return update;
 	}
 
-	public List<EmpInfo> getAllEmpInfo() {
-		String sql = """
-				select dempName,ename,job
-				""";
-		return null;
-	}
 }

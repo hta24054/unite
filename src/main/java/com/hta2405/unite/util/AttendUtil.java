@@ -24,7 +24,7 @@ public class AttendUtil {
         //한달 날짜 모두 리스트화(Attend 객체에는 날짜정보만)
         List<Attend> allDate = insertAllDays(startDate, endDate);
 
-        List<Holiday> holidayList = new HolidayDao().getMonthlyHoliday(startDate, endDate);
+        List<Holiday> holidayList = new HolidayDao().getHoliday(startDate, endDate);
         System.out.println(holidayList);
         //휴일 업데이트(Attend객체 내 attendType에 휴일 정보 추가)
         updateHoliday(allDate, holidayList);

@@ -1,6 +1,5 @@
 package com.hta2405.unite.dao;
 
-import com.hta2405.unite.dto.Attend;
 import com.hta2405.unite.dto.Holiday;
 
 import javax.naming.InitialContext;
@@ -8,7 +7,6 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class HolidayDao {
@@ -49,7 +47,7 @@ public class HolidayDao {
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setDate(1, Date.valueOf(localDate));
             ResultSet rs = ps.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 return rs.getString(1);
             }
         } catch (SQLException e) {
@@ -58,7 +56,24 @@ public class HolidayDao {
         return null;
     }
 
-    public List<Holiday> getMonthlyHoliday(LocalDate startDate, LocalDate endDate) {
+    public int updateHoliday(String holidayName, LocalDate holidayDate) {
+        String sql = """
+                   UPDATE HOLIDAY
+                   SET HOLIDAY_NAME = ?
+                   WHERE HOLIDAY_DATE = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, holidayName);
+            ps.setDate(2, Date.valueOf(holidayDate));
+
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Holiday> getHoliday(LocalDate startDate, LocalDate endDate) {
         ArrayList<Holiday> HolidayList = new ArrayList<>();
         String sql = """
                     SELECT * FROM HOLIDAY
@@ -82,22 +97,5 @@ public class HolidayDao {
             throw new RuntimeException(e);
         }
         return HolidayList;
-    }
-
-    public int updateHoliday(String holidayName, LocalDate holidayDate) {
-        String sql = """
-                   UPDATE HOLIDAY
-                   SET HOLIDAY_NAME = ?
-                   WHERE HOLIDAY_DATE = ?
-                """;
-        try (Connection conn = ds.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, holidayName);
-            ps.setDate(2, Date.valueOf(holidayDate));
-
-            return ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

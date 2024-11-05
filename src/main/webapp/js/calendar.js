@@ -17,7 +17,8 @@
 	        slotMinTime: '00:00', // Day 캘린더에서 시작 시간
 	        slotMaxTime: '24:00', // Day 캘린더에서 종료 시간
 	        defaultAllDay: true, // 종일 이벤트
-	        timeZone: 'UTC',
+	        //timeZone: 'UTC',
+	        timeZone: 'local',
 	        headerToolbar: {
 	          left: 'prev,next',
 	          center: 'title',
@@ -31,7 +32,7 @@
 	        locale: 'ko', // 한국어 설정
 	        
 			eventAdd: function(obj) { // 이벤트가 추가되면 발생하는 이벤트
-	         	 console.log(obj);
+	         	 console.log("eventAdd obj", obj);
 	        },
 	        
 	        eventChange: function(obj) { // 이벤트가 수정되면 발생하는 이벤트
@@ -41,16 +42,22 @@
 	        eventRemove: function(obj){ // 이벤트가 삭제되면 발생하는 이벤트
 	         	console.log(obj);
 	        },
+	        select: function(start, end) {
+				console.log("start", start);
+				console.log("end", end);
+                $scheduleModal.modal('show');
+            },
+	        /*
 		    events: function(info, successCallback, failureCallback) {
-				 //successCallback(events);
+				 successCallback(events);
 				
 				 $.ajax({
 		            url: '${pageContext.request.contextPath}/schedule/ScheduleAddProcessAction',
 		            type: 'post',
 		            dataType: 'json',
 		            data: {
-						start : moment(info.startStr).format('yyyy-MM-dd HH:mm:ss'),
-						end : moment(info.endStr).format('yyyy-MM-dd HH:mm:ss')
+						start: moment(info.startStr).format('YYYY-MM-dd HH:mm:ss'), 
+            			end: moment(info.endStr).format('YYYY-MM-dd HH:mm:ss') 
 					},
 		            success: function(events) {
 		                callback(events);
@@ -59,6 +66,7 @@
 		         });
 		        
 		    },
+		    */
 		   /*
 	       events: function(start, end, timezone, callback) {
 		        // 서버에서 일정 데이터를 가져온다.
@@ -77,15 +85,20 @@
 	        },
 		    
 			eventClick: function(info) {  
-				console.log("info eventClick", info)
+				console.log("eventClick info", info.event);
+				
 				if (info) {
 					$scheduleName.val(info.event.title);
 					$description.val(info.event.extendedProps.contents);
 					$bgColor.val(info.event.extendedProps.bgColor);
 					$scheduleModal.modal('show');
 				}
+			},
+			eventDidMount: function(info) {
+			    console.log("info.event.extendedProps", info.event.extendedProps);
+			    // {description: "Lecture", department: "BioChemistry"}
 			}
-		  });
+		});
 		
 		calendar.render();
 		
@@ -118,10 +131,10 @@
 	  	    // 입력값 객체 생성
 			const eventData = {
 			  	title: $scheduleName.val(),
-			    //start: $start.val().replace("T", " "), // T를 공백으로 변경
-			    //end: $end.val().replace("T", " "), // T를 공백으로 변경
-			    start: $start.val(), 
-			    end: $end.val(),
+			    start: $start.val().replace("T", " "), // T를 공백으로 변경
+			    end: $end.val().replace("T", " "), // T를 공백으로 변경
+			    //start: $start.val(), 
+			    //end: $end.val(),
 			    allDay: $allDay.is(":checked"), // 체크박스인 경우 true/false
 			    bgColor: $bgColor.val(),
 			    description: $description.val()
@@ -144,11 +157,10 @@
 				type: "post",
 	            dataType: "json",
 	            data: { 
-					 eventsJson: JSON.stringify(eventsFromCalendar) 
+					 eventsJson: JSON.stringify(eventsFromCalendar),
 				},
 	            success: function(data) {
-	                 //$('#calendar').fullCalendar('renderEvent', eventsFromCalendar, true);
-	                 $scheduleModal.modal("hide");
+	                $scheduleModal.modal("hide");
 	            },
 	            error: function(){
 					console.log('에러');
@@ -164,7 +176,6 @@
 			$bgColor.val("");
 			$description.val("");
 		});
-		
 		
 		$bgColor.on("change", function(){
 			$(this).css("backgound-color", $(this).val());

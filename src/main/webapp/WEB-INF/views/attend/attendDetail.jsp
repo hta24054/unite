@@ -47,10 +47,12 @@
             margin-left: 500px;
             margin-bottom: 20px;
         }
-        #specify{
+
+        #specify {
             text-align: center;
         }
-        #specify th{
+
+        #specify th {
             width: 20%;
         }
 
@@ -58,7 +60,7 @@
     </style>
 </head>
 <body>
-<h2 id="main_title">나의 근태 관리</h2>
+<h2 id="main_title">근태 관리</h2>
 <div class="container">
     <!-- 연도와 월 변경 -->
     <div class="text-center my-4">
@@ -191,7 +193,12 @@
             window.location.href = "?" + params;
         }
     });
-
+    // title 수정(직원근태관리 일 경우 param에 있는 값)
+    const params = new URLSearchParams(window.location.search);
+    const emp = params.get('emp'); // 'emp' 파라미터 값 가져오기
+    if (emp) { // 'emp' 파라미터가 존재할 경우
+        $('#main_title').text('직원 근태 관리-' + ${param.emp});
+    }
 </script>
 </body>
 </html>

@@ -42,17 +42,29 @@ public class EmpDao {
         return null;
     }
 
-    public List<Emp> getEmpListByDeptId(Long deptId) {
+    public List<Emp> getEmpListByDeptId(Emp emp) {
         List<Emp> list = new ArrayList<>();
+        String deptToString = emp.getDeptId().toString();
+        //쿼리에 들어갈 deep 구함 ex) 1110 -> 1 / 1100 -> 2 / 1000 -> 3
+        int deep = deptToString.length();
+        for (int i = 0; i < deptToString.length(); i++) {
+            if (deptToString.charAt(i) != '0') {
+                deep--;
+            } else {
+                break;
+            }
+        }
         String sql = """
                     SELECT *
                     FROM EMP e NATURAL JOIN JOB j
-                    WHERE e.DEPT_ID = ?
+                    where ? = floor(dept_id / power(10,?)) * power(10,?)
                     ORDER BY j.JOB_RANK, e.emp_id
                 """;
         try (Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, deptId);
+            ps.setLong(1, emp.getDeptId());
+            ps.setLong(2, deep);
+            ps.setLong(3, deep);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 list.add(makeEmp(rs));
@@ -80,7 +92,4 @@ public class EmpDao {
                 rs.getString("img_type"),
                 rs.getBoolean("hired"));
     }
-
-
-
 }

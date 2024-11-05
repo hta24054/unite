@@ -6,9 +6,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-public class AdminHolidayInsertAction implements Action {
+public class AdminHolidayAction implements Action {
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        return null;
+        return new ActionForward(false, "/WEB-INF/views/admin/holiday.jsp");
     }
 }

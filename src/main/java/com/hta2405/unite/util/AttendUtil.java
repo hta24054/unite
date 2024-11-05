@@ -1,24 +1,20 @@
-package com.hta2405.unite.action;
+package com.hta2405.unite.util;
 
+import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.AttendDao;
 import com.hta2405.unite.dao.HolidayDao;
 import com.hta2405.unite.dto.Attend;
+import com.hta2405.unite.dto.Emp;
 import com.hta2405.unite.dto.Holiday;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyAttendAction implements Action {
-    @Override
-    public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String emp = "admin"; //로그인 구현 시 세션 내 "emp"로 대체
-
+public class AttendUtil {
+    public ActionForward getAttendDetail(HttpServletRequest req, Emp targetEmp) {
         int year = Integer.parseInt(req.getParameter("year"));
         int month = Integer.parseInt(req.getParameter("month"));
 
@@ -31,10 +27,10 @@ public class MyAttendAction implements Action {
         List<Holiday> holidayList = new HolidayDao().getMonthlyHoliday(startDate, endDate);
         System.out.println(holidayList);
         //휴일 업데이트(Attend객체 내 attendType에 휴일 정보 추가)
-        updateHoliday(startDate, endDate, allDate, holidayList);
+        updateHoliday(allDate, holidayList);
 
         //한달간의 해당 직원 근태목록 불러와 업데이트
-        updateEmpAttend(startDate, endDate, emp, allDate);
+        updateEmpAttend(startDate, endDate, targetEmp, allDate);
 
         int allWorkDate = endDate.getDayOfMonth() - holidayList.size();
         int myWorkDate = 0;
@@ -64,10 +60,9 @@ public class MyAttendAction implements Action {
         req.setAttribute("myWorkDate", myWorkDate); //근무일
         req.setAttribute("vacation", vacation); //휴가일
         req.setAttribute("absent", absent); //결근일
-        return new ActionForward(false, "/WEB-INF/views/attend/myattend.jsp");
+        return new ActionForward(false, "/WEB-INF/views/attend/attendDetail.jsp");
     }
-
-    private void updateEmpAttend(LocalDate startDate, LocalDate endDate, String emp, List<Attend> allDate) {
+    private void updateEmpAttend(LocalDate startDate, LocalDate endDate, Emp emp, List<Attend> allDate) {
         ArrayList<Attend> attendList = new AttendDao().getAttendByEmpId(emp, startDate, endDate);
         System.out.println(attendList);
         int attendIdx = 0;
@@ -106,7 +101,7 @@ public class MyAttendAction implements Action {
         return list;
     }
 
-    private void updateHoliday(LocalDate startDate, LocalDate endDate, List<Attend> allDate, List<Holiday> holidayList) {
+    private void updateHoliday(List<Attend> allDate, List<Holiday> holidayList) {
         if (!holidayList.isEmpty()) {
             int holidayIdx = 0;
             int dateIdx = 0;

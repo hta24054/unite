@@ -25,7 +25,7 @@ public class AdminHolidayWeekendAction implements Action {
         PrintWriter out = resp.getWriter();
         out.print("<script>");
         out.print("alert('향후 1년간의 주말이 업데이트 되었습니다.');");
-        out.print("location.href='list';");
+        out.print("location.href = history.back();");
         out.print("</script>");
         out.close();
         return null;

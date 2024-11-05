@@ -1,3 +1,4 @@
+<%@ page import="java.time.LocalDate" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -10,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <jsp:include page="../common/header.jsp"/>
-    <jsp:include page="attendLeft.jsp"/>
+    <jsp:include page="attend_leftbar.jsp"/>
     <style>
         .table {
             width: 70%;
@@ -39,7 +40,7 @@
     </style>
 </head>
 <body>
-<h2 id="main_title">부서원 근태 관리-${deptName}</h2>
+<h2 id="main_title">부서원 근태 관리(${deptName}) - 직원 목록</h2>
 <div class="container">
     <table class="table table-striped table-bordered">
         <thead>
@@ -52,7 +53,7 @@
         <tbody>
         <c:forEach var="emp" items="${empList}">
             <tr>
-                <td>${emp.ename}</td>
+                <td><a href="${pageContext.request.contextPath}/attend/emp?emp=${emp.empId}&year=<%=LocalDate.now().getYear()%>&month=<%=LocalDate.now().getMonthValue()%>">${emp.ename}</a></td>
                 <td>${emp.jobId}</td>
                 <td>${emp.tel}</td>
             </tr>

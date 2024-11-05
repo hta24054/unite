@@ -1,6 +1,7 @@
 package com.hta2405.unite.action;
 
 import com.hta2405.unite.dao.HolidayDao;
+import com.hta2405.unite.util.CommonUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,6 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Properties;
 import java.util.TreeMap;
+
+import static com.hta2405.unite.util.CommonUtil.*;
 
 public class AdminHolidayApiAction implements Action {
 
@@ -37,15 +40,7 @@ public class AdminHolidayApiAction implements Action {
                 holidayDao.updateHoliday(map.get(localDate), localDate);
             }
         }
-        System.out.println("공휴일 추가 성공");
-        resp.setContentType("text/html;charset=utf-8");
-        PrintWriter out = resp.getWriter();
-        out.print("<script>");
-        out.print("alert('향후 1년간의 공휴일이 업데이트 되었습니다.');");
-        out.print("location.href = history.back();");
-        out.print("</script>");
-        out.close();
-        return null;
+        return alertAndGoBack(resp, "향후 1년간의 공휴일이 업데이트 되었습니다.");
     }
 
     /**

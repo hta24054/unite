@@ -94,4 +94,20 @@ public class HolidayDao {
         }
         return HolidayList;
     }
+
+    public int deleteHoliday(LocalDate date) {
+        String sql = """
+                    DELETE FROM HOLIDAY
+                    WHERE HOLIDAY_DATE = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, Date.valueOf(date));
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("휴일 삭제 실패");
+            e.printStackTrace();
+            return 0;
+        }
+    }
 }

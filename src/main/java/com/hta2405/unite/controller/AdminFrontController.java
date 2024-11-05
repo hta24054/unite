@@ -21,6 +21,7 @@ public class AdminFrontController extends HttpServlet {
     public void init() throws ServletException {
         actionMap.put("/holiday", new AdminHolidayAction()); //휴일 관리
         actionMap.put("/holiday/insert", new AdminHolidayInsertAction()); //휴일 직접 등록
+        actionMap.put("/holiday/delete", new AdminHolidayDeleteAction()); //휴일 직접 등록
         actionMap.put("/holiday/api", new AdminHolidayApiAction()); //공휴일 api로 받아와서 DB 업데이트
         actionMap.put("/holiday/weekend", new AdminHolidayWeekendAction()); //주말 DB에 업데이트
         actionMap.put("/popup", new AdminPopupAction()); //팝업 등록

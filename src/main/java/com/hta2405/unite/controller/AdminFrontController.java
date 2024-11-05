@@ -9,13 +9,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.io.Serial;
 import java.util.HashMap;
 
 @WebServlet("/admin/*")
 public class AdminFrontController extends HttpServlet {
+    @Serial
     private static final long serialVersionUID = 1L;
     HashMap<String, Action> actionMap = new HashMap<>();
+
     //아래에 URL, Action 추가
     @Override
     public void init() throws ServletException {

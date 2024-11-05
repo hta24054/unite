@@ -1,7 +1,6 @@
 package com.hta2405.unite.action;
 
 import com.hta2405.unite.dao.HolidayDao;
-import com.hta2405.unite.util.CommonUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,7 +9,10 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -19,7 +21,7 @@ import java.time.LocalDate;
 import java.util.Properties;
 import java.util.TreeMap;
 
-import static com.hta2405.unite.util.CommonUtil.*;
+import static com.hta2405.unite.util.CommonUtil.alertAndGoBack;
 
 public class AdminHolidayApiAction implements Action {
 

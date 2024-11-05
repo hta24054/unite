@@ -1,7 +1,9 @@
 package com.hta2405.unite.controller;
-///mypage/password
 
-import com.hta2405.unite.action.*;
+import com.hta2405.unite.action.Action;
+import com.hta2405.unite.action.ActionForward;
+import com.hta2405.unite.action.MyPagePasswordChangeAction;
+import com.hta2405.unite.action.MyPagePasswordChangeProcessAction;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -10,10 +12,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.HashMap;
 
 @WebServlet("/mypage/*")
 public class MyPageFrontController extends HttpServlet {
+    @Serial
     private static final long serialVersionUID = 1L;
     HashMap<String, Action> actionMap = new HashMap<>();
 

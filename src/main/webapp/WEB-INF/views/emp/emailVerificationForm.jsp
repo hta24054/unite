@@ -56,9 +56,9 @@ h2 {
 }
 
 .instruction {
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #666;
-    margin-bottom: 15px;
+    margin-bottom: 25px;
 }
 
 form label {
@@ -141,15 +141,16 @@ span{
         </div>
         <h2>이메일 인증</h2>
         <p class="instruction">입력하신 이메일 주소와 같아야 이메일을 받을 수 있습니다.</p>
-        <form>
+        <form action='${pageContext.request.contextPath}/emp/emailVerificationProcess' method='post' 
+			name="emailVerificationProcess">
             <label for="name">이름</label>
-            <input type="text" id="name" placeholder="이름" required>
+            <input type="text" id="name" name="name" placeholder="이름" required>
             
             <label for="email">이메일</label>
-            <input type="email" id="email" placeholder="이메일" required>
+            <input type="email" id="email" name="email" placeholder="이메일" required>
             
             <div class="verification">
-                <input type="text" placeholder="인증번호 입력" required>
+                <input type="text" name="authenCode" placeholder="인증번호 입력" required>
                 <button type="button" class="verify-btn">인증번호 받기</button>
             </div>
             

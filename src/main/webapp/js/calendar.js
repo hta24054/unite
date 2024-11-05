@@ -42,9 +42,45 @@
 	        eventRemove: function(obj){ // 이벤트가 삭제되면 발생하는 이벤트
 	         	console.log(obj);
 	        },
-	        select: function(start, end) {
-				console.log("start", start);
-				console.log("end", end);
+	        /*
+	        select: function (arg) { // 캘린더에서 드래그로 이벤트를 생성할 수 있다.
+            	const title = prompt('일정을 입력해주세요.');
+                if (title) {
+                    calendar.addEvent({
+                        title: title,
+                        start: arg.start,
+                        end: arg.end,
+                        allDay: arg.allDay,
+                    })
+                }
+                const allEvent = calendar.getEvents(); // .getEvents() 함수로 모든 이벤트를 Array 형식으로 가져온다. 
+ 
+                const events = new Array(); // Json 데이터를 받기 위한 배열 선언
+                for (var i = 0; i < allEvent.length; i++) {
+                         var obj = new Object();     // Json 을 담기 위해 Object 선언
+                         // alert(allEvent[i]._def.title); // 이벤트 명칭 알람
+                         obj.title = allEvent[i]._def.title; // 이벤트 명칭  ConsoleLog 로 확인 가능.
+                         obj.start = allEvent[i]._instance.range.start; // 시작
+                         obj.end = allEvent[i]._instance.range.end; // 끝
+ 
+                         events.push(obj);
+                }
+                
+                const jsondata = JSON.stringify(events);
+                console.log(jsondata);
+                // saveData(jsondata);
+ 
+                $.ajax({
+                      url: "${pageContext.request.contextPath}/schedule/ScheduleAddProcessAction",
+                      method: "POST",
+                      dataType: "json",
+                      data: JSON.stringify(events),
+                      contentType: 'application/json',
+                })
+                calendar.unselect();
+            },
+            */
+	        select: function(arg) {
                 $scheduleModal.modal('show');
             },
 	        /*
@@ -150,7 +186,6 @@
 			calendar.addEvent(eventData);
 			
 			const eventsFromCalendar = $('#calendar').fullCalendar('clientEvents');
-	        alert(eventsFromCalendar);
 	        
 		    $.ajax({
 				url: "${pageContext.request.contextPath}/schedule/ScheduleAddProcessAction",

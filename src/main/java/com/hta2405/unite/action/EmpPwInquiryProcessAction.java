@@ -9,6 +9,7 @@ import com.hta2405.unite.dto.Emp;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 public class EmpPwInquiryProcessAction implements Action {
 
@@ -22,7 +23,9 @@ public class EmpPwInquiryProcessAction implements Action {
 		
 		if(emp != null) {
 			String dbEmail = emp.getEmail();
-			req.setAttribute("email", dbEmail);
+			HttpSession session = req.getSession();
+			session.setAttribute("email", dbEmail);
+			session.setMaxInactiveInterval(5*60);//세션 유효시간 5분 설정
 			
 			ActionForward forward = new ActionForward();
 			forward.setRedirect(true);

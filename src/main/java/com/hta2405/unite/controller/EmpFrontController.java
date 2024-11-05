@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
-import com.hta2405.unite.action.EmailVerificationProcessAction;
+import com.hta2405.unite.action.EmpEmailVerificationProcessAction;
 import com.hta2405.unite.action.EmpEmailVerificationAction;
 import com.hta2405.unite.action.EmpLoginAction;
 import com.hta2405.unite.action.EmpLoginProcessAction;
@@ -35,7 +35,7 @@ public class EmpFrontController extends HttpServlet {
         actionMap.put("/pwInquiry", new EmpPwInquiryAction());
         actionMap.put("/pwInquiryProcess", new EmpPwInquiryProcessAction());
         actionMap.put("/EmailVerification", new EmpEmailVerificationAction());
-        actionMap.put("/EmailVerificationProcess", new EmailVerificationProcessAction());
+        actionMap.put("/EmailVerificationProcess", new EmpEmailVerificationProcessAction());
         actionMap.put("/home", new EmpHomeAction());
     }
 

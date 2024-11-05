@@ -21,17 +21,15 @@ public class HolidayDao {
         }
     }
 
-
     public int insertHoliday(LocalDate localDate, String holidayName) {
         String sql = """
                     INSERT INTO HOLIDAY (HOLIDAY_DATE, HOLIDAY_NAME)
-                                       VALUES (?, ?)
+                    VALUES (?, ?)
                 """;
         try (Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setDate(1, Date.valueOf(localDate));
             ps.setString(2, holidayName);
-
             return ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -84,13 +82,11 @@ public class HolidayDao {
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setDate(1, Date.valueOf(startDate));
             ps.setDate(2, Date.valueOf(endDate));
-
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Holiday holiday = new Holiday(rs.getLong("holiday_id"),
                         rs.getDate("holiday_date").toLocalDate(),
                         rs.getString("holiday_name"));
-
                 HolidayList.add(holiday);
             }
         } catch (SQLException e) {

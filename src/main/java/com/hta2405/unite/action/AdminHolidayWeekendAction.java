@@ -20,7 +20,6 @@ public class AdminHolidayWeekendAction implements Action {
 
         addWeekendHolidays(startDate, endDate, holidayDao);
 
-        System.out.println("주말 추가 성공");
         resp.setContentType("text/html;charset=utf-8");
         PrintWriter out = resp.getWriter();
         out.print("<script>");
@@ -36,7 +35,6 @@ public class AdminHolidayWeekendAction implements Action {
 
         while (!date.isAfter(endDate)) {
             DayOfWeek dayOfWeek = date.getDayOfWeek();
-
             if (isWeekend(dayOfWeek) && holidayDao.getHolidayName(date) == null) {
                 String holidayName = (dayOfWeek == DayOfWeek.SATURDAY) ? "토요일" : "일요일";
                 holidayDao.insertHoliday(date, holidayName);

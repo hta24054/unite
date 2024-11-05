@@ -10,8 +10,9 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+
+import static com.hta2405.unite.util.EmpUtil.sha256;
+import static com.hta2405.unite.util.EmpUtil.verifyPassword;
 
 public class EmpLoginProcessAction implements Action {
 
@@ -25,6 +26,9 @@ public class EmpLoginProcessAction implements Action {
 
         EmpDao dao = new EmpDao();
         Emp emp = dao.getEmpById(id);
+
+        ActionForward forward = new ActionForward();
+
         if (emp != null) {
             String dbPassword = emp.getPassword();
             System.out.println("db에 저장된 pass 값은 " + dbPassword);
@@ -33,10 +37,7 @@ public class EmpLoginProcessAction implements Action {
             String savePass = dbPassword.substring(0, 64);//db에 저장되어 있는 해시 값
             System.out.println("저장된 해쉬 값은 " + savePass);
 
-            String hashPass = sha256(pass + salt);//입력받은 비밀번호 암호화한 해시 값
-
-            ActionForward forward = new ActionForward();
-            if (savePass.equals(hashPass)) {//로그인 성공
+            if (verifyPassword(emp, pass)) {//로그인 성공
                 HttpSession session = req.getSession();
                 session.setAttribute("id", id);
 
@@ -61,6 +62,7 @@ public class EmpLoginProcessAction implements Action {
         } else {
             message = "아이디가 존재하지 않습니다.";
         }
+
         resp.setContentType("text/html;charset=utf-8");
         PrintWriter out = resp.getWriter();
         out.print("<script>");
@@ -71,26 +73,4 @@ public class EmpLoginProcessAction implements Action {
         return null;
 
     }
-
-    public static String sha256(String input) {
-        try {
-            // SHA-256 알고리즘 인스턴스 생성
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-
-            // 입력 데이터를 바이트 배열로 변환 후 해시 계산
-            byte[] encodedHash = digest.digest(input.getBytes());
-
-            // 해시 결과를 16진수 문자열로 변환
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : encodedHash) {
-                hexString.append(String.format("%02x", b));
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            System.out.println("sha256() 에러: " + e);
-            return null;
-        }
-    }
-
 }

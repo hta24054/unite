@@ -41,6 +41,9 @@
 	        eventRemove: function(obj){ // 이벤트가 삭제되면 발생하는 이벤트
 	         	console.log(obj);
 	        },
+	        select: function(start, end) {
+                $scheduleModal.modal('show');
+            },
 	        /*
 		    events: function(info, successCallback, failureCallback) {
 				 successCallback(events);
@@ -90,6 +93,8 @@
 		
 		calendar.render();
 		
+		$("#startAt", "#endAt").datetimepicker();
+		
 		//모달창 이벤트
 		$("#btnRegister").on("click", function () {
 	  		if($scheduleName.val().trim() == "") {
@@ -137,6 +142,8 @@
 			// 이벤트 추가
 			calendar.addEvent(eventData);
 			
+			calendar.fullCalendar('renderEvent', eventData, true);
+			
 			const eventsFromCalendar = $('#calendar').fullCalendar('clientEvents');
 	        alert(eventsFromCalendar);
 	        
@@ -149,7 +156,7 @@
 				},
 	            success: function(data) {
 					alert(data);
-	                 $scheduleModal.modal("hide");
+	                $scheduleModal.modal("hide");
 	            },
 	            error: function(){
 					console.log('에러');

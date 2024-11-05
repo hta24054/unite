@@ -4,13 +4,10 @@
 <html>
 <head>
 	<jsp:include page="../common/header.jsp" />
-	<title>캘린더 일정관리</title>
-	<!-- fullcalendar CDN -->  
+	<title>캘린더 일정관리</title> 
 	<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.8.0/main.min.css' rel='stylesheet' />  
-	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.8.0/main.min.js'></script>  
-	<!-- fullcalendar 언어 CDN -->  
+	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.8.0/main.min.js'></script>   
 	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.8.0/locales-all.min.js'></script>
-	<!-- fullcalendar 날짜 DataFormat 적용 -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
 	<script src="${pageContext.request.contextPath}/js/calendar.js"></script>
 	<style>

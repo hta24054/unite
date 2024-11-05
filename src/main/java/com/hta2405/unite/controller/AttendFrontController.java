@@ -1,8 +1,6 @@
 package com.hta2405.unite.controller;
 
-import com.hta2405.unite.action.Action;
-import com.hta2405.unite.action.ActionForward;
-import com.hta2405.unite.action.MyAttendAction;
+import com.hta2405.unite.action.*;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -11,18 +9,24 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.io.Serial;
 import java.util.HashMap;
 
 @WebServlet("/attend/*")
 public class AttendFrontController extends HttpServlet {
+    @Serial
     private static final long serialVersionUID = 1L;
     HashMap<String, Action> actionMap = new HashMap<>();
 
     //아래에 URL, Action 추가
     @Override
     public void init() throws ServletException {
-        actionMap.put("/myattend", new MyAttendAction());
+        actionMap.put("/my", new AttendMyDetailAction());
+        actionMap.put("/empList", new AttendEmpListAction());
+        actionMap.put("/emp", new AttendEmpDetailAction());
+        actionMap.put("/vacation/my", new AttendVacationDetailAction());
+        actionMap.put("/vacation/empList", new AttendVacationEmpListAction());
+        actionMap.put("/vacation/emp", new AttendVacationEmpDetailAction());
     }
 
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -36,14 +40,6 @@ public class AttendFrontController extends HttpServlet {
 
         String command = requestURI.substring(contextPath.length() + "/attend".length());
         System.out.println("command = " + command);
-
-        //nav 메뉴 눌렀을 때 /myattend로 보냄
-        if (command.isEmpty() || command.equals("/")) {
-            String currentYear = String.valueOf(LocalDateTime.now().getYear());
-            String currentMonth = LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("MM"));
-            resp.sendRedirect(contextPath + "/attend/myattend?year=" + currentYear + "&month=" + currentMonth);
-            return;
-        }
 
         //등록된 URL이 아닌경우 404에러페이지 보여줌
         if (!actionMap.containsKey(command)) {

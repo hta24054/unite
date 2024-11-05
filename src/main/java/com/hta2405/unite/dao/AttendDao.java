@@ -1,6 +1,7 @@
 package com.hta2405.unite.dao;
 
 import com.hta2405.unite.dto.Attend;
+import com.hta2405.unite.dto.Emp;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
@@ -20,7 +21,7 @@ public class AttendDao {
         }
     }
 
-    public ArrayList<Attend> getAttendByEmpId(String empId, LocalDate startDate, LocalDate endDate) {
+    public ArrayList<Attend> getAttendByEmpId(Emp emp, LocalDate startDate, LocalDate endDate) {
         ArrayList<Attend> attendList = new ArrayList<>();
         System.out.println("startDate = " + startDate.toString());
         System.out.println("startDate = " + endDate.toString());
@@ -30,7 +31,7 @@ public class AttendDao {
             """;
         try (Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, empId);
+            ps.setString(1, emp.getEmpId());
             ps.setDate(2, Date.valueOf(startDate));
             ps.setDate(3, Date.valueOf(endDate));
 

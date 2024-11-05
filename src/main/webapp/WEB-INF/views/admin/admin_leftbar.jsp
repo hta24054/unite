@@ -19,13 +19,12 @@
 </head>
 <body>
 <div class="sidebar">
-    <h3 style="color:rgb(51, 68, 102)">근태관리</h3><br>
-    <jsp:include page="attendButton.jsp"/>
+    <h3 style="color:rgb(51, 68, 102)">관리자</h3><br>
     <ul class="list-group" style="list-style-type: disc; padding-left: 20px;">
-        <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/attend/my">나의 근태관리</a></li>
-        <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/attend/empList">부서원 근태 관리</a></li>
-        <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/attend/vacation/my">나의 연차</a></li>
-        <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/attend/vacation/empList">연차 관리(인사)</a></li>
+        <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/admin/holiday">휴일 설정</a></li>
+        <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/admin/popup">팝업 등록</a></li>
+        <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/admin/resource">자원 관리</a></li>
+
     </ul>
 </div>
 </body>

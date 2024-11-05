@@ -12,69 +12,64 @@
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="admin_leftbar.jsp"/>
     <style>
-        .table {
-            width: 70%;
-            margin: auto;
-        }
-
-        table, td, th {
-            border-collapse: collapse;
+        .container {
+            max-width: 600px;
+            margin-top: 20px;
         }
 
         h2 {
-            text-align: left;
-            color: black;
-            margin: 0;
-        }
-
-        /* h2의 기본 여백 제거 */
-        caption {
-            caption-side: top;
-            margin-bottom: 30px;
-        }
-
-        #report {
-            width: 500px;
-            text-align: center;
-        }
-
-        #report th {
-            width: 25%;
-        }
-
-        #main_title {
             color: #334466;
             margin-left: 500px;
             margin-bottom: 20px;
         }
-        #specify{
-            text-align: center;
-        }
-        #specify th{
-            width: 20%;
+
+        .btn-block {
+            width: 100%;
+            margin-bottom: 10px;
         }
 
-        /* 캡션과 테이블 간격 설정 */
+        .form-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-<h2 id="main_title">휴일 관리</h2>
+<h2 id="main_title">휴일 설정</h2>
 <div class="container">
-    <button id="api">공휴일 받아오기</button>
-    <button id="weekend">주말 업데이트</button>
-    <form action="${pageContext.request.contextPath}/holiday/insert">
-        <input type="date">휴일 설정
-    </form>
+    <div class="row mb-3">
+        <div class="col">
+            <button type="button" class="btn btn-primary btn-block" id="api">공휴일 받아오기</button>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col">
+            <button type="button" class="btn btn-primary btn-block" id="weekend">주말 업데이트</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <form action="${pageContext.request.contextPath}/admin/holiday/insert" class="form-group" method="post">
+                <input type="date" class="form-control" name="date" required>
+                <input type="text" class="form-control" name="holidayName" placeholder="휴일 사유를 입력하세요" required>
+                <button type="submit" class="btn btn-primary">사용자 휴일 등록</button>
+
+            </form>
+        </div>
+    </div>
 </div>
 <script>
-    $(document).ready(function (){
-        $('#api').click(function (){
-            window.href="${pageContext.request.contextPath}/holiday/api"
-        })
-        $('#weekend').click(function (){
-            window.href="${pageContext.request.contextPath}/holiday/weekend"
-        })
-    })
+    $(document).ready(function () {
+        $('#api').click(function () {
+            window.location.href = "${pageContext.request.contextPath}/admin/holiday/api";
+        });
+        $('#weekend').click(function () {
+            window.location.href = "${pageContext.request.contextPath}/admin/holiday/weekend";
+        });
+    });
 </script>
 </body>
 </html>

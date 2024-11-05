@@ -3,7 +3,7 @@
 	<meta charset="UTF-8">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <%--<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script> --%>
-    <script src="${pageContext.request.contextPath }/js/jquery-3.7.1.js"></script> 
+    <script src="${pageContext.request.contextPath }/js/jquery-3.7.1.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 	<style>
@@ -18,13 +18,13 @@
 		.a1 {
 		    transition: all 0.3s ease; /* 부드러운 전환 효과 */
 		}
-		
+
 		.a1:hover,
 		.a1.active {
 		    font-size: 1.2em; /* 글자 크기 증가 */
 		    font-weight: bold; /* 글자 굵게 */
 		}
-				
+
 		textarea{resize: none;}
 		.nav-item1{position: absolute; left: 15px; top: 2px;}
 		.nav-item2{position: absolute; right: 80px; top: 5px;}
@@ -79,7 +79,7 @@
 					<a class="nav-link a1" href="#">&nbsp;마이페이지&nbsp;</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link a1" href="${pageContext.request.contextPath}/admin/holiday">>&nbsp;관리자&nbsp;</a>
+					<a class="nav-link a1" href="${pageContext.request.contextPath}/admin/holiday">&nbsp;관리자&nbsp;</a>
 				</li>
 				<li class="nav-item2">
 					<a class="nav-link" href="#"><img src="${pageContext.request.contextPath}/image/profile_white.png" style="width:30px;"></a>

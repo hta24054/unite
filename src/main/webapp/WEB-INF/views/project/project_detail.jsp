@@ -19,6 +19,16 @@
 		caption { caption-side: top; }
 		.notification-content { border: 1px solid #ccc; border-radius: 8px; padding: 10px; height: 480px;}<%--height--%>
 	</style>
+	<script>
+		$(document).ready(function() {
+			// 서버에서 전달된 프로젝트 이름이 존재할 때
+			var projectName = "${left}";
+			if (projectName) {
+				// hidden 요소를 보이게 하고, 프로젝트 이름을 삽입
+				$("#currentProjectName").text(projectName).show();
+			}
+		});
+	</script>
 </head>
 <body>
 	<div class="container">
@@ -52,17 +62,19 @@
 					<caption><h5>진행 과정</h5></caption>
 					<thead>
 						<tr>
-							<th>제목</th>
 							<th>작성자</th>
-							<th>첨부파일</th>
+							<th>제목</th>
+							<th>작성일자</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
-							<td>#001</td>
-							<td>홍길동 책임</td>
-							<td>파일1.txt</td>
-						</tr>
+						<c:forEach var="project" items="${project2}">
+						    <tr>
+								<td>${project.taskWriter}</td>
+								<td>${project.taskTitle}</td>
+								<td>${project.taskUpdateDate}</td>
+							</tr>
+						</c:forEach>
 						<tr>
 							<td>#002</td>
 							<td>이순신 책임</td>

@@ -31,8 +31,7 @@ h3 {
 
 <body>
 	<div class="sidebar">
-		<br>
-		<br>
+		<br> <br>
 		<h3 style="color: rgb(51, 68, 102)">인사정보</h3>
 		<br>
 		<ul class="list-group"

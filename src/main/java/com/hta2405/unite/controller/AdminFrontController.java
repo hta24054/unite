@@ -9,19 +9,25 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.io.Serial;
 import java.util.HashMap;
 
 @WebServlet("/admin/*")
 public class AdminFrontController extends HttpServlet {
+    @Serial
     private static final long serialVersionUID = 1L;
     HashMap<String, Action> actionMap = new HashMap<>();
 
     //아래에 URL, Action 추가
     @Override
     public void init() throws ServletException {
-        actionMap.put("/holiday/api", new AdminHolidayInsertAction()); //공휴일 api로 받아와서 DB 업데이트
+        actionMap.put("/holiday", new AdminHolidayAction()); //휴일 관리
+        actionMap.put("/holiday/insert", new AdminHolidayInsertAction()); //휴일 직접 등록
+        actionMap.put("/holiday/delete", new AdminHolidayDeleteAction()); //휴일 직접 등록
+        actionMap.put("/holiday/api", new AdminHolidayApiAction()); //공휴일 api로 받아와서 DB 업데이트
         actionMap.put("/holiday/weekend", new AdminHolidayWeekendAction()); //주말 DB에 업데이트
+        actionMap.put("/popup", new AdminPopupAction()); //팝업 등록
+        actionMap.put("/resource", new AdminResourceAction()); //자원관리
     }
 
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

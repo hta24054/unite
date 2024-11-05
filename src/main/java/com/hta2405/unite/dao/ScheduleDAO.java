@@ -41,6 +41,7 @@ public class ScheduleDAO {
 			pstmt.setString(5, s.getScheduleContent());
 			pstmt.setString(6, s.getScheduleColor());
 			
+			
 			result = pstmt.executeUpdate();//삽입 성공시 result는 1
 			
 		} catch (Exception e) {

@@ -2,7 +2,6 @@ package com.hta2405.unite.action;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import com.hta2405.unite.dao.ScheduleDAO;
 import com.hta2405.unite.dto.Schedule;
@@ -30,9 +29,12 @@ public class ScheduleAddProcessAction implements Action {
 		s.setScheduleName(scheduleName);
 		s.setScheduleContent(scheduleContent);
 		
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		LocalDateTime startDateTime = LocalDateTime.parse(scheduleStart, formatter);
-		LocalDateTime endDateTime = LocalDateTime.parse(scheduleEnd, formatter);
+//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//		LocalDateTime startDateTime = LocalDateTime.parse(scheduleStart, formatter);
+//		LocalDateTime endDateTime = LocalDateTime.parse(scheduleEnd, formatter);
+		
+		LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(scheduleStart);
+		LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(scheduleEnd);
 		
 		s.setScheduleStart(startDateTime);
 		s.setScheduleEnd(endDateTime);

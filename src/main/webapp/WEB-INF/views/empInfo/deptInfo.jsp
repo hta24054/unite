@@ -25,8 +25,9 @@
 <title>인사 정보</title>
 <style>
 .table {
-width:20%;
+	width: 20%;
 }
+
 body {
 	font-family: Arial, sans-serif;
 }
@@ -69,7 +70,7 @@ th {
 				<h2>부서 인사정보</h2>
 				<tr>
 					<th width="50%">해당부서</th>
-					<td>${deptName}</td>
+					<td>${empinfo.deptId}</td>
 				</tr>
 			</table>
 			<table class="table2">
@@ -81,15 +82,17 @@ th {
 					<th>내선 번호</th>
 				</tr>
 
-				<tr>
-					<th>${empinfo.deptName}</th>
-					<th>${empinfo.ename}</th>
-					<th>${empinfo.jobName}</th>
-					<th>${empinfo.email}</th>
-					<th>${empinfo.tel}</th>
-				</tr>
-
-
+				<tbody>
+					<c:forEach var="empinfo" items="${empinfoList}">
+						<tr>
+							<th>${empinfo.deptId}</th>
+							<th>${empinfo.ename}</th>
+							<th>${empinfo.jobName}</th>
+							<th>${empinfo.email}</th>
+							<th>${empinfo.tel}</th>
+						</tr>
+					</c:forEach>
+				</tbody>
 			</table>
 		</div>
 	</div>

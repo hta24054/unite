@@ -10,7 +10,7 @@ public class ScheduleDateTimeUtil {
         if (dateTime != null && !dateTime.isEmpty()) {
         	
             dateTime = dateTime.replace("T", " "); // "T"를 공백으로 교체
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss");
            
             try {
                 return LocalDateTime.parse(dateTime, formatter);

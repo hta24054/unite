@@ -17,7 +17,8 @@
 	        slotMinTime: '00:00', // Day 캘린더에서 시작 시간
 	        slotMaxTime: '24:00', // Day 캘린더에서 종료 시간
 	        defaultAllDay: true, // 종일 이벤트
-	        timeZone: 'UTC',
+	        //timeZone: 'UTC',
+	        timeZone: 'local',
 	        headerToolbar: {
 	          left: 'prev,next',
 	          center: 'title',
@@ -31,7 +32,7 @@
 	        locale: 'ko', // 한국어 설정
 	        
 			eventAdd: function(obj) { // 이벤트가 추가되면 발생하는 이벤트
-	         	 console.log(obj);
+	         	 console.log("eventAdd obj", obj);
 	        },
 	        
 	        eventChange: function(obj) { // 이벤트가 수정되면 발생하는 이벤트
@@ -42,6 +43,8 @@
 	         	console.log(obj);
 	        },
 	        select: function(start, end) {
+				console.log("start", start);
+				console.log("end", end);
                 $scheduleModal.modal('show');
             },
 	        /*
@@ -82,18 +85,22 @@
 	        },
 		    
 			eventClick: function(info) {  
+				console.log("eventClick info", info.event);
+				
 				if (info) {
 					$scheduleName.val(info.event.title);
 					$description.val(info.event.extendedProps.contents);
 					$bgColor.val(info.event.extendedProps.bgColor);
 					$scheduleModal.modal('show');
 				}
+			},
+			eventDidMount: function(info) {
+			    console.log("info.event.extendedProps", info.event.extendedProps);
+			    // {description: "Lecture", department: "BioChemistry"}
 			}
 		});
 		
 		calendar.render();
-		
-		$("#startAt", "#endAt").datetimepicker();
 		
 		//모달창 이벤트
 		$("#btnRegister").on("click", function () {
@@ -142,8 +149,6 @@
 			// 이벤트 추가
 			calendar.addEvent(eventData);
 			
-			calendar.fullCalendar('renderEvent', eventData, true);
-			
 			const eventsFromCalendar = $('#calendar').fullCalendar('clientEvents');
 	        alert(eventsFromCalendar);
 	        
@@ -152,10 +157,9 @@
 				type: "post",
 	            dataType: "json",
 	            data: { 
-					 eventsJson: JSON.stringify(eventsFromCalendar) ,
+					 eventsJson: JSON.stringify(eventsFromCalendar),
 				},
 	            success: function(data) {
-					alert(data);
 	                $scheduleModal.modal("hide");
 	            },
 	            error: function(){

@@ -22,8 +22,9 @@ public class AttendFrontController extends HttpServlet {
         actionMap.put("/my", new AttendMyDetailAction());
         actionMap.put("/empList", new AttendEmpListAction());
         actionMap.put("/emp", new AttendEmpDetailAction());
-        actionMap.put("/holiday/my", new AttendEmpDetailAction());
-        actionMap.put("/holiday/all", new AttendEmpDetailAction());
+        actionMap.put("/vacation/my", new AttendVacationDetailAction());
+        actionMap.put("/vacation/empList", new AttendVacationEmpListAction());
+        actionMap.put("/vacation/emp", new AttendVacationEmpDetailAction());
     }
 
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

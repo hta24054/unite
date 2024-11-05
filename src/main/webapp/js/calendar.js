@@ -41,16 +41,17 @@
 	        eventRemove: function(obj){ // 이벤트가 삭제되면 발생하는 이벤트
 	         	console.log(obj);
 	        },
+	        /*
 		    events: function(info, successCallback, failureCallback) {
-				 //successCallback(events);
+				 successCallback(events);
 				
 				 $.ajax({
 		            url: '${pageContext.request.contextPath}/schedule/ScheduleAddProcessAction',
 		            type: 'post',
 		            dataType: 'json',
 		            data: {
-						start : moment(info.startStr).format('yyyy-MM-dd HH:mm:ss'),
-						end : moment(info.endStr).format('yyyy-MM-dd HH:mm:ss')
+						start: moment(info.startStr).format('YYYY-MM-dd HH:mm:ss'), 
+            			end: moment(info.endStr).format('YYYY-MM-dd HH:mm:ss') 
 					},
 		            success: function(events) {
 		                callback(events);
@@ -59,6 +60,7 @@
 		         });
 		        
 		    },
+		    */
 		   /*
 	       events: function(start, end, timezone, callback) {
 		        // 서버에서 일정 데이터를 가져온다.
@@ -77,7 +79,6 @@
 	        },
 		    
 			eventClick: function(info) {  
-				console.log("info eventClick", info)
 				if (info) {
 					$scheduleName.val(info.event.title);
 					$description.val(info.event.extendedProps.contents);
@@ -85,7 +86,7 @@
 					$scheduleModal.modal('show');
 				}
 			}
-		  });
+		});
 		
 		calendar.render();
 		
@@ -118,10 +119,10 @@
 	  	    // 입력값 객체 생성
 			const eventData = {
 			  	title: $scheduleName.val(),
-			    //start: $start.val().replace("T", " "), // T를 공백으로 변경
-			    //end: $end.val().replace("T", " "), // T를 공백으로 변경
-			    start: $start.val(), 
-			    end: $end.val(),
+			    start: $start.val().replace("T", " "), // T를 공백으로 변경
+			    end: $end.val().replace("T", " "), // T를 공백으로 변경
+			    //start: $start.val(), 
+			    //end: $end.val(),
 			    allDay: $allDay.is(":checked"), // 체크박스인 경우 true/false
 			    bgColor: $bgColor.val(),
 			    description: $description.val()
@@ -144,10 +145,10 @@
 				type: "post",
 	            dataType: "json",
 	            data: { 
-					 eventsJson: JSON.stringify(eventsFromCalendar) 
+					 eventsJson: JSON.stringify(eventsFromCalendar) ,
 				},
 	            success: function(data) {
-	                 //$('#calendar').fullCalendar('renderEvent', eventsFromCalendar, true);
+					alert(data);
 	                 $scheduleModal.modal("hide");
 	            },
 	            error: function(){
@@ -164,7 +165,6 @@
 			$bgColor.val("");
 			$description.val("");
 		});
-		
 		
 		$bgColor.on("change", function(){
 			$(this).css("backgound-color", $(this).val());

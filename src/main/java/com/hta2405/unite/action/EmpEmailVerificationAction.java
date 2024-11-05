@@ -12,6 +12,7 @@ public class EmpEmailVerificationAction implements Action {
 	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
+		
 		ActionForward forward = new ActionForward();
 		forward.setRedirect(false); //주소 변경없이 jsp페이지의 내용을 보여줍니다.
 		forward.setPath("/WEB-INF/views/emp/emailVerificationForm.jsp");

@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>이메일 인증</title>
+<script src="${pageContext.request.contextPath}/js/jquery-3.7.1.js"></script>
 <style>
 * {
     box-sizing: border-box;
@@ -121,14 +122,34 @@ a:hover {
     text-decoration: underline;
 }
 
-span{
+span,.emailVerification{
 	display: flex;
     align-items: center;
     justify-content: center;
     gap:2px;
 }
 
+label[for="emailCheck"]{
+	color:#666666;
+	font-size: 11px;
+}
 </style>
+<script>
+	$("button:button").on('click', function(){
+		$.ajax({
+			type:"post",
+			url:"../emp/emailVerificationProcess",
+			data:{
+				"name":$("#name").val(),
+				"email":$("#email").val()
+			},
+			dataType:"json",
+			success:function(rdata){
+				$("input:text").val(rdata);
+			}
+		})
+	})
+</script>
 </head>
 <body>
     <div class="container">
@@ -139,9 +160,9 @@ span{
         	</span>
         	<a href="login">로그인</a>
         </div>
-        <h2>이메일 인증</h2>
+        <div class="emailVerification"><h2>이메일 인증</h2><label for="emailCheck">(${email})</label></div>
         <p class="instruction">입력하신 이메일 주소와 같아야 이메일을 받을 수 있습니다.</p>
-        <form action='${pageContext.request.contextPath}/emp/emailVerificationProcess' method='post' 
+        <form action='${pageContext.request.contextPath}/emp/emailVerificationProcess' method='get' 
 			name="emailVerificationProcess">
             <label for="name">이름</label>
             <input type="text" id="name" name="name" placeholder="이름" required>

@@ -1,5 +1,7 @@
 package com.hta2405.unite.dao;
 
+
+
 import com.hta2405.unite.dto.EmpInfo;
 
 import javax.naming.InitialContext;
@@ -8,27 +10,34 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList; 
+import java.util.List;
 
 public class EmpInfoDao {
 	private DataSource ds;
 
 	public EmpInfoDao() {
 		try {
-	        InitialContext init = new InitialContext();
-	        ds = (DataSource) init.lookup("java:comp/env/jdbc/OracleDB");
-	    } catch (Exception e) {
-	        System.out.println("DB연결 실패 " + e.getMessage());
-	    }
+			InitialContext init = new InitialContext();
+			ds = (DataSource) init.lookup("java:comp/env/jdbc/OracleDB");
+		} catch (Exception e) {
+			System.out.println("DB연결 실패 " + e.getMessage());
+		}
 	}
 
 	public EmpInfo getEmpInfoById(String empId) {
 		EmpInfo empInfo = null;
 		String sql = """
-				SELECT e.emp_id, e.password, e.ename, e.dept_id, e.job_id, e.gender, e.email, e.tel, e.mobile, e.img_path, e.img_original, e.img_uuid, e.img_type, e.hired,
-				       ei.mobile2, ei.hiredate, ei.hiretype, ei.birthday, ei.school, ei.major, ei.bank, ei.account, ei.address, ei.married, ei.child, ei.etype, ei.vacation_count
-				FROM emp e
-				JOIN emp_info ei ON e.emp_id = ei.emp_id
-				WHERE e.emp_id = ?
+				SELECT e.emp_id, e.password, e.ename,
+				e.dept_id, e.job_id, e.gender, e.email,
+				e.tel, e.mobile, e.img_path, e.img_original,
+				e.img_uuid, e.img_type, e.hired, ei.mobile2,
+				ei.hiredate, ei.hiretype, ei.birthday,
+				ei.birthdaytype,
+				ei.school, ei.major, ei.bank, ei.account,
+				ei.address, ei.married, ei.child, ei.etype,
+				ei.vacation_count FROM emp e JOIN emp_info
+				ei ON e.emp_id = ei.emp_id WHERE e.emp_id = ?
 				""";
 
 		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -47,10 +56,10 @@ public class EmpInfoDao {
 				empInfo.setDeptId(rs.getString("dept_id"));
 				empInfo.setJobName(rs.getString("job_id"));
 				empInfo.setMobile(rs.getString("mobile"));
-
 				empInfo.setHireDate(rs.getDate("hiredate"));
 				empInfo.setHireType(rs.getString("hiretype"));
 				empInfo.setBirthDate(rs.getDate("birthday"));
+				empInfo.setBirthdayType(rs.getString("birthdayType"));
 				empInfo.setSchool(rs.getString("school"));
 				empInfo.setMajor(rs.getString("major"));
 				empInfo.setBank(rs.getString("bank"));
@@ -61,7 +70,7 @@ public class EmpInfoDao {
 				empInfo.setMobile2(rs.getString("mobile2"));
 				// empInfo.setCertName(rs.getString("certName"));
 				// empInfo.setLangName(rs.getString("langName"));
-				empInfo.setChild(rs.getInt("child"));
+				empInfo.setChild(rs.getBoolean("child"));
 			} else {
 				System.out.println("No employee found with ID: " + empId); // 디버그 출력
 			}
@@ -69,6 +78,23 @@ public class EmpInfoDao {
 			e.printStackTrace();
 		}
 		return empInfo;
+	}
+
+	public List<String> getCertNamesByEmpId(String empId) {
+		List<String> certNames = new ArrayList<>();
+		String sql = "SELECT cert_name FROM cert WHERE emp_id = ?";
+
+		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+			ps.setString(1, empId);
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				certNames.add(rs.getString("cert_name"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return certNames;
 	}
 
 	public boolean updateEmpInfo(EmpInfo empInfo) throws SQLException {
@@ -87,5 +113,12 @@ public class EmpInfoDao {
 			pstmt.setBoolean(6, empInfo.getMarried());
 		}
 		return update;
+	}
+
+	public List<EmpInfo> getAllEmpInfo() {
+		String sql = """
+				select dempName,ename,job
+				""";
+		return null;
 	}
 }

@@ -14,10 +14,19 @@ public class EmpViewDeptAction implements Action {
 	@Override
 	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		EmpInfoDao dao = new EmpInfoDao();
-		EmpInfo empinfo = dao.getEmpInfoById(req.getParameter("id"));
-		req.setAttribute("empinfo", empinfo);
+		String empId = "E002";
 		
+		EmpInfoDao dao = new EmpInfoDao();
+		EmpInfo empinfo = dao.getEmpInfoById(empId);
+		
+		if (empinfo == null) {
+			throw new ServletException("No employee found with ID: " + empId);
+		}
+
+		
+
+		
+		req.setAttribute("empinfo", empinfo);
 		ActionForward forward = new ActionForward();
 		forward.setRedirect(false);
 		forward.setPath("/WEB-INF/views/empInfo/deptInfo.jsp");

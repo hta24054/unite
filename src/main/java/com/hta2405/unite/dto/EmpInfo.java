@@ -26,11 +26,12 @@ public class EmpInfo {
 	private String mobile2; // 긴급 연락처
 	private String etype; // 직원구분 (정규직, 계약직, 퇴직 등)
 	private Date birthDate; // 생년월일
+	private String birthdayType; // 양력/음력
 	private String address; // 주소
 	private String school; // 최종 학력
 	private Boolean married; // 혼인 여부
 	private String certName; // 자격증 id
 	private String major; // 전공
 	private String langName;// 외국어 id
-	private Integer child;
+	private Boolean child;
 }

@@ -76,7 +76,7 @@
 					<a class="nav-link a1" href="#">&nbsp;메신저&nbsp;</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link a1" href="#">&nbsp;마이페이지&nbsp;</a>
+					<a class="nav-link a1" href="${pageContext.request.contextPath}/mypage/password">&nbsp;마이페이지&nbsp;</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link a1" href="${pageContext.request.contextPath}/admin/holiday">&nbsp;관리자&nbsp;</a>

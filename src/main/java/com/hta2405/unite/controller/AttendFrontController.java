@@ -9,10 +9,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.HashMap;
 
 @WebServlet("/attend/*")
 public class AttendFrontController extends HttpServlet {
+    @Serial
     private static final long serialVersionUID = 1L;
     HashMap<String, Action> actionMap = new HashMap<>();
 

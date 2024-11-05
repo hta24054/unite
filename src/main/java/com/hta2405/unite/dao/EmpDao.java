@@ -98,6 +98,38 @@ public class EmpDao {
         return list;
     }
 
+    public int updateEmp(Emp emp) {
+        String sql = """
+                    UPDATE EMP SET
+                    PASSWORD = ?, ENAME = ?, DEPT_ID = ?, JOB_ID = ?, GENDER = ?,
+                    EMAIL = ?, TEL = ?, MOBILE = ?, IMG_PATH = ?, IMG_ORIGINAL = ?,
+                    IMG_UUID = ?, IMG_TYPE = ?, HIRED = ?
+                    WHERE EMP_ID = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, emp.getPassword());
+            ps.setString(2, emp.getEname());
+            ps.setLong(3, emp.getDeptId());
+            ps.setLong(4, emp.getJobId());
+            ps.setString(5, emp.getGender());
+            ps.setString(6, emp.getEmail());
+            ps.setString(7, emp.getTel());
+            ps.setString(8, emp.getMobile());
+            ps.setString(9, emp.getImgPath());
+            ps.setString(10, emp.getImgOriginal());
+            ps.setString(11, emp.getImgUUID());
+            ps.setString(12, emp.getImgType());
+            ps.setInt(13, emp.isHired() ? 1 : 0);
+            ps.setString(14, emp.getEmpId());
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("회원정보 변경 오류");
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
     private static Emp makeEmp(ResultSet rs) throws SQLException {
         return new Emp(rs.getString("emp_id"),
                 rs.getString("password"),

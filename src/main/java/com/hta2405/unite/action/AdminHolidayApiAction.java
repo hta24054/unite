@@ -9,7 +9,10 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -17,6 +20,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Properties;
 import java.util.TreeMap;
+
+import static com.hta2405.unite.util.CommonUtil.alertAndGoBack;
 
 public class AdminHolidayApiAction implements Action {
 
@@ -37,15 +42,7 @@ public class AdminHolidayApiAction implements Action {
                 holidayDao.updateHoliday(map.get(localDate), localDate);
             }
         }
-        System.out.println("공휴일 추가 성공");
-        resp.setContentType("text/html;charset=utf-8");
-        PrintWriter out = resp.getWriter();
-        out.print("<script>");
-        out.print("alert('향후 1년간의 공휴일이 업데이트 되었습니다.');");
-        out.print("location.href = history.back();");
-        out.print("</script>");
-        out.close();
-        return null;
+        return alertAndGoBack(resp, "향후 1년간의 공휴일이 업데이트 되었습니다.");
     }
 
     /**

@@ -58,9 +58,19 @@
             </div>
 
             <form action="${pageContext.request.contextPath}/admin/holiday/insert" method="post" class="form-group">
-                <input type="date" class="form-control mb-2" name="date" required>
-                <input type="text" class="form-control mb-2" name="holidayName" placeholder="휴일 사유를 입력하세요" required>
-                <button type="submit" class="btn btn-primary btn-block">사용자 휴일 등록</button>
+                <label>
+                    <input type="date" class="form-control mb-2" name="date" required>
+                </label>
+                <label>
+                    <input type="text" class="form-control mb-2" name="holidayName" placeholder="휴일 사유를 입력하세요" required>
+                </label>
+                <button type="submit" class="btn btn-success btn-block">휴일등록</button>
+            </form>
+            <form action="${pageContext.request.contextPath}/admin/holiday/delete" method="post" class="form-group">
+                <label>
+                    <input type="date" class="form-control mb-2" name="date" required>
+                </label>
+                <button type="submit" class="btn btn-success btn-block">휴일삭제</button>
             </form>
         </div>
 
@@ -87,7 +97,6 @@
         </div>
     </div>
 </div>
-
 <script>
     $(document).ready(function () {
         $('#api').click(function () {

@@ -1,6 +1,9 @@
 package com.hta2405.unite.controller;
 
-import com.hta2405.unite.action.*;
+import com.hta2405.unite.action.Action;
+import com.hta2405.unite.action.ActionForward;
+import com.hta2405.unite.action.MyPagePasswordChangeAction;
+import com.hta2405.unite.action.MyPagePasswordChangeProcessAction;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -9,24 +12,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.HashMap;
 
-@WebServlet("/emp/*")
-public class EmpFrontController extends HttpServlet {
+@WebServlet("/mypage/*")
+public class MyPageFrontController extends HttpServlet {
+    @Serial
     private static final long serialVersionUID = 1L;
     HashMap<String, Action> actionMap = new HashMap<>();
 
     //아래에 URL, Action 추가
     @Override
     public void init() throws ServletException {
-        actionMap.put("/login", new EmpLoginAction());
-        actionMap.put("/loginProcess", new EmpLoginProcessAction());
-        actionMap.put("/logout", new EmpLogoutAction());
-        actionMap.put("/pwInquiry", new EmpPwInquiryAction());
-        actionMap.put("/pwInquiryProcess", new EmpPwInquiryProcessAction());
-        actionMap.put("/EmailVerification", new EmpEmailVerificationAction());
-        actionMap.put("/EmailVerificationProcess", new EmailVerificationProcessAction());
-        actionMap.put("/home", new EmpHomeAction());
+        actionMap.put("/password", new MyPagePasswordChangeAction());
+        actionMap.put("/password/process", new MyPagePasswordChangeProcessAction());
     }
 
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -38,23 +37,15 @@ public class EmpFrontController extends HttpServlet {
         String contextPath = req.getContextPath();
         System.out.println("contextPath = " + contextPath);
 
-        String command = requestURI.substring(contextPath.length() + "/emp".length());
+        String command = requestURI.substring(contextPath.length() + "/mypage".length());
         System.out.println("command = " + command);
 
-        //등록된 URL이 아닌경우 404에러페이지 보여줌
         if (!actionMap.containsKey(command)) {
             RequestDispatcher dispatcher = req.getRequestDispatcher("/error/404.jsp");
             dispatcher.forward(req, resp);
             return;
         }
-
-        //초기화
         Action action = actionMap.get(command);
-
-        //요청 주소 별 ActionForward(리다이렉트 여부, 다음 주소 정보)객체 생성해서 변수에 담음
-
-        //해시에 저장되어있는 new 객체들은 생성은 되지만, 이때 비로소 'forward' 로 참조변수가 설정됨
-        //action.execute 로 리다이렉트 여부, 주소를 forward 변수에 담고, request 변수에 model 객체를 담음
         ActionForward forward = action.execute(req, resp);
 
         if (forward != null) {

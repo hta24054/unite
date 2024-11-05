@@ -26,6 +26,6 @@ public class EmpUtil {
                 break;
             }
         }
-        return targetEmp.getDeptId() == Math.floor(loginEmp.getDeptId() / Math.pow(10, deep)) * Math.pow(10, deep);
+        return loginEmp.getDeptId() == Math.floor(targetEmp.getDeptId() / Math.pow(10, deep)) * Math.pow(10, deep);
     }
 }

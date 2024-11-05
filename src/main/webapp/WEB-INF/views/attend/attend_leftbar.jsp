@@ -19,7 +19,8 @@
 </head>
 <body>
 <div class="sidebar">
-    <h3 style="color:rgb(51, 68, 102)">관리자</h3><br>
+    <h3 style="color:rgb(51, 68, 102)">근태관리</h3><br>
+    <jsp:include page="attendButton.jsp"/>
     <ul class="list-group" style="list-style-type: disc; padding-left: 20px;">
         <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/attend/my">나의 근태관리</a></li>
         <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/attend/empList">부서원 근태 관리</a></li>

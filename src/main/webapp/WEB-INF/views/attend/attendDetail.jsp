@@ -47,10 +47,12 @@
             margin-left: 500px;
             margin-bottom: 20px;
         }
-        #specify{
+
+        #specify {
             text-align: center;
         }
-        #specify th{
+
+        #specify th {
             width: 20%;
         }
 
@@ -58,7 +60,7 @@
     </style>
 </head>
 <body>
-<h2 id="main_title">나의 근태 관리</h2>
+<h2 id="main_title">근태 관리</h2>
 <div class="container">
     <!-- 연도와 월 변경 -->
     <div class="text-center my-4">
@@ -134,6 +136,9 @@
 
 <script>
     $(document).ready(function () {
+        let currentMonth = ${param.month};
+        let currentYear = ${param.year};
+
         $(".table tbody tr").each(function () {
             const $row = $(this);
             const $dateCell = $row.find(".attend-date");
@@ -161,8 +166,7 @@
                 $dateCell.css("color", "red");
             }
         });
-        let currentMonth = ${param.month};
-        let currentYear = ${param.year};
+
         // 이전 달 버튼 클릭
         $('#prevMonth').click(function () {
             if (currentMonth === 1) {
@@ -187,11 +191,27 @@
 
         // GET 요청 보내기
         function sendRequest() {
-            const params = $.param({year: currentYear, month: currentMonth});
+            // 현재 URL의 쿼리 파라미터 가져오기
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // year와 month 파라미터 업데이트
+            urlParams.set('year', currentYear);
+            urlParams.set('month', currentMonth);
+
+            // emp 파라미터가 있는 경우 그대로 유지, 없는 경우 추가하지 않음
+            const params = urlParams.toString();
+
+            // 새 URL로 이동
             window.location.href = "?" + params;
         }
-    });
 
+        // title 수정(직원근태관리 일 경우 param에 있는 값)
+        const params = new URLSearchParams(window.location.search);
+        const emp = params.get('emp'); // 'emp' 파라미터 값 가져오기
+        if (emp) { // 'emp' 파라미터가 존재할 경우
+            $('#main_title').text('직원 근태 관리-' + emp);
+        }
+    });
 </script>
 </body>
 </html>

@@ -54,84 +54,137 @@ caption {
 	margin-bottom: 30px;
 } /* 캡션과 테이블 간격 설정 */
 </style>
+<script>
+	$(document).ready(
+					function() {
+						$("#editButton")
+								.click(
+										function() {
+											$(".editable").removeAttr(
+													"readonly").removeAttr(
+													"disabled").css("border",
+													"1px solid #000");
+										});
+					});
+</script>
 </head>
 <body>
 	<div class="main-container">
 		<div class="content">
-			<table class="table">
-				<caption>
-					<h2>나의 인사정보</h2>
-				</caption>
-				<tr>
-					<td rowspan="4" width="10%"></td>
-					<th>이름</th>
-					<th>성별</th>
-					<th>이메일</th>
-					<th>내선번호</th>
-				</tr>
-				<tr>
-					<td>${empinfo.ename}</td>
-					<td>${empinfo.gender}</td>
-					<td>${empinfo.email}</td>
-					<td>${empinfo.tel}</td>
-				</tr>
-				<tr>
-					<th>소속</th>
-					<th>사번</th>
-					<th>부서/직책</th>
-					<th>휴대폰번호</th>
-				</tr>
-				<tr>
-					<td>${empinfo.company}</td>
-					<td>${empinfo.empId}</td>
-					<td>${empinfo.deptId}/ ${empinfo.jobName}</td>
-					<td>${empinfo.mobile}</td>
-				</tr>
-			</table>
+			<form action="${pageContext.request.contextPath}/empInfo/update"
+				method="post">
+				<input type="hidden" name="id" value="${empinfo.empId}">
+				<table class="table">
+					<caption>
+						<h2>나의 인사정보</h2>
+					</caption>
+					<tr>
+						<td rowspan="4" width="10%"></td>
+						<th>이름</th>
+						<th>성별</th>
+						<th>이메일</th>
+						<th>내선번호</th>
+					</tr>
+					<tr>
+						<td>${empinfo.ename}</td>
+						<td><select name="gender" disabled>
+								<option value="남성" ${empinfo.gender == '남성' ? 'selected' : ''}>남성</option>
+								<option value="여성" ${empinfo.gender == '여성' ? 'selected' : ''}>여성</option>
+						</select></td>
+						<td><input type="text" name="email" class="editable"
+							value="${empinfo.email}" readonly></td>
+						<td><input type="text" name="tel" class="editable"
+							value="${empinfo.tel}" readonly></td>
+					</tr>
+					<tr>
+						<th>부서</th>
+						<th>사번</th>
+						<th>직책</th>
+						<th>휴대폰번호</th>
+					</tr>
+					<tr>
+						<td>${empinfo.deptId}</td>
+						<td>${empinfo.empId}</td>
+						<td>${empinfo.jobName}</td>
+						<td><input type="text" name="mobile" class="editable"
+							value="${empinfo.mobile}" readonly></td>
+					</tr>
+				</table>
 
-			<table>
-				<tr>
-					<th>입사일</th>
-					<td>${empinfo.hireDate}</td>
-					<th rowspan="2">계좌번호</th>
-					<td rowspan="2">${empinfo.bank}${empinfo.account}</td>
-					<th>긴급연락처</th>
-					<td>${empinfo.mobile2}</td>
-				</tr>
-				<tr>
-					<th>채용구분</th>
-					<td>${empinfo.hireType}</td>
-					<th>직원구분</th>
-					<td>${empinfo.etype}</td>
-				</tr>
-				<tr>
-					<th>생년월일</th>
-					<td>${empinfo.birthDate}</td>
-					<th>주소</th>
-					<td>${empinfo.address}</td>
-					<th rowspan="2">자격증</th>
-					<td rowspan="2">${empinfo.certName}</td>
-				</tr>
-				<tr>
-					<th>최종학력</th>
-					<td>${empinfo.school}</td>
-					<th>결혼여부</th>
-					<td>${empinfo.married}</td>
-				</tr>
-				<tr>
-					<th>전공</th>
-					<td>${empinfo.major}</td>
-					<th>자녀</th>
-					<td>${empinfo.child}</td>
-					<th>외국어능력</th>
-					<td>${empinfo.langName}</td>
-				</tr>
-			</table>
+				<table>
+					<tr>
+						<th>입사일</th>
+						<td><input type="text" name="hiredate"
+							placeholder="YYYY/MM/DD" value="${empinfo.hireDate}" readonly></td>
 
-			<form action="updateInfo" method="post">
-				<input type="submit" value="수정">
+						<th rowspan="2">계좌번호</th>
+						<td rowspan="2">${empinfo.bank}${empinfo.account}</td>
+						<th>긴급연락처</th>
+						<td><input type="text" name="mobile2" class="editable"
+							value="${empinfo.mobile2}" readonly></td>
+					</tr>
+					<tr>
+						<th>채용구분</th>
+						<td><select name="hiretype" disabled>
+								<option value="경력" ${empinfo.hireType == '경력' ? 'selected' : ''}>경력</option>
+								<option value="신입" ${empinfo.hireType == '신입' ? 'selected' : ''}>신입</option>
+								<option value="인턴" ${empinfo.hireType == '인턴' ? 'selected' : ''}>인턴</option>
+						</select></td>
+						<th>직원구분</th>
+						<td><select name="etype" disabled>
+								<option value="정규직" ${empinfo.etype == '정규직' ? 'selected' : ''}>정규직</option>
+								<option value="계약직" ${empinfo.etype == '계약직' ? 'selected' : ''}>계약직</option>
+								<option value="퇴직" ${empinfo.etype == '퇴직' ? 'selected' : ''}>퇴직</option>
+						</select></td>
+					</tr>
+					<tr>
+						<th>생년월일</th>
+						<td><input type="text" name="birthday"
+							placeholder="YYYY/MM/DD" value="${empinfo.birthDay}" readonly>
+							<select name="birthday_type" disabled>
+								<option value="양력"
+									${empinfo.birthdayType == '양력' ? 'selected' : ''}>양력</option>
+								<option value="음력"
+									${empinfo.birthdayType == '음력' ? 'selected' : ''}>음력</option>
+						</select></td>
+						<th>주소</th>
+						<td><input type="text" name="address" class="editable"
+							value="${empinfo.address}" readonly></td>
+						<th rowspan="2">자격증</th>
+						<td rowspan="2"><select name="cert_id">
+								<c:forEach var="cert" items="${certList}">
+									<option value="${cert.cert_id}">${cert.cert_name}</option>
+								</c:forEach>
+						</select></td>
+					</tr>
+					<tr>
+						<th>최종학력</th>
+						<td>${empinfo.school}</td>
+						<th>결혼여부</th>
+						<td><select name="married" class="editable" disabled>
+								<option value="Y" ${empinfo.married == 'Y' ? 'selected' : ''}>Y</option>
+								<option value="N" ${empinfo.married == 'N' ? 'selected' : ''}>N</option>
+						</select></td>
+					</tr>
+					<tr>
+						<th>전공</th>
+						<td>${empinfo.major}</td>
+						<th>자녀</th>
+						<td><select name="child" disabled>
+								<option value="Y" ${empinfo.child == 'Y' ? 'selected' : ''}>Y</option>
+								<option value="N" ${empinfo.child == 'N' ? 'selected' : ''}>N</option>
+						</select></td>
+						<th>외국어능력</th>
+						<td>${empinfo.langName}</td>
+					</tr>
+				</table>
+
+
+				<button type="button" id="editButton">수정</button>
+				<button type="submit">저장</button>
 			</form>
 		</div>
 	</div>
+
 </body>
 </html>

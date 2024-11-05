@@ -73,8 +73,26 @@ public class ProjectDAO {
         }
         return deptId;
     }
-    
-    //프로젝트 생성
+    public String getEmpIdByEname(String ename) {
+        String empId = null;
+        String sql = "SELECT emp_id FROM emp WHERE ename = ?";
+
+        try (Connection conn = ds.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, ename); // ename을 사용하여 emp_id를 조회
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    empId = rs.getString("emp_id"); // emp_id 반환
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return empId; // emp_id가 없으면 null 반환
+    }
+
+    // 프로젝트 생성
     public int createProject(String managerId, String projectName, String startDate, String endDate, String description) {
         String projectSql = "INSERT INTO project (project_id, manager_id, project_name, project_start_date, project_end_date, project_content) "
                           + "VALUES (project_seq.NEXTVAL, ?, ?, ?, ?, ?)";
@@ -105,7 +123,7 @@ public class ProjectDAO {
         return -1; // 실패 시 -1 반환
     }
 
-    //책임자(project_
+    // 책임자 추가
     public void addProjectMember(int projectId, String memberId, String role) {
         String memberSql = "INSERT INTO project_member (project_member_id, member_id, project_id, member_role, member_date) "
                          + "VALUES (project_member_seq.NEXTVAL, ?, ?, ?, SYSDATE)";
@@ -122,7 +140,7 @@ public class ProjectDAO {
         }
     }
 
-    //여러명일때
+    // 여러명일 때 추가
     public void addProjectMembers(int projectId, String members, String role) {
         String memberSql = "INSERT INTO project_member (project_member_id, member_id, project_id, member_role, member_date) "
                          + "VALUES (project_member_seq.NEXTVAL, ?, ?, ?, SYSDATE)";
@@ -140,6 +158,39 @@ public class ProjectDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    // 작업 생성
+    public void createTask(int projectId, String empId, String taskSubject, String taskContent) {
+        String taskSql = "INSERT INTO task (task_id, emp_id, project_id, task_subject, task_content, task_date) "
+                       + "VALUES (SEQ_task.NEXTVAL, ?, ?, ?, ?, SYSDATE)";
+
+        try (Connection conn = ds.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(taskSql)) {
+            pstmt.setString(1, empId);
+            pstmt.setInt(2, projectId);
+            pstmt.setString(3, taskSubject); // Task 제목
+            pstmt.setString(4, taskContent); // Task 내용
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    //프로젝트 이름 가져오기(left_bar)
+    public String getProjectName(int projectId) {
+    	String sql = "select project_name from project where project_id = ?";
+        try (Connection conn = ds.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, projectId); // projectId를 SQL 문의 ?에 설정
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("project_name");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // 해당 ID의 프로젝트가 없을 경우
     }
     
     //성공하면 메인(나중에 다시 확인 필요.중복확인)
@@ -186,21 +237,37 @@ public class ProjectDAO {
     }
     
     public boolean updateProjectStatus(int projectId, boolean finished, boolean canceled) {
-        String sql = "UPDATE project SET project_finished = ?, project_canceled = ?, project_end_date = ? WHERE project_id = ?";
+        String getEndDateSql = "SELECT project_end_date FROM project WHERE project_id = ?";
+        String updateSql = "UPDATE project SET project_finished = ?, project_canceled = ?, project_end_date = ? WHERE project_id = ?";
+
         try (Connection conn = ds.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-             
-            pstmt.setInt(1, finished ? 1 : 0);
-            pstmt.setInt(2, canceled ? 1 : 0);
-            // 취소된 경우 현재 날짜를 설정, 그렇지 않으면 NULL로 설정
-            if (canceled) {
-                pstmt.setDate(3, new java.sql.Date(System.currentTimeMillis()));
-            } else {
-                pstmt.setNull(3, java.sql.Types.DATE);
+             PreparedStatement getEndDatePstmt = conn.prepareStatement(getEndDateSql);
+             PreparedStatement updatePstmt = conn.prepareStatement(updateSql)) {
+
+            // 기존 종료 날짜 조회
+            getEndDatePstmt.setInt(1, projectId);
+            ResultSet rs = getEndDatePstmt.executeQuery();
+
+            java.sql.Date existingEndDate = null;
+            if (rs.next()) {
+                existingEndDate = rs.getDate("project_end_date"); // 기존 종료 날짜 가져오기
             }
-            pstmt.setInt(4, projectId);
+
+            // 업데이트 쿼리 설정
+            updatePstmt.setInt(1, finished ? 1 : 0);
+            updatePstmt.setInt(2, canceled ? 1 : 0);
+
+            if (canceled) {
+                // 취소된 경우 현재 날짜 설정
+                updatePstmt.setDate(3, new java.sql.Date(System.currentTimeMillis()));
+            } else {
+                // 취소가 아닐 경우 기존 종료 날짜로 설정
+                updatePstmt.setDate(3, existingEndDate);
+            }
             
-            int updatedRows = pstmt.executeUpdate();
+            updatePstmt.setInt(4, projectId);
+
+            int updatedRows = updatePstmt.executeUpdate();
             return updatedRows > 0; // 성공 여부 반환
         } catch (SQLException e) {
             e.printStackTrace();
@@ -208,15 +275,34 @@ public class ProjectDAO {
         }
     }
 
+
     //완료 프로젝트(ProjectCompleteAction. project_main에서 관리자가 완료한 프로젝트. project_complete.jsp에서 뜨는)
     public List<ProjectComplete> getCompletedProjects() {
         List<ProjectComplete> completedProjects = new ArrayList<>();
         String sql = """
-                SELECT p.project_id, p.project_name, m.member_id, e.ename, m.member_role, p.project_start_date, p.project_end_date, p.project_file_path FROM project p 
-                JOIN project_member m ON p.project_id = m.project_id
-                JOIN emp e ON m.member_id = e.ename
-                WHERE p.project_finished = 1
-                order by p.project_id desc
+                SELECT 
+                    p.project_id,
+                    p.project_name,
+                    (SELECT e.ename 
+                     FROM project_member m 
+                     JOIN emp e ON m.member_id = e.emp_id 
+                     WHERE m.project_id = p.project_id 
+                       AND m.member_role = 'MANAGER') AS manager_name,
+                    m.member_role,
+                    e.ename AS participant_name,
+                    p.project_start_date,
+                    p.project_end_date,
+                    p.project_file_path
+                FROM 
+                    project p 
+                JOIN 
+                    project_member m ON p.project_id = m.project_id
+                JOIN 
+                    emp e ON m.member_id = e.emp_id
+                WHERE 
+                    p.project_finished = 1
+                ORDER BY 
+                    p.project_id
                 """;
 
         try (Connection conn = ds.getConnection();
@@ -242,11 +328,13 @@ public class ProjectDAO {
 
                 // 책임자 또는 참여자 추가
                 String memberRole = rs.getString("member_role");
-                String empName = rs.getString("ename");
+                String empName = rs.getString("participant_name");
 
-                if ("MANAGER".equalsIgnoreCase(memberRole)) {
-                    project.setEmpName(empName); // 책임자 설정
-                } else {
+                if (rs.getString("manager_name") != null) {
+                    project.setEmpName(rs.getString("manager_name")); // 책임자 설정
+                }
+                
+                if (!"MANAGER".equalsIgnoreCase(memberRole)) {
                     project.getParticipantNames().add(empName); // 참여자 추가
                 }
             }
@@ -259,15 +347,33 @@ public class ProjectDAO {
         return completedProjects;
     }
 
+
     //취소 프로젝트(ProjectCancelAction. project_main에서 관리자가 취소한 프로젝트. project_cancel.jsp에서 뜨는) 
     public List<ProjectComplete> getCancelProjects() {
-    	List<ProjectComplete> cancelProjects = new ArrayList<>();
+        List<ProjectComplete> cancelProjects = new ArrayList<>();
         String sql = """
-                SELECT p.project_id, p.project_name, m.member_id, e.ename, m.member_role, p.project_start_date, p.project_end_date, p.project_file_path FROM project p 
-                JOIN project_member m ON p.project_id = m.project_id
-                JOIN emp e ON m.member_id = e.ename
-                WHERE p.project_canceled = 1
-                order by p.project_id desc
+                SELECT 
+                    p.project_id, 
+                    p.project_name, 
+                    (SELECT e.ename 
+                     FROM project_member m 
+                     JOIN emp e ON m.member_id = e.emp_id 
+                     WHERE m.project_id = p.project_id 
+                       AND m.member_role = 'MANAGER') AS manager_name,
+                    e.ename AS participant_name,
+                    p.project_start_date,
+                    p.project_end_date,
+                    p.project_file_path
+                FROM 
+                    project p 
+                JOIN 
+                    project_member m ON p.project_id = m.project_id
+                JOIN 
+                    emp e ON m.member_id = e.emp_id
+                WHERE 
+                    p.project_canceled = 1
+                ORDER BY 
+                    p.project_id
                 """;
 
         try (Connection conn = ds.getConnection();
@@ -292,14 +398,11 @@ public class ProjectDAO {
                 }
 
                 // 책임자 또는 참여자 추가
-                String memberRole = rs.getString("member_role");
-                String empName = rs.getString("ename");
-
-                if ("MANAGER".equalsIgnoreCase(memberRole)) {
-                    project.setEmpName(empName); // 책임자 설정
-                } else {
-                    project.getParticipantNames().add(empName); // 참여자 추가
-                }
+                String empName = rs.getString("participant_name");
+                if (rs.getString("manager_name") != null) {
+                    project.setEmpName(rs.getString("manager_name")); // 책임자 설정
+                } 
+                project.getParticipantNames().add(empName); // 참여자 추가
             }
 
             cancelProjects.addAll(projectMap.values());
@@ -308,15 +411,16 @@ public class ProjectDAO {
         }
 
         return cancelProjects;
-	}
+    }
+
     
     //프로젝트 ID에 따른 상세 정보를 가져오는 메서드 추가(project
-    public List<ProjectDetail> getProjectDetails(int projectId) {
+    public List<ProjectDetail> getProjectDetail1(int projectId) {
         List<ProjectDetail> project = new ArrayList<>(); 
         String sql = """
                 select e.ename, m.member_designated, m.member_progress_rate
                 from project p join project_member m on p.project_id = m.project_id
-                join emp e on m.member_id = e.ename
+                join emp e on m.member_id = e.emp_id
                 where p.project_id = ?
                 """;
 
@@ -337,6 +441,36 @@ public class ProjectDAO {
         }
         return project; // 프로젝트 정보 반환
     }
+
+	public List<ProjectDetail> getProjectDetail2(int projectId) {
+		List<ProjectDetail> project = new ArrayList<>(); 
+        String sql = """
+                SELECT e.ename, t.task_subject, NVL(t.task_date, t.task_update_date) AS task_date
+				FROM project p
+				JOIN project_member m ON p.project_id = m.project_id
+				JOIN emp e ON m.member_id = e.emp_id
+				JOIN task t ON p.project_id = t.project_id
+				WHERE p.project_id = ?
+                """;
+
+        try (Connection conn = ds.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, projectId); // 프로젝트 ID 설정
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) { 
+                ProjectDetail projectDetail = new ProjectDetail();
+                projectDetail.setTaskWriter(rs.getString(1));
+                projectDetail.setTaskTitle(rs.getString(2));
+                projectDetail.setTaskUpdateDate(rs.getString(3));
+                project.add(projectDetail);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return project; // 프로젝트 정보 반환
+	}
+
 
 	
 

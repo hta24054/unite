@@ -13,12 +13,13 @@ public class EmpViewAction implements Action {
 	@Override
 	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-
-		
-		  String empId = req.getParameter("id"); if (empId == null || empId.isEmpty())
-		  { throw new ServletException("Employee ID is missing."); }
-		 
-		//String empId = "241001"; // 추후 삭제 또는 변경
+/*
+		String empId = req.getParameter("id");
+		if (empId == null || empId.isEmpty()) {
+			throw new ServletException("Employee ID is missing.");
+		}
+*/
+		 String empId = "241408"; // 추후 삭제 또는 변경
 
 		EmpInfoDao dao = new EmpInfoDao();
 		EmpInfo empinfo = dao.getEmpInfoById(empId);
@@ -26,10 +27,8 @@ public class EmpViewAction implements Action {
 		if (empinfo == null) {
 			throw new ServletException("No employee found with ID: " + empId);
 		}
-		
 
 		req.setAttribute("empinfo", empinfo);
-		
 
 		ActionForward forward = new ActionForward();
 		forward.setRedirect(false);

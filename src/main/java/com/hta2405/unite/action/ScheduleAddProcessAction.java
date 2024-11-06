@@ -19,7 +19,9 @@ public class ScheduleAddProcessAction implements Action {
 		String empId = request.getParameter("emp_id");
 		String scheduleName = request.getParameter("schedule_name");
 		String startAt = request.getParameter("startAt");
+		System.out.println("startAt=" + startAt);
 		String endAt = request.getParameter("endAt");
+		System.out.println("endAt=" + endAt);
 		String description = request.getParameter("description");
 		String bgColor = request.getParameter("bgColor");
 		
@@ -29,13 +31,10 @@ public class ScheduleAddProcessAction implements Action {
 		s.setScheduleName(scheduleName);
 		s.setScheduleContent(description);
 		
-//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-//		LocalDateTime startDateTime = LocalDateTime.parse(startAt, formatter);
-//		LocalDateTime endDateTime = LocalDateTime.parse(endAt, formatter);
-		
 		LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(startAt);
+		System.out.println(startDateTime);
 		LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(endAt);
-		
+		System.out.println(endDateTime);
 		s.setScheduleStart(startDateTime);
 		s.setScheduleEnd(endDateTime);
 		s.setScheduleColor(bgColor);

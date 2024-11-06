@@ -92,15 +92,14 @@
 		            type: 'post',
 		            dataType: 'json',
 		            data: {
-						start: moment(info.start).format('YYYY-MM-dd HH:mm:ss'), 
-            			end: moment(info.end).format('YYYY-MM-dd HH:mm:ss') 
+						start: moment(info.start).format('yyyy-MM-dd HH:mm:ss'), 
+            			end: moment(info.end).format('yyyy-MM-dd HH:mm:ss') 
 					},
 		            success: function(events) {
 		                callback(events);
 		                
 		            }
 		         });
-		        
 		    },
 		   */
 		   /*
@@ -207,7 +206,7 @@
 			$scheduleName.val("");
 			$start.val("");
 			$end.val("");
-			//$allDay.prop("checked", false);
+			$allDay.prop("checked", false);
 			$bgColor.val("");
 			$description.val("");
 		});
@@ -215,9 +214,5 @@
 		$bgColor.on("change", function(){
 			$(this).css("backgound-color", $(this).val());
 		});
-		
-	
-		
-		
 	});
 })();

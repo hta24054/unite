@@ -77,12 +77,11 @@ public class AttendUtil {
                 date.setAttendOut(attend.getAttendOut());
                 date.setAttendType(attend.getAttendType());
 
+                System.out.println(date);
                 // 근무 시간 계산 및 설정
                 if (attend.getAttendIn() != null && attend.getAttendOut() != null) {
                     Duration workDuration = Duration.between(attend.getAttendIn(), attend.getAttendOut());
                     date.setWorkTime(workDuration);
-                } else {
-                    date.setWorkTime(Duration.ZERO);
                 }
                 attendIdx++;
             }

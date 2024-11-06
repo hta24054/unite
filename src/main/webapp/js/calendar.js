@@ -48,7 +48,7 @@
 	        events: function(info, successCallback, failureCallback) {
 		        // 서버에서 일정 데이터를 가져온다.
 		        $.ajax({
-		            url: "${pageContext.request.contextPath}/schedule/ScheduleAddProcessAction",
+		            url: "${pageContext.request.contextPath}/schedule/ScheduleListAction",
 		            type: 'post',
 		            dataType: 'json',
 		            success: function(data) {

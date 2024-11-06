@@ -1,12 +1,9 @@
 package com.hta2405.unite.action;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.hta2405.unite.dao.ScheduleDAO;
-import com.hta2405.unite.dto.Schedule;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,22 +11,24 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class ScheduleListAction implements Action {
 
-	@Override
-	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		
-		ScheduleDAO sdao = new ScheduleDAO();
-		List<Schedule> scheduleList = new ArrayList<Schedule>();
-		
-		sdao.getListSchedule();
-		
-		// 일정 목록을 JSON으로 변환
-        Gson gson = new Gson();
-        String jsonSchedules = gson.toJson(scheduleList);
+    @Override
+    public ActionForward execute(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         
-        resp.setContentType("application/json;charset=utf-8");
-        resp.getWriter().write(jsonSchedules);
-        return null;
-	}
+        String empId = request.getParameter("emp_id"); 
+        
+        ScheduleDAO sdao = new ScheduleDAO();
+        JsonArray array = sdao.getListSchedule(empId);
 
+        response.setContentType("application/json;charset=utf-8");
+
+        if (array != null) {
+            response.getWriter().print(array);
+        } else {
+            response.getWriter().print("[]"); 
+        }
+        
+        System.out.println(array); 
+		return null;
+    }
 }

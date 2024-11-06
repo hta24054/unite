@@ -12,6 +12,7 @@ import com.hta2405.unite.action.EmpLoginProcessAction;
 import com.hta2405.unite.action.EmpLogoutAction;
 import com.hta2405.unite.action.EmpPwInquiryAction;
 import com.hta2405.unite.action.EmpPwInquiryProcessAction;
+import com.hta2405.unite.action.EmpSendAuthenCodeAction;
 import com.hta2405.unite.action.EmpHomeAction;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -38,6 +39,7 @@ public class EmpFrontController extends HttpServlet {
         actionMap.put("/pwInquiryProcess", new EmpPwInquiryProcessAction());
         actionMap.put("/emailVerification", new EmpEmailVerificationAction());
         actionMap.put("/emailVerificationProcess", new EmpEmailVerificationProcessAction());
+        actionMap.put("/sendAuthenCode", new EmpSendAuthenCodeAction());
         actionMap.put("/changePw", new EmpChangePwAction());
         actionMap.put("/home", new EmpHomeAction());
     }

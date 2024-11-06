@@ -154,7 +154,7 @@ $(function(){
 		
 		$.ajax({
 			type:"post",
-			url:"../emp/emailVerificationProcess",
+			url:"../emp/sendAuthenCode",
 			data:{
 				"name":$("#name").val(),
 				"email":$("#email").val()

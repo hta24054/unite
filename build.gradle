@@ -34,9 +34,11 @@ dependencies {
   compileOnly group: 'jakarta.servlet.jsp', name: 'jakarta.servlet.jsp-api', version: '4.0.0' //servlet-api
   implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:2.0.0'
 
+
   implementation 'com.google.code.gson:gson:2.11.0'
-  implementation 'javax.mail:javax.mail-api:1.4.7' //mail
+  implementation 'javax.mail:mail:1.4.7' //mail
   implementation 'com.oracle.database.jdbc:ojdbc10:19.24.0.0'//jdbc
+  implementation 'javax.activation:activation:1.1' //activation
 
   testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")

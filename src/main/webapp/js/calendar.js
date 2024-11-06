@@ -46,6 +46,7 @@
                 $scheduleModal.modal('show');
             },
 	        events: function(info, successCallback, failureCallback) {
+				
 		        // 서버에서 일정 데이터를 가져온다.
 		        $.ajax({
 		            url: "${pageContext.request.contextPath}/schedule/ScheduleListAction",
@@ -53,6 +54,7 @@
 		            dataType: 'json',
 		            success: function(data) {
 			            successCallback(data);
+			            console.log(data)
 			        },
 		        });
 		    },

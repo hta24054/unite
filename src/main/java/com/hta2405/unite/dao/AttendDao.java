@@ -9,6 +9,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class AttendDao {
     private DataSource ds;
@@ -64,6 +65,29 @@ public class AttendDao {
             System.out.println("근태기록 찾기 오류");
         }
         return null;
+    }
+
+
+    public List<Attend> getYearlyVacationByEmpId(String empId, int year) {
+        List<Attend> list = new ArrayList<>();
+        String sql = """
+                SELECT * FROM ATTEND
+                WHERE EMP_ID = ? AND ATTEND_TYPE ='%휴가%'
+                AND EXTRACT(YEAR FROM ATTEND_DATE) = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, empId);
+            ps.setInt(2, year);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                list.add(makeAttend(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("휴가 목록 가져오기 오류");
+        }
+        return list;
     }
 
     public int attendIn(String empId, String attendType) {

@@ -153,7 +153,7 @@ public class EmpDao {
             ps.setInt(23, emp.isMarried() ? 1 : 0);
             ps.setInt(24, emp.isChild() ? 1 : 0);
             ps.setString(25, emp.getEtype());
-            ps.setInt(26, emp.getVacation_count());
+            ps.setInt(26, emp.getVacationCount());
             ps.setInt(27, emp.isHired() ? 1 : 0);
             ps.setString(28, emp.getEmpId());
             return ps.executeUpdate();
@@ -185,7 +185,8 @@ public class EmpDao {
                 rs.getDate("birthday").toLocalDate(),
                 rs.getString("birthday_type"),
                 rs.getString("school"),
-                rs.getString("major"),
+                rs.getString("major") == null ?
+                        null : rs.getString("major"),
                 rs.getString("bank"),
                 rs.getString("account"),
                 rs.getString("address"),

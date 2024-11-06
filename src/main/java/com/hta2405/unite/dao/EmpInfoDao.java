@@ -83,7 +83,7 @@ public class EmpInfoDao {
 				empInfo.setImgType(rs.getString("img_type"));
 
 				Dept dept = new Dept();
-				dept.setDeptName(rs.getString("dept_name"));
+				dept.setDname(rs.getString("dept_name"));
 				empInfo.setDept(dept);
 
 				Job job = new Job();

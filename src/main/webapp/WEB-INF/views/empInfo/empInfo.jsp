@@ -55,7 +55,8 @@ caption {
 } /* 캡션과 테이블 간격 설정 */
 </style>
 <script>
-	$(document).ready(
+	$(document)
+			.ready(
 					function() {
 						$("#editButton")
 								.click(
@@ -79,7 +80,7 @@ caption {
 						<h2>나의 인사정보</h2>
 					</caption>
 					<tr>
-						<td rowspan="4" width="10%"></td>
+						<td rowspan="4" width="200"><img src="..${empinfo.imgPath}" alt="${empinfo.ename}의 사진" width="200" height="200"></td>
 						<th>이름</th>
 						<th>성별</th>
 						<th>이메일</th>
@@ -103,7 +104,7 @@ caption {
 						<th>휴대폰번호</th>
 					</tr>
 					<tr>
-						<td>${empinfo.deptId}</td>
+						<td>${empinfo.deptName}</td>
 						<td>${empinfo.empId}</td>
 						<td>${empinfo.jobName}</td>
 						<td><input type="text" name="mobile" class="editable"
@@ -151,11 +152,7 @@ caption {
 						<td><input type="text" name="address" class="editable"
 							value="${empinfo.address}" readonly></td>
 						<th rowspan="2">자격증</th>
-						<td rowspan="2"><select name="cert_id">
-								<c:forEach var="cert" items="${certList}">
-									<option value="${cert.cert_id}">${cert.cert_name}</option>
-								</c:forEach>
-						</select></td>
+						<td rowspan="2">${empinfo.certName}</td>
 					</tr>
 					<tr>
 						<th>최종학력</th>
@@ -178,7 +175,6 @@ caption {
 						<td>${empinfo.langName}</td>
 					</tr>
 				</table>
-
 
 				<button type="button" id="editButton">수정</button>
 				<button type="submit">저장</button>

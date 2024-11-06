@@ -6,7 +6,7 @@
  */
 $(function(){
 	$("button").click(function(){
-		location.href="write";
+		location.href="../b/write";
 	})
 
 	$("#viewcount").change(function(){

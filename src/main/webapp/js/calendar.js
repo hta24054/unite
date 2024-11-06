@@ -14,8 +14,8 @@
 		const calendar = new FullCalendar.Calendar(calendarEl, {
 		    //height: '700px', // calendar 높이 설정
 	        expandRows: true, // 화면에 맞게 높이 재설정
-	        slotMinTime: '00:00', // Day 캘린더에서 시작 시간
-	        slotMaxTime: '24:00', // Day 캘린더에서 종료 시간
+	        slotMinTime: '08:00', // Day 캘린더에서 시작 시간
+	        slotMaxTime: '22:00', // Day 캘린더에서 종료 시간
 	        defaultAllDay: true, // 종일 이벤트
 	        //timeZone: 'UTC',
 	        timeZone: 'local',
@@ -92,8 +92,8 @@
 		            type: 'post',
 		            dataType: 'json',
 		            data: {
-						start: moment(info.startStr).format('YYYY-MM-dd HH:mm:ss'), 
-            			end: moment(info.endStr).format('YYYY-MM-dd HH:mm:ss') 
+						start: moment(info.start).format('YYYY-MM-dd HH:mm:ss'), 
+            			end: moment(info.end).format('YYYY-MM-dd HH:mm:ss') 
 					},
 		            success: function(events) {
 		                callback(events);
@@ -102,7 +102,7 @@
 		         });
 		        
 		    },
-		    */
+		   */
 		   /*
 	       events: function(start, end, timezone, callback) {
 		        // 서버에서 일정 데이터를 가져온다.
@@ -167,10 +167,10 @@
 	  	    // 입력값 객체 생성
 			const eventData = {
 			  	title: $scheduleName.val(),
-			    start: $start.val().replace("T", " "), // T를 공백으로 변경
-			    end: $end.val().replace("T", " "), // T를 공백으로 변경
-			    //start: $start.val(), 
-			    //end: $end.val(),
+			    //start: $start.val().replace("T", " "), // T를 공백으로 변경
+			    //end: $end.val().replace("T", " "), // T를 공백으로 변경
+			    start: moment($start.val(), 'YYYY-MM-DDTHH:mm').format('YYYY-MM-dd HH:mm'),
+				end: moment($end.val(), 'YYYY-MM-DDTHH:mm').format('YYYY-MM-dd HH:mm'),
 			    allDay: $allDay.is(":checked"), // 체크박스인 경우 true/false
 			    bgColor: $bgColor.val(),
 			    description: $description.val()
@@ -215,5 +215,9 @@
 		$bgColor.on("change", function(){
 			$(this).css("backgound-color", $(this).val());
 		});
+		
+	
+		
+		
 	});
 })();

@@ -56,14 +56,6 @@
 			        },
 		        });
 		    },
-		  	/*
-		   events: [
-			    {
-			      title: 'Event1',
-			      start: '2024-11-06'
-			    }
-			],
-			*/
 		    dateClick: function(info) { // 일자셀 클릭 함수
 	            console.log("dateClick info", info)
 	        },

@@ -54,9 +54,6 @@
 		            success: function(data) {
 			            successCallback(data);
 			        },
-		             error: function() {
-			            failureCallback(); // 에러 발생 시 failureCallback 호출
-			        }
 		        });
 		    },
 		  	/*

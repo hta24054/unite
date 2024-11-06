@@ -18,27 +18,27 @@ public class ScheduleAddProcessAction implements Action {
 		
 		String empId = request.getParameter("emp_id");
 		String scheduleName = request.getParameter("schedule_name");
-		String scheduleContent = request.getParameter("schedule_content");
-		String scheduleStart = request.getParameter("schedule_start");
-		String scheduleEnd = request.getParameter("schedule_end");
-		String scheduleColor = request.getParameter("schedule_color");
+		String startAt = request.getParameter("startAt");
+		String endAt = request.getParameter("endAt");
+		String description = request.getParameter("description");
+		String bgColor = request.getParameter("bgColor");
 		
 		Schedule s = new Schedule();
 		
 		s.setEmpId(empId);
 		s.setScheduleName(scheduleName);
-		s.setScheduleContent(scheduleContent);
+		s.setScheduleContent(description);
 		
 //		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-//		LocalDateTime startDateTime = LocalDateTime.parse(scheduleStart, formatter);
-//		LocalDateTime endDateTime = LocalDateTime.parse(scheduleEnd, formatter);
+//		LocalDateTime startDateTime = LocalDateTime.parse(startAt, formatter);
+//		LocalDateTime endDateTime = LocalDateTime.parse(endAt, formatter);
 		
-		LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(scheduleStart);
-		LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(scheduleEnd);
+		LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(startAt);
+		LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(endAt);
 		
 		s.setScheduleStart(startDateTime);
 		s.setScheduleEnd(endDateTime);
-		s.setScheduleColor(scheduleColor);
+		s.setScheduleColor(bgColor);
 		
 		ScheduleDAO sdao = new ScheduleDAO();
 		

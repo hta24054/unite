@@ -12,6 +12,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import com.google.gson.JsonObject;
 import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dto.Emp;
 
@@ -19,6 +20,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 
 public class EmpSendAuthenCodeAction implements Action {
 	private final String gmailid="unite240504";
@@ -28,9 +30,6 @@ public class EmpSendAuthenCodeAction implements Action {
 	@Override
 	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-
-		ActionForward forward = new ActionForward();
-		
 		/* 브라우저에서 건너온 세션 확인 
 		 * 로그인 상태에선 접근 못하게 설정 */
 		HttpSession session = req.getSession(true);
@@ -43,7 +42,6 @@ public class EmpSendAuthenCodeAction implements Action {
 			out.println("</script>");
 		}
 		
-		
 		String emailCheck = (String) req.getSession().getAttribute("email");
 		String receiverName = req.getParameter("name");
 		String receiverEmail = req.getParameter("email");
@@ -52,30 +50,30 @@ public class EmpSendAuthenCodeAction implements Action {
 		EmpDao dao = new EmpDao();
 		Emp emp = dao.getEmpByNameAndEmail(receiverName,receiverEmail);
 		
+
+		JsonObject object = new JsonObject();
+		String authenCode = "empty";
+		
 		if(emp == null || !emp.getEmail().equals(emailCheck)) {
+			System.out.println("불일치");
 			// 회원 정보가 일치하지 않은 경우
-			resp.setContentType("text/html;charset=utf-8");
-			PrintWriter out = resp.getWriter();
-			out.println("<script>");
-			out.println("alert('회원 정보가 존재하지 않습니다.');");
-			out.println("history.back(-1);");
-			out.println("</script>");
-			return null;
+			object.addProperty("message", "회원 정보가 존재하지 않습니다.");
+			
 		} else {
 			System.out.println("일치");
 			/* 메일 전송 */
-			String authenCode = sendEmail(receiverEmail);
-			
-			/* 포워딩 처리 */
-			session.setAttribute("authenCode", authenCode);
-			session.setAttribute("id", emp.getEmpId());
-
+			authenCode = sendEmail(receiverEmail);
 			System.out.println(authenCode);
-			forward = new ActionForward();
-			forward.setPath("../emp/changePw");
-			forward.setRedirect(true);
-			return forward;
+			
+			//위에서 request로 담았던 것을 JsonObject에 담습니다.
+			object.addProperty("authenCode", authenCode);//{"page": 변수 page의 값} 형식으로 저장
+			object.addProperty("message", "인증번호를 발송했습니다.\n인증번호가 오지 않으면 입력하신 정보를 확인해 주세요");
+			
 		}
+		resp.setContentType("application/json;charset=utf-8");
+		resp.getWriter().print(object);
+		System.out.println(object.toString());
+		return null;
 	}
 
 	//이메일 발송
@@ -147,6 +145,7 @@ public class EmpSendAuthenCodeAction implements Action {
 		return authenCode;
 	}
 	
+	//인증번호 만들기
 	private static String makeAuthenticationCode() throws Exception {
 		
 		int pwdLength = 8;

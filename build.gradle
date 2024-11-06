@@ -32,6 +32,7 @@ dependencies {
 
   compileOnly group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.1.0' //servlet
   compileOnly group: 'jakarta.servlet.jsp', name: 'jakarta.servlet.jsp-api', version: '4.0.0' //servlet-api
+  implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:2.0.0'
 
   implementation 'com.google.code.gson:gson:2.11.0'
   implementation 'javax.mail:javax.mail-api:1.4.7' //mail
@@ -41,6 +42,7 @@ dependencies {
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 
   implementation files("lib/cos2024.jar") //파일 업로드 관련 lib
+
 }
 
 test {

@@ -5,9 +5,8 @@ import java.util.HashMap;
 
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
-import com.hta2405.unite.action.ScheduleAddProcessAction;
-import com.hta2405.unite.action.ScheduleCalenderAction;
-import com.hta2405.unite.action.ScheduleListAction;
+import com.hta2405.unite.action.ProjectMainAction;
+import com.hta2405.unite.action.ProjectWriteAction;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -16,19 +15,17 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/schedule/*")
-public class ScheduleFrontController extends HttpServlet {
+@WebServlet("/b/*")
+public class ProjectBoardController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     HashMap<String, Action> actionMap = new HashMap<>();
-    
+
     //아래에 URL, Action 추가
     @Override
     public void init() throws ServletException {
-        actionMap.put("/calender", new ScheduleCalenderAction());
-        actionMap.put("/ScheduleAddProcessAction", new ScheduleAddProcessAction());
-        actionMap.put("/ScheduleListAction", new ScheduleListAction());
-    }
-    
+        actionMap.put("/write", new ProjectWriteAction()); 
+    }					
+
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("요청 주소 : " + req.getRequestURL());
 
@@ -38,12 +35,12 @@ public class ScheduleFrontController extends HttpServlet {
         String contextPath = req.getContextPath();
         System.out.println("contextPath = " + contextPath);
 
-        String command = requestURI.substring(contextPath.length() + "/schedule".length());
+        String command = requestURI.substring(contextPath.length() + "/b".length());
         System.out.println("command = " + command);
 
         //등록된 URL이 아닌경우 404에러페이지 보여줌
         if (!actionMap.containsKey(command)) {
-            RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/views/error/error.jsp");
+            RequestDispatcher dispatcher = req.getRequestDispatcher("/error/404.jsp");
             dispatcher.forward(req, resp);
             return;
         }

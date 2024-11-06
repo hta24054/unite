@@ -16,8 +16,10 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ProjectCancelAction implements Action {
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    	String userid = (String) req.getSession().getAttribute("id");
+    	
         ProjectDAO projectDAO = new ProjectDAO(); 
-        List<ProjectComplete> cancelProjects = projectDAO.getCancelProjects(); //프로젝트 취소 셋팅 
+        List<ProjectComplete> cancelProjects = projectDAO.getCancelProjects(userid); //프로젝트 취소 셋팅 
 
         req.setAttribute("cancelProjects", cancelProjects);
         

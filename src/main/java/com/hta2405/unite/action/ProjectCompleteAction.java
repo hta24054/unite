@@ -16,8 +16,10 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ProjectCompleteAction implements Action {
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ProjectDAO projectDAO = new ProjectDAO();
-        List<ProjectComplete> completedProjects = projectDAO.getCompletedProjects();
+    	String userid = (String) req.getSession().getAttribute("id");
+    	
+    	ProjectDAO projectDAO = new ProjectDAO();
+        List<ProjectComplete> completedProjects = projectDAO.getCompletedProjects(userid);
 
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8"); 

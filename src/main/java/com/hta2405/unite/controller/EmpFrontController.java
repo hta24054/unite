@@ -5,13 +5,14 @@ import java.util.HashMap;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.action.EmpChangePwAction;
-import com.hta2405.unite.action.EmpEmailVerificationProcessAction;
+import com.hta2405.unite.action.EmpChangePwProcessAction;
 import com.hta2405.unite.action.EmpEmailVerificationAction;
 import com.hta2405.unite.action.EmpLoginAction;
 import com.hta2405.unite.action.EmpLoginProcessAction;
 import com.hta2405.unite.action.EmpLogoutAction;
 import com.hta2405.unite.action.EmpPwInquiryAction;
 import com.hta2405.unite.action.EmpPwInquiryProcessAction;
+import com.hta2405.unite.action.EmpSendAuthenCodeAction;
 import com.hta2405.unite.action.EmpHomeAction;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -37,8 +38,9 @@ public class EmpFrontController extends HttpServlet {
         actionMap.put("/pwInquiry", new EmpPwInquiryAction());
         actionMap.put("/pwInquiryProcess", new EmpPwInquiryProcessAction());
         actionMap.put("/emailVerification", new EmpEmailVerificationAction());
-        actionMap.put("/emailVerificationProcess", new EmpEmailVerificationProcessAction());
+        actionMap.put("/sendAuthenCode", new EmpSendAuthenCodeAction());
         actionMap.put("/changePw", new EmpChangePwAction());
+        actionMap.put("/changePwProcess", new EmpChangePwProcessAction());
         actionMap.put("/home", new EmpHomeAction());
     }
 

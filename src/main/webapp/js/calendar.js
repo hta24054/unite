@@ -14,8 +14,8 @@
 		const calendar = new FullCalendar.Calendar(calendarEl, {
 		    //height: '700px', // calendar 높이 설정
 	        expandRows: true, // 화면에 맞게 높이 재설정
-	        slotMinTime: '00:00', // Day 캘린더에서 시작 시간
-	        slotMaxTime: '24:00', // Day 캘린더에서 종료 시간
+	        slotMinTime: '08:00', // Day 캘린더에서 시작 시간
+	        slotMaxTime: '22:00', // Day 캘린더에서 종료 시간
 	        defaultAllDay: true, // 종일 이벤트
 	        //timeZone: 'UTC',
 	        timeZone: 'local',
@@ -42,80 +42,31 @@
 	        eventRemove: function(obj){ // 이벤트가 삭제되면 발생하는 이벤트
 	         	console.log(obj);
 	        },
-	        /*
-	        select: function (arg) { // 캘린더에서 드래그로 이벤트를 생성할 수 있다.
-            	const title = prompt('일정을 입력해주세요.');
-                if (title) {
-                    calendar.addEvent({
-                        title: title,
-                        start: arg.start,
-                        end: arg.end,
-                        allDay: arg.allDay,
-                    })
-                }
-                const allEvent = calendar.getEvents(); // .getEvents() 함수로 모든 이벤트를 Array 형식으로 가져온다. 
- 
-                const events = new Array(); // Json 데이터를 받기 위한 배열 선언
-                for (var i = 0; i < allEvent.length; i++) {
-                         var obj = new Object();     // Json 을 담기 위해 Object 선언
-                         // alert(allEvent[i]._def.title); // 이벤트 명칭 알람
-                         obj.title = allEvent[i]._def.title; // 이벤트 명칭  ConsoleLog 로 확인 가능.
-                         obj.start = allEvent[i]._instance.range.start; // 시작
-                         obj.end = allEvent[i]._instance.range.end; // 끝
- 
-                         events.push(obj);
-                }
-                
-                const jsondata = JSON.stringify(events);
-                console.log(jsondata);
-                // saveData(jsondata);
- 
-                $.ajax({
-                      url: "${pageContext.request.contextPath}/schedule/ScheduleAddProcessAction",
-                      method: "POST",
-                      dataType: "json",
-                      data: JSON.stringify(events),
-                      contentType: 'application/json',
-                })
-                calendar.unselect();
-            },
-            */
 	        select: function(arg) {
                 $scheduleModal.modal('show');
             },
-	        /*
-		    events: function(info, successCallback, failureCallback) {
-				 successCallback(events);
-				
-				 $.ajax({
-		            url: '${pageContext.request.contextPath}/schedule/ScheduleAddProcessAction',
-		            type: 'post',
-		            dataType: 'json',
-		            data: {
-						start: moment(info.startStr).format('YYYY-MM-dd HH:mm:ss'), 
-            			end: moment(info.endStr).format('YYYY-MM-dd HH:mm:ss') 
-					},
-		            success: function(events) {
-		                callback(events);
-		                
-		            }
-		         });
-		        
-		    },
-		    */
-		   /*
-	       events: function(start, end, timezone, callback) {
+	        events: function(info, successCallback, failureCallback) {
 		        // 서버에서 일정 데이터를 가져온다.
 		        $.ajax({
-		            url: '${pageContext.request.contextPath}/schedule/ScheduleList',
-		            type: 'get',
+		            url: "${pageContext.request.contextPath}/schedule/ScheduleAddProcessAction",
+		            type: 'post',
 		            dataType: 'json',
-		            success: function(events) {
-		                callback(events);
-		            }
+		            success: function(data) {
+			            successCallback(data);
+			        },
+		             error: function() {
+			            failureCallback(); // 에러 발생 시 failureCallback 호출
+			        }
 		        });
 		    },
-		    */
+		  	/*
+		   events: [
+			    {
+			      title: 'Event1',
+			      start: '2024-11-06'
+			    }
+			],
+			*/
 		    dateClick: function(info) { // 일자셀 클릭 함수
 	            console.log("dateClick info", info)
 	        },
@@ -167,10 +118,8 @@
 	  	    // 입력값 객체 생성
 			const eventData = {
 			  	title: $scheduleName.val(),
-			    start: $start.val().replace("T", " "), // T를 공백으로 변경
-			    end: $end.val().replace("T", " "), // T를 공백으로 변경
-			    //start: $start.val(), 
-			    //end: $end.val(),
+			    start: moment($start.val(), 'yyyy-MM-DDTHH:mm').format('yyyy-MM-dd HH:mm'),
+				end: moment($end.val(), 'yyyy-MM-DDTHH:mm').format('yyyy-MM-dd HH:mm'),
 			    allDay: $allDay.is(":checked"), // 체크박스인 경우 true/false
 			    bgColor: $bgColor.val(),
 			    description: $description.val()
@@ -207,7 +156,7 @@
 			$scheduleName.val("");
 			$start.val("");
 			$end.val("");
-			//$allDay.prop("checked", false);
+			$allDay.prop("checked", false);
 			$bgColor.val("");
 			$description.val("");
 		});

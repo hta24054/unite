@@ -15,6 +15,7 @@ import com.hta2405.unite.action.ProjectEmployAction;
 import com.hta2405.unite.action.ProjectGetOngoingAction;
 import com.hta2405.unite.action.ProjectMainAction;
 import com.hta2405.unite.action.ProjectProgressAction;
+import com.hta2405.unite.action.ProjectUpdateRateAction;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -38,11 +39,14 @@ public class ProjectFrontController extends HttpServlet {
         actionMap.put("/detail", new ProjectDetailAction());
         actionMap.put("/progress", new ProjectProgressAction());
         actionMap.put("/orgchart", new ProjectChartAction());
+       // actionMap.put("/write", new ProjectWriteAction());
+       // actionMap.put("/add", new ProjectAddAction());
         
         actionMap.put("/employ", new ProjectEmployAction());
         actionMap.put("/doCreate", new ProjectDoCreateAction());
         actionMap.put("/getOngoingProjects", new ProjectGetOngoingAction());
-    }
+        actionMap.put("/updateprogressrate", new ProjectUpdateRateAction());
+    }					
 
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("요청 주소 : " + req.getRequestURL());

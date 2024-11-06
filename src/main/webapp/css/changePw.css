@@ -42,7 +42,7 @@ h2 {
 
 .id {
     font-size: 18px;
-	margin: 10px 0px 10px;
+	margin-top: 10px;
 	display: block;
 	text-align: left;
 }
@@ -58,7 +58,7 @@ form input[type="password"] {
 
 .submit-btn {
     padding: 6px 12px;
-    margin-top: 15px;
+    margin-top: auto;
 	border: 1px #aaaaaa solid;
     background-color: white;
     color: #666666;
@@ -89,7 +89,9 @@ a:hover,.verify-btn:hover{
 span{
 	display: flex;
     align-items: flex-end;
-    justify-content: center;
+    justify-content: flex-start;
     gap:2px;
     color: #34495e;
+    font-size: 13px;
+    margin-bottom: 10px;
 }

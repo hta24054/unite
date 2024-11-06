@@ -28,7 +28,7 @@ $(function() {
 	let authenCode = "";
 	
 	$(".verify-btn").on('click', function() {
-		//유효성 검사
+		//유효성 검사(매개변수로 submit하는지 boolean값으로 넣음)
 		if (!validation(false)) {
 			return false;
 		}
@@ -75,7 +75,7 @@ $(function() {
 
 	$("form[name='changePw']").submit(function(){
 		
-		//유효성 검사
+		//유효성 검사(매개변수로 submit하는지 boolean값으로 넣음)
 		if (!validation(true)) {
 			return false;
 		}

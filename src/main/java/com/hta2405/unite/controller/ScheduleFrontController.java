@@ -7,6 +7,7 @@ import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.action.ScheduleAddProcessAction;
 import com.hta2405.unite.action.ScheduleCalenderAction;
+import com.hta2405.unite.action.ScheduleListAction;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -25,7 +26,7 @@ public class ScheduleFrontController extends HttpServlet {
     public void init() throws ServletException {
         actionMap.put("/calender", new ScheduleCalenderAction());
         actionMap.put("/ScheduleAddProcessAction", new ScheduleAddProcessAction());
-        
+        actionMap.put("/ScheduleListAction", new ScheduleListAction());
     }
     
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

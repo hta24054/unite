@@ -2,9 +2,11 @@ package com.hta2405.unite.util;
 
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.AttendDao;
+import com.hta2405.unite.dao.EmpInfoDao;
 import com.hta2405.unite.dao.HolidayDao;
 import com.hta2405.unite.dto.Attend;
 import com.hta2405.unite.dto.Emp;
+import com.hta2405.unite.dto.EmpInfo;
 import com.hta2405.unite.dto.Holiday;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -62,6 +64,7 @@ public class AttendUtil {
         req.setAttribute("absent", absent); //결근일
         return new ActionForward(false, "/WEB-INF/views/attend/attendDetail.jsp");
     }
+
     private void updateEmpAttend(LocalDate startDate, LocalDate endDate, Emp emp, List<Attend> allDate) {
         ArrayList<Attend> attendList = new AttendDao().getAttendByEmpId(emp, startDate, endDate);
         System.out.println(attendList);
@@ -114,5 +117,11 @@ public class AttendUtil {
                 dateIdx++;
             }
         }
+    }
+
+    public ActionForward getVacationDetail(HttpServletRequest req, Emp targetEmp) {
+        EmpInfo empInfo = new EmpInfoDao().getEmpInfoById(targetEmp.getEmpId());
+//        empInfo.get
+        return new ActionForward(false, "/WEB-INF/views/attend/attendDetail.jsp");
     }
 }

@@ -76,8 +76,8 @@
 	// 진행 중인 프로젝트 데이터 로드 함수
 	function loadOngoingProjects() {
 	    $.ajax({
-	        url: "${pageContext.request.contextPath}/project/getOngoingProjects",
-	        type: "GET",
+	    	url: "${pageContext.request.contextPath}/project/getOngoingProjects",
+			type: "GET",
 	        success: function(data) {
 	            // 테이블에 데이터 추가
 	            var tbody = $(".table tbody");

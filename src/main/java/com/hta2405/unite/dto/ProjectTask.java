@@ -1,7 +1,5 @@
 package com.hta2405.unite.dto;
 
-import java.util.Date;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,11 +11,9 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class ProjectInfo {
+public class ProjectTask {
 	private int projectId;
-    private String projectName;
-    private Date endDate;
-    private int memberCount;
-    private Double progressRate;
-    private Boolean isManager;
+    private String memberId;
+    private String subject;
+    private String content;
 }

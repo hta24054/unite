@@ -2,6 +2,7 @@ package com.hta2405.unite.dto;
 
 import lombok.*;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,7 +16,7 @@ public class EmpInfo {
 	private String gender; // 성별 ("남", "여")
 	private String email; // 이메일 주소
 	private String tel; // 내선 번호
-	private String deptId; // 부서id
+	private String deptName; // 부서id
 	private String jobName; // 직위id
 	private String mobile; // 휴대폰 번호
 	private String company; // 회사명
@@ -34,4 +35,13 @@ public class EmpInfo {
 	private String major; // 전공
 	private String langName;// 외국어 id
 	private Boolean child;
+	private String imgPath;
+	private String imgOriginal;
+	private String imgUuid;
+	private String imgType;
+
+	private Dept dept;
+	private Job job;
+	private List<Cert> certs;
+	private List<Lang> langs;
 }

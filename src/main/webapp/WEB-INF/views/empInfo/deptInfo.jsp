@@ -3,11 +3,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <html>
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>empInfo</title>
+<title>부서 인사정보</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css"
@@ -21,8 +20,6 @@
 	src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <jsp:include page="../common/header.jsp" />
 <jsp:include page="empInfo_leftbar.jsp" />
-<meta charset="UTF-8">
-<title>인사 정보</title>
 <style>
 .table {
 	width: 20%;
@@ -59,8 +56,22 @@ th {
 	background-color: #f2f2f2;
 	font-weight: bold;
 }
+
+tr.clickable-row {
+	cursor: pointer;
+}
 </style>
 
+<script>
+$(document).ready(function() {
+    $(".clickable-row").click(function() {
+        var empId = $(this).data("id");
+        console.log("Clicked empId: " + empId); // 디버그 로그 추가
+        window.location.href = "${pageContext.request.contextPath}/empInfo/view?id=" + empId;
+    });
+});
+
+</script>
 
 </head>
 <body>
@@ -70,7 +81,7 @@ th {
 				<h2>부서 인사정보</h2>
 				<tr>
 					<th width="50%">해당부서</th>
-					<td>${empinfo.deptId}</td>
+					<td>${deptName}</td>
 				</tr>
 			</table>
 			<table class="table2">
@@ -81,15 +92,14 @@ th {
 					<th>이메일</th>
 					<th>내선 번호</th>
 				</tr>
-
 				<tbody>
-					<c:forEach var="empinfo" items="${empinfoList}">
-						<tr>
-							<th>${empinfo.deptId}</th>
-							<th>${empinfo.ename}</th>
-							<th>${empinfo.jobName}</th>
-							<th>${empinfo.email}</th>
-							<th>${empinfo.tel}</th>
+					<c:forEach var="empinfo" items="${empList}">
+						<tr class="clickable-row" data-id="${empinfo.empId}">
+							<td>${empinfo.deptName}</td>
+							<td>${empinfo.ename}</td>
+							<td>${empinfo.jobName}</td>
+							<td>${empinfo.email}</td>
+							<td>${empinfo.tel}</td>
 						</tr>
 					</c:forEach>
 				</tbody>
@@ -98,3 +108,4 @@ th {
 	</div>
 </body>
 </html>
+

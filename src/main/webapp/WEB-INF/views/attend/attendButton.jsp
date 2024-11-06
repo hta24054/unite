@@ -29,7 +29,7 @@
 <div id="box">
     <h4>현재 시각</h4>
     <p><span id="currentDay"></span></p>
-    <h3 id="horizon"><span id="currentTime"></span></h3>
+    <h3 id="horizon"><span id="currentTime">&nbsp;</span></h3>
     <p>출근시각: <span id="startTime">미등록</span></p>
     <p>퇴근시각: <span id="endTime">미등록</span></p>
     <p>근무구분:

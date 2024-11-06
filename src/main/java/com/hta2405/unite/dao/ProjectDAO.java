@@ -161,16 +161,14 @@ public class ProjectDAO {
     }
 
     // 작업 생성
-    public void createTask(int projectId, String empId, String taskSubject, String taskContent) {
-        String taskSql = "INSERT INTO task (task_id, emp_id, project_id, task_subject, task_content, task_date) "
-                       + "VALUES (SEQ_task.NEXTVAL, ?, ?, ?, ?, SYSDATE)";
+    public void createTask(int projectId, String empId) {
+        String taskSql = "INSERT INTO task (task_id, emp_id, project_id) "
+                       + "VALUES (SEQ_task.NEXTVAL, ?, ?)";
 
         try (Connection conn = ds.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(taskSql)) {
             pstmt.setString(1, empId);
             pstmt.setInt(2, projectId);
-            pstmt.setString(3, taskSubject); // Task 제목
-            pstmt.setString(4, taskContent); // Task 내용
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -194,46 +192,62 @@ public class ProjectDAO {
     }
     
     //성공하면 메인(나중에 다시 확인 필요.중복확인)
-    public List<ProjectInfo> getOngoingProjects() {
-        List<ProjectInfo> projectList = new ArrayList<>();
+    public List<ProjectInfo> getOngoingProjects(String loginEmp) {
+    	List<ProjectInfo> projectList = new ArrayList<>();
         String sql = """
                 SELECT 
                     p.project_id, 
                     p.project_name, 
-                    p.project_end_date, 
-                    COUNT(pm.member_id) AS member_count, 
-                    AVG(pm.member_progress_rate) AS average_progress_rate  -- 평균 참여율을 계산
+                    p.project_end_date,
+                    (SELECT COUNT(pm_inner.member_id)
+                     FROM project_member pm_inner
+                     WHERE pm_inner.project_id = p.project_id) AS member_count,
+                    AVG(pm.member_progress_rate) AS average_progress_rate,
+                    (SELECT m.member_id
+                     FROM project_member m 
+                     WHERE m.project_id = p.project_id 
+                     AND m.member_role = 'MANAGER') AS manager_id
                 FROM 
                     project p
-                LEFT JOIN 
+                JOIN 
                     project_member pm ON p.project_id = pm.project_id
                 WHERE 
                     p.project_finished = 0 
                     AND p.project_canceled = 0
+                    AND pm.member_id = ?
                 GROUP BY 
                     p.project_id, 
                     p.project_name, 
                     p.project_end_date
-                order by p.project_id desc
+                ORDER BY 
+                    p.project_id DESC
                 """;
 
         try (Connection conn = ds.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, loginEmp);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    ProjectInfo project = new ProjectInfo();
+                    project.setProjectId(rs.getInt("project_id"));
+                    project.setProjectName(rs.getString("project_name"));
+                    project.setEndDate(rs.getDate("project_end_date"));
+                    project.setMemberCount(rs.getInt("member_count")); 
+                    project.setProgressRate(rs.getDouble("average_progress_rate")); 
 
-            while (rs.next()) {
-                ProjectInfo project = new ProjectInfo();
-                project.setProjectId(rs.getInt("project_id"));
-                project.setProjectName(rs.getString("project_name"));
-                project.setEndDate(rs.getDate("project_end_date"));
-                project.setMemberCount(rs.getInt("member_count"));
-                project.setProgressRate(rs.getDouble("average_progress_rate")); // 평균 참여율로 수정
-                projectList.add(project);
+                    // manager_id가 loginEmp와 같은지 비교하여 isManager 설정
+                    String managerId = rs.getString("manager_id");
+                    project.setIsManager(managerId != null && managerId.equals(loginEmp));
+
+                    projectList.add(project);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return projectList;
+
     }
     
     public boolean updateProjectStatus(int projectId, boolean finished, boolean canceled) {
@@ -277,8 +291,8 @@ public class ProjectDAO {
 
 
     //완료 프로젝트(ProjectCompleteAction. project_main에서 관리자가 완료한 프로젝트. project_complete.jsp에서 뜨는)
-    public List<ProjectComplete> getCompletedProjects() {
-        List<ProjectComplete> completedProjects = new ArrayList<>();
+    public List<ProjectComplete> getCompletedProjects(String userid) {
+    	List<ProjectComplete> completedProjects = new ArrayList<>();
         String sql = """
                 SELECT 
                     p.project_id,
@@ -301,45 +315,50 @@ public class ProjectDAO {
                     emp e ON m.member_id = e.emp_id
                 WHERE 
                     p.project_finished = 1
+                    and m.member_id = ?
                 ORDER BY 
                     p.project_id
                 """;
 
         try (Connection conn = ds.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            Map<Integer, ProjectComplete> projectMap = new HashMap<>();
+            pstmt.setString(1, userid);  
+            try (ResultSet rs = pstmt.executeQuery()) {
+                Map<Integer, ProjectComplete> projectMap = new HashMap<>();
 
-            while (rs.next()) {
-                int projectId = rs.getInt("project_id");
-                ProjectComplete project = projectMap.get(projectId);
+                while (rs.next()) {
+                    int projectId = rs.getInt("project_id");
+                    ProjectComplete project = projectMap.get(projectId);
 
-                if (project == null) {
-                    project = new ProjectComplete();
-                    project.setProjectId(projectId);
-                    project.setProjectName(rs.getString("project_name"));
-                    project.setProjectStartDate(rs.getDate("project_start_date"));
-                    project.setProjectEndDate(rs.getDate("project_end_date"));
-                    project.setProjectFilePath(rs.getString("project_file_path"));
-                    project.setParticipantNames(new ArrayList<>());
-                    projectMap.put(projectId, project);
+                    if (project == null) {
+                        project = new ProjectComplete();
+                        project.setProjectId(projectId);
+                        project.setProjectName(rs.getString("project_name"));
+                        project.setProjectStartDate(rs.getDate("project_start_date"));
+                        project.setProjectEndDate(rs.getDate("project_end_date"));
+                        project.setProjectFilePath(rs.getString("project_file_path"));
+                        project.setParticipantNames(new ArrayList<>());
+                        projectMap.put(projectId, project);
+                    }
+
+                    // 책임자 추가 (단, 책임자 이름이 null이 아니면)
+                    String managerName = rs.getString("manager_name");
+                    if (managerName != null) {
+                        project.setEmpName(managerName); // 책임자 설정
+                    }
+
+                    // 참여자 추가 (MANAGER가 아닌 경우에만 추가)
+                    String memberRole = rs.getString("member_role");
+                    String participantName = rs.getString("participant_name");
+
+                    if (!"MANAGER".equalsIgnoreCase(memberRole)) {
+                        project.getParticipantNames().add(participantName); // 참여자 추가
+                    }
                 }
 
-                // 책임자 또는 참여자 추가
-                String memberRole = rs.getString("member_role");
-                String empName = rs.getString("participant_name");
-
-                if (rs.getString("manager_name") != null) {
-                    project.setEmpName(rs.getString("manager_name")); // 책임자 설정
-                }
-                
-                if (!"MANAGER".equalsIgnoreCase(memberRole)) {
-                    project.getParticipantNames().add(empName); // 참여자 추가
-                }
+                completedProjects.addAll(projectMap.values());
             }
-
-            completedProjects.addAll(projectMap.values());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -349,68 +368,80 @@ public class ProjectDAO {
 
 
     //취소 프로젝트(ProjectCancelAction. project_main에서 관리자가 취소한 프로젝트. project_cancel.jsp에서 뜨는) 
-    public List<ProjectComplete> getCancelProjects() {
-        List<ProjectComplete> cancelProjects = new ArrayList<>();
-        String sql = """
-                SELECT 
-                    p.project_id, 
-                    p.project_name, 
-                    (SELECT e.ename 
-                     FROM project_member m 
-                     JOIN emp e ON m.member_id = e.emp_id 
-                     WHERE m.project_id = p.project_id 
-                       AND m.member_role = 'MANAGER') AS manager_name,
-                    e.ename AS participant_name,
-                    p.project_start_date,
-                    p.project_end_date,
-                    p.project_file_path
-                FROM 
-                    project p 
-                JOIN 
-                    project_member m ON p.project_id = m.project_id
-                JOIN 
-                    emp e ON m.member_id = e.emp_id
-                WHERE 
-                    p.project_canceled = 1
-                ORDER BY 
-                    p.project_id
-                """;
+    public List<ProjectComplete> getCancelProjects(String userid) {
+    	 List<ProjectComplete> cancelProjects = new ArrayList<>();
+    	    String sql = """
+    	            SELECT 
+    	                p.project_id, 
+    	                p.project_name, 
+    	                (SELECT e.ename 
+    	                 FROM project_member m 
+    	                 JOIN emp e ON m.member_id = e.emp_id 
+    	                 WHERE m.project_id = p.project_id 
+    	                   AND m.member_role = 'MANAGER') AS manager_name,
+    	                m.member_role,
+    	                e.ename AS participant_name,
+    	                p.project_start_date,
+    	                p.project_end_date,
+    	                p.project_file_path
+    	            FROM 
+    	                project p 
+    	            JOIN 
+    	                project_member m ON p.project_id = m.project_id
+    	            JOIN 
+    	                emp e ON m.member_id = e.emp_id
+    	            WHERE 
+    	                p.project_canceled = 1
+    	                and m.member_id = ?
+    	            ORDER BY 
+    	                p.project_id
+    	            """;
 
-        try (Connection conn = ds.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
+    	    try (Connection conn = ds.getConnection();
+    	            PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            Map<Integer, ProjectComplete> projectMap = new HashMap<>();
+    	        pstmt.setString(1, userid);  
+    	        try (ResultSet rs = pstmt.executeQuery()) {
+    	            Map<Integer, ProjectComplete> projectMap = new HashMap<>();
 
-            while (rs.next()) {
-                int projectId = rs.getInt("project_id");
-                ProjectComplete project = projectMap.get(projectId);
+    	            while (rs.next()) {
+    	                int projectId = rs.getInt("project_id");
+    	                ProjectComplete project = projectMap.get(projectId);
 
-                if (project == null) {
-                    project = new ProjectComplete();
-                    project.setProjectId(projectId);
-                    project.setProjectName(rs.getString("project_name"));
-                    project.setProjectStartDate(rs.getDate("project_start_date"));
-                    project.setProjectEndDate(rs.getDate("project_end_date"));
-                    project.setProjectFilePath(rs.getString("project_file_path"));
-                    project.setParticipantNames(new ArrayList<>());
-                    projectMap.put(projectId, project);
-                }
+    	                if (project == null) {
+    	                    project = new ProjectComplete();
+    	                    project.setProjectId(projectId);
+    	                    project.setProjectName(rs.getString("project_name"));
+    	                    project.setProjectStartDate(rs.getDate("project_start_date"));
+    	                    project.setProjectEndDate(rs.getDate("project_end_date"));
+    	                    project.setProjectFilePath(rs.getString("project_file_path"));
+    	                    project.setParticipantNames(new ArrayList<>());
+    	                    projectMap.put(projectId, project);
+    	                }
 
-                // 책임자 또는 참여자 추가
-                String empName = rs.getString("participant_name");
-                if (rs.getString("manager_name") != null) {
-                    project.setEmpName(rs.getString("manager_name")); // 책임자 설정
-                } 
-                project.getParticipantNames().add(empName); // 참여자 추가
-            }
+    	                // 책임자 추가 (MANAGER는 여기에서만 설정)
+    	                String managerName = rs.getString("manager_name");
+    	                if (managerName != null) {
+    	                    project.setEmpName(managerName); // 책임자 설정
+    	                }
 
-            cancelProjects.addAll(projectMap.values());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    	                // 참여자 추가 (MANAGER가 아닌 경우에만 추가)
+    	                String memberRole = rs.getString("member_role");
+    	                String participantName = rs.getString("participant_name");
+    	                if ("MANAGER".equalsIgnoreCase(memberRole)) {
+    	                    // MANAGER는 책임자로 설정되었으므로 참여자 목록에는 추가하지 않음
+    	                } else {
+    	                    project.getParticipantNames().add(participantName); // PARTICIPANT는 참여자 목록에 추가
+    	                }
+    	            }
 
-        return cancelProjects;
+    	            cancelProjects.addAll(projectMap.values());
+    	        }
+    	    } catch (SQLException e) {
+    	        e.printStackTrace();
+    	    }
+
+    	    return cancelProjects;
     }
 
     
@@ -451,6 +482,7 @@ public class ProjectDAO {
 				JOIN emp e ON m.member_id = e.emp_id
 				JOIN task t ON p.project_id = t.project_id
 				WHERE p.project_id = ?
+				GROUP BY e.ename, t.task_subject, NVL(t.task_date, t.task_update_date)
                 """;
 
         try (Connection conn = ds.getConnection();
@@ -469,6 +501,26 @@ public class ProjectDAO {
             e.printStackTrace();
         }
         return project; // 프로젝트 정보 반환
+	}
+
+	public boolean updateProgressRate(int projectId, int memberId, int memberProgressRate) {
+		 String sql = """
+			    UPDATE project_member
+			    SET member_progress_rate = ?
+			    WHERE project_id = ? AND member_id = ?;
+			""";
+			try (Connection conn = ds.getConnection();
+			     PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			    pstmt.setInt(1, memberProgressRate);
+			    pstmt.setInt(2, projectId);
+			    pstmt.setInt(3, memberId); // memberId 추가
+			   
+			    int updatedRows = pstmt.executeUpdate();
+			    return updatedRows > 0; // 업데이트 성공 여부 반환
+			} catch (SQLException e) {
+			    e.printStackTrace();
+			    return false;
+			}
 	}
 
 

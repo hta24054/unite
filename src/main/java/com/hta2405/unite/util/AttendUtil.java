@@ -2,9 +2,11 @@ package com.hta2405.unite.util;
 
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.AttendDao;
+import com.hta2405.unite.dao.EmpInfoDao;
 import com.hta2405.unite.dao.HolidayDao;
 import com.hta2405.unite.dto.Attend;
 import com.hta2405.unite.dto.Emp;
+import com.hta2405.unite.dto.EmpInfo;
 import com.hta2405.unite.dto.Holiday;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -62,6 +64,7 @@ public class AttendUtil {
         req.setAttribute("absent", absent); //결근일
         return new ActionForward(false, "/WEB-INF/views/attend/attendDetail.jsp");
     }
+
     private void updateEmpAttend(LocalDate startDate, LocalDate endDate, Emp emp, List<Attend> allDate) {
         ArrayList<Attend> attendList = new AttendDao().getAttendByEmpId(emp, startDate, endDate);
         System.out.println(attendList);
@@ -77,12 +80,11 @@ public class AttendUtil {
                 date.setAttendOut(attend.getAttendOut());
                 date.setAttendType(attend.getAttendType());
 
+                System.out.println(date);
                 // 근무 시간 계산 및 설정
                 if (attend.getAttendIn() != null && attend.getAttendOut() != null) {
                     Duration workDuration = Duration.between(attend.getAttendIn(), attend.getAttendOut());
                     date.setWorkTime(workDuration);
-                } else {
-                    date.setWorkTime(Duration.ZERO);
                 }
                 attendIdx++;
             }
@@ -115,5 +117,11 @@ public class AttendUtil {
                 dateIdx++;
             }
         }
+    }
+
+    public ActionForward getVacationDetail(HttpServletRequest req, Emp targetEmp) {
+        EmpInfo empInfo = new EmpInfoDao().getEmpInfoById(targetEmp.getEmpId());
+//        empInfo.get
+        return new ActionForward(false, "/WEB-INF/views/attend/attendDetail.jsp");
     }
 }

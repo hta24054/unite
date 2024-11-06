@@ -46,6 +46,7 @@
         <thead>
         <tr>
             <th>성명</th>
+            <th>부서</th>
             <th>직위</th>
             <th>전화번호</th>
         </tr>
@@ -54,7 +55,8 @@
         <c:forEach var="emp" items="${empList}">
             <tr>
                 <td><a href="${pageContext.request.contextPath}/attend/emp?emp=${emp.empId}&year=<%=LocalDate.now().getYear()%>&month=<%=LocalDate.now().getMonthValue()%>">${emp.ename}</a></td>
-                <td>${emp.jobId}</td>
+                <td>${deptMap[emp.deptId]}</td>
+                <td>${jobMap[emp.jobId]}</td>
                 <td>${emp.tel}</td>
             </tr>
         </c:forEach>

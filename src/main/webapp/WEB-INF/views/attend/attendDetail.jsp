@@ -120,7 +120,12 @@
                         <c:otherwise>-</c:otherwise>
                     </c:choose>
                 </td>
-                <td class="work-time">${attend.workTime.seconds}</td>
+                <td class="work-time">
+                    <c:choose>
+                        <c:when test="${not empty attend.workTime.seconds}">${attend.workTime.seconds}</c:when>
+                        <c:otherwise>-</c:otherwise>
+                    </c:choose>
+                </td>
                 <td class="attend-type">
                     <c:choose>
                         <c:when test="${not empty attend.attendType}">${attend.attendType}</c:when>
@@ -148,10 +153,11 @@
             // 근무 시간을 시:분:초 형식으로 변환
             const totalSeconds = parseInt($workTimeCell.text(), 10);
             if (!isNaN(totalSeconds)) {
-                const hours = Math.floor(totalSeconds / 3600);
-                const minutes = Math.floor((totalSeconds % 3600) / 60);
-                const seconds = totalSeconds % 60;
-                const formattedTime = hours + ":" + minutes + ":" + seconds;
+                const hours = String(Math.floor(totalSeconds / 3600));
+                const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+                const seconds = String(totalSeconds % 60).padStart(2, '0');
+                // const formattedTime = hours + "시간 " + minutes + "분 " + seconds + "초";
+                const formattedTime = hours + "시간 " + minutes + "분 "; //초는 빼고 출력
                 $workTimeCell.text(formattedTime);
             }
 

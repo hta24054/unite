@@ -1,7 +1,6 @@
 package com.hta2405.unite.action;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Properties;
 import java.util.Random;
 
@@ -30,31 +29,23 @@ public class EmpSendAuthenCodeAction implements Action {
 	@Override
 	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		/* 브라우저에서 건너온 세션 확인 
-		 * 로그인 상태에선 접근 못하게 설정 */
-		HttpSession session = req.getSession(true);
-		if((String)session.getAttribute("id") != null) {
-			resp.setContentType("text/html;charset=utf-8");
-			PrintWriter out = resp.getWriter();
-			out.println("<script>");
-			out.println("alert('접근 권한이 없습니다.');");
-			out.println("location.href='../emp/home';");
-			out.println("</script>");
-		}
 		
-		String emailCheck = (String) req.getSession().getAttribute("email");
+		HttpSession session = req.getSession();
+		String checkId = (String) session.getAttribute("checkId");
+		session.setMaxInactiveInterval(5*60);//세션 유효시간 5분 갱신
+		session.removeAttribute("email");
+		
 		String receiverName = req.getParameter("name");
 		String receiverEmail = req.getParameter("email");
 		
 		//dao를 사용해 이름과 이메일이 같은지 비교
 		EmpDao dao = new EmpDao();
-		Emp emp = dao.getEmpByNameAndEmail(receiverName,receiverEmail);
+		Emp emp = dao.getEmpById(checkId);
 		
-
 		JsonObject object = new JsonObject();
 		String authenCode = "empty";
 		
-		if(emp == null || !emp.getEmail().equals(emailCheck)) {
+		if(emp == null || !emp.getEmail().equals(receiverEmail) || !emp.getEname().equals(receiverName)) {
 			System.out.println("불일치");
 			// 회원 정보가 일치하지 않은 경우
 			object.addProperty("message", "회원 정보가 존재하지 않습니다.");

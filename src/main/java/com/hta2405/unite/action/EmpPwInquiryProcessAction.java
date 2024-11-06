@@ -25,7 +25,8 @@ public class EmpPwInquiryProcessAction implements Action {
 			String dbEmail = emp.getEmail();
 			
 			HttpSession session = req.getSession();
-			session.setAttribute("email", dbEmail);
+			session.setAttribute("checkId", id);
+			session.setAttribute("email", maskEmail(dbEmail));
 			session.setMaxInactiveInterval(5*60);//세션 유효시간 5분 설정
 			
 			ActionForward forward = new ActionForward();

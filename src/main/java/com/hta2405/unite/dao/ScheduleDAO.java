@@ -48,6 +48,11 @@ public class ScheduleDAO {
 		}
 		return result;
 	}//scheduleInsert end
+
+	public void getListSchedule() {
+		// TODO Auto-generated method stub
+		
+	}//scheduleInsert end
 	
 	
 	

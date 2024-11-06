@@ -55,7 +55,7 @@
 
         // 페이지 로딩 시 AJAX로 출근 기록 확인
         $.ajax({
-            url: "../attend/attendInfo", // 서버에서 출근 기록을 가져오는 URL
+            url: "${pageContext.request.contextPath}/attend/attendInfo", // 서버에서 출근 기록을 가져오는 URL
             method: "GET",
             dataType: "json",
             success: function (data) {
@@ -122,7 +122,7 @@
 
         // 출근 시간 저장을 위한 AJAX 요청
         $.ajax({
-            url: "../attend/attendIn",
+            url: "${pageContext.request.contextPath}/attend/attendIn",
             method: "POST",
             data: {attendType: type},
             success: function (data) {
@@ -146,7 +146,7 @@
 
         // 퇴근 시간 저장을 위한 AJAX 요청
         $.ajax({
-            url: "../attend/attendOut",
+            url: "${pageContext.request.contextPath}/attend/attendOut",
             method: "POST",
             success: function (data) {
                 if (data.status === 'success') {

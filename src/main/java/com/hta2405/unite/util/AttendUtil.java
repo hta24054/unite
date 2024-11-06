@@ -2,6 +2,7 @@ package com.hta2405.unite.util;
 
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.AttendDao;
+import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dao.EmpInfoDao;
 import com.hta2405.unite.dao.HolidayDao;
 import com.hta2405.unite.dto.Attend;
@@ -120,8 +121,26 @@ public class AttendUtil {
     }
 
     public ActionForward getVacationDetail(HttpServletRequest req, Emp targetEmp) {
-        EmpInfo empInfo = new EmpInfoDao().getEmpInfoById(targetEmp.getEmpId());
-//        empInfo.get
-        return new ActionForward(false, "/WEB-INF/views/attend/attendDetail.jsp");
+        int year = Integer.parseInt(req.getParameter("year"));
+        //총 연차 부여일
+        req.setAttribute("allVacCount", targetEmp.getVacationCount());
+
+        //모든 특정 년도 휴가 목록 가져옴
+        List<Attend> vacList = new AttendDao().getYearlyVacationByEmpId(targetEmp.getEmpId(), year);
+
+        //전체 휴가 중 '연차'사용 갯수만 카운트
+        int privateVacCount = 0;
+        for (Attend attend : vacList) {
+            if (attend.getAttendType().equals("연차")) {
+                privateVacCount++;
+            }
+        }
+
+        req.setAttribute("vacList", vacList);
+        System.out.println("vacList = " + vacList);
+        req.setAttribute("givenVacCount", targetEmp.getVacationCount());
+        System.out.println(targetEmp.getVacationCount());
+        req.setAttribute("privateVacCount", privateVacCount);
+        return new ActionForward(false, "/WEB-INF/views/attend/vacationDetail.jsp");
     }
 }

@@ -5,11 +5,17 @@
 <head>
 	<jsp:include page="../common/header.jsp" />
 	<title>캘린더 일정관리</title> 
-	<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.8.0/main.min.css' rel='stylesheet' />  
-	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.8.0/main.min.js'></script>   
-	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.8.0/locales-all.min.js'></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
 	<script src="${pageContext.request.contextPath}/js/calendar.js"></script>
+	<script>
+	     document.addEventListener('DOMContentLoaded', function() {
+	       var calendarEl = document.getElementById('calendar');
+	       var calendar = new FullCalendar.Calendar(calendarEl, {
+	        	initialView: 'dayGridMonth'
+	       });
+	       calendar.render();
+	     });
+    </script>
 	<style>
 		.container {
 			max-width: 1900px;
@@ -68,9 +74,7 @@
 				</aside>
 			</div>
 			<div class="col-sm-10 px-5">
-				<div id="calendar-container">
-					<div id="calendar"></div>
-				</div>
+				<div id="calendar"></div>
 			</div>
 		</div>
 	</div>
@@ -83,6 +87,7 @@
 				<div class="modal-body">
 					<form action="${pageContext.request.contextPath}/schedule/ScheduleAddProcessAction" name="schedulAdd" method="post">
 						<input type="hidden" id="schedule_id" name="schedule_id" value="${param.id}">
+						<input type="hidden" id="emp_id" name="emp_id" value="E001"> <!-- 임시 -->
 						
 						<div class="form-group">
 							<label for="schedule_name">일정명</label>

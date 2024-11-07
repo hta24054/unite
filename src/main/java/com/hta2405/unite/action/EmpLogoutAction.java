@@ -11,12 +11,9 @@ public class EmpLogoutAction implements Action {
 	@Override
 	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		req.getSession().invalidate();
+		req.getSession().invalidate();//세션 초기화
 		
-		ActionForward forward = new ActionForward();
-		forward.setRedirect(true);
-		forward.setPath("../emp/login");
-		return forward;
+		return new ActionForward(true, "../emp/login");
 	}
 
 }

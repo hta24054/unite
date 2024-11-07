@@ -42,7 +42,7 @@ h2 {
 
 .id {
     font-size: 18px;
-	margin-top: 10px;
+	margin: 10px 0px 15px;
 	display: block;
 	text-align: left;
 }
@@ -50,7 +50,7 @@ h2 {
 form input[type="password"] {
     width: 100%;
     padding: 10px;
-    margin: 10px 0;
+    margin-bottom: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 1em;
@@ -94,4 +94,9 @@ span{
     color: #34495e;
     font-size: 13px;
     margin-bottom: 10px;
+}
+
+.newPwText,.confirmPwText{
+	color:red;
+	margin: 0px 5px 10px;
 }

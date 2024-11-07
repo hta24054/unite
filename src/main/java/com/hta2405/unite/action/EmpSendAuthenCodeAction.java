@@ -48,7 +48,7 @@ public class EmpSendAuthenCodeAction implements Action {
 		if(emp == null || !emp.getEmail().equals(receiverEmail) || !emp.getEname().equals(receiverName)) {
 			System.out.println("불일치");
 			// 회원 정보가 일치하지 않은 경우
-			object.addProperty("message", "회원 정보가 존재하지 않습니다.");
+			object.addProperty("message", "회원 정보가 존재하지 않습니다.\n이름과 이메일을 다시 한번 확인해 주세요");
 			
 		} else {
 			System.out.println("일치");

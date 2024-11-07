@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,8 +22,8 @@
         </div>
         <div class="emailVerification"><h2>이메일 인증</h2><label for="emailCheck">(${email})</label></div>
         <p class="instruction">입력하신 이메일 주소와 같아야 이메일을 받을 수 있습니다.</p>
-        <form action='${pageContext.request.contextPath}/emp/changePw' method='post' 
-			name="changePw">
+        <form action='emailVerificationProcess' method='post' 
+			name="emailVerificationProcess">
 			<div class="inputLine">
 	            <label for="name">이름</label>
 	            <input type="text" id="name" name="name" placeholder="이름을 입력하세요">

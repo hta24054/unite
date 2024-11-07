@@ -1,10 +1,10 @@
 package com.hta2405.unite.action;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dto.Emp;
+import com.hta2405.unite.util.CommonUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,20 +29,12 @@ public class EmpPwInquiryProcessAction implements Action {
 			session.setAttribute("email", maskEmail(dbEmail));
 			session.setMaxInactiveInterval(5*60);//세션 유효시간 5분 설정
 			
-			ActionForward forward = new ActionForward();
-			forward.setRedirect(true);
-			forward.setPath("emailVerification");
-			return forward;
+			session.setAttribute("step1Complete", true);//세션 플래그(비밀번호 변경 페이지)
+			
+			return new ActionForward(true, "emailVerification");//emailVerification로 이동
 		}
-		resp.setContentType("text/html;charset=utf-8");
-		PrintWriter out = resp.getWriter();
-		out.print("<script>");
-		out.print("alert('잘못된 아이디입니다. 다시 입력해주세요');");
-		out.print("history.back();");
-		out.print("</script>");
-		out.close();
-		return null;
 		
+		return CommonUtil.alertAndGoBack(resp, "잘못된 아이디입니다. 다시 입력해주세요");//요청한 곳으로 돌아감
 	}
 	
 	public static String maskEmail(String email) {

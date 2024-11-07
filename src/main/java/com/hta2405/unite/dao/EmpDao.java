@@ -39,27 +39,6 @@ public class EmpDao {
         return null;
     }
 
-    public Emp getEmpByNameAndEmail(String name, String email) {
-        String sql = """
-                    SELECT * FROM EMP
-                    WHERE ENAME = ?
-                    AND EMAIL = ?
-                """;
-        try (Connection conn = ds.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, name);
-            ps.setString(2, email);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return makeEmp(rs);
-            }
-        } catch (SQLException e) {
-            System.out.println("회원 정보 가져오기 오류");
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public List<Emp> getSubEmpListByEmp(Emp emp) {
         List<Emp> list = new ArrayList<>();
         if (emp.getEmpId().contains("admin")) {

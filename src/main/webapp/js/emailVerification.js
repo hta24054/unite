@@ -11,6 +11,13 @@ function validation(submit){
 		alert("이메일을 입력하세요");
 		$email.focus();
 		return false;
+	}else{
+		const pattern = /^\w+@\w+[.]\w{2,}$/;
+		if(!pattern.test($email.val())){
+			alert("이메일형식이 맞지 않습니다.");
+			$email.focus();
+			return false;
+		}
 	}
 	
 	if(submit){
@@ -28,8 +35,11 @@ $(function() {
 	let authenCode = "";
 	
 	$(".verify-btn").on('click', function() {
+		$('html').css("cursor", "wait");//마우스 로딩중 표시
+		
 		//유효성 검사(매개변수로 submit하는지 boolean값으로 넣음)
 		if (!validation(false)) {
+			$('html').css("cursor", "auto"); //마우스 원래대로 표시
 			return false;
 		}
 		
@@ -44,6 +54,7 @@ $(function() {
 			},
 			dataType: "json",
 			success: function(rdata) {
+				$('html').css("cursor", "auto"); //마우스 원래대로 표시
 				console.log("AJAX 요청 성공:", rdata);
 				alert(rdata.message);
 				if(rdata.authenCode!=null){//회원정보가 일치할 경우
@@ -55,7 +66,7 @@ $(function() {
 																	"color":"green",
 																	"font-size":"12px",
 																    "display": "flex",
-																    "justify-content": "flex-start"
+																    "justify-content": "flex-end"
 																})
 																
 					authenCode = rdata.authenCode;
@@ -66,14 +77,17 @@ $(function() {
 				$(".verify-btn").prop("disabled", false);//인증번호 받기 버튼 활성화
 			},
 			error: function(request, status, error) {
+				$('html').css("cursor", "auto"); //마우스 원래대로 표시
 				console.error("AJAX 요청 실패:", status, error);
 				alert("인증번호 발송에 실패했습니다. 잠시 후 다시 시도해주세요.");
 			}
 		});
+		
+		
 	});
 	
 
-	$("form[name='changePw']").submit(function(){
+	$("form[name='emailVerificationProcess']").submit(function(){
 		
 		//유효성 검사(매개변수로 submit하는지 boolean값으로 넣음)
 		if (!validation(true)) {

@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 public class MyPagePasswordChangeProcessAction implements Action {
     @Override
@@ -19,18 +18,14 @@ public class MyPagePasswordChangeProcessAction implements Action {
         EmpDao empDao = new EmpDao();
         Emp emp = empDao.getEmpById((String) req.getSession().getAttribute("id"));
 
-        String message = "비밀번호 변경이 완료되었습니다.";
-
+        String message;
         if (!EmpUtil.verifyPassword(emp, currentPassword)) {
+            message = "현재 비밀번호가 다릅니다.";
+        } else if (!EmpUtil.changePassword(emp, newPassword)) {
             message = "비밀번호 변경 실패";
+        } else {
+            message = "비밀번호 변경이 완료되었습니다.";
         }
-
-        emp.setPassword(EmpUtil.hashingPassword(newPassword));
-
-        if (empDao.updateEmp(emp) != 1) {
-            message = "비밀번호 변경 실패";
-        }
-
         return CommonUtil.alertAndGoBack(resp, message);
     }
 }

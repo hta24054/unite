@@ -48,46 +48,8 @@ document.addEventListener('DOMContentLoaded', function () {
 		        select: function(arg) {
 	                $scheduleModal.modal('show');
 	            },
-	            /*
-	            events: function(info, successCallback, failureCallback) {
-			        // 서버에서 일정 데이터를 가져온다.
-			        $.ajax({
-				        url: "ScheduleListAction",
-				        type: "get",
-				        dataType: "json",
-				       
-				        data: {
-							"emp_id" : "E001", 
-							"schedule_id" : 22,
-							start: moment(info.startStr).format('YYYY-MM-DD HH:mm'),
-							end: moment(info.endStr).format('YYYY-MM-DD HH:mm')
-							
-						},
-						
-				        success: function(result) {
-				            const events = [];
-				            
-				            if (events.length > 0) {
-								$(result).each(function(idx, item){
-									events.push({
-										"emp_id" : "E001", 
-										"schedule_id" : 22,
-										title: item.title,
-										start: moment(info.startStr).format('YYYY-MM-DD HH:mm'),
-										end: moment(info.endStr).format('YYYY-MM-DD HH:mm')
-									});
-								});
-							}
-				        },
-				        error: function(error) {
-				            console.log('이벤트 데이터를 불러오는 중 오류 발생:', error);
-				        }
-				    });
-			    },*/
-
 	            eventSources: [{
 					events: function(info, successCallback, failureCallback) {
-					
 				        // 서버에서 일정 데이터를 가져온다.
 				        $.ajax({
 					        url: "ScheduleListAction",
@@ -113,38 +75,6 @@ document.addEventListener('DOMContentLoaded', function () {
 					    });
 				    },
 				}],
-				
-			   /*
-			   eventSources: [{
-					events: function(info, successCallback, failureCallback) {
-					
-				        const eventResult = $.ajax({
-					        url: "ScheduleListAction",
-					        type: "get",
-					    });
-					    
-					    const eventData = eventResult.data;
-					    
-					    //이벤트에 넣을 배열 선언
-					    const eventArr = [];
-					    eventData.forEach((res) => {
-							eventArr.push({
-								"emp_id" : "E001", 
-								"schedule_id" : 22,
-								title: res.schedule_name,
-								start: moment(res.startStr).format('YYYY-MM-DD HH:mm'),
-								end: moment(res.endStr).format('YYYY-MM-DD HH:mm'),
-								
-							});
-						});
-						
-						console.log("eventArr", eventArr)
-						
-						successCallback(eventArr);
-						
-				    },
-				}],
-		        */
 			    dateClick: function(info) { // 일자셀 클릭 함수
 		            console.log("dateClick info", info)
 		        },
@@ -163,12 +93,9 @@ document.addEventListener('DOMContentLoaded', function () {
 				},
 				eventDidMount: function(info) {
 				    console.log("info.event.extendedProps", info.event.extendedProps);
-				    // {description: "Lecture", department: "BioChemistry"}
 				}
 			});
-			
 			calendar.render();
-			
 	
 			//모달창 이벤트
 			$("#btnRegister").on("click", function () {

@@ -18,11 +18,12 @@ public class AdminHolidayInsertAction implements Action {
         LocalDate date = LocalDate.parse(req.getParameter("date"));
         String HolidayName = req.getParameter("holidayName");
         if (new HolidayDao().getHolidayName(date) != null) {
-            return alertAndGoBack(resp, "휴일 등록 실패, 이미 등록된 휴일입니다.");
+            return alertAndGoBack(resp, "휴일 등록을 실패하였습니다. 이미 등록된 휴일입니다.");
         }
         if (new HolidayDao().insertHoliday(date, HolidayName) != 1) {
-            return alertAndGoBack(resp, "휴일 등록 실패");
+            return alertAndGoBack(resp, "휴일 등록을 실패하였습니다.");
         }
+        req.getSession().setAttribute("message", "휴일을 등록하였습니다.");
         return new ActionForward(true, req.getContextPath() + "/admin/holiday");
     }
 }

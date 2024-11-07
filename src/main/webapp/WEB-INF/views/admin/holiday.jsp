@@ -11,6 +11,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="admin_leftbar.jsp"/>
+    <script>
+        let result = '${message}';
+        if (result !== '') {
+            alert(result);
+            <%session.removeAttribute("message");%>
+        }
+    </script>
     <style>
         /* 컨테이너와 제목 스타일 */
         .container {

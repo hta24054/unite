@@ -29,6 +29,9 @@ public class AdminFrontController extends HttpServlet {
         actionMap.put("/holiday/weekend", new AdminHolidayWeekendAction()); //주말 DB에 업데이트
         actionMap.put("/popup", new AdminPopupAction()); //팝업 등록
         actionMap.put("/resource", new AdminResourceAction()); //자원관리
+        actionMap.put("/resource/add", new AdminResourceAddAction()); //자원관리-추가
+        actionMap.put("/resource/edit", new AdminResourceEditAction()); //자원관리-수정
+        actionMap.put("/resource/delete", new AdminResourceDeleteAction()); //자원관리-삭제
     }
 
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

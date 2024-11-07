@@ -22,6 +22,7 @@ public class AdminHolidayDeleteAction implements Action {
         if (new HolidayDao().deleteHoliday(date) != 1) {
             return alertAndGoBack(resp, "휴일 삭제 실패");
         }
+        req.getSession().setAttribute("message", "휴일을 삭제하였습니다.");
         return new ActionForward(true, req.getContextPath() + "/admin/holiday");
     }
 }

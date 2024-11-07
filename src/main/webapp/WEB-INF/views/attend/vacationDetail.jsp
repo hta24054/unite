@@ -36,6 +36,7 @@
         #report {
             width: 500px;
             text-align: center;
+            font-weight: bold;
         }
 
         #report th {
@@ -53,7 +54,7 @@
         }
 
         #specify th {
-            width: 20%;
+            width: 16.6667%;
         }
 
         /* 캡션과 테이블 간격 설정 */
@@ -81,7 +82,7 @@
         <tr>
             <td>${givenVacCount}</td>
             <td>${privateVacCount}</td>
-            <td>${givenVacCount-privateVacCount}</td>
+            <td style="color: blue">${givenVacCount-privateVacCount}</td>
         </tr>
         </tbody>
     </table>
@@ -92,10 +93,6 @@
         <thead>
         <tr>
             <th>No</th>
-            <th>사원번호</th>
-            <th>성명</th>
-            <th>직위</th>
-            <th>부서</th>
             <th>일수</th>
             <th>휴가구분</th>
             <th>신청일</th>

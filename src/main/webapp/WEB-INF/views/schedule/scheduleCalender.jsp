@@ -12,15 +12,6 @@
 	<!-- the moment-to-fullcalendar connector. must go AFTER the moment lib -->
 	<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/moment@6.1.15/index.global.min.js'></script>
 	<script src="${pageContext.request.contextPath}/js/calendar.js"></script>
-	<script>
-	     document.addEventListener('DOMContentLoaded', function() {
-		       var calendarEl = document.getElementById('calendar');
-		       var calendar = new FullCalendar.Calendar(calendarEl, {
-		        	initialView: 'dayGridMonth'
-		       });
-		       calendar.render();
-	     });
-    </script>
 	<style>
 		.container {
 			max-width: 1900px;
@@ -88,11 +79,16 @@
 	<div class="modal" id="scheduleModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<div class="modal-header">일정등록</div>
+				<div class="modal-header" style="align-items: center;">
+					일정등록
+					<button type="button" class="btn btn-danger" data-dismiss="modal">X</button>
+				</div>
 				<div class="modal-body">
-					<form action="${pageContext.request.contextPath}/schedule/ScheduleAddProcessAction" name="schedulAdd" method="post">
-						<input type="hidden" id="schedule_id" name="schedule_id" value="${param.id}">
-						<input type="hidden" id="emp_id" name="emp_id" value="E001"> <!-- 임시 -->
+					<form name="scheduleEvent" method="post">
+						<input type="hidden" id="schedule_id" name="schedule_id" value="${param.schedule_id}">
+
+						<!-- EmpLoginProcessAction의 session.setAttribute("id", id)의 값이 value에 들어가야함 -->
+						<input type="hidden" id="emp_id" name="emp_id" value="${id}">
 						
 						<div class="form-group">
 							<label for="schedule_name">일정명</label>
@@ -132,7 +128,7 @@
 				        </div>
 				        
           				<div class="btn_wrap">
-          					<button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>
+          					<button type="reset" class="btn btn-danger">취소</button>
 							<button type="submit" class="btn btn-info" id="btnRegister">등록</button>
           				</div>
 					</form>

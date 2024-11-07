@@ -45,7 +45,8 @@
         .fc-day:not(.fc-day-sat):not(.fc-day-sun) a {
             color: black !important;
         }
-        #button-container button{
+
+        #button-container button {
             background-color: #334466;
             color: white;
         }
@@ -59,8 +60,8 @@
 
 <div class="main-container">
     <div id="button-container">
-        <button type="button" class="btn btn-sm" id="holidayImport">휴일 받아오기</button>
-        <button type="button" class="btn btn-sm" id="publicHolidayImport">공휴일 받아오기</button>
+        <button type="button" class="btn btn-sm" id="holidayImport">주말 휴일설정</button>
+        <button type="button" class="btn btn-sm" id="publicHolidayImport">공휴일 휴일설정</button>
     </div>
     <div id="calendar-container">
         <div id="calendar"></div>
@@ -164,14 +165,14 @@
             calendar.render();
 
             $("#holidayImport").on("click", function () {
-                if (confirm("모든 공휴일이 휴일로 등록됩니다. 진행하시겠습니까?")) {
-                    window.location.href = "${pageContext.request.contextPath}/admin/holiday/api";
+                if (confirm("모든 주말이 휴일로 등록됩니다. 진행하시겠습니까?")) {
+                    window.location.href = "${pageContext.request.contextPath}/admin/holiday/weekend";
                 }
             });
 
             $("#publicHolidayImport").on("click", function () {
-                if (confirm("모든 주말이 휴일로 등록됩니다. 진행하시겠습니까?")) {
-                    window.location.href = "${pageContext.request.contextPath}/admin/holiday/weekend";
+                if (confirm("모든 공휴일이 휴일로 등록됩니다. 진행하시겠습니까?")) {
+                    window.location.href = "${pageContext.request.contextPath}/admin/holiday/api";
                 }
             });
 

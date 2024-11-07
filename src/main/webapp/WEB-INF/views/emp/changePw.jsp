@@ -1,49 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>비밀번호 재설정</title>
     <script src="${pageContext.request.contextPath}/js/jquery-3.7.1.js"></script>
+    <script src="${pageContext.request.contextPath}/js/changePw.js"></script>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/changePw.css">
-<script>
-$(function(){
-	$(".submit-btn").click(function(){
-		$(".newPwText").text("");
-		$(".confirmPwText").text("");
-		let check = true;
-		
-		const $newPassword = $("#newPassword");
-		if ($newPassword.val().trim() == "") {
-			alert("새 비밀번호을 입력해 주세요");
-			$newPassword.focus();
-			return false;
-		}
-		
-		const $confirmPassword = $("#confirmPassword");
-		if ($confirmPassword.val().trim() == "") {
-			alert("새 비밀번호 확인을 입력해 주세요");
-			$confirmPassword.focus();
-			return false;
-		}
-		
-		if ($confirmPassword.val().trim() != $newPassword.val().trim()) {
-			alert("비밀번호가 일치하지 않습니다.\n 다시 확인을 입력해 주세요");
-			$newPassword.focus();
-			return false;
-		}
-		
-		if(!confirm('비밀번호 변경하시겠습니까?')){//변경 선택하지 않을 경우 submit 되지 않음
-			return false;
-		}else{
-			alert("비밀번호가 변경 되었습니다.");
-		}
-		
-	})
-})
-</script>
 </head>
 <body>
     <div class="container">

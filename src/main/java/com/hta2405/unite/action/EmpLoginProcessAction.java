@@ -2,6 +2,8 @@ package com.hta2405.unite.action;
 
 import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dto.Emp;
+import com.hta2405.unite.util.CommonUtil;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,9 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
-import static com.hta2405.unite.util.EmpUtil.sha256;
 import static com.hta2405.unite.util.EmpUtil.verifyPassword;
 
 public class EmpLoginProcessAction implements Action {
@@ -23,11 +23,9 @@ public class EmpLoginProcessAction implements Action {
         String id = req.getParameter("id");
         String pass = req.getParameter("pass");
         String message;
-
+        
         EmpDao dao = new EmpDao();
         Emp emp = dao.getEmpById(id);
-
-        ActionForward forward = new ActionForward();
 
         if (emp != null) {
             String dbPassword = emp.getPassword();
@@ -52,25 +50,15 @@ public class EmpLoginProcessAction implements Action {
                 } else {
                     cookie.setMaxAge(0);
                 }
+                
                 resp.addCookie(cookie);
-                forward.setRedirect(true);
-                forward.setPath("../emp/home");
-                return forward;
+                return new ActionForward(true, "../emp/home");
             } else {
                 message = "비밀번호가 일치하지 않습니다.";
             }
         } else {
             message = "아이디가 존재하지 않습니다.";
         }
-
-        resp.setContentType("text/html;charset=utf-8");
-        PrintWriter out = resp.getWriter();
-        out.print("<script>");
-        out.print("alert('" + message + "');");
-        out.print("history.back();");
-        out.print("</script>");
-        out.close();
-        return null;
-
+        return CommonUtil.alertAndGoBack(resp, message);//요청한 곳으로 돌아감
     }
 }

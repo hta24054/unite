@@ -20,10 +20,6 @@ public class EmpLoginAction implements Action {
 			}
 		}
 		req.setAttribute("cookieId", id);
-		
-		ActionForward forward = new ActionForward();
-		forward.setRedirect(false); //주소 변경없이 jsp페이지의 내용을 보여줍니다.
-		forward.setPath("/WEB-INF/views/emp/loginForm.jsp");
-		return forward;
+		return new ActionForward(false,"/WEB-INF/views/emp/loginForm.jsp");
     }
 }

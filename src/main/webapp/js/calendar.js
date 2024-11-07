@@ -45,22 +45,103 @@ document.addEventListener('DOMContentLoaded', function () {
 		        select: function(arg) {
 	                $scheduleModal.modal('show');
 	            },
-		        events: function(info, successCallback, failureCallback) {
-					
+	            /*
+	            events: function(info, successCallback, failureCallback) {
 			        // 서버에서 일정 데이터를 가져온다.
 			        $.ajax({
 				        url: "ScheduleListAction",
 				        type: "get",
 				        dataType: "json",
-				        data: {"emp_id" : "E001", "schedule_id" : 22},
-				        success: function(data) {
-				            console.log("data", data)
+				       
+				        data: {
+							"emp_id" : "E001", 
+							"schedule_id" : 22,
+							start: moment(info.startStr).format('YYYY-MM-DD HH:mm'),
+							end: moment(info.endStr).format('YYYY-MM-DD HH:mm')
+							
+						},
+						
+				        success: function(result) {
+				            const events = [];
+				            
+				            if (events.length > 0) {
+								$(result).each(function(idx, item){
+									events.push({
+										"emp_id" : "E001", 
+										"schedule_id" : 22,
+										title: item.title,
+										start: moment(info.startStr).format('YYYY-MM-DD HH:mm'),
+										end: moment(info.endStr).format('YYYY-MM-DD HH:mm')
+									});
+								});
+							}
 				        },
 				        error: function(error) {
 				            console.log('이벤트 데이터를 불러오는 중 오류 발생:', error);
 				        }
 				    });
-			    },
+			    },*/
+
+	            eventSources: [{
+					events: function(info, successCallback, failureCallback) {
+					
+				        // 서버에서 일정 데이터를 가져온다.
+				        $.ajax({
+					        url: "ScheduleListAction",
+					        type: "get",
+					        dataType: "json",
+					        data: {
+								"emp_id" : "E001", 
+								"schedule_id" : 32,
+								title: $scheduleName.val(),
+								start: moment(info.startStr).format('YYYY-MM-DD HH:mm'),
+								end: moment(info.endStr).format('YYYY-MM-DD HH:mm'),
+								allDay: $allDay.is(":checked"), // 체크박스인 경우 true/false
+							    backgroundColor: $bgColor.val(),
+							    description: $description.val()
+							},
+					        success: function(data) {
+					            console.log("data", data)
+					            successCallback(data);
+					        },
+					        error: function(error) {
+					            console.log('이벤트 데이터를 불러오는 중 오류 발생:', error);
+					        }
+					    });
+				    },
+				}],
+				
+			   /*
+			   eventSources: [{
+					events: function(info, successCallback, failureCallback) {
+					
+				        const eventResult = $.ajax({
+					        url: "ScheduleListAction",
+					        type: "get",
+					    });
+					    
+					    const eventData = eventResult.data;
+					    
+					    //이벤트에 넣을 배열 선언
+					    const eventArr = [];
+					    eventData.forEach((res) => {
+							eventArr.push({
+								"emp_id" : "E001", 
+								"schedule_id" : 22,
+								title: res.schedule_name,
+								start: moment(res.startStr).format('YYYY-MM-DD HH:mm'),
+								end: moment(res.endStr).format('YYYY-MM-DD HH:mm'),
+								
+							});
+						});
+						
+						console.log("eventArr", eventArr)
+						
+						successCallback(eventArr);
+						
+				    },
+				}],
+		        */
 			    dateClick: function(info) { // 일자셀 클릭 함수
 		            console.log("dateClick info", info)
 		        },
@@ -137,74 +218,29 @@ document.addEventListener('DOMContentLoaded', function () {
 			$("form[name=scheduleEvent]").on("submit", function(e){
 				e.preventDefault();
 				
-				if($scheduleName.val().trim() == "") {
-			  		alert("일정명을 입력하세요");
-			  		$scheduleName.focus();
-			  		return false;
-		  		}
-		  
-			    if($start.val().trim() == "") {
-					alert("시작날짜/시간을 선택하세요");
-					$start.focus();
-					return false;
-			    }
-		  
-				if($end.val().trim() == "") {
-					alert("종료날짜/시간을 선택하세요");
-					$end.focus();
-					return false;
-				}
-		  
-				if($description.val().trim() == "") {
-					 alert("내용을 입력하세요");
-					 $description.focus();
-					 return false;
-				}
-				
-				// 입력값 객체 생성
-				const eventData = {
-				  	title: $scheduleName.val(),
-				    start: moment($start.val(), 'yyyy-MM-DDTHH:mm').format('yyyy-MM-dd HH:mm'),
-					end: moment($end.val(), 'yyyy-MM-DDTHH:mm').format('yyyy-MM-dd HH:mm'),
-				    allDay: $allDay.is(":checked"), // 체크박스인 경우 true/false
-				    bgColor: $bgColor.val(),
-				    description: $description.val()
-				};
-		
-				// 끝나는 날짜가 시작하는 날짜보다 이전인지 검증
-				if (new Date(eventData.start) > new Date(eventData.end)) {
-				    alert("끝나는 날짜/시간이 시작 날짜/시간보다 이전입니다. 다시 확인해 주세요.");
-				    return false;
-				}
-				
-				// 이벤트 추가
-				calendar.addEvent(eventData);
-				
-				const eventsFromCalendar = $('#calendar').fullCalendar('clientEvents');
-		        
-			    $.ajax({
-					url: "ScheduleAddProcessAction",
-					type: "post",
-		            dataType: "json",
-		            data: { 
-						 eventsJson: JSON.stringify(eventsFromCalendar),
+				// 서버에서 일정 데이터를 가져온다.
+		        $.ajax({
+			        url: "ScheduleListAction",
+			        type: "get",
+			        dataType: "json",
+			        data: {
+						"emp_id" : "E001", 
+						"schedule_id" : 32,
+						title: $scheduleName.val(),
+						start: moment(info.startStr).format('YYYY-MM-DD HH:mm'),
+						end: moment(info.endStr).format('YYYY-MM-DD HH:mm'),
+						//allDay: $allDay.is(":checked"), // 체크박스인 경우 true/false
+					    backgroundColor: $bgColor.val(),
+					    description: $description.val()
 					},
-		            success: function(data) {
-		                $scheduleModal.modal("hide");
-		            },
-		            error: function(){
-						console.log('에러');
-					}
+			        success: function(data) {
+			            console.log("data", data)
+			            successCallback(data);
+			        },
+			        error: function(error) {
+			            console.log('이벤트 데이터를 불러오는 중 오류 발생:', error);
+			        }
 			    });
-				
-				// 모달 닫기 및 입력 필드 초기화
-				$scheduleModal.modal("hide");
-				$scheduleName.val("");
-				$start.val("");
-				$end.val("");
-				$allDay.prop("checked", false);
-				$bgColor.val("");
-				$description.val("");
 			});
 			
 		});

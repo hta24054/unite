@@ -1,14 +1,50 @@
-/**
- * 
- */
 $(document).ready(function() {
-    // projectName 변수 사용
-    if (projectName) {
-        $("#currentProjectName").text(projectName).show();
-    }
-
     let currentProjectId, memberId;
 
+    // 업무 내용 클릭 시
+    $(".task-content.clickable").click(function() {
+        console.log('c');
+        currentProjectId = $(this).data("id"); // 프로젝트 ID
+        memberId = $(this).data("memberid"); // 로그인한 사용자 ID
+        const content = $(this).data("content") || ""; // 현재 업무 내용
+        
+        $("#taskContentInput").val(content); // 모달 창에 업무 내용 설정
+        $("#taskContentModal").modal("show");
+    });
+
+    // 업무 내용 저장 버튼 클릭 시
+    $("#saveTaskContentBtn").click(function() {
+        const newTaskContent = $("#taskContentInput").val();
+
+        if (!newTaskContent) {
+            alert("업무 내용을 입력해주세요.");
+            return;
+        }
+
+        $.ajax({
+            url: contextPath + "/project/updatetaskdesign",
+            type: "POST",
+            data: { 
+                projectId: currentProjectId,
+                memberId: memberId,
+                taskContent: newTaskContent 
+            },
+            success: function(response) {
+                if (response.success) {
+                    const taskContentElement = $(`.task-content[data-id='${memberId}'][data-memberid='${memberId}']`);
+                    taskContentElement.text(newTaskContent);
+                    taskContentElement.data("content", newTaskContent);
+                } else {
+                    alert("업무 내용 업데이트에 실패했습니다.");
+                }
+                $("#taskContentModal").modal("hide");
+            },
+            error: function() {
+                alert("오류가 발생했습니다.");
+                $("#taskContentModal").modal("hide");
+            }
+        });
+    });
     // 진행률 클릭 시
     $(".progress-rate.clickable").click(function() {
         currentProjectId = $(this).data("id"); // 프로젝트 ID

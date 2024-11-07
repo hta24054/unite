@@ -16,6 +16,7 @@ import com.hta2405.unite.action.project.ProjectGetOngoingAction;
 import com.hta2405.unite.action.project.ProjectMainAction;
 import com.hta2405.unite.action.project.ProjectProgressAction;
 import com.hta2405.unite.action.project.ProjectUpdateProgressAction;
+import com.hta2405.unite.action.project.ProjectUpdateTaskDesignAction;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -46,6 +47,7 @@ public class ProjectFrontController extends HttpServlet {
         actionMap.put("/doCreate", new ProjectDoCreateAction());
         actionMap.put("/getOngoingProjects", new ProjectGetOngoingAction());
         actionMap.put("/updateprogress", new ProjectUpdateProgressAction());
+        actionMap.put("/updatetaskdesign", new ProjectUpdateTaskDesignAction());
     }					
 
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

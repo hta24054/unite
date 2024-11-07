@@ -29,7 +29,6 @@
 	<div class="container">
 		<div class="d-flex justify-content-between align-items-center">
 			<h3><c:out value="${left}"/></h3>
-			<button class="btn btn-primary">관리</button>
 		</div>
 		<hr style="margin-top: 40px;"> <!-- 진행률과의 간격 추가 -->
 		<div class="row">
@@ -48,8 +47,11 @@
 						    <tr>
 						        <td>${project.participantNames}</td>
 						        <td><span class="task-content <c:if test='${project.isManager}'>clickable</c:if>" 
-					                      data-id="${project.projectId}" data-content="${project.memberDesign}">
-					                    ${project.memberDesign}</span>
+						                  data-id="${project.projectId}" 
+						                  data-memberid="${project.memberId}" 
+						                  data-content="${project.memberDesign}">
+						                ${project.memberDesign}업무가 지정되지 않았습니다
+						            </span>
 				                </td>
 						        <td><span class="progress-rate <c:if test='${project.memberId == sessionScope.id}'>clickable</c:if>" 
 								          data-id="${project.projectId}" data-memberid="${project.memberId}"

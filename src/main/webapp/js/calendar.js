@@ -134,7 +134,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     success: function(data) {
                         console.log("ScheduleAddProcessAction :", data);
                         $scheduleModal.modal("hide"); 
-                        successCallback(data);
                     },
                     error: function() {
                         console.log('일정 추가 중 오류 발생');

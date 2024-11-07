@@ -66,4 +66,8 @@ public class EmpUtil {
             return null;
         }
     }
+
+    public static boolean isHrDept(Emp loginEmp) {
+        return new DeptDao().getDeptNameById(loginEmp.getDeptId()).equals("인사관리팀");
+    }
 }

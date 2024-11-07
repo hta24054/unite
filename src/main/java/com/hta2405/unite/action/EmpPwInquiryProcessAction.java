@@ -23,8 +23,10 @@ public class EmpPwInquiryProcessAction implements Action {
 		
 		if(emp != null) {
 			String dbEmail = emp.getEmail();
+			
 			HttpSession session = req.getSession();
-			session.setAttribute("email", dbEmail);
+			session.setAttribute("checkId", id);
+			session.setAttribute("email", maskEmail(dbEmail));
 			session.setMaxInactiveInterval(5*60);//세션 유효시간 5분 설정
 			
 			ActionForward forward = new ActionForward();
@@ -42,5 +44,31 @@ public class EmpPwInquiryProcessAction implements Action {
 		return null;
 		
 	}
+	
+	public static String maskEmail(String email) {
+        // 이메일이 null이거나 비어있을 경우 그대로 반환
+        if (email == null || email.isEmpty()) {
+            return email;
+        }
+
+        // 이메일을 '@' 기준으로 나눕니다.
+        String[] parts = email.split("@");
+
+        String username = parts[0];
+        String domain = parts[1];
+
+        int length = username.length();
+        if (length <= 3) {
+            // 사용자명이 3자리이하면 모두 감추기
+            username = "*".repeat(length);
+        } else {
+            // 사용자명이 3자리이상이면 첫 두글자 제외하고 모두 감추기
+            username = username.substring(0, 2)
+                    + "*".repeat(length - 2);
+        }
+
+        // 마스킹된 사용자명과 도메인을 합쳐서 반환
+        return username + "@" + domain;
+    }
 
 }

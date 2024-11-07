@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 public class DeptDao {
     private DataSource ds;
@@ -53,5 +54,23 @@ public class DeptDao {
             throw new RuntimeException(e);
         }
         return null;
+    }
+
+    public HashMap<Long, String> getIdToDeptNameMap() {
+        HashMap<Long, String> map = new HashMap<>();
+        String sql = """
+                    SELECT dept_id, dept_name from DEPT
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                map.put(rs.getLong("dept_id"), rs.getString("dept_name"));
+            }
+        } catch (SQLException e) {
+            System.out.println("deptMap 불러오기 에러");
+            e.printStackTrace();
+        }
+        return map;
     }
 }

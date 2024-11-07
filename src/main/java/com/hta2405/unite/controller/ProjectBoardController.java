@@ -5,17 +5,8 @@ import java.util.HashMap;
 
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
-import com.hta2405.unite.action.ProjectCancelAction;
-import com.hta2405.unite.action.ProjectChartAction;
-import com.hta2405.unite.action.ProjectCompleteAction;
-import com.hta2405.unite.action.ProjectCreateAction;
-import com.hta2405.unite.action.ProjectDetailAction;
-import com.hta2405.unite.action.ProjectDoCreateAction;
-import com.hta2405.unite.action.ProjectEmployAction;
-import com.hta2405.unite.action.ProjectGetOngoingAction;
 import com.hta2405.unite.action.ProjectMainAction;
-import com.hta2405.unite.action.ProjectProgressAction;
-import com.hta2405.unite.action.ProjectUpdateRateAction;
+import com.hta2405.unite.action.ProjectWriteAction;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -24,28 +15,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/project/*")
-public class ProjectFrontController extends HttpServlet {
+@WebServlet("/b/*")
+public class ProjectBoardController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     HashMap<String, Action> actionMap = new HashMap<>();
 
     //아래에 URL, Action 추가
     @Override
     public void init() throws ServletException {
-        actionMap.put("/main", new ProjectMainAction()); //메인
-        actionMap.put("/create", new ProjectCreateAction()); 
-        actionMap.put("/complete", new ProjectCompleteAction());
-        actionMap.put("/cancel", new ProjectCancelAction());
-        actionMap.put("/detail", new ProjectDetailAction());
-        actionMap.put("/progress", new ProjectProgressAction());
-        actionMap.put("/orgchart", new ProjectChartAction());
-       // actionMap.put("/write", new ProjectWriteAction());
-       // actionMap.put("/add", new ProjectAddAction());
-        
-        actionMap.put("/employ", new ProjectEmployAction());
-        actionMap.put("/doCreate", new ProjectDoCreateAction());
-        actionMap.put("/getOngoingProjects", new ProjectGetOngoingAction());
-        actionMap.put("/updateprogressrate", new ProjectUpdateRateAction());
+        actionMap.put("/write", new ProjectWriteAction()); 
     }					
 
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -57,7 +35,7 @@ public class ProjectFrontController extends HttpServlet {
         String contextPath = req.getContextPath();
         System.out.println("contextPath = " + contextPath);
 
-        String command = requestURI.substring(contextPath.length() + "/project".length());
+        String command = requestURI.substring(contextPath.length() + "/b".length());
         System.out.println("command = " + command);
 
         //등록된 URL이 아닌경우 404에러페이지 보여줌

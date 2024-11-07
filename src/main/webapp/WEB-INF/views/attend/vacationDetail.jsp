@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>근태 관리</title>
+    <title>나의 연차</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
@@ -60,30 +60,28 @@
     </style>
 </head>
 <body>
-<h2 id="main_title">근태 관리</h2>
+<h2 id="main_title">나의 연차</h2>
 <div class="container">
     <!-- 연도와 월 변경 -->
     <div class="text-center my-4">
         <button id="prevMonth" class="btn btn-outline-primary">&lt;</button>
-        <span id="currentYearMonth">${param.year}년 ${param.month}월</span>
+        <span id="currentYearMonth">${param.year}년</span>
         <button id="nextMonth" class="btn btn-outline-primary">&gt;</button>
     </div>
     <%--    요약 테이블--%>
     <table class="table table-striped table-bordered" id="report">
         <thead>
         <tr>
-            <th>당월 근무일</th>
-            <th>근무</th>
-            <th>휴가</th>
-            <th>결근</th>
+            <th>총 연차일</th>
+            <th>사용일</th>
+            <th>잔여일</th>
         </tr>
         </thead>
         <tbody>
         <tr>
-            <td>${allWorkDate}</td>
-            <td>${myWorkDate}</td>
-            <td>${vacation}</td>
-            <td>${absent}</td>
+            <td>${givenVacCount}</td>
+            <td>${privateVacCount}</td>
+            <td>${givenVacCount-privateVacCount}</td>
         </tr>
         </tbody>
     </table>
@@ -93,11 +91,16 @@
     <table class="table table-striped table-bordered" id="specify">
         <thead>
         <tr>
-            <th>날짜</th>
-            <th>출근 시각</th>
-            <th>퇴근 시각</th>
-            <th>근무 시간</th>
-            <th>근무 유형</th>
+            <th>No</th>
+            <th>사원번호</th>
+            <th>성명</th>
+            <th>직위</th>
+            <th>부서</th>
+            <th>일수</th>
+            <th>휴가구분</th>
+            <th>신청일</th>
+            <th>시작일</th>
+            <th>종료일</th>
         </tr>
         </thead>
         <tbody>

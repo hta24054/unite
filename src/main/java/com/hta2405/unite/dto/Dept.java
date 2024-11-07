@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class Dept {
-    private int deptId;
+    private Long deptId;
     private String dname;
     private String deptManager;
 }

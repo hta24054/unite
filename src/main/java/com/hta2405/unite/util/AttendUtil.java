@@ -2,9 +2,12 @@ package com.hta2405.unite.util;
 
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.AttendDao;
+import com.hta2405.unite.dao.EmpDao;
+import com.hta2405.unite.dao.EmpInfoDao;
 import com.hta2405.unite.dao.HolidayDao;
 import com.hta2405.unite.dto.Attend;
 import com.hta2405.unite.dto.Emp;
+import com.hta2405.unite.dto.EmpInfo;
 import com.hta2405.unite.dto.Holiday;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -62,6 +65,7 @@ public class AttendUtil {
         req.setAttribute("absent", absent); //결근일
         return new ActionForward(false, "/WEB-INF/views/attend/attendDetail.jsp");
     }
+
     private void updateEmpAttend(LocalDate startDate, LocalDate endDate, Emp emp, List<Attend> allDate) {
         ArrayList<Attend> attendList = new AttendDao().getAttendByEmpId(emp, startDate, endDate);
         System.out.println(attendList);
@@ -77,12 +81,11 @@ public class AttendUtil {
                 date.setAttendOut(attend.getAttendOut());
                 date.setAttendType(attend.getAttendType());
 
+                System.out.println(date);
                 // 근무 시간 계산 및 설정
                 if (attend.getAttendIn() != null && attend.getAttendOut() != null) {
                     Duration workDuration = Duration.between(attend.getAttendIn(), attend.getAttendOut());
                     date.setWorkTime(workDuration);
-                } else {
-                    date.setWorkTime(Duration.ZERO);
                 }
                 attendIdx++;
             }
@@ -115,5 +118,29 @@ public class AttendUtil {
                 dateIdx++;
             }
         }
+    }
+
+    public ActionForward getVacationDetail(HttpServletRequest req, Emp targetEmp) {
+        int year = Integer.parseInt(req.getParameter("year"));
+        //총 연차 부여일
+        req.setAttribute("allVacCount", targetEmp.getVacationCount());
+
+        //모든 특정 년도 휴가 목록 가져옴
+        List<Attend> vacList = new AttendDao().getYearlyVacationByEmpId(targetEmp.getEmpId(), year);
+
+        //전체 휴가 중 '연차'사용 갯수만 카운트
+        int privateVacCount = 0;
+        for (Attend attend : vacList) {
+            if (attend.getAttendType().equals("연차")) {
+                privateVacCount++;
+            }
+        }
+
+        req.setAttribute("vacList", vacList);
+        System.out.println("vacList = " + vacList);
+        req.setAttribute("givenVacCount", targetEmp.getVacationCount());
+        System.out.println(targetEmp.getVacationCount());
+        req.setAttribute("privateVacCount", privateVacCount);
+        return new ActionForward(false, "/WEB-INF/views/attend/vacationDetail.jsp");
     }
 }

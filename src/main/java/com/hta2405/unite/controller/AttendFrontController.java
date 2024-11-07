@@ -21,6 +21,9 @@ public class AttendFrontController extends HttpServlet {
     //아래에 URL, Action 추가
     @Override
     public void init() throws ServletException {
+        actionMap.put("/attendIn", new AttendInAction());
+        actionMap.put("/attendOut", new AttendOutAction());
+        actionMap.put("/attendInfo", new AttendInfoAction());
         actionMap.put("/my", new AttendMyDetailAction());
         actionMap.put("/empList", new AttendEmpListAction());
         actionMap.put("/emp", new AttendEmpDetailAction());

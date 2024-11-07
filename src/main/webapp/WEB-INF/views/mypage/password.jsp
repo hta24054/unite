@@ -23,6 +23,7 @@
             color: #334466;
             margin-left: 500px;
             margin-bottom: 20px;
+            font-weight: bold;
         }
 
         .form-group {

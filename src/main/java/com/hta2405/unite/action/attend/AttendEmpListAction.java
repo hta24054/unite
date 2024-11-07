@@ -1,5 +1,7 @@
-package com.hta2405.unite.action;
+package com.hta2405.unite.action.attend;
 
+import com.hta2405.unite.action.Action;
+import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.DeptDao;
 import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dao.JobDao;

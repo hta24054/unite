@@ -1,5 +1,7 @@
-package com.hta2405.unite.action;
+package com.hta2405.unite.action.admin;
 
+import com.hta2405.unite.action.Action;
+import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.HolidayDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,10 +11,7 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -22,6 +21,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 import static com.hta2405.unite.util.CommonUtil.alertAndGoBack;
+import static java.time.format.DateTimeFormatter.*;
 
 public class AdminHolidayApiAction implements Action {
 
@@ -53,7 +53,7 @@ public class AdminHolidayApiAction implements Action {
         Properties properties = new Properties();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties")) {
             if (input == null) {
-                System.out.println("Sorry, unable to find config.properties");
+                System.out.println("API 키 받아오기 오류, config.properties 파일을 확인하세요");
                 return null;
             }
             properties.load(input);
@@ -101,7 +101,6 @@ public class AdminHolidayApiAction implements Action {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Content-type", "application/json");
-//        System.out.println("Response code: " + conn.getResponseCode());
 
         BufferedReader rd;
         if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
@@ -126,7 +125,7 @@ public class AdminHolidayApiAction implements Action {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(new java.io.ByteArrayInputStream(response.getBytes()));
+            Document doc = builder.parse(new ByteArrayInputStream(response.getBytes()));
 
             // XML에서 공휴일 날짜와 이름 추출
             NodeList dateNodes = doc.getElementsByTagName("locdate");
@@ -137,7 +136,7 @@ public class AdminHolidayApiAction implements Action {
                 String name = nameNodes.item(i).getTextContent();
 
                 // 날짜 포맷을 LocalDate로 변환
-                LocalDate date = LocalDate.parse(dateStr, java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
+                LocalDate date = LocalDate.parse(dateStr, ofPattern("yyyyMMdd"));
                 holidays.put(date, name);
             }
         } catch (Exception e) {

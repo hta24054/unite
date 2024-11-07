@@ -1,21 +1,16 @@
-package com.hta2405.unite.action;
+package com.hta2405.unite.action.attend;
 
-import com.hta2405.unite.dao.AttendDao;
+import com.hta2405.unite.action.Action;
+import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.EmpDao;
-import com.hta2405.unite.dao.HolidayDao;
-import com.hta2405.unite.dto.Attend;
 import com.hta2405.unite.dto.Emp;
-import com.hta2405.unite.dto.Holiday;
 import com.hta2405.unite.util.AttendUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AttendMyDetailAction implements Action {
     @Override

@@ -2,17 +2,16 @@ package com.hta2405.unite.util;
 
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.AttendDao;
-import com.hta2405.unite.dao.EmpDao;
-import com.hta2405.unite.dao.EmpInfoDao;
 import com.hta2405.unite.dao.HolidayDao;
 import com.hta2405.unite.dto.Attend;
 import com.hta2405.unite.dto.Emp;
-import com.hta2405.unite.dto.EmpInfo;
 import com.hta2405.unite.dto.Holiday;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,25 +26,28 @@ public class AttendUtil {
         //한달 날짜 모두 리스트화(Attend 객체에는 날짜정보만)
         List<Attend> allDate = insertAllDays(startDate, endDate);
 
-        List<Holiday> holidayList = new HolidayDao().getHoliday(startDate, endDate);
-        System.out.println(holidayList);
         //휴일 업데이트(Attend객체 내 attendType에 휴일 정보 추가)
+        List<Holiday> holidayList = new HolidayDao().getHoliday(startDate, endDate);
         updateHoliday(allDate, holidayList);
 
         //한달간의 해당 직원 근태목록 불러와 업데이트
         updateEmpAttend(startDate, endDate, targetEmp, allDate);
 
         int allWorkDate = endDate.getDayOfMonth() - holidayList.size();
-        int myWorkDate = 0;
-        int vacation = 0;
-        int absent = 0;
+        int myWorkDate = 0; //내 총 근무일
+        int vacation = 0; //휴가일
+        int absent = 0; //결근일
+        int lateOrLeaveEarly = 0; //지각, 또는 조퇴일
 
         // attendType ={일반, 출장, 외근, 휴가, 결근, 휴일}
         for (Attend attend : allDate) {
-            if (attend.getAttendType() == null || attend.getAttendType().equals("휴일")) {
+            if(attend.getAttendType()==null){
                 continue;
             }
-            if (attend.getAttendType().equals("휴가")) { //휴일이 아니면
+            if (attend.getAttendType().equals("휴일")) {
+                continue;
+            }
+            if (attend.getAttendType().equals("휴가")) {
                 vacation++;
                 continue;
             }
@@ -53,22 +55,25 @@ public class AttendUtil {
                 absent++;
                 continue;
             }
+            if (attend.getAttendDate().isBefore(LocalDate.now()) &&
+                    isLateOrLeaveEarly(attend)) {
+                lateOrLeaveEarly++;
+            }
             myWorkDate++;
         }
 
-        //TODO 결근일 추가 로직. 전 직원 한번에 될 수 있도록 모아서 처리해야 할듯.
-
         req.setAttribute("attendList", allDate);
-        req.setAttribute("allWorkDate", allWorkDate); //당월 총 근무일
-        req.setAttribute("myWorkDate", myWorkDate); //근무일
-        req.setAttribute("vacation", vacation); //휴가일
-        req.setAttribute("absent", absent); //결근일
+        req.setAttribute("allWorkDate", allWorkDate); //당월 총 근무일수
+        req.setAttribute("myWorkDate", myWorkDate); //근무일수
+        req.setAttribute("vacation", vacation); //휴가일수
+        req.setAttribute("absent", absent); //결근일수
+        req.setAttribute("lateOrLeaveEarly", lateOrLeaveEarly); //지각, 조퇴일수
         return new ActionForward(false, "/WEB-INF/views/attend/attendDetail.jsp");
     }
 
     private void updateEmpAttend(LocalDate startDate, LocalDate endDate, Emp emp, List<Attend> allDate) {
+        //출근이 찍힌것들만 가져옴
         ArrayList<Attend> attendList = new AttendDao().getAttendByEmpId(emp, startDate, endDate);
-        System.out.println(attendList);
         int attendIdx = 0;
         int dateIdx = 0;
         while (attendIdx < attendList.size()) {
@@ -81,15 +86,23 @@ public class AttendUtil {
                 date.setAttendOut(attend.getAttendOut());
                 date.setAttendType(attend.getAttendType());
 
-                System.out.println(date);
-                // 근무 시간 계산 및 설정
+                // 출, 퇴근시간이 모두 있는 경우에는, 근무 시간 계산 및 설정
                 if (attend.getAttendIn() != null && attend.getAttendOut() != null) {
+                    //근무시간 계산
                     Duration workDuration = Duration.between(attend.getAttendIn(), attend.getAttendOut());
                     date.setWorkTime(workDuration);
+                    //지각, 조퇴 카운트
                 }
                 attendIdx++;
             }
             dateIdx++;
+        }
+        //결근일 확인
+        for (Attend attend : allDate) {
+            if (attend.getAttendType() == null &&
+                    attend.getAttendDate().isBefore(LocalDate.now())) {
+                attend.setAttendType("결근");
+            }
         }
     }
 
@@ -120,6 +133,16 @@ public class AttendUtil {
         }
     }
 
+    //조퇴 또는 지각 판별, 9 to 6 기업으로 가정
+    public boolean isLateOrLeaveEarly(Attend attend) {
+        LocalDateTime attendIn = attend.getAttendIn();
+        LocalDateTime attendOut = attend.getAttendOut();
+
+        LocalTime intTime = attendIn.toLocalTime();
+        LocalTime outTime = attendOut.toLocalTime();
+        return intTime.isAfter(LocalTime.of(9, 0)) || outTime.isBefore(LocalTime.of(18, 0));
+    }
+
     public ActionForward getVacationDetail(HttpServletRequest req, Emp targetEmp) {
         int year = Integer.parseInt(req.getParameter("year"));
         //총 연차 부여일
@@ -137,9 +160,7 @@ public class AttendUtil {
         }
 
         req.setAttribute("vacList", vacList);
-        System.out.println("vacList = " + vacList);
         req.setAttribute("givenVacCount", targetEmp.getVacationCount());
-        System.out.println(targetEmp.getVacationCount());
         req.setAttribute("privateVacCount", privateVacCount);
         return new ActionForward(false, "/WEB-INF/views/attend/vacationDetail.jsp");
     }

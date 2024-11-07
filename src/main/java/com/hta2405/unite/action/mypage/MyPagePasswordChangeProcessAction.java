@@ -1,5 +1,7 @@
-package com.hta2405.unite.action;
+package com.hta2405.unite.action.mypage;
 
+import com.hta2405.unite.action.Action;
+import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dto.Emp;
 import com.hta2405.unite.util.CommonUtil;

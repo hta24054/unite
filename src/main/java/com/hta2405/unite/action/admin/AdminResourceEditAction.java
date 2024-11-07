@@ -18,8 +18,7 @@ public class AdminResourceEditAction implements Action {
                 req.getParameter("resourceType"),
                 req.getParameter("resourceName"),
                 req.getParameter("resourceInfo"),
-                req.getParameter("resourceUsable").equals("가능"));
-
+                req.getParameter("resourceUsable").equals("true"));
         int result = new ResourceDao().updateResource(editResource);
         if (result != 1) {
             CommonUtil.alertAndGoBack(resp, "자원 수정을 실패하였습니다.");

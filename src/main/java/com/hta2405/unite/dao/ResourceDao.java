@@ -49,14 +49,15 @@ public class ResourceDao {
 
     public int insertResource(Resource resource) {
         String sql = """
-                   INSERT INTO RESC (RESC_TYPE, RESC_NAME, RESC_INFO)
-                   VALUES (?,?,?)
+                   INSERT INTO RESC (RESC_TYPE, RESC_NAME, RESC_INFO, RESC_USABLE)
+                   VALUES (?,?,?,?)
                 """;
         try (Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, resource.getResourceType());
             ps.setString(2, resource.getResourceName());
             ps.setString(3, resource.getResourceInfo());
+            ps.setInt(4, resource.isResourceUsable() ? 1 : 0);
             return ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -92,7 +93,7 @@ public class ResourceDao {
     public int updateResource(Resource resource) {
         String sql = """
                     UPDATE RESC
-                    SET RESC_TYPE = ?, RESC_NAME =?, RESC_INFO =?
+                    SET RESC_TYPE = ?, RESC_NAME =?, RESC_INFO =?, RESC_USABLE =?
                     WHERE RESC_ID=?
                 """;
         try (Connection conn = ds.getConnection();
@@ -100,7 +101,8 @@ public class ResourceDao {
             ps.setString(1, resource.getResourceType());
             ps.setString(2, resource.getResourceName());
             ps.setString(3, resource.getResourceInfo());
-            ps.setLong(4, resource.getResourceId());
+            ps.setInt(4, resource.isResourceUsable() ? 1 : 0);
+            ps.setLong(5, resource.getResourceId());
             return ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

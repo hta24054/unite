@@ -1,5 +1,7 @@
 package com.hta2405.unite.action.admin;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.HolidayDao;
@@ -16,13 +18,20 @@ public class AdminHolidayDeleteAction implements Action {
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         LocalDate date = LocalDate.parse(req.getParameter("date"));
-        if (new HolidayDao().getHolidayName(date) == null) {
-            return alertAndGoBack(resp, "휴일 삭제 실패, 휴일이 아닙니다.");
+        HolidayDao holidayDao = new HolidayDao();
+        String message = "휴일을 삭제하였습니다.";
+
+        if (holidayDao.getHolidayName(date) == null) {
+            message = "휴일 삭제 실패, 휴일이 아닙니다.";
+        }else if (holidayDao.deleteHoliday(date) != 1) {
+            message = "휴일 삭제 실패";
         }
-        if (new HolidayDao().deleteHoliday(date) != 1) {
-            return alertAndGoBack(resp, "휴일 삭제 실패");
-        }
-        req.getSession().setAttribute("message", "휴일을 삭제하였습니다.");
-        return new ActionForward(true, req.getContextPath() + "/admin/holiday");
+
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("message", message);
+
+        resp.setContentType("application/json;charset=utf-8");
+        resp.getWriter().print(jsonObject);
+        return null;
     }
 }

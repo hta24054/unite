@@ -110,22 +110,6 @@ public class AttendDao {
         return 0;
     }
 
-
-    private static Attend makeAttend(ResultSet rs) throws SQLException {
-        return new Attend(
-                rs.getInt("attend_id"),
-                rs.getString("emp_id"),
-                rs.getDate("attend_date").toLocalDate(),
-                rs.getTimestamp("attend_in") == null ?
-                        null : rs.getTimestamp("attend_in").toLocalDateTime(),
-                rs.getTimestamp("attend_out") == null ?
-                        null : rs.getTimestamp("attend_out").toLocalDateTime(),
-                null,
-                rs.getString("attend_type")
-        );
-    }
-
-
     public int attendOut(String empId) {
         String sql = """
                     UPDATE ATTEND SET
@@ -142,5 +126,20 @@ public class AttendDao {
             System.out.println("퇴근처리 오류");
         }
         return 0;
+    }
+
+
+    private static Attend makeAttend(ResultSet rs) throws SQLException {
+        return new Attend(
+                rs.getInt("attend_id"),
+                rs.getString("emp_id"),
+                rs.getDate("attend_date").toLocalDate(),
+                rs.getTimestamp("attend_in") == null ?
+                        null : rs.getTimestamp("attend_in").toLocalDateTime(),
+                rs.getTimestamp("attend_out") == null ?
+                        null : rs.getTimestamp("attend_out").toLocalDateTime(),
+                null,
+                rs.getString("attend_type")
+        );
     }
 }

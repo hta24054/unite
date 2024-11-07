@@ -10,6 +10,7 @@ public class AdminFrontController extends AbstractFrontController {
     @Override
     public void init() throws ServletException {
         actionMap.put("/holiday", new AdminHolidayAction());
+        actionMap.put("/holiday/get", new AdminHolidayGetAction());
         actionMap.put("/holiday/insert", new AdminHolidayInsertAction());
         actionMap.put("/holiday/delete", new AdminHolidayDeleteAction());
         actionMap.put("/holiday/api", new AdminHolidayApiAction());

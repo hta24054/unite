@@ -21,7 +21,7 @@ public class AdminHolidayWeekendAction implements Action {
         HolidayDao holidayDao = new HolidayDao();
 
         addWeekendHolidays(startDate, endDate, holidayDao);
-        return CommonUtil.alertAndGoBack(resp, "향후 1년간의 주말이 업데이트 되었습니다.");
+        return CommonUtil.alertAndGoBack(resp, "향후 1년간의 주말이 휴일로 설정되었습니다.");
     }
 
     private void addWeekendHolidays(LocalDate startDate, LocalDate endDate, HolidayDao holidayDao) {

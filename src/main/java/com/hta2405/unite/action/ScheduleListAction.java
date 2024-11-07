@@ -15,11 +15,10 @@ public class ScheduleListAction implements Action {
     public ActionForward execute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
     	System.out.println("scheduleId" + request.getParameter("schedule_id")); 
+    	System.out.println("empId" + request.getParameter("empId")); 
     	
-        
+    	
     	int scheduleId = Integer.parseInt(request.getParameter("schedule_id"));
-    	//System.out.println("scheduleId" + scheduleId); 
-    	
     	String empId = request.getParameter("emp_id"); 
         
         ScheduleDAO sdao = new ScheduleDAO();

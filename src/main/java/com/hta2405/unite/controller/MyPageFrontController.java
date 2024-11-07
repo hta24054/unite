@@ -2,8 +2,8 @@ package com.hta2405.unite.controller;
 
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
-import com.hta2405.unite.action.MyPagePasswordChangeAction;
-import com.hta2405.unite.action.MyPagePasswordChangeProcessAction;
+import com.hta2405.unite.action.mypage.MyPagePasswordChangeAction;
+import com.hta2405.unite.action.mypage.MyPagePasswordChangeProcessAction;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

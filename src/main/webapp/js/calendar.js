@@ -56,8 +56,8 @@ document.addEventListener('DOMContentLoaded', function () {
 					        type: "get",
 					        dataType: "json",
 					        data: {
-								"emp_id" : "E001", 
-								"schedule_id" : 32,
+								"schedule_id" : $("#schedule_id").val(),
+								"emp_id" : $("#emp_id").val(),
 								title: $scheduleName.val(),
 								start: moment(info.startStr).format('YYYY-MM-DD HH:mm'),
 								end: moment(info.endStr).format('YYYY-MM-DD HH:mm'),
@@ -184,8 +184,8 @@ document.addEventListener('DOMContentLoaded', function () {
 			        type: "get",
 			        dataType: "json",
 			        data: {
-						"emp_id" : "E001", 
-						"schedule_id" : 32,
+						"schedule_id" : $("#schedule_id").val(),
+						"emp_id" : $("#emp_id").val(), 
 						title: $scheduleName.val(),
 						start: start.format('YYYY-MM-DD HH:mm'),
 						end: end.format('YYYY-MM-DD HH:mm'),

@@ -1,6 +1,7 @@
 package com.hta2405.unite.util;
 
 import com.hta2405.unite.dao.DeptDao;
+import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dto.Emp;
 
 import java.security.MessageDigest;
@@ -8,6 +9,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 public class EmpUtil {
+    public static boolean changePassword(Emp emp, String newPassword) {
+        emp.setPassword(EmpUtil.hashingPassword(newPassword));
+        EmpDao empDao = new EmpDao();
+        return empDao.updateEmp(emp) == 1;
+    }
 
     public static boolean isManager(Emp emp) {
         if (emp.getEmpId().contains("admin")) {

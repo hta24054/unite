@@ -53,6 +53,7 @@ public class ScheduleDAO {
 		return result;
 	}//scheduleInsert end
 
+	/*
 	public JsonArray getListSchedule(String empId) {
 		String sql = """
 				select * 
@@ -60,10 +61,13 @@ public class ScheduleDAO {
 				where emp_id = ?
 				""";
 		JsonArray array = new JsonArray();
+		System.out.println("empId" + empId);
 		
 		try(Connection con = ds.getConnection();
 			PreparedStatement pstmt = con.prepareStatement(sql);) {
-			pstmt.setString(1, empId);
+			
+			pstmt.setInt(1, scheduleId);
+			pstmt.setInt(2, empId);
 			
 			try (ResultSet rs = pstmt.executeQuery()) {
 				while (rs.next()) {
@@ -83,8 +87,49 @@ public class ScheduleDAO {
 	                }
 	                obj.addProperty("schedule_color", rs.getString(5));
 	                array.add(obj);
+	          
 				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getListSchedule() 에러 : " + e);
+		}
+		
+	    System.out.println("array = " + array);
+		return array;
+	}*/
+
+	public JsonArray getListSchedule(int scheduleId, String empId) {
+		String sql = """
+				select * 
+				from schedule
+				where schedule_id = ? and emp_id = ?
+				""";
+		JsonArray array = new JsonArray();
+		
+		System.out.println("scheduleId" + scheduleId);
+		System.out.println("empId" + empId);
+		
+		try (Connection con = ds.getConnection();
+			 PreparedStatement pstmt = con.prepareStatement(sql);) {
+			
+				pstmt.setInt(1, scheduleId);
+				pstmt.setString(2, empId);
+				
+				try (ResultSet rs = pstmt.executeQuery()) {
+					while (rs.next()) {
+						JsonObject scheduleObj  = new JsonObject();
+						
+		                scheduleObj.addProperty("schedule_name", rs.getString("schedule_name"));
+		                scheduleObj.addProperty("schedule_content", rs.getString("schedule_content"));
+		                scheduleObj.addProperty("schedule_start", rs.getString("schedule_start"));
+		                scheduleObj.addProperty("schedule_end", rs.getString("schedule_end"));
+		                scheduleObj.addProperty("schedule_color", rs.getString("schedule_color"));
+
+		                array.add(scheduleObj);
+					}
+				}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("getListSchedule() 에러 : " + e);

@@ -21,6 +21,7 @@
 <div class="sidebar">
     <h3 style="color:rgb(51, 68, 102)">관리자</h3><br>
     <ul class="list-group" style="list-style-type: disc; padding-left: 20px;">
+        <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/admin/emp">휴일 설정</a></li>
         <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/admin/holiday">휴일 설정</a></li>
         <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/admin/popup">팝업 등록</a></li>
         <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/admin/resource">자원 관리</a></li>

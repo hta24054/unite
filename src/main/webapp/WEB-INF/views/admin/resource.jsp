@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="admin_leftbar.jsp"/>
+
     <script>
         $(document).ready(function () {
             let result = '${message}';
@@ -77,21 +78,22 @@
     </script>
     <style>
         .container {
-            max-width: 1000px;
+            max-width: 800px;
             margin-top: 20px;
         }
 
         #main_title {
             color: #334466;
-            font-weight: bold;
+            margin-left: 500px;
             margin-bottom: 20px;
+            font-weight: bold;
         }
 
         #resource_table {
             margin-top: 20px;
         }
 
-        #resource_table th, #resource_table td {
+        #resource_table th, td {
             text-align: center;
             vertical-align: middle;
             padding: 5px;
@@ -100,10 +102,10 @@
     </style>
 </head>
 <body>
+<h2 id="main_title">자원 관리</h2>
 <div class="container text-center">
-    <h2 id="main_title">자원 관리</h2>
     <div class="text-right mb-2">
-        <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#addResourceModal">등록
+        <button type="button" class="btn btn-success mr-2" data-toggle="modal" data-target="#addResourceModal">등록
         </button>
         <button type="button" class="btn btn-secondary mr-2" onclick="openEditModal()">수정</button>
         <button type="button" class="btn btn-danger" onclick="deleteSelectedResources()">삭제</button>
@@ -112,7 +114,10 @@
     <table class="table table-striped table-bordered" id="resource_table">
         <thead>
         <tr>
-            <th>전체 선택&nbsp;<input type="checkbox" onclick="$('input[name=resourceId]').prop('checked', this.checked);"></th>
+            <th style="width: 80px; text-align: center;">
+                선택<br>
+                <input type="checkbox" onclick="$('input[name=resourceId]').prop('checked', this.checked);">
+            </th>
             <th>분류명</th>
             <th>자원명</th>
             <th>자원정보</th>
@@ -123,9 +128,9 @@
         <c:forEach var="resource" items="${resourceList}">
             <tr>
                 <td><input type="checkbox" class="checkbox" name="resourceId" value="${resource.resourceId}"></td>
-                <td>${resource.resourceType}</td>
-                <td>${resource.resourceName}</td>
-                <td>${resource.resourceInfo}</td>
+                <td style="text-align: left;">${resource.resourceType}</td>
+                <td style="text-align: left;">${resource.resourceName}</td>
+                <td style="text-align: left;">${resource.resourceInfo}</td>
                 <c:choose>
                     <c:when test="${resource.resourceUsable == true}">
                         <td>가능</td>

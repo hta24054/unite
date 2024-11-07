@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>휴일 관리</title>
+    <title>휴일 설정</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
@@ -27,8 +27,9 @@
 
         #main_title {
             color: #334466;
-            font-weight: bold;
+            margin-left: 500px;
             margin-bottom: 20px;
+            font-weight: bold;
         }
 
         /* 버튼 그룹 스타일 */
@@ -53,12 +54,10 @@
     </style>
 </head>
 <body>
+<h2 id="main_title">휴일 설정</h2>
 <div class="container">
     <div class="row">
-        <!-- 왼쪽 영역: 제목과 버튼, 폼 -->
         <div class="col-md-4">
-            <h2 id="main_title">휴일 설정</h2>
-
             <div class="button-group">
                 <button type="button" class="btn btn-primary btn-block" id="api">공휴일 받아오기</button>
                 <button type="button" class="btn btn-primary btn-block" id="weekend">주말 업데이트</button>

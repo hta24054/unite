@@ -19,5 +19,6 @@ public class AdminFrontController extends AbstractFrontController {
         actionMap.put("/resource/add", new AdminResourceAddAction());
         actionMap.put("/resource/edit", new AdminResourceEditAction());
         actionMap.put("/resource/delete", new AdminResourceDeleteAction());
+        actionMap.put("/emp-manage", new AdminEmpManageAction());
     }
 }

@@ -53,52 +53,6 @@ public class ScheduleDAO {
 		return result;
 	}//scheduleInsert end
 
-	/*
-	public JsonArray getListSchedule(String empId) {
-		String sql = """
-				select * 
-				from schedule
-				where emp_id = ?
-				""";
-		JsonArray array = new JsonArray();
-		System.out.println("empId" + empId);
-		
-		try(Connection con = ds.getConnection();
-			PreparedStatement pstmt = con.prepareStatement(sql);) {
-			
-			pstmt.setInt(1, scheduleId);
-			pstmt.setInt(2, empId);
-			
-			try (ResultSet rs = pstmt.executeQuery()) {
-				while (rs.next()) {
-					JsonObject obj  = new JsonObject();
-					obj.addProperty("schedule_name", rs.getString(1));
-					obj.addProperty("schedule_content", rs.getString(2));
-					
-					Timestamp scheduleStart = rs.getTimestamp(3);
-	                if (scheduleStart != null) {
-	                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm"); 
-	                    obj.addProperty("schedule_start", sdf.format(scheduleStart));
-	                }
-	                Timestamp scheduleEnd = rs.getTimestamp(4);
-	                if (scheduleEnd != null) {
-	                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-	                    obj.addProperty("schedule_end", sdf.format(scheduleEnd));
-	                }
-	                obj.addProperty("schedule_color", rs.getString(5));
-	                array.add(obj);
-	          
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("getListSchedule() 에러 : " + e);
-		}
-		
-	    System.out.println("array = " + array);
-		return array;
-	}*/
-
 	public JsonArray getListSchedule(int scheduleId, String empId) {
 		String sql = """
 				select * 

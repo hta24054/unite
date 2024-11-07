@@ -1,8 +1,10 @@
-package com.hta2405.unite.action;
+package com.hta2405.unite.action.project;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import com.hta2405.unite.action.Action;
+import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ProjectDAO;
 
 import jakarta.servlet.ServletException;
@@ -10,7 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 //프로젝트 상세. main에서 누르고 들어오는 첫 창
-public class ProjectUpdateRateAction implements Action {
+public class ProjectUpdateProgressAction implements Action {
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // 클라이언트로부터 전달받은 파라미터 처리

@@ -5,17 +5,17 @@ import java.util.HashMap;
 
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
-import com.hta2405.unite.action.ProjectCancelAction;
-import com.hta2405.unite.action.ProjectChartAction;
-import com.hta2405.unite.action.ProjectCompleteAction;
-import com.hta2405.unite.action.ProjectCreateAction;
-import com.hta2405.unite.action.ProjectDetailAction;
-import com.hta2405.unite.action.ProjectDoCreateAction;
-import com.hta2405.unite.action.ProjectEmployAction;
-import com.hta2405.unite.action.ProjectGetOngoingAction;
-import com.hta2405.unite.action.ProjectMainAction;
-import com.hta2405.unite.action.ProjectProgressAction;
-import com.hta2405.unite.action.ProjectUpdateRateAction;
+import com.hta2405.unite.action.project.ProjectCancelAction;
+import com.hta2405.unite.action.project.ProjectChartAction;
+import com.hta2405.unite.action.project.ProjectCompleteAction;
+import com.hta2405.unite.action.project.ProjectCreateAction;
+import com.hta2405.unite.action.project.ProjectDetailAction;
+import com.hta2405.unite.action.project.ProjectDoCreateAction;
+import com.hta2405.unite.action.project.ProjectEmployAction;
+import com.hta2405.unite.action.project.ProjectGetOngoingAction;
+import com.hta2405.unite.action.project.ProjectMainAction;
+import com.hta2405.unite.action.project.ProjectProgressAction;
+import com.hta2405.unite.action.project.ProjectUpdateProgressAction;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -45,7 +45,7 @@ public class ProjectFrontController extends HttpServlet {
         actionMap.put("/employ", new ProjectEmployAction());
         actionMap.put("/doCreate", new ProjectDoCreateAction());
         actionMap.put("/getOngoingProjects", new ProjectGetOngoingAction());
-        actionMap.put("/updateprogressrate", new ProjectUpdateRateAction());
+        actionMap.put("/updateprogress", new ProjectUpdateProgressAction());
     }					
 
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

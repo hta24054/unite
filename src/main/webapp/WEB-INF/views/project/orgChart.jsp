@@ -19,8 +19,8 @@
                             {title: "부사장", folder: true},
                             {
                                 title: "경영기획본부", folder: true, children: [
-                                    {title: "재무관리팀", key: "재무부"},
-                                    {title: "인사관리팀", key: "인사부"}
+                                    {title: "재무관리팀", key: "재무관리팀"},
+                                    {title: "인사관리팀", key: "인사관리팀"}
                                 ]
                             },
                             {
@@ -55,7 +55,7 @@
 
             function loadEmployees(department) {
                 $.ajax({
-                    url: 'employ',
+                    url: '${pageContext.request.contextPath}/project/employ',
                     method: 'GET',
                     data: { department: department },
                     success: function(data) {

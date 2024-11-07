@@ -1,8 +1,10 @@
-package com.hta2405.unite.action;
+package com.hta2405.unite.action.project;
 
 import java.io.IOException;
 import java.util.List;
 
+import com.hta2405.unite.action.Action;
+import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ProjectDAO;
 import com.hta2405.unite.dto.ProjectDetail;
 
@@ -15,7 +17,8 @@ public class ProjectDetailAction implements Action {
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		int projectId = Integer.parseInt(req.getParameter("projectId"));
-        System.out.println("projectId: " + projectId);
+		String userid = (String) req.getSession().getAttribute("id");
+        System.out.println("projectId: " + projectId + "userid" + userid);
         
         //프로젝트 detail이동시 leftbar바에 추가 
         ProjectDAO projectDAO1 = new ProjectDAO();
@@ -25,7 +28,7 @@ public class ProjectDetailAction implements Action {
         
         //진행률
         ProjectDAO projectDAO2 = new ProjectDAO();
-        List<ProjectDetail> projectDetail1 = projectDAO2.getProjectDetail1(projectId); //db값 가져와 진행률 반영
+        List<ProjectDetail> projectDetail1 = projectDAO2.getProjectDetail1(projectId, userid); //db값 가져와 진행률 반영
         req.setAttribute("project", projectDetail1); 
         System.out.println("진행률 : " + projectDetail1);//값 확인
         

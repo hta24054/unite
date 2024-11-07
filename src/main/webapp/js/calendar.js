@@ -46,6 +46,7 @@
                 $scheduleModal.modal('show');
             },
 	        events: function(info, successCallback, failureCallback) {
+				
 		        // 서버에서 일정 데이터를 가져온다.
 		        $.ajax({
 		            url: "${pageContext.request.contextPath}/schedule/ScheduleListAction",
@@ -53,20 +54,10 @@
 		            dataType: 'json',
 		            success: function(data) {
 			            successCallback(data);
+			            console.log(data)
 			        },
-		             error: function() {
-			            failureCallback(); // 에러 발생 시 failureCallback 호출
-			        }
 		        });
 		    },
-		  	/*
-		   events: [
-			    {
-			      title: 'Event1',
-			      start: '2024-11-06'
-			    }
-			],
-			*/
 		    dateClick: function(info) { // 일자셀 클릭 함수
 	            console.log("dateClick info", info)
 	        },

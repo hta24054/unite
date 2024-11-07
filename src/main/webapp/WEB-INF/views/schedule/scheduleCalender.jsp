@@ -85,8 +85,10 @@
 				</div>
 				<div class="modal-body">
 					<form name="scheduleEvent" method="post">
-						<input type="hidden" id="schedule_id" name="schedule_id" value="${param.id}">
-						<input type="hidden" id="emp_id" name="emp_id" value="E001"> <!-- 임시 -->
+						<input type="hidden" id="schedule_id" name="schedule_id" value="${param.schedule_id}">
+
+						<!-- EmpLoginProcessAction의 session.setAttribute("id", id)의 값이 value에 들어가야함 -->
+						<input type="hidden" id="emp_id" name="emp_id" value="${id}">
 						
 						<div class="form-group">
 							<label for="schedule_name">일정명</label>

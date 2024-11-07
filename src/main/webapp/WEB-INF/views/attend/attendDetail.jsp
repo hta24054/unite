@@ -34,12 +34,12 @@
         }
 
         #report {
-            width: 500px;
+            width: 600px;
             text-align: center;
         }
 
         #report th {
-            width: 25%;
+            width: 20%;
         }
 
         #main_title {
@@ -76,6 +76,7 @@
             <th>근무</th>
             <th>휴가</th>
             <th>결근</th>
+            <th>지각, 조퇴</th>
         </tr>
         </thead>
         <tbody>
@@ -84,6 +85,7 @@
             <td>${myWorkDate}</td>
             <td>${vacation}</td>
             <td>${absent}</td>
+            <td>${lateOrLeaveEarly}</td>
         </tr>
         </tbody>
     </table>

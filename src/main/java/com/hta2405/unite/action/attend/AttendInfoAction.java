@@ -5,6 +5,7 @@ import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.AttendDao;
 import com.hta2405.unite.dto.Attend;
+import com.hta2405.unite.util.CommonUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,20 +20,16 @@ public class AttendInfoAction implements Action {
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String empId = (String) req.getSession().getAttribute("id");
 
-        // empId가 null인 경우
         if (empId == null) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "유저가 없습니다.");
-            return null;
+            return CommonUtil.alertAndGoBack(resp, "유저가 없습니다.");
         }
 
         AttendDao attendDao = new AttendDao();
         Attend attend = attendDao.getAttendByEmpId(empId, LocalDate.now());
 
-        // JSON 응답 준비
         resp.setContentType("application/json");
         JsonObject jsonObject = createAttendJsonResponse(attend);
 
-        // JSON 응답 출력
         try (PrintWriter out = resp.getWriter()) {
             out.print(jsonObject);
             out.flush();

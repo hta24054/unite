@@ -5,6 +5,7 @@ import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dto.Emp;
 import com.hta2405.unite.util.AttendUtil;
+import com.hta2405.unite.util.CommonUtil;
 import com.hta2405.unite.util.EmpUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,20 +24,12 @@ public class AttendEmpDetailAction implements Action {
 
         //본인이 부서장인지 확인
         if (!EmpUtil.isManager(loginEmp)) {
-            PrintWriter out = resp.getWriter();
-            resp.setContentType("text/html;charset=utf-8");
-            out.print("<script>alert('부서장이 아닙니다.');");
-            out.print("history.back()</script>");
-            return null;
+            return CommonUtil.alertAndGoBack(resp, "부서장이 아닙니다.");
         }
 
         //해당 타겟 직원의 부서장인지 확인
         if (!EmpUtil.isValidToAccessEmp(loginEmp, targetEmp)) {
-            PrintWriter out = resp.getWriter();
-            resp.setContentType("text/html;charset=utf-8");
-            out.print("<script>alert('해당 직원을 확인할 수 없습니다.');");
-            out.print("history.back()</script>");
-            return null;
+            return CommonUtil.alertAndGoBack(resp, "해당 직원을 확인할 권한이 없습니다.");
         }
         return new AttendUtil().getAttendDetail(req, targetEmp);
     }

@@ -1,8 +1,10 @@
-	package com.hta2405.unite.action;
+	package com.hta2405.unite.action.project;
 	
 	import java.io.IOException;
-	
-	import com.hta2405.unite.dao.ProjectDAO;
+
+import com.hta2405.unite.action.Action;
+import com.hta2405.unite.action.ActionForward;
+import com.hta2405.unite.dao.ProjectDAO;
 	
 	import jakarta.servlet.ServletException;
 	import jakarta.servlet.http.HttpServletRequest;

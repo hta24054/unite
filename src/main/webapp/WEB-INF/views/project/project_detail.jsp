@@ -10,6 +10,11 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+	    var contextPath = "${pageContext.request.contextPath}";
+	    var projectName = "${left}";
+	</script>
+	<script src="${pageContext.request.contextPath }/js/project_detail.js"></script>
 	<jsp:include page="../common/header.jsp"/>
 	<jsp:include page="project_leftbar.jsp"/>
 	<style>
@@ -19,84 +24,11 @@
 		caption { caption-side: top; }
 		.notification-content { border: 1px solid #ccc; border-radius: 8px; padding: 10px; height: 480px;}<%--height--%>
 	</style>
-		<script>
-    $(document).ready(function() {
-        var projectName = "${left}";
-        if (projectName) {
-            $("#currentProjectName").text(projectName).show();
-        }
-
-        let currentProjectId, memberId;
-
-        // 진행률 클릭 시
-        $(".progress-rate.clickable").click(function() {
-            currentProjectId = $(this).data("id"); // 프로젝트 ID
-            memberId = $(this).data("memberid");   // 멤버 ID
-            const currentRate = $(this).data("rate"); // 현재 진행률
-            console.log("currentProjectId: " + currentProjectId);
-            console.log("memberId: " + memberId);
-            console.log("currentRate: " + currentRate);
-
-            // 모달에 진행률 설정
-            $("#progressInput").val(currentRate);
-            $("#progressModal").modal("show");
-        });
-
-        // 진행률 저장 버튼 클릭 시
-        $("#saveProgressBtn").click(function() {
-            const newProgressRate = $("#progressInput").val(); // 새로 입력된 진행률
-            console.log("New progress rate: " + newProgressRate);
-
-            // 값이 없으면 요청을 중단
-            if (!newProgressRate) {
-                alert("진행률을 입력해 주세요.");
-                return;
-            }
-
-            $.ajax({
-                url: "${pageContext.request.contextPath}/project/updateprogressrate",
-                type: "POST",
-                data: { 
-                    projectId: currentProjectId, 
-                    memberId: memberId, 
-                    memberProgressRate: newProgressRate 
-                },
-                success: function(response) {
-                    console.log("Response from server: ", response);
-
-                    if (response.success) {
-                        // 서버에서 성공적으로 응답 받은 경우, 진행률을 업데이트
-                        const progressRateElement = $(`.progress-rate[data-id='${currentProjectId.toString()}']`);
-                        console.log("Progress rate element:", progressRateElement); // 요소가 제대로 선택되는지 확인
-
-                        // 선택한 요소가 존재하는지 확인하고 진행률을 업데이트
-                        if (progressRateElement.length > 0) {
-                            progressRateElement.text(newProgressRate + "%");  // 진행률 텍스트 업데이트
-                            progressRateElement.data("rate", newProgressRate);  // data 속성도 업데이트
-                        } else {
-                            console.log("진행률 요소를 찾을 수 없습니다.");
-                        }
-                    } else {
-                        console.log("업데이트에 실패했습니다.");
-                    }
-                    $("#progressModal").modal("hide");  // 진행률 모달 창 숨기기
-                },
-                error: function() {
-                    console.log("오류가 발생했습니다.");
-                    $("#progressModal").modal("hide");
-                }
-            });
-        });
-
-    });
-</script>
-
 </head>
 <body>
 	<div class="container">
 		<div class="d-flex justify-content-between align-items-center">
 			<h3><c:out value="${left}"/></h3>
-			<button class="btn btn-primary">관리</button>
 		</div>
 		<hr style="margin-top: 40px;"> <!-- 진행률과의 간격 추가 -->
 		<div class="row">
@@ -114,7 +46,13 @@
 						<c:forEach var="project" items="${project}">
 						    <tr>
 						        <td>${project.participantNames}</td>
-						        <td>${project.memberDesign}</td>
+						        <td><span class="task-content <c:if test='${project.isManager}'>clickable</c:if>" 
+						                  data-id="${project.projectId}" 
+						                  data-memberid="${project.memberId}" 
+						                  data-content="${project.memberDesign}">
+						                ${project.memberDesign}업무가 지정되지 않았습니다
+						            </span>
+				                </td>
 						        <td><span class="progress-rate <c:if test='${project.memberId == sessionScope.id}'>clickable</c:if>" 
 								          data-id="${project.projectId}" data-memberid="${project.memberId}"
 								          data-rate="${project.memberProgressRate}">
@@ -154,6 +92,27 @@
 		</div>
 	</div>
 	
+	<!-- 업무 내용 입력 모달 -->
+	<div class="modal fade" id="taskContentModal" tabindex="-1" role="dialog" aria-labelledby="taskContentModalLabel" aria-hidden="true">
+	    <div class="modal-dialog" role="document">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="taskContentModalLabel">업무 내용 수정</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+	            <div class="modal-body">
+	                <input type="text" id="taskContentInput" class="form-control" placeholder="업무 내용을 입력하세요" />
+	            </div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+	                <button type="button" class="btn btn-primary" id="saveTaskContentBtn">저장</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+		
 	<!-- 진행률 입력 모달 -->
 	<div class="modal fade" id="progressModal" tabindex="-1" role="dialog" aria-labelledby="progressModalLabel" aria-hidden="true">
 	    <div class="modal-dialog" role="document">

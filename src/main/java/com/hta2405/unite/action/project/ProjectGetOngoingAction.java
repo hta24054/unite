@@ -1,10 +1,12 @@
-package com.hta2405.unite.action;
+package com.hta2405.unite.action.project;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.hta2405.unite.action.Action;
+import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dao.ProjectDAO;
 import com.hta2405.unite.dto.Emp;
@@ -23,7 +25,6 @@ public class ProjectGetOngoingAction implements Action {
         //Integer loggedInUserId = (Integer) req.getSession().getAttribute("userId");  // "userId"는 세션에 저장된 사용자 ID 키입니다.
 
     	String userid = (String) req.getSession().getAttribute("id");
-
         ProjectDAO projectDAO = new ProjectDAO();
         List<ProjectInfo> ongoingProjects = projectDAO.getOngoingProjects(userid);  // 로그인된 사용자 ID 전달
 

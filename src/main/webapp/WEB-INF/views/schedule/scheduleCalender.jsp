@@ -5,11 +5,8 @@
 <head>
 	<jsp:include page="../common/header.jsp" />
 	<title>캘린더 일정관리</title> 
-	<!-- moment lib -->
 	<script src='https://cdn.jsdelivr.net/npm/moment@2.27.0/min/moment.min.js'></script>
-	<!-- fullcalendar bundle -->
 	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
-	<!-- the moment-to-fullcalendar connector. must go AFTER the moment lib -->
 	<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/moment@6.1.15/index.global.min.js'></script>
 	<script src="${pageContext.request.contextPath}/js/calendar.js"></script>
 	<style>

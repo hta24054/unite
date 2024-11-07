@@ -56,7 +56,6 @@ document.addEventListener('DOMContentLoaded', function () {
 					        type: "get",
 					        dataType: "json",
 					        data: {
-								"schedule_id" : $("#schedule_id").val(),
 								"emp_id" : $("#emp_id").val(),
 								title: $scheduleName.val(),
 								start: moment(info.startStr).format('YYYY-MM-DD HH:mm'),
@@ -118,23 +117,29 @@ document.addEventListener('DOMContentLoaded', function () {
 				// 이벤트 추가
 				calendar.addEvent(eventData);
 				
-				const eventsFromCalendar = $('#calendar').fullCalendar('clientEvents');
-		        
-			    $.ajax({
-					url: "ScheduleAddProcessAction",
-					type: "post",
-		            dataType: "json",
-		            data: { 
-						 eventsJson: JSON.stringify(eventsFromCalendar),
-					},
-		            success: function(data) {
-						console.log("data", data);
-		                $scheduleModal.modal("hide");
-		            },
-		            error: function(){
-						console.log('에러');
-					}
-			    });
+				// 이벤트를 서버로 전송
+                $.ajax({
+                    url: "ScheduleAddProcessAction", 
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        title: eventData.title,
+                        start: eventData.start,
+                        end: eventData.end,
+                        allDay: eventData.allDay,
+                        backgroundColor: eventData.bgColor,
+                        description: eventData.description,
+                        emp_id: $("#emp_id").val() // 현재 로그인한 사용자 ID 전달
+                    },
+                    success: function(data) {
+                        console.log("ScheduleAddProcessAction :", data);
+                        $scheduleModal.modal("hide"); 
+                        successCallback(data);
+                    },
+                    error: function() {
+                        console.log('일정 추가 중 오류 발생');
+                    }
+                });
 				
 				// 모달 닫기 및 입력 필드 초기화
 				$scheduleModal.modal("hide");
@@ -178,13 +183,12 @@ document.addEventListener('DOMContentLoaded', function () {
 				const start = moment($start.val(), 'YYYY-MM-DDTHH:mm'); 
 				const end = moment($end.val(), 'YYYY-MM-DDTHH:mm'); 
 
-				// 서버에서 일정 데이터를 가져온다.
+				// 이벤트를 서버로 전송
 		        $.ajax({
-			        url: "ScheduleListAction",
-			        type: "get",
+			        url: "ScheduleAddProcessAction",
+			        type: "post",
 			        dataType: "json",
 			        data: {
-						"schedule_id" : $("#schedule_id").val(),
 						"emp_id" : $("#emp_id").val(), 
 						title: $scheduleName.val(),
 						start: start.format('YYYY-MM-DD HH:mm'),
@@ -194,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
 					    description: $description.val()
 					},
 			        success: function(data) {
-			            console.log("data", data);
+			            console.log("일정 데이터 추가", data);
 			            calendar.addEvent(data);
 			            $scheduleModal.modal("hide");
 			            $scheduleName.val("");
@@ -205,17 +209,11 @@ document.addEventListener('DOMContentLoaded', function () {
 						$description.val("");
 			        },
 			        error: function(error) {
-			            console.log('이벤트 데이터를 불러오는 중 오류 발생:', error);
+			            console.log('이벤트 데이터를 불러오는 중 오류 발생', error);
 			        }
 			    });
 			    
-			    $scheduleModal.modal("hide");
-			    $scheduleName.val("");
-				$start.val("");
-				$end.val("");
-				$allDay.prop("checked", false);
-				$bgColor.val("");
-				$description.val("");
+			
 			});
 			
 		});

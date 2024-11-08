@@ -1,12 +1,6 @@
-/**
- * 
- */
-/**
- * 
- */
 $(function(){
 	$("button").click(function(){
-		location.href="../b/write";
+		location.href="../board/boardWrite";
 	})
 
 	$("#viewcount").change(function(){
@@ -96,40 +90,5 @@ function generatePagination(data){
 	
 	$('.pagination').empty().append(output);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

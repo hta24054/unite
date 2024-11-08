@@ -93,6 +93,10 @@
 								   class="form-control" placeholder="일정명을 입력하세요"
 								   name="schedule_name" id="schedule_name">
 						</div>
+						<div class="form-group custom-control custom-checkbox">
+				             <input type="checkbox" name="allDay" id="allDay" class="custom-control-input" value="">
+				             <label for="allDay" class="custom-control-label">하루종일</label>
+				        </div>
 						<div class="form-group">
 							<label for="startAt">시작날짜/시간</label>
 							<input type="datetime-local" name="startAt" id="startAt" class="form-control">
@@ -100,10 +104,6 @@
 						<div class="form-group">
 				            <label for="endAt">종료날짜/시간</label>
 				            <input type="datetime-local" name="endAt" id="endAt" class="form-control">
-				        </div>
-				        <div class="form-group custom-control custom-checkbox">
-				             <input type="checkbox" name="allDay" id="allDay" class="custom-control-input" value="">
-				             <label for="allDay" class="custom-control-label">하루종일</label>
 				        </div>
           				<div class="form-group">
           					<div class="color-group">

@@ -19,29 +19,29 @@ public class ScheduleAddProcessAction implements Action {
 		String empId = request.getParameter("emp_id");
 		String scheduleName = request.getParameter("schedule_name");
 		String description = request.getParameter("description");
-		
 		String startAt = request.getParameter("startAt");
-		System.out.println("startAt=" + startAt);
 		String endAt = request.getParameter("endAt");
+		System.out.println("startAt=" + startAt);
 		System.out.println("endAt=" + endAt);
-		
 		String bgColor = request.getParameter("bgColor");
+		//int allDay = Integer.parseInt(request.getParameter("allDay"));
+		String allDayParam = request.getParameter("allDay");
+		int allDay = (allDayParam != null) ? Integer.parseInt(allDayParam) : 0;
 		
 		Schedule s = new Schedule();
 		
 		s.setEmpId(empId);
 		s.setScheduleName(scheduleName);
-		
+		s.setScheduleContent(description);
 		LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(startAt);
-		System.out.println(startDateTime);
-		
 		LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(endAt);
-		System.out.println(endDateTime);
+//		System.out.println(startDateTime);
+//		System.out.println(endDateTime);
 		
 		s.setScheduleStart(startDateTime);
 		s.setScheduleEnd(endDateTime);
 		s.setScheduleColor(bgColor);
-		s.setScheduleContent(description);
+		s.setScheduleAllDay(allDay);
 		
 		ScheduleDAO sdao = new ScheduleDAO();
 		

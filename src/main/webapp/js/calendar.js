@@ -17,12 +17,14 @@ $(document).ready(function(){
 	            
 	            if (data != null) {
 			        for (let i = 0; i < data.length; i++) {
+						
 			            events.push({
 			                title: data[i].schedule_name, 
 			                start: data[i].schedule_start, 
 			                end: data[i].schedule_end, 
 			                backgroundColor: data[i].schedule_color, 
-			                description: data[i].schedule_content 
+			                description: data[i].schedule_content,
+			                allDay: data[i].schedule_allDay === 0
 			            });
 			        }
 			    }
@@ -48,19 +50,24 @@ $(document).ready(function(){
                 startAt: moment(eventData.startAt).format('YYYY-MM-DD HH:mm'),
                 endAt: moment(eventData.endAt).format('YYYY-MM-DD HH:mm'),
                 bgColor: eventData.bgColor,
-                description: eventData.description
+                description: eventData.description,
+                allDay: eventData.schedule_allDay
             },
             success: function (data) {
                 console.log("일정 추가 성공", data);
 
                 if (data != null) {
 			        for (let i = 0; i < data.length; i++) {
+						//allDay 변환과정 필요함
+						
 			            events.push({
 			                title: data[i].schedule_name, 
 			                start: data[i].schedule_start, 
 			                end: data[i].schedule_end, 
 			                backgroundColor: data[i].schedule_color, 
-			                description: data[i].schedule_content 
+			                description: data[i].schedule_content,
+			                //allDay: data[i].schedule_allDay === 0 
+			                allDay: true
 			            });
 			        }
 			    }
@@ -78,8 +85,6 @@ $(document).ready(function(){
 		const $scheduleName = $("#schedule_name");
 		const $start = $("#startAt"); 
 		const $end = $("#endAt");
-		//const $allDay = $("#allDay");
-		//const $bgColor = $("#bgColor");
 		const $description = $("#description");
 
         if ($scheduleName.val().trim() === "") {
@@ -121,11 +126,25 @@ $(document).ready(function(){
             startAt: $("#startAt").val(),
             endAt: $("#endAt").val(),
             bgColor: $("#bgColor").val(),
-            description: $("#description").val()
+            description: $("#description").val(),
+            allDay: $("#allDay").prop("checked") 
         };
 
         if (validateForm()) {
             addEvent(eventData);
+        }
+    });
+    
+    // 종일 체크박스 상태 변경 시 
+    $("#allDay").change(function() {
+        const isAllDayChecked = $(this).is(":checked");
+        
+        if (isAllDayChecked) {
+            // allDay가 체크된 경우 시간 부분을 비활성화하고 날짜만 입력하도록 변경
+            $("#startAt, #endAt").attr("type", "date");
+        } else {
+            // allDay가 체크 해제된 경우 다시 시간 입력 가능하도록 변경
+            $("#startAt, #endAt").attr("type", "datetime-local");
         }
     });
 

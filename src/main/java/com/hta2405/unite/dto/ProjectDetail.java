@@ -19,7 +19,12 @@ public class ProjectDetail {
     private int memberProgressRate;  //진행률 - 진행률
     private String taskWriter;  //진행과정 - 작성자
     private String taskTitle;  //진행과정 - 제목
+    private String taskDate;  //진행과정 - 작성일
     private String taskUpdateDate;  //진행과정 - 작성일
     private String content;
+    private String task_file_path;
+    private String task_file_original;
+    private String task_file_uuid;
+    private String task_file_type;
     private Boolean isManager;
 }

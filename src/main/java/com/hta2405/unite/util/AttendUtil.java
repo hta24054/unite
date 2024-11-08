@@ -62,7 +62,8 @@ public class AttendUtil {
             myWorkDate++;
         }
 
-        req.setAttribute("attendList", allDate);
+        req.setAttribute("targetEmp", targetEmp); //근태확인할 직원정보
+        req.setAttribute("attendList", allDate); //전체 근태
         req.setAttribute("allWorkDate", allWorkDate); //당월 총 근무일수
         req.setAttribute("myWorkDate", myWorkDate); //근무일수
         req.setAttribute("vacation", vacation); //휴가일수

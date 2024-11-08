@@ -91,53 +91,75 @@ public class EmpDao {
 		}
 		return list;
 	}
-
-	public int updateEmp(Emp emp) {
-		String sql = """
-				    UPDATE EMP SET
-				    PASSWORD = ?, ENAME = ?, DEPT_ID = ?, JOB_ID = ?, GENDER = ?,
-				    EMAIL = ?, TEL = ?, MOBILE = ?, MOBILE2 =?, IMG_PATH = ?, IMG_ORIGINAL = ?,
-				    IMG_UUID = ?, IMG_TYPE = ?, HIREDATE =?, HIRETYPE = ?, BIRTHDAY = ?, BIRTHDAY_TYPE = ?,
-				    SCHOOL = ?, MAJOR = ?, BANK =?, ACCOUNT = ?, ADDRESS = ?, MARRIED = ?, CHILD = ?, ETYPE = ?,
-				    VACATION_COUNT = ?, HIRED = ?
-				    WHERE EMP_ID = ?
-				""";
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-			ps.setString(1, emp.getPassword());
-			ps.setString(2, emp.getEname());
-			ps.setLong(3, emp.getDeptId());
-			ps.setLong(4, emp.getJobId());
-			ps.setString(5, emp.getGender());
-			ps.setString(6, emp.getEmail());
-			ps.setString(7, emp.getTel());
-			ps.setString(8, emp.getMobile());
-			ps.setString(9, emp.getMobile2());
-			ps.setString(10, emp.getImgPath());
-			ps.setString(11, emp.getImgOriginal());
-			ps.setString(12, emp.getImgUUID());
-			ps.setString(13, emp.getImgType());
-			ps.setDate(14, Date.valueOf(emp.getHireDate()));
-			ps.setString(15, emp.getHireType());
-			ps.setDate(16, Date.valueOf(emp.getBirthday()));
-			ps.setString(17, emp.getBirthdayType());
-			ps.setString(18, emp.getSchool());
-			ps.setString(19, emp.getMajor());
-			ps.setString(20, emp.getBank());
-			ps.setString(21, emp.getAccount());
-			ps.setString(22, emp.getAddress());
-			ps.setInt(23, emp.isMarried() ? 1 : 0);
-			ps.setInt(24, emp.isChild() ? 1 : 0);
-			ps.setString(25, emp.getEtype());
-			ps.setInt(26, emp.getVacationCount());
-			ps.setInt(27, emp.isHired() ? 1 : 0);
-			ps.setString(28, emp.getEmpId());
-			return ps.executeUpdate();
-		} catch (SQLException e) {
-			System.out.println("회원정보 변경 오류");
-			e.printStackTrace();
-			return 0;
-		}
-	}
+    public int updateEmp(Emp emp) {
+        String sql = """
+                    UPDATE EMP SET
+                    PASSWORD = ?, ENAME = ?, DEPT_ID = ?, JOB_ID = ?, GENDER = ?,
+                    EMAIL = ?, TEL = ?, MOBILE = ?, MOBILE2 =?, IMG_PATH = ?, IMG_ORIGINAL = ?,
+                    IMG_UUID = ?, IMG_TYPE = ?, HIREDATE =?, HIRETYPE = ?, BIRTHDAY = ?, BIRTHDAY_TYPE = ?,
+                    SCHOOL = ?, MAJOR = ?, BANK =?, ACCOUNT = ?, ADDRESS = ?, MARRIED = ?, CHILD = ?, ETYPE = ?,
+                    VACATION_COUNT = ?, HIRED = ?
+                    WHERE EMP_ID = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, emp.getPassword());
+            ps.setString(2, emp.getEname());
+            ps.setLong(3, emp.getDeptId());
+            ps.setLong(4, emp.getJobId());
+            ps.setString(5, emp.getGender());
+            ps.setString(6, emp.getEmail());
+            ps.setString(7, emp.getTel());
+            ps.setString(8, emp.getMobile());
+            ps.setString(9, emp.getMobile2());
+            ps.setString(10, emp.getImgPath());
+            ps.setString(11, emp.getImgOriginal());
+            ps.setString(12, emp.getImgUUID());
+            ps.setString(13, emp.getImgType());
+            ps.setDate(14, Date.valueOf(emp.getHireDate()));
+            ps.setString(15, emp.getHireType());
+            ps.setDate(16, Date.valueOf(emp.getBirthday()));
+            ps.setString(17, emp.getBirthdayType());
+            ps.setString(18, emp.getSchool());
+            ps.setString(19, emp.getMajor());
+            ps.setString(20, emp.getBank());
+            ps.setString(21, emp.getAccount());
+            ps.setString(22, emp.getAddress());
+            ps.setInt(23, emp.isMarried() ? 1 : 0);
+            ps.setInt(24, emp.isChild() ? 1 : 0);
+            ps.setString(25, emp.getEtype());
+            ps.setInt(26, emp.getVacationCount());
+            ps.setInt(27, emp.isHired() ? 1 : 0);
+            ps.setString(28, emp.getEmpId());
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("회원정보 변경 오류");
+            e.printStackTrace();
+            return 0;
+        }
+    }
+  
+    public List<Emp> getEmpByDeptId(Long deptId) {
+        List<Emp> list = new ArrayList<>();
+        String sql = """
+                    SELECT *
+                    FROM EMP e NATURAL JOIN JOB j
+                    WHERE DEPT_ID = ?
+                    ORDER BY j.JOB_RANK, e.emp_id
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, deptId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(makeEmp(rs));
+            }
+        } catch (SQLException e) {
+            System.out.println("부서 회원 정보 가져오기 오류");
+            e.printStackTrace();
+        }
+        return list;
+    }
 
 	public int updateMyEmp(Emp emp) {
 		String sql = """

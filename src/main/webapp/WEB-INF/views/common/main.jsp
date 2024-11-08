@@ -7,6 +7,6 @@
 	<jsp:include page="../common/header.jsp"/>
 </head>
 <body>
-	<h1>여기는 메인</h1>
+	<h1>여기는 2메인</h1>
 </body>
 </html>

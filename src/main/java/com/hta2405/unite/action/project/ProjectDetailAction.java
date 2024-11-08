@@ -18,8 +18,8 @@ public class ProjectDetailAction implements Action {
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		int projectId = Integer.parseInt(req.getParameter("projectId"));
 		String userid = (String) req.getSession().getAttribute("id");
-        System.out.println("projectId: " + projectId + "userid" + userid);
-        
+        System.out.println("projectId: " + projectId + "\nuserid : " + userid);
+        req.getSession().setAttribute("projectId", projectId);
         //프로젝트 detail이동시 leftbar바에 추가 
         ProjectDAO projectDAO1 = new ProjectDAO();
         String left = projectDAO1.getProjectName(projectId);

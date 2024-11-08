@@ -40,7 +40,7 @@
                required>
         <input type="password" class="form-control mb-2" id="newPasswordVerify" name="newPasswordVerify"
                placeholder="새 비밀번호 확인" required>
-        <button type="submit" class="btn btn-primary btn-block">확인</button>
+        <button type="submit" class="btn btn-primary btn-block submit-btn">확인</button>
         <button type="reset" class="btn btn-secondary btn-block">취소</button>
     </form>
 </div>
@@ -65,6 +65,12 @@
                 $('#currentPassword').val('').focus();
                 $('#newPassword').val('');
                 $('#newPasswordVerify').val('');
+                return false;
+            }
+
+            const pattern = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*?_]).{8,}$/;
+            if(!pattern.test(newPassword)){
+                alert("최소 8자 이상,\n하나 이상의 영문자,\n하나 이상의 숫자,\n하나 이상의 특수 문자를 포함해야 합니다.");
                 return false;
             }
         });

@@ -183,6 +183,7 @@
     </div>
 </div>
 
+<%--수정모달--%>
 <div class="modal fade" id="editResourceModal" tabindex="-1" aria-labelledby="editResourceModalLabel"
      aria-hidden="true">
     <div class="modal-dialog">

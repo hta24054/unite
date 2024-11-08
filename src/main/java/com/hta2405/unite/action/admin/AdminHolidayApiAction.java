@@ -21,7 +21,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 import static com.hta2405.unite.util.CommonUtil.alertAndGoBack;
-import static java.time.format.DateTimeFormatter.*;
+import static java.time.format.DateTimeFormatter.ofPattern;
 
 public class AdminHolidayApiAction implements Action {
 

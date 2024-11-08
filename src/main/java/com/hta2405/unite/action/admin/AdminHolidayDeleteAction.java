@@ -1,6 +1,5 @@
 package com.hta2405.unite.action.admin;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
@@ -11,8 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.time.LocalDate;
-
-import static com.hta2405.unite.util.CommonUtil.alertAndGoBack;
 
 public class AdminHolidayDeleteAction implements Action {
     @Override

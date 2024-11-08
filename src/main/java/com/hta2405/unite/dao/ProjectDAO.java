@@ -30,24 +30,30 @@ public class ProjectDAO {
     }
 
     //사원번호로 사원정보찾기
-    public List<Emp> getEmployeesByDepartment(int i) {
+    public List<Emp> getEmployeesByDepartment(int deptId) {
         List<Emp> empList = new ArrayList<>();
-        String sql = "SELECT * FROM emp WHERE dept_id = ?";
+        String sql = "SELECT emp_id, ename, e.dept_id, gender, email, tel, mobile, "
+                + "j.job_name, d.dept_name "
+                + "FROM emp e "
+                + "JOIN job j ON e.job_id = j.job_id "
+                + "JOIN dept d ON e.dept_id = d.dept_id "
+                + "WHERE e.dept_id = ?";
 
         try (Connection conn = ds.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setLong(1, i);
+            pstmt.setInt(1, deptId);  // deptId는 int 타입으로 전달
             ResultSet rs = pstmt.executeQuery();
+            
             while (rs.next()) {
                 Emp emp = new Emp();
                 emp.setEmpId(rs.getString("emp_id"));
                 emp.setEname(rs.getString("ename"));
-                emp.setDeptId(rs.getLong("dept_id"));
-                emp.setJobId(rs.getLong("job_id"));
+                emp.setDeptId(rs.getLong("dept_id"));  // dept_id를 int로 받아 설정
+                emp.setSchool(rs.getString("job_name"));  // job_name을 String으로 설정
                 emp.setGender(rs.getString("gender"));
                 emp.setEmail(rs.getString("email"));
                 emp.setTel(rs.getString("tel"));
-                emp.setMobile(rs.getString("mobile"));
+                emp.setMobile(rs.getString("dept_name"));
                 empList.add(emp);
             }
         } catch (SQLException e) {
@@ -94,8 +100,8 @@ public class ProjectDAO {
 
     // 프로젝트 생성
     public int createProject(String managerId, String projectName, String startDate, String endDate, String description) {
-        String projectSql = "INSERT INTO project (project_id, manager_id, project_name, project_start_date, project_end_date, project_content) "
-                          + "VALUES (project_seq.NEXTVAL, ?, ?, ?, ?, ?)";
+        String projectSql = "INSERT INTO project (manager_id, project_name, project_start_date, project_end_date, project_content) "
+                          + "VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = ds.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(projectSql)) {
@@ -109,7 +115,7 @@ public class ProjectDAO {
             pstmt.executeUpdate();
 
             // 두 번째 쿼리를 사용하여 새로 생성된 project_id를 가져오기
-            String idSql = "SELECT project_seq.CURRVAL FROM dual";
+            String idSql = "SELECT SEQ_PROJECT.CURRVAL FROM dual";
             try (PreparedStatement idStmt = conn.prepareStatement(idSql);
                  ResultSet rs = idStmt.executeQuery()) {
 
@@ -125,8 +131,8 @@ public class ProjectDAO {
 
     // 책임자 추가
     public void addProjectMember(int projectId, String memberId, String role) {
-        String memberSql = "INSERT INTO project_member (project_member_id, member_id, project_id, member_role, member_date) "
-                         + "VALUES (project_member_seq.NEXTVAL, ?, ?, ?, SYSDATE)";
+        String memberSql = "INSERT INTO project_member (member_id, project_id, member_role, member_date) "
+                         + "VALUES (?, ?, ?, SYSDATE)";
 
         try (Connection conn = ds.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(memberSql)) {
@@ -142,8 +148,8 @@ public class ProjectDAO {
 
     // 여러명일 때 추가
     public void addProjectMembers(int projectId, String members, String role) {
-        String memberSql = "INSERT INTO project_member (project_member_id, member_id, project_id, member_role, member_date) "
-                         + "VALUES (project_member_seq.NEXTVAL, ?, ?, ?, SYSDATE)";
+        String memberSql = "INSERT INTO project_member (member_id, project_id, member_role, member_date) "
+                         + "VALUES (?, ?, ?, SYSDATE)";
 
         try (Connection conn = ds.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(memberSql)) {
@@ -162,8 +168,8 @@ public class ProjectDAO {
 
     // 작업 생성
     public void createTask(int projectId, String empId) {
-        String taskSql = "INSERT INTO task (task_id, emp_id, project_id) "
-                       + "VALUES (SEQ_task.NEXTVAL, ?, ?)";
+        String taskSql = "INSERT INTO task (emp_id, project_id) "
+                       + "VALUES (?, ?)";
 
         try (Connection conn = ds.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(taskSql)) {
@@ -195,37 +201,32 @@ public class ProjectDAO {
     public List<ProjectInfo> getOngoingProjects(String loginEmp) {
     	List<ProjectInfo> projectList = new ArrayList<>();
         String sql = """
-                SELECT 
-                    p.project_id, 
-                    p.project_name, 
-                    p.project_end_date,
-                    (SELECT COUNT(pm_inner.member_id)
-                     FROM project_member pm_inner
-                     WHERE pm_inner.project_id = p.project_id) AS member_count,
-                    AVG(pm.member_progress_rate) AS average_progress_rate,
-                    (SELECT m.member_id
+                SELECT
+				    p.project_id,
+				    p.project_name,
+				    p.project_end_date,
+				    COUNT(pm.project_member_id) AS member_count,  
+				    SUM(pm.MEMBER_PROGRESS_RATE) / COUNT(pm.project_member_id) AS avg_progress,
+				     (SELECT m.member_id
                      FROM project_member m 
                      WHERE m.project_id = p.project_id 
                      AND m.member_role = 'MANAGER') AS manager_id
-                FROM 
-                    project p
-                JOIN 
-                    project_member pm ON p.project_id = pm.project_id
-                WHERE 
-                    p.project_finished = 0 
-                    AND p.project_canceled = 0
-                    AND pm.member_id = ?
-                GROUP BY 
-                    p.project_id, 
-                    p.project_name, 
-                    p.project_end_date
-                ORDER BY 
-                    p.project_id DESC
+				FROM
+				    project p
+				        JOIN
+				    project_member pm ON p.project_id = pm.project_id
+				WHERE
+				    p.project_id IN (
+				        SELECT project_id
+				        FROM project_member
+				        WHERE member_id = ? 
+				    ) and p.project_finished = 0 and p.project_canceled = 0
+				GROUP BY
+				    p.project_id, p.project_name, p.project_end_date
                 """;
 
         try (Connection conn = ds.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
             pstmt.setString(1, loginEmp);
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
@@ -234,11 +235,15 @@ public class ProjectDAO {
                     project.setProjectName(rs.getString("project_name"));
                     project.setEndDate(rs.getDate("project_end_date"));
                     project.setMemberCount(rs.getInt("member_count")); 
-                    project.setProgressRate(rs.getDouble("average_progress_rate")); 
+                    project.setProgressRate(rs.getInt("avg_progress")); 
 
                     // manager_id가 loginEmp와 같은지 비교하여 isManager 설정
                     String managerId = rs.getString("manager_id");
-                    project.setIsManager(managerId != null && managerId.equals(loginEmp));
+                    if(managerId != null && managerId.equals(loginEmp)) {
+                        project.setIsManager(true);
+                    } else {
+                        project.setIsManager(false);
+                    }
 
                     projectList.add(project);
                 }
@@ -487,11 +492,16 @@ public class ProjectDAO {
 
     
     //프로젝트 ID에 따른 상세 정보를 가져오는 메서드 추가(project
-    public List<ProjectDetail> getProjectDetail1(int projectId) {
+    public List<ProjectDetail> getProjectDetail1(int projectId, String userid) {
         List<ProjectDetail> project = new ArrayList<>(); 
         String sql = """
-                select e.ename, m.member_id, m.member_designated, m.member_progress_rate, p.project_id
-                from project p join project_member m on p.project_id = m.project_id
+                select e.ename, m.member_id, m.member_designated, m.member_progress_rate, p.project_id,
+                       (select m2.member_id
+                        from project_member m2
+                        where m2.project_id = p.project_id
+                        and m2.member_role = 'MANAGER') as manager_id
+                from project p 
+                join project_member m on p.project_id = m.project_id
                 join emp e on m.member_id = e.emp_id
                 where p.project_id = ?
                 """;
@@ -508,6 +518,10 @@ public class ProjectDAO {
                 projectDetail.setMemberDesign(rs.getString(3));
                 projectDetail.setMemberProgressRate(rs.getInt(4));
                 projectDetail.setProjectId(rs.getInt(5));
+
+                String managerId = rs.getString(6); // MANAGER의 ID 가져오기
+                projectDetail.setIsManager(managerId != null && managerId.equals(userid)); // 로그인 ID가 MANAGER인지 확인
+                
                 project.add(projectDetail);
             }
         } catch (SQLException e) {
@@ -515,6 +529,7 @@ public class ProjectDAO {
         }
         return project; // 프로젝트 정보 반환
     }
+
 
 	public List<ProjectDetail> getProjectDetail2(int projectId) {
 		List<ProjectDetail> project = new ArrayList<>(); 
@@ -570,9 +585,47 @@ public class ProjectDAO {
 	}
 
 
+	public boolean updateTaskContent(int projectId, String memberId, String taskContent) {
+	    String sql;
+
+	    // 해당 project_id와 member_id로 레코드가 있는지 확인
+	    String checkSql = "SELECT COUNT(*) FROM project_member WHERE project_id = ? AND member_id = ?";
+
+	    try (Connection conn = ds.getConnection();
+	         PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+
+	        checkStmt.setInt(1, projectId);
+	        checkStmt.setString(2, memberId);
+
+	        try (ResultSet rs = checkStmt.executeQuery()) {
+	            rs.next();
+	            int count = rs.getInt(1);
+	            
+	            // 레코드가 존재하면 UPDATE, 없으면 INSERT
+	            if (count > 0) {
+	                sql = "UPDATE project_member SET member_designated = ? WHERE project_id = ? AND member_id = ?";
+	            } else {
+	                sql = "INSERT INTO project_member (member_designated, project_id, member_id) VALUES (?, ?, ?)";
+	            }
+
+	            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+	                stmt.setString(1, taskContent);
+	                stmt.setInt(2, projectId);
+	                stmt.setString(3, memberId);
+
+	                int rowsAffected = stmt.executeUpdate();
+	                return rowsAffected > 0;
+	            }
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+
+
 	
 
-    
     
     
     

@@ -93,13 +93,13 @@ $(document).ready(function() {
 					<th>내선 번호</th>
 				</tr>
 				<tbody>
-					<c:forEach var="empinfo" items="${empList}">
-						<tr class="clickable-row" data-id="${empinfo.empId}">
-							<td>${empinfo.deptName}</td>
-							<td>${empinfo.ename}</td>
-							<td>${empinfo.jobName}</td>
-							<td>${empinfo.email}</td>
-							<td>${empinfo.tel}</td>
+					<c:forEach var="emp" items="${empList}">
+						<tr class="clickable-row" data-id="${emp.empId}">
+							<td>${emp.deptName}</td>
+							<td>${emp.ename}</td>
+							<td>${emp.jobName}</td>
+							<td>${emp.email}</td>
+							<td>${emp.tel}</td>
 						</tr>
 					</c:forEach>
 				</tbody>

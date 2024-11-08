@@ -18,6 +18,6 @@ public class ProjectInfo {
     private String projectName;
     private Date endDate;
     private int memberCount;
-    private Double progressRate;
+    private int progressRate;
     private Boolean isManager;
 }

@@ -34,18 +34,19 @@
         }
 
         #report {
-            width: 500px;
+            width: 600px;
             text-align: center;
         }
 
         #report th {
-            width: 25%;
+            width: 20%;
         }
 
         #main_title {
             color: #334466;
             margin-left: 500px;
             margin-bottom: 20px;
+            font-weight: bold;
         }
 
         #specify {
@@ -65,7 +66,7 @@
     <!-- 연도와 월 변경 -->
     <div class="text-center my-4">
         <button id="prevMonth" class="btn btn-outline-primary">&lt;</button>
-        <span id="currentYearMonth">${param.year}년 ${param.month}월</span>
+        <span id="currentYearMonth" style="font-weight: bold">${param.year}년 ${param.month}월</span>
         <button id="nextMonth" class="btn btn-outline-primary">&gt;</button>
     </div>
     <%--    요약 테이블--%>
@@ -76,6 +77,7 @@
             <th>근무</th>
             <th>휴가</th>
             <th>결근</th>
+            <th>지각, 조퇴</th>
         </tr>
         </thead>
         <tbody>
@@ -84,6 +86,7 @@
             <td>${myWorkDate}</td>
             <td>${vacation}</td>
             <td>${absent}</td>
+            <td>${lateOrLeaveEarly}</td>
         </tr>
         </tbody>
     </table>
@@ -128,7 +131,14 @@
                 </td>
                 <td class="attend-type">
                     <c:choose>
-                        <c:when test="${not empty attend.attendType}">${attend.attendType}</c:when>
+                        <c:when test="${not empty attend.attendType}">
+                            <c:if test="${attend.attendType == '결근'}">
+                                <span style="color: red;">${attend.attendType}</span>
+                            </c:if>
+                            <c:if test="${attend.attendType != '결근'}">
+                                ${attend.attendType}
+                            </c:if>
+                        </c:when>
                         <c:otherwise>-</c:otherwise>
                     </c:choose>
                 </td>
@@ -215,7 +225,7 @@
         const params = new URLSearchParams(window.location.search);
         const emp = params.get('emp'); // 'emp' 파라미터 값 가져오기
         if (emp) { // 'emp' 파라미터가 존재할 경우
-            $('#main_title').text('직원 근태 관리-' + emp);
+            $('#main_title').text('직원 근태 관리 - ' + '${targetEmp.ename}');
         }
     });
 </script>

@@ -40,9 +40,13 @@ h3 {
 			style="list-style-type: disc; padding-left: 20px;">
 			<li class="left" style="border: none;"><a
 				href="${pageContext.request.contextPath}/empInfo/view">나의 인사정보</a></li>
+			<%
+			String empId = (String) session.getAttribute("id");
+			%>
 			<li class="left" style="border: none;"><a
-				href="${pageContext.request.contextPath}/empInfo/viewdept?deptId=2">부서
+				href="${pageContext.request.contextPath}/empInfo/viewdept?empId=<%= empId %>">부서
 					인사정보</a></li>
+
 			<li class="left" style="border: none;"><a
 				href="${pageContext.request.contextPath}/empInfo/viewotherdept">타
 					부서 인사정보</a></li>

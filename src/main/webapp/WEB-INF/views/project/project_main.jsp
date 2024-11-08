@@ -19,6 +19,119 @@
         caption { caption-side: top; margin-bottom: 30px; } /* 캡션과 테이블 간격 설정 */
         .progress {height: 30px;width: 100%;}
         .progress-bar {color: white;font-weight: bold;}
+        /* 페이지 전체 레이아웃 */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+}
+
+/* 메인 컨테이너 스타일 */
+.table {
+    width: 70%;
+    margin: 30px auto;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+caption {
+    font-size: 1.5em;
+    font-weight: bold;
+    padding: 20px 0;
+    color: #495057;
+    background-color: #f8f9fa;
+}
+
+.table th, .table td {
+    padding: 15px;
+    text-align: center;
+    border-top: 1px solid #dee2e6;
+}
+
+.table th {
+    background-color: #e9ecef;
+    font-weight: 600;
+    color: #495057;
+}
+
+.table td {
+    font-size: 1em;
+    color: #343a40;
+}
+
+/* 진행률 바 스타일 */
+.progress {
+    height: 24px;
+    border-radius: 12px;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    font-weight: 600;
+    color: #ffffff;
+}
+
+/* 상태 변경 select box 및 저장 버튼 스타일 */
+.project-status {
+    width: 100%;
+    border-radius: 5px;
+}
+
+.save-status {
+    display: none;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.save-status:hover {
+    background-color: #218838;
+}
+
+/* 관리 권한 없음 스타일 */
+td[colspan='2'] {
+    color: #999;
+    font-size: 0.9em;
+}
+
+/* 페이지네이션 스타일 */
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination .page-item .page-link {
+    color: #007bff;
+    padding: 10px 15px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.pagination .page-item .page-link:hover {
+    background-color: #e9ecef;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+}
+
+.pagination .page-item .page-link.gray {
+    color: #ccc;
+}
+        
 	</style>
 	<script>
 	$(document).ready(function() {
@@ -76,8 +189,8 @@
 	// 진행 중인 프로젝트 데이터 로드 함수
 	function loadOngoingProjects() {
 	    $.ajax({
-	    	url: "${pageContext.request.contextPath}/project/getOngoingProjects",
-			type: "GET",
+	        url: "${pageContext.request.contextPath}/project/getOngoingProjects",
+	        type: "GET",
 	        success: function(data) {
 	            // 테이블에 데이터 추가
 	            var tbody = $(".table tbody");
@@ -95,17 +208,22 @@
 	                        "</div>" + 
 	                    "</td>" +
 	                    "<td>" + project.endDate + "</td>" +
-	                    "<td>" +
-	                    "<select class='form-control project-status' data-project-id='" + project.projectId + "'>" +
-	                    "<option value='ongoing'>진행 중</option>" +
-	                    "<option value='completed'>완료</option>" +
-	                    "<option value='cancelled'>취소</option>" +
-	                    "</select>" +
-	                    "</td>" +
-	                    "<td><button class='btn btn-success save-status' data-project-id='" + project.projectId + "' style='display:none;'>저장</button></td>" +
+	                    // isManager가 true일 때만 상태 변경 select와 저장 버튼 추가
+	                    (project.isManager ?
+	                        "<td>" +
+	                            "<select class='form-control project-status' data-project-id='" + project.projectId + "'>" +
+	                                "<option value='ongoing'>진행 중</option>" +
+	                                "<option value='completed'>완료</option>" +
+	                                "<option value='cancelled'>취소</option>" +
+	                            "</select>" +
+	                        "</td>" +
+	                        "<td><button class='btn btn-success save-status' data-project-id='" + project.projectId + "' style='display:none;'>저장</button></td>" 
+	                        :
+	                        "<td colspan='2'>관리 권한 없음</td>"
+	                    ) +
 	                    "</tr>");
 	            });
-
+	
 	            // 상태 변경 시 저장 버튼 표시
 	            $('.project-status').on('change', function() {
 	                var selectedValue = $(this).val();

@@ -17,4 +17,5 @@ public class Schedule {
 	private LocalDateTime scheduleStart;//시작일시
 	private LocalDateTime scheduleEnd;//종료일시
 	private String scheduleColor;    //일정색상
+	private int scheduleAllDay;		//종일
 }

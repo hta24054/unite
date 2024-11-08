@@ -16,5 +16,4 @@ public class EmpHomeAction implements Action {
 		forward.setPath("/WEB-INF/views/emp/home.jsp");
 		return forward;
 	}
-
 }

@@ -9,6 +9,6 @@ import lombok.*;
 @ToString
 public class Dept {
     private Long deptId;
-    private String dname;
+    private String deptName;
     private String deptManager;
 }

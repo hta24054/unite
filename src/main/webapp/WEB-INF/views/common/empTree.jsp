@@ -36,6 +36,13 @@
         #tree_title {
             margin-bottom: 25px;
         }
+        #tree_table {
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
     </style>
 </head>
 <body>
@@ -50,9 +57,10 @@
         <!-- 직원 목록 테이블 영역 -->
         <div id="employeeTableContainer">
             <h5 class="title">직원 목록</h5>
-            <table class="table table-bordered mt-4">
+            <table class="table table-bordered mt-4" id="tree_table">
                 <thead>
                 <tr>
+                    <th style="display: none;">id</th>
                     <th>이름</th>
                     <th>내선번호</th>
                     <th>직급</th>
@@ -123,26 +131,29 @@
             function updateEmployeeTable(empList, jobName) {
                 const tableBody = $('#employeeTableBody');
                 tableBody.empty();
+                $('#noDataMessage').remove()
 
                 if (empList.length === 0) {
-                    tableBody.append("<tr><td colspan='3'>직원이 없습니다.</td></tr>");
+                    tableBody.append("<tr><td colspan='4'>직원이 없습니다.</td></tr>");
                 } else {
-                    $.each(empList, function (index, value) {
+                    $.each(empList, function (index, emp) {
                         let html = "<tr>";
-                        html += "<td>" + value.ename + "</td>";
-                        html += "<td>" + value.tel + "</td>";
-                        html += "<td>" + jobName[value.jobId] + "</td>";
+                        html += "<td style='display: none;'>" + emp.empId + "</td>"; // 숨긴 empId 열
+                        html += "<td>" + emp.ename + "</td>";
+                        html += "<td>" + emp.tel + "</td>";
+                        html += "<td>" + jobName[emp.jobId] + "</td>";
                         html += "</tr>";
                         tableBody.append(html);
                     });
                 }
             }
-
-            // 초기 메시지
+            //부서 선택 전
             function showInitialMessage() {
                 const tableBody = $('#employeeTableBody');
                 tableBody.empty();
-                tableBody.append("<tr><td colspan='3'>부서를 선택해주세요</td></tr>");
+                $('#employeeTableContainer').append(
+                    "<div id='noDataMessage' style='text-align: center; padding: 20px; font-weight: bold;'>부서를 선택해주세요</div>"
+                );
             }
         })
     });

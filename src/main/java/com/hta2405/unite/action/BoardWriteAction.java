@@ -13,7 +13,7 @@ public class BoardWriteAction implements Action {
 			throws ServletException, IOException {
 		ActionForward forward = new ActionForward();
 		forward.setRedirect(false);
-		forward.setPath("/WEB-INF/views/board/write.jsp");
+		forward.setPath("/WEB-INF/views/board/boardWrite.jsp");
 		return forward;
 	}
 

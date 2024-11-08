@@ -1,11 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>아코디언 메뉴</title>
+
   <style>
     /* 기본 스타일 설정 */
     .accordion {
@@ -41,8 +36,6 @@
     span{margin-bottom: "3px";
     }
   </style>
-</head>
-<body>
 
 <div class="accordion">
   <div class="accordion-item">
@@ -97,6 +90,3 @@
     }
   }
 </script>
-
-</body>
-</html>

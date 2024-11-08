@@ -25,7 +25,7 @@ public class BoardFrontController extends HttpServlet {
     @Override
     public void init() throws ServletException {
         actionMap.put("", new BoardHomeAction());//게시판 홈
-        actionMap.put("/write", new BoardWriteAction());
+        actionMap.put("/boardWrite", new BoardWriteAction());
         for(int num=1;num<=30;num++) {//게시판id 개수만큼 반복(임의)
             actionMap.put("/list"+num, new BoardListAction(num));
         }

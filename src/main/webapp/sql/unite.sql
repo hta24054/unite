@@ -678,6 +678,7 @@ CREATE TABLE reservation
   reservation_start DATE          NOT NULL,
   reservation_end   DATE          NOT NULL,
   reservation_info  VARCHAR2(100),
+  reservation_allDay NUMBER        DEFAULT 0 NOT NULL,
   CONSTRAINT PK_reservation PRIMARY KEY (reservation_id)
 );
 
@@ -700,6 +701,8 @@ COMMENT ON COLUMN reservation.reservation_end IS '예약종료시각';
 
 COMMENT ON COLUMN reservation.reservation_info IS '예약내용';
 
+COMMENT ON COLUMN reservation.reservation_allDay IS '종일';
+
 CREATE TABLE schedule
 (
   schedule_id      NUMBER       NOT NULL,
@@ -709,6 +712,7 @@ CREATE TABLE schedule
   schedule_start   DATE         NOT NULL,
   schedule_end     DATE         NOT NULL,
   schedule_color   VARCHAR2(30) NOT NULL,
+  schedule_allDay  NUMBER       DEFAULT 0 NOT NULL,
   CONSTRAINT PK_schedule PRIMARY KEY (schedule_id)
 );
 
@@ -732,6 +736,8 @@ COMMENT ON COLUMN schedule.schedule_start IS '시작일시';
 COMMENT ON COLUMN schedule.schedule_end IS '종료일시';
 
 COMMENT ON COLUMN schedule.schedule_color IS '일정색상';
+
+COMMENT ON COLUMN schedule.schedule_allDay IS '종일';
 
 CREATE TABLE schedule_share
 (

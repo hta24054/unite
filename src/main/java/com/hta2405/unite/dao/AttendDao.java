@@ -110,16 +110,17 @@ public class AttendDao {
         return 0;
     }
 
-    public int attendOut(String empId) {
+    public int attendOut(String empId, LocalDate date) {
         String sql = """
                     UPDATE ATTEND SET
                     ATTEND_OUT = ?
-                    WHERE EMP_ID = ?
+                    WHERE EMP_ID = ? AND ATTEND_DATE = ?
                 """;
         try (Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
             ps.setString(2, empId);
+            ps.setDate(3, Date.valueOf(date));
             return ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

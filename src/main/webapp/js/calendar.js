@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
+	let calendar;
+	
 	(function(){
 		$(function(){
 		  	const $scheduleModal = $("#scheduleModal");
@@ -67,8 +69,28 @@ document.addEventListener('DOMContentLoaded', function () {
 							    description: $description.val()
 							},
 					        success: function(data) {
-					            console.log("data", data)
+					            console.log("success data", data)
 					            successCallback(data);
+					                    
+					            //선택 상태를 해제합니다.
+				     	        calendar.unselect();
+				     			
+				     			//화면에 보이도록 합니다.
+				     	        calendar.render();
+
+					            /*
+					             if (data != null) {
+							        for (let i = 0; i < data.length; i++) {
+							            calendar.addEvent({
+							                title: data[i].schedule_name, 
+							                start: data[i].schedule_start, 
+							                end: data[i].schedule_end, 
+							                backgroundColor: data[i].schedule_color, 
+							                description: data[i].schedule_content 
+							            });
+							        }
+							    }
+							    */
 					        },
 					        error: function(error) {
 					            console.log('이벤트 데이터를 불러오는 중 오류 발생:', error);
@@ -116,8 +138,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     },
                     success: function(data) {
 			            console.log("ScheduleAddProcessAction:", data);
+			            
+			            if (data != null) {
+					        for (let i = 0; i < data.length; i++) {
+					            calendar.addEvent({
+					                title: data[i].schedule_name, 
+					                start: data[i].schedule_start, 
+					                end: data[i].schedule_end, 
+					                backgroundColor: data[i].schedule_color, 
+					                description: data[i].schedule_content 
+					            });
+					        }
+					    }
+					    
 			            $scheduleModal.modal("hide"); 
-			            calendar.refetchEvents(); // 새로 추가된 이벤트 포함
+			           
 			        },
                     error: function() {
                         console.log('일정 추가 중 오류 발생');
@@ -126,7 +161,6 @@ document.addEventListener('DOMContentLoaded', function () {
 				
 			});
 
-			
 			//form 유효성 체크
 			$("form[name=scheduleEvent]").on("submit", function(e){
 				e.preventDefault();
@@ -177,15 +211,20 @@ document.addEventListener('DOMContentLoaded', function () {
 					},
 			        success: function(data) {
 			            console.log("일정 데이터 추가", data);
-			            successCallback(data);
+			            
+			             if (data != null) {
+					        for (let i = 0; i < data.length; i++) {
+					            calendar.addEvent({
+					                title: data[i].schedule_name, 
+					                start: data[i].schedule_start, 
+					                end: data[i].schedule_end, 
+					                backgroundColor: data[i].schedule_color, 
+					                description: data[i].schedule_content 
+					            });
+					        }
+					    }
+			            
 			            //calendar.addEvent(data);
-			            //$scheduleModal.modal("hide");
-			            //$scheduleName.val("");
-						//$start.val("");
-						//$end.val("");
-						//$allDay.prop("checked", false);
-						//$bgColor.val("");
-						//$description.val("");
 			        },
 			        error: function(error) {
 			            console.log('이벤트 데이터를 불러오는 중 오류 발생', error);

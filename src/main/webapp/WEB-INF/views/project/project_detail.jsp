@@ -18,11 +18,116 @@
 	<jsp:include page="../common/header.jsp"/>
 	<jsp:include page="project_leftbar.jsp"/>
 	<style>
-		.table { width: 100%; margin-bottom: 30px; }
-		table, td, th { border-collapse: collapse; }
 		.notification { height: 100%; }
 		caption { caption-side: top; }
-		.notification-content { border: 1px solid #ccc; border-radius: 8px; padding: 10px; height: 480px;}<%--height--%>
+		.notification-content { border: 1px solid #ccc; border-radius: 8px; padding: 10px; height: 480px;}
+		.progress {height: 30px;width: 100%;}
+        .progress-bar {color: white;font-weight: bold;}
+        .table { 
+	        width: 100%; 
+	        margin-bottom: 30px; 
+	        table-layout: fixed; 
+	    }
+	    table, td, th {border-collapse: collapse;}
+	    th, td {padding: 10px; text-align: left;}
+	    th:nth-child(1), td:nth-child(1) {width: 20%; }
+	    th:nth-child(2), td:nth-child(2) {width: 60%; }
+	    th:nth-child(3), td:nth-child(3) {width: 20%; }
+	    /* 전체 컨테이너 스타일 */
+.container {
+    max-width: 1200px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 제목 스타일 */
+h3, h5 {
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 20px;
+}
+
+/* 테이블 스타일 */
+.table {
+    width: 100%;
+    margin-bottom: 30px;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+.table caption {
+    caption-side: top;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #495057;
+    padding-bottom: 15px;
+}
+
+.table th, .table td {
+    padding: 15px;
+    text-align: left;
+    border-top: 1px solid #dee2e6;
+}
+
+.table th {
+    background-color: #e9ecef;
+    font-weight: 600;
+    color: #495057;
+}
+
+/* 진행률 바 스타일 */
+.progress {
+    height: 24px;
+    border-radius: 8px;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    font-weight: 600;
+    color: #ffffff;
+}
+
+/* 알림 스타일 */
+.notification {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.notification h5 {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #343a40;
+}
+
+/* 모달 스타일 */
+.modal-content {
+    border-radius: 10px;
+}
+
+.modal-header, .modal-footer {
+    border: none;
+}
+
+.modal-header h5 {
+    font-weight: 600;
+    color: #343a40;
+}
+
+.modal-body input, .modal-body textarea {
+    border-radius: 8px;
+}
+
+.modal-footer .btn {
+    padding: 8px 16px;
+    font-weight: 600;
+}
+	    
 	</style>
 </head>
 <body>
@@ -47,23 +152,28 @@
 						    <tr>
 						        <td>${project.participantNames}</td>
 						        <td><span class="task-content <c:if test='${project.isManager}'>clickable</c:if>" 
-						                  data-id="${project.projectId}" 
-						                  data-memberid="${project.memberId}" 
-						                  data-content="${project.memberDesign}">
-						                ${project.memberDesign}업무가 지정되지 않았습니다
-						            </span>
+								          data-id="${project.projectId}" 
+								          data-memberid="${project.memberId}" 
+								          data-content="${project.memberDesign}">
+								        ${empty project.memberDesign ? '업무을 지정해주세요' : project.memberDesign}
+								    </span>
 				                </td>
-						        <td><span class="progress-rate <c:if test='${project.memberId == sessionScope.id}'>clickable</c:if>" 
+						        <td><span class="progress-rate <c:if test='${project.memberId == sessionScope.id}'>clickable</c:if> progress" 
 								          data-id="${project.projectId}" data-memberid="${project.memberId}"
 								          data-rate="${project.memberProgressRate}">
-								    ${project.memberProgressRate}%</span>
+								    <span class="progress-bar" role="progressbar" style="width:${project.memberProgressRate}%">${project.memberProgressRate}%</span></span>
 					            </td>
 						    </tr>
 						</c:forEach>
 					</tbody>
 				</table>
 				<table class="table">
-					<caption><h5>진행 과정</h5></caption>
+					<caption>
+				        <div class="d-flex justify-content-between align-items-center">
+				            <h5>진행 과정</h5>
+				            <button type="button" class="btn btn-primary btn-sm float-right" data-toggle="modal" data-target="#writeModal">글 작성</button>
+				        </div>
+				    </caption>
 					<thead>
 						<tr>
 							<th>작성자</th>
@@ -129,6 +239,40 @@
 	            <div class="modal-footer">
 	                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
 	                <button type="button" class="btn btn-primary" id="saveProgressBtn">저장</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	
+	<!-- 글 작성 모달 -->
+	<div class="modal fade" id="writeModal" tabindex="-1" role="dialog" aria-labelledby="writeModalLabel" aria-hidden="true">
+	    <div class="modal-dialog" role="document">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="writeModalLabel">글 작성</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+	            <div class="modal-body">
+	                <form id="writeForm" action="${pageContext.request.contextPath}/projectb/write" method="post" enctype="multipart/form-data">
+	                    <div class="form-group">
+	                        <label for="postTitle">제목</label>
+	                        <input type="text" class="form-control" id="postTitle" name="title" placeholder="제목을 입력하세요" required>
+	                    </div>
+	                    <div class="form-group">
+	                        <label for="postContent">내용</label>
+	                        <textarea class="form-control" id="postContent" name="content" rows="4" placeholder="내용을 입력하세요" required></textarea>
+	                    </div>
+	                    <div class="form-group">
+	                        <label for="postFile">첨부파일</label>
+	                        <input type="file" class="form-control-file" id="postFile" name="file">
+	                    </div>
+	                    <div class="modal-footer">
+	                        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+	                        <button type="submit" class="btn btn-primary">저장</button>
+	                    </div>
+	                </form>
 	            </div>
 	        </div>
 	    </div>

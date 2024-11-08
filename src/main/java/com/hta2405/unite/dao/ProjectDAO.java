@@ -239,8 +239,11 @@ public class ProjectDAO {
 
                     // manager_id가 loginEmp와 같은지 비교하여 isManager 설정
                     String managerId = rs.getString("manager_id");
-                    if(managerId == loginEmp) project.setIsManager(managerId != null && managerId.equals(loginEmp));
-                    else project.setIsManager(false);
+                    if(managerId != null && managerId.equals(loginEmp)) {
+                        project.setIsManager(true);
+                    } else {
+                        project.setIsManager(false);
+                    }
 
                     projectList.add(project);
                 }
@@ -584,10 +587,9 @@ public class ProjectDAO {
 
 	public boolean updateTaskContent(int projectId, String memberId, String taskContent) {
 	    String sql;
-	    boolean hasContent = false;
 
-	    // 먼저 해당 project_id와 member_id로 레코드가 있는지 확인
-	    String checkSql = "SELECT member_designated FROM project_member WHERE project_id = ? AND member_id = ?";
+	    // 해당 project_id와 member_id로 레코드가 있는지 확인
+	    String checkSql = "SELECT COUNT(*) FROM project_member WHERE project_id = ? AND member_id = ?";
 
 	    try (Connection conn = ds.getConnection();
 	         PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
@@ -596,31 +598,31 @@ public class ProjectDAO {
 	        checkStmt.setString(2, memberId);
 
 	        try (ResultSet rs = checkStmt.executeQuery()) {
-	            if (rs.next()) {
-	                hasContent = rs.getInt(1) > 0;
+	            rs.next();
+	            int count = rs.getInt(1);
+	            
+	            // 레코드가 존재하면 UPDATE, 없으면 INSERT
+	            if (count > 0) {
+	                sql = "UPDATE project_member SET member_designated = ? WHERE project_id = ? AND member_id = ?";
+	            } else {
+	                sql = "INSERT INTO project_member (member_designated, project_id, member_id) VALUES (?, ?, ?)";
 	            }
-	        }
-	        
-	        // hasContent 값에 따라 SQL 구문 설정
-	        if (hasContent) {
-	            sql = "UPDATE project_member SET member_designated = ? WHERE project_id = ? AND member_id = ?";
-	        } else {
-	            sql = "INSERT INTO project_member (member_designated , project_id, member_id) VALUES (?, ?, ?)";
-	        }
 
-	        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-	            stmt.setString(1, taskContent);
-	            stmt.setInt(2, projectId);
-	            stmt.setString(3, memberId);
+	            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+	                stmt.setString(1, taskContent);
+	                stmt.setInt(2, projectId);
+	                stmt.setString(3, memberId);
 
-	            int rowsAffected = stmt.executeUpdate();
-	            return rowsAffected > 0;
+	                int rowsAffected = stmt.executeUpdate();
+	                return rowsAffected > 0;
+	            }
 	        }
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	        return false;
 	    }
 	}
+
 
 	
 

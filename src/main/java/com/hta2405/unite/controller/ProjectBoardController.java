@@ -5,8 +5,7 @@ import java.util.HashMap;
 
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
-import com.hta2405.unite.action.ProjectMainAction;
-import com.hta2405.unite.action.ProjectWriteAction;
+import com.hta2405.unite.action.project.ProjectWriteAction;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -15,7 +14,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/b/*")
+@WebServlet("/projectb/*")
 public class ProjectBoardController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     HashMap<String, Action> actionMap = new HashMap<>();
@@ -35,7 +34,7 @@ public class ProjectBoardController extends HttpServlet {
         String contextPath = req.getContextPath();
         System.out.println("contextPath = " + contextPath);
 
-        String command = requestURI.substring(contextPath.length() + "/b".length());
+        String command = requestURI.substring(contextPath.length() + "/projectb".length());
         System.out.println("command = " + command);
 
         //등록된 URL이 아닌경우 404에러페이지 보여줌

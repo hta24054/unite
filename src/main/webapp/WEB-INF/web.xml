@@ -3,5 +3,29 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
+    <filter>
+        <filter-name>LoginFilter</filter-name>
+        <filter-class>com.hta2405.unite.filter.LoginFilter</filter-class>
+    </filter>
+    <welcome-file-list>
+        <welcome-file>first</welcome-file>
+    </welcome-file-list>
+
+    <filter-mapping>
+        <filter-name>LoginFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <!-- CSS, JS 제외-->
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>AdminFilter</filter-name>
+        <filter-class>com.hta2405.unite.filter.AdminFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>AdminFilter</filter-name>
+        <url-pattern>/admin/*</url-pattern> <!-- 관리자 경로에만 관리자 확인 필터 적용 -->
+    </filter-mapping>
 </web-app>
 

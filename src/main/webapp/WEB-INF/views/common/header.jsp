@@ -74,7 +74,7 @@
             </li>
          --%>
         <li class="nav-item1">
-            <a class="nav-link" href="${pageContext.request.contextPath}/emp/home"><img
+            <a class="nav-link" href="${pageContext.request.contextPath}/home"><img
                     src="${pageContext.request.contextPath}/image/logo_header.png" style="width:80px;"></a>
         </li>
         <li class="nav-item">
@@ -112,7 +112,7 @@
                                               style="width:30px;"></a>
         </li>
         <li class="nav-item3" style="line-height: 10px;">
-            <%--${.name} --%><span class="nav-link">${id}님</span><a class="nav-link"
+            <%--${.name} --%><span class="nav-link">${ename}님</span><a class="nav-link"
                                                                     href="${pageContext.request.contextPath}/emp/logout">로그아웃</a>
         </li>
         <%--<c:if test="${id=='admin' }">

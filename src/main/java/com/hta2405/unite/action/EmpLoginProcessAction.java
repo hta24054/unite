@@ -3,7 +3,6 @@ package com.hta2405.unite.action;
 import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dto.Emp;
 import com.hta2405.unite.util.CommonUtil;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +22,7 @@ public class EmpLoginProcessAction implements Action {
         String id = req.getParameter("id");
         String pass = req.getParameter("pass");
         String message;
-        
+
         EmpDao dao = new EmpDao();
         Emp emp = dao.getEmpById(id);
 
@@ -38,6 +37,7 @@ public class EmpLoginProcessAction implements Action {
             if (verifyPassword(emp, pass)) {//로그인 성공
                 HttpSession session = req.getSession();
                 session.setAttribute("id", id);
+                session.setAttribute("ename", emp.getEname());
 
                 String IDStore = req.getParameter("remember");
                 Cookie cookie = new Cookie("id", id);
@@ -50,9 +50,8 @@ public class EmpLoginProcessAction implements Action {
                 } else {
                     cookie.setMaxAge(0);
                 }
-                
                 resp.addCookie(cookie);
-                return new ActionForward(true, "../emp/home");
+                return new ActionForward(true, req.getContextPath() + "/home");
             } else {
                 message = "비밀번호가 일치하지 않습니다.";
             }

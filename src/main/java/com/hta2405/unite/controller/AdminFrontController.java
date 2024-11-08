@@ -15,11 +15,14 @@ public class AdminFrontController extends AbstractFrontController {
         actionMap.put("/holiday/delete", new AdminHolidayDeleteAction());
         actionMap.put("/holiday/api", new AdminHolidayApiAction());
         actionMap.put("/holiday/weekend", new AdminHolidayWeekendAction());
-        actionMap.put("/popup", new AdminPopupAction());
         actionMap.put("/resource", new AdminResourceAction());
         actionMap.put("/resource/add", new AdminResourceAddAction());
         actionMap.put("/resource/edit", new AdminResourceEditAction());
         actionMap.put("/resource/delete", new AdminResourceDeleteAction());
+        actionMap.put("/notice", new AdminNoticeAction());
+        actionMap.put("/notice/insert", new AdminNoticeAddAction());
+        actionMap.put("/notice/update", new AdminNoticeEditAction());
+        actionMap.put("/notice/delete", new AdminNoticeDeleteAction());
         actionMap.put("/emp-manage", new AdminEmpManageAction());
     }
 }

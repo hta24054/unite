@@ -17,14 +17,13 @@ public class ProjectUpdateTaskDesignAction implements Action {
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int projectId = Integer.parseInt(req.getParameter("projectId"));
         String memberId = req.getParameter("memberId");
-        String memberRole = req.getParameter("memberRole");
         String taskContent = req.getParameter("taskContent");
 
         boolean success = false;
-        if ("manager".equalsIgnoreCase(memberRole)) {
-            ProjectDAO projectDAO = new ProjectDAO();
-            success = projectDAO.updateTaskContent(projectId, memberId, taskContent);
-        }
+        
+        // 'manager' 여부와 관계없이 taskContent만 업데이트
+        ProjectDAO projectDAO = new ProjectDAO();
+        success = projectDAO.updateTaskContent(projectId, memberId, taskContent);
 
         StringBuilder jsonResponse = new StringBuilder();
         jsonResponse.append("{");
@@ -40,5 +39,6 @@ public class ProjectUpdateTaskDesignAction implements Action {
 
         return null;
     }
+
 
 }

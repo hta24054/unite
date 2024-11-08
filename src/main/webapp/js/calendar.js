@@ -54,14 +54,16 @@ document.addEventListener('DOMContentLoaded', function () {
 				        $.ajax({
 					        url: "ScheduleListAction",
 					        type: "get",
+					        //type: "post",
 					        dataType: "json",
 					        data: {
-								"emp_id" : $("#emp_id").val(),
-								title: $scheduleName.val(),
-								start: moment(info.startStr).format('YYYY-MM-DD HH:mm'),
-								end: moment(info.endStr).format('YYYY-MM-DD HH:mm'),
-								allDay: $allDay.is(":checked"), // 체크박스인 경우 true/false
-							    backgroundColor: $bgColor.val(),
+								//data key 값은 request.getParameter("startAt")의 값!
+								emp_id: $("#emp_id").val(),
+								schedule_name: $scheduleName.val(),
+								startAt: moment(info.startStr).format('YYYY-MM-DD HH:mm'),
+								endAt: moment(info.endStr).format('YYYY-MM-DD HH:mm'),
+								//allDay: $allDay.is(":checked"), // 체크박스인 경우 true/false
+							    bgColor: $bgColor.val(),
 							    description: $description.val()
 							},
 					        success: function(data) {
@@ -91,63 +93,37 @@ document.addEventListener('DOMContentLoaded', function () {
 					}
 				},
 				eventDidMount: function(info) {
-				    console.log("info.event.extendedProps", info.event.extendedProps);
+				    console.log("eventDidMount 데이터 확인", info.event);
 				}
 			});
 			calendar.render();
 	
 			//모달창 이벤트
 			$("#btnRegister").on("click", function () {
-		  	    // 입력값 객체 생성
-				const eventData = {
-				  	title: $scheduleName.val(),
-				    start: moment($start.val(), 'YYYY-MM-DDTHH:mm').format('YYYY-MM-DD HH:mm'),
-					end: moment($end.val(), 'YYYY-MM-DDTHH:mm').format('YYYY-MM-DD HH:mm'),
-				    allDay: $allDay.is(":checked"), // 체크박스인 경우 true/false
-				    bgColor: $bgColor.val(),
-				    description: $description.val()
-				};
-		
-				// 끝나는 날짜가 시작하는 날짜보다 이전인지 검증
-				if (new Date(eventData.start) > new Date(eventData.end)) {
-				    alert("끝나는 날짜/시간이 시작 날짜/시간보다 이전입니다. 다시 확인해 주세요.");
-				    return false;
-				}
-				
-				// 이벤트 추가
-				calendar.addEvent(eventData);
-				
 				// 이벤트를 서버로 전송
                 $.ajax({
                     url: "ScheduleAddProcessAction", 
                     type: "post",
                     dataType: "json",
                     data: {
-                        title: eventData.title,
-                        start: eventData.start,
-                        end: eventData.end,
-                        allDay: eventData.allDay,
-                        backgroundColor: eventData.bgColor,
-                        description: eventData.description,
-                        emp_id: $("#emp_id").val() // 현재 로그인한 사용자 ID 전달
+						emp_id: $("#emp_id").val(), // 현재 로그인한 사용자 ID 전달
+                        schedule_name: $scheduleName.val(),
+                        startAt: moment($start.val(), 'YYYY-MM-DDTHH:mm').format('YYYY-MM-DD HH:mm'),
+                        endAt: moment($end.val(), 'YYYY-MM-DDTHH:mm').format('YYYY-MM-DD HH:mm'),
+                        //allDay: $allDay.is(":checked"), // 체크박스인 경우 true/false
+                        bgColor: $bgColor.val(),
+                        description: $description.val(),
                     },
                     success: function(data) {
-                        console.log("ScheduleAddProcessAction :", data);
-                        $scheduleModal.modal("hide"); 
-                    },
+			            console.log("ScheduleAddProcessAction:", data);
+			            $scheduleModal.modal("hide"); 
+			            calendar.refetchEvents(); // 새로 추가된 이벤트 포함
+			        },
                     error: function() {
                         console.log('일정 추가 중 오류 발생');
                     }
                 });
 				
-				// 모달 닫기 및 입력 필드 초기화
-				$scheduleModal.modal("hide");
-				$scheduleName.val("");
-				$start.val("");
-				$end.val("");
-				$allDay.prop("checked", false);
-				$bgColor.val("");
-				$description.val("");
 			});
 
 			
@@ -166,6 +142,12 @@ document.addEventListener('DOMContentLoaded', function () {
 					$start.focus();
 					return false;
 			    }
+			    
+			    // 끝나는 날짜가 시작하는 날짜보다 이전인지 검증
+				if (new Date(eventData.startAt) > new Date(eventData.endAt)) {
+				    alert("끝나는 날짜/시간이 시작 날짜/시간보다 이전입니다. 다시 확인해 주세요.");
+				    return false;
+				}
 		  
 				if($end.val().trim() == "") {
 					alert("종료날짜/시간을 선택하세요");
@@ -178,41 +160,37 @@ document.addEventListener('DOMContentLoaded', function () {
 					 $description.focus();
 					 return false;
 				}
-				
-				const start = moment($start.val(), 'YYYY-MM-DDTHH:mm'); 
-				const end = moment($end.val(), 'YYYY-MM-DDTHH:mm'); 
-
+		
 				// 이벤트를 서버로 전송
 		        $.ajax({
 			        url: "ScheduleAddProcessAction",
 			        type: "post",
 			        dataType: "json",
 			        data: {
-						"emp_id" : $("#emp_id").val(), 
+						emp_id : $("#emp_id").val(), 
 						title: $scheduleName.val(),
-						start: start.format('YYYY-MM-DD HH:mm'),
-						end: end.format('YYYY-MM-DD HH:mm'),
+						startAt: moment($start.val(), 'YYYY-MM-DDTHH:mm'),
+						endAt: moment($end.val(), 'YYYY-MM-DDTHH:mm'),
 						//allDay: $allDay.is(":checked"), // 체크박스인 경우 true/false
 					    backgroundColor: $bgColor.val(),
 					    description: $description.val()
 					},
 			        success: function(data) {
 			            console.log("일정 데이터 추가", data);
-			            calendar.addEvent(data);
-			            $scheduleModal.modal("hide");
-			            $scheduleName.val("");
-						$start.val("");
-						$end.val("");
-						$allDay.prop("checked", false);
-						$bgColor.val("");
-						$description.val("");
+			            successCallback(data);
+			            //calendar.addEvent(data);
+			            //$scheduleModal.modal("hide");
+			            //$scheduleName.val("");
+						//$start.val("");
+						//$end.val("");
+						//$allDay.prop("checked", false);
+						//$bgColor.val("");
+						//$description.val("");
 			        },
 			        error: function(error) {
 			            console.log('이벤트 데이터를 불러오는 중 오류 발생', error);
 			        }
 			    });
-			    
-			
 			});
 			
 		});

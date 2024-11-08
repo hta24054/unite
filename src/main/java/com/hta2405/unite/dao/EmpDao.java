@@ -142,6 +142,27 @@ public class EmpDao {
             return 0;
         }
     }
+    public List<Emp> getEmpByDeptId(Long deptId) {
+        List<Emp> list = new ArrayList<>();
+        String sql = """
+                    SELECT *
+                    FROM EMP e NATURAL JOIN JOB j
+                    WHERE DEPT_ID = ?
+                    ORDER BY j.JOB_RANK, e.emp_id
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, deptId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(makeEmp(rs));
+            }
+        } catch (SQLException e) {
+            System.out.println("부서 회원 정보 가져오기 오류");
+            e.printStackTrace();
+        }
+        return list;
+    }
 
     private static Emp makeEmp(ResultSet rs) throws SQLException {
 

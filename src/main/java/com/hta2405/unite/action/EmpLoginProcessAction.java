@@ -38,6 +38,7 @@ public class EmpLoginProcessAction implements Action {
             if (verifyPassword(emp, pass)) {//로그인 성공
                 HttpSession session = req.getSession();
                 session.setAttribute("id", id);
+                session.setAttribute("ename", emp.getEname());
 
                 String IDStore = req.getParameter("remember");
                 Cookie cookie = new Cookie("id", id);

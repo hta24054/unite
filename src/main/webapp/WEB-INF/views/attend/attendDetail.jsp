@@ -66,7 +66,7 @@
     <!-- 연도와 월 변경 -->
     <div class="text-center my-4">
         <button id="prevMonth" class="btn btn-outline-primary">&lt;</button>
-        <span id="currentYearMonth">${param.year}년 ${param.month}월</span>
+        <span id="currentYearMonth" style="font-weight: bold">${param.year}년 ${param.month}월</span>
         <button id="nextMonth" class="btn btn-outline-primary">&gt;</button>
     </div>
     <%--    요약 테이블--%>
@@ -225,7 +225,7 @@
         const params = new URLSearchParams(window.location.search);
         const emp = params.get('emp'); // 'emp' 파라미터 값 가져오기
         if (emp) { // 'emp' 파라미터가 존재할 경우
-            $('#main_title').text('직원 근태 관리-' + emp);
+            $('#main_title').text('직원 근태 관리 - ' + '${targetEmp.ename}');
         }
     });
 </script>

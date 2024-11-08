@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -30,10 +29,10 @@ public class ScheduleDAO {
 	public int scheduleInsert(Schedule s) {
 		int result = 0;
 		String sql = """
-				INSERT INTO schedule
-				(schedule_id, emp_id, schedule_name, schedule_content, schedule_start, schedule_end, schedule_color) 
-				VALUES(SEQ_schedule.NEXTVAL, ?, ?, ?, ?, ?, ?)
-				""";
+			    INSERT INTO schedule
+			    (schedule_id, emp_id, schedule_name, schedule_content, schedule_start, schedule_end, schedule_color, schedule_allDay) 
+			    VALUES (SEQ_schedule.NEXTVAL, ?, ?, ?, ?, ?, ?, ?)
+			    """;
 		
 		try(Connection con = ds.getConnection();
 			PreparedStatement pstmt = con.prepareStatement(sql);) {
@@ -44,6 +43,7 @@ public class ScheduleDAO {
 			pstmt.setTimestamp(4, Timestamp.valueOf(s.getScheduleStart())); 
 	        pstmt.setTimestamp(5, Timestamp.valueOf(s.getScheduleEnd()));
 			pstmt.setString(6, s.getScheduleColor());
+			pstmt.setInt(7, s.getScheduleAllDay());
 			
 			result = pstmt.executeUpdate();//삽입 성공시 result는 1
 		} catch (Exception e) {
@@ -52,48 +52,43 @@ public class ScheduleDAO {
 		}
 		return result;
 	}//scheduleInsert end
-
-	public JsonArray getListSchedule(int scheduleId, String empId) {
+	
+	// 일정 리스트
+	public JsonArray getListSchedule(String id) {
 		String sql = """
 				select * 
 				from schedule
-				where schedule_id = ? and emp_id = ?
+				where emp_id = ?
 				""";
 		JsonArray array = new JsonArray();
-		
-		System.out.println("scheduleId" + scheduleId);
-		System.out.println("empId" + empId);
+		System.out.println("getListSchedule id 값" + id);
 		
 		try (Connection con = ds.getConnection();
 			 PreparedStatement pstmt = con.prepareStatement(sql);) {
-			
-				pstmt.setInt(1, scheduleId);
-				pstmt.setString(2, empId);
+				
+				pstmt.setString(1, id);
 				
 				try (ResultSet rs = pstmt.executeQuery()) {
 					while (rs.next()) {
 						JsonObject scheduleObj  = new JsonObject();
 						
+						scheduleObj.addProperty("schedule_id", rs.getInt("schedule_id"));
 		                scheduleObj.addProperty("schedule_name", rs.getString("schedule_name"));
 		                scheduleObj.addProperty("schedule_content", rs.getString("schedule_content"));
 		                scheduleObj.addProperty("schedule_start", rs.getString("schedule_start"));
 		                scheduleObj.addProperty("schedule_end", rs.getString("schedule_end"));
 		                scheduleObj.addProperty("schedule_color", rs.getString("schedule_color"));
+		                scheduleObj.addProperty("schedule_allDay", rs.getInt("schedule_allDay"));
 
 		                array.add(scheduleObj);
 					}
 				}
-			
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("getListSchedule() 에러 : " + e);
-		}
+	        e.printStackTrace();
+	        System.out.println("getListSchedule() 에러: " + e);
+	    }
 		return array;
-	}//getListSchedule end
-	
-	
-	
-	
-	
-	
+	}
+
+
 }

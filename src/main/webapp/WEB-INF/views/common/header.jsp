@@ -74,7 +74,7 @@
             </li>
          --%>
         <li class="nav-item1">
-            <a class="nav-link" href="${pageContext.request.contextPath}/emp/home"><img
+            <a class="nav-link" href="${pageContext.request.contextPath}/home"><img
                     src="${pageContext.request.contextPath}/image/logo_header.png" style="width:80px;"></a>
         </li>
         <li class="nav-item">

@@ -18,6 +18,5 @@ public class EmpFrontController extends AbstractFrontController {
         actionMap.put("/sendAuthenCode", new EmpSendAuthenCodeAction());
         actionMap.put("/changePw", new EmpChangePwAction());
         actionMap.put("/changePwProcess", new EmpChangePwProcessAction());
-        actionMap.put("/home", new EmpHomeAction());
     }
 }

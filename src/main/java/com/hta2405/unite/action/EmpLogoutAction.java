@@ -13,6 +13,6 @@ public class EmpLogoutAction implements Action {
             throws ServletException, IOException {
         req.getSession().invalidate();//세션 초기화
 
-        return new ActionForward(true, "../emp/login");
+        return new ActionForward(true, req.getContextPath()+"/emp/login");
     }
 }

@@ -25,33 +25,6 @@ public class ScheduleDAO {
 			System.out.println("DB 연결 실패 : " + ex);
 		}
 	}
-	
-	public int isId(String id) {
-		int result = -1;//DB에 해당 id가 없습니다.
-		String sql = """
-				select emp_id
-				from   schedule
-				where  emp_id = ?
-				""";
-		
-		try (Connection con = ds.getConnection();
-			 PreparedStatement pstmt = con.prepareStatement(sql);) {
-			 pstmt.setString(1, id);
-			
-			 try (ResultSet rs = pstmt.executeQuery()) {
-				 if(rs.next()) {
-					 result = 0; //DB에 해당 id가 있습니다.
-				 }
-			 } catch (SQLException e) {
-				 e.printStackTrace();
-			 }
-			 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-	
 
 	//일정 등록
 	public int scheduleInsert(Schedule s) {
@@ -88,7 +61,6 @@ public class ScheduleDAO {
 				where emp_id = ?
 				""";
 		JsonArray array = new JsonArray();
-		
 		System.out.println("getListSchedule id 값" + id);
 		
 		try (Connection con = ds.getConnection();
@@ -112,91 +84,10 @@ public class ScheduleDAO {
 				}
 		} catch (Exception e) {
 	        e.printStackTrace();
-	        System.out.println("getSchedule() 에러: " + e);
-	    }
-		return array;
-	}
-
-//	// 일정 리스트
-//	public JsonArray getListSchedule(int scheduleId, String id) {
-//		String sql = """
-//				select * 
-//				from schedule
-//				where schedule_id = ? and emp_id = ?
-//				""";
-//		JsonArray array = new JsonArray();
-//		
-//		System.out.println("scheduleId" + scheduleId);
-//		System.out.println("id" + id);
-//		
-//		try (Connection con = ds.getConnection();
-//			 PreparedStatement pstmt = con.prepareStatement(sql);) {
-//			
-//				pstmt.setInt(1, scheduleId);
-//				pstmt.setString(2, id);
-//				
-//				try (ResultSet rs = pstmt.executeQuery()) {
-//					while (rs.next()) {
-//						JsonObject scheduleObj  = new JsonObject();
-//						
-//		                scheduleObj.addProperty("schedule_name", rs.getString("schedule_name"));
-//		                scheduleObj.addProperty("schedule_content", rs.getString("schedule_content"));
-//		                scheduleObj.addProperty("schedule_start", rs.getString("schedule_start"));
-//		                scheduleObj.addProperty("schedule_end", rs.getString("schedule_end"));
-//		                scheduleObj.addProperty("schedule_color", rs.getString("schedule_color"));
-//
-//		                array.add(scheduleObj);
-//					}
-//				}
-//			
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			System.out.println("getListSchedule() 에러 : " + e);
-//		}
-//		return array;
-//	}//getListSchedule end
-
-	public JsonArray getSchedule(String id) {
-		String sql = """
-				select * 
-				from schedule
-				where emp_id = ?
-				""";
-		JsonArray array = new JsonArray();
-		
-		System.out.println("getSchedule id 값" + id);
-		
-		try (Connection con = ds.getConnection();
-			 PreparedStatement pstmt = con.prepareStatement(sql);) {
-				
-				pstmt.setString(1, id);
-				
-				try (ResultSet rs = pstmt.executeQuery()) {
-					while (rs.next()) {
-						JsonObject scheduleObj  = new JsonObject();
-						
-						scheduleObj.addProperty("schedule_id", rs.getInt("schedule_id"));
-		                scheduleObj.addProperty("schedule_name", rs.getString("schedule_name"));
-		                scheduleObj.addProperty("schedule_content", rs.getString("schedule_content"));
-		                scheduleObj.addProperty("schedule_start", rs.getString("schedule_start"));
-		                scheduleObj.addProperty("schedule_end", rs.getString("schedule_end"));
-		                scheduleObj.addProperty("schedule_color", rs.getString("schedule_color"));
-
-		                array.add(scheduleObj);
-					}
-				}
-		} catch (Exception e) {
-	        e.printStackTrace();
-	        System.out.println("getSchedule() 에러: " + e);
+	        System.out.println("getListSchedule() 에러: " + e);
 	    }
 		return array;
 	}
 
 
-
-	
-	
-	
-	
-	
 }

@@ -10,6 +10,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.fancytree/2.38.0/jquery.fancytree-all-deps.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.fancytree/2.38.0/skin-win8/ui.fancytree.min.css"/>
 
+    <style>
+	    .content-container {
+	        display: block; /* 세로로 정렬 */
+	    }
+	
+	    #tree {
+	        margin-bottom: 30px; /* 조직도와 직원 목록 사이에 공간을 추가 */
+	    }
+	
+	    #employeeTableContainer {
+	        margin-top: 30px;
+	    }
+	</style>
+
     <script>
         $(document).ready(function() {
             $("#tree").fancytree({
@@ -18,32 +32,31 @@
                         title: "대표이사", folder: true, children: [
                             {title: "부사장", folder: true},
                             {
-                                title: "경영기획본부", folder: true, children: [
-                                    {title: "재무관리팀", key: "재무부"},
-                                    {title: "인사관리팀", key: "인사부"}
+                                title: "경영기획본부", key: "경영기획본부", folder: true, children: [
+                                    {title: "재무관리팀", key: "재무관리팀", folder: true},
+                                    {title: "인사관리팀", key: "인사관리팀", folder: true}
                                 ]
                             },
                             {
-                                title: "SI사업본부", folder: true, children: [
-                                    {title: "신용평가팀", key: "평가부"},
-                                    {title: "금융SI팀", key: "금융부"},
-                                    {title: "비금융SI팀", key: "비금융부"},
-                                    {title: "SM팀", key: "SM사업부"}
+                                title: "SI사업본부", key: "SI사업본부", folder: true, children: [
+                                    {title: "신용평가팀", key: "신용평가팀", folder: true},
+                                    {title: "금융SI팀", key: "금융SI팀", folder: true},
+                                    {title: "비금융SI팀", key: "비금융SI팀", folder: true},
+                                    {title: "SM팀", key: "SM팀", folder: true}
                                 ]
                             },
                             {
-                                title: "영업본부", folder: true, children: [
-                                    {title: "솔루션영업팀", key: "재무부"},
-                                    {title: "SI영업팀", key: "SI부"},
-                                    {title: "SM영업팀", key: "SM영업부"}
+                                title: "영업본부", key: "영업본부", folder: true, children: [
+                                    {title: "솔루션영업팀", key: "솔루션영업팀", folder: true},
+                                    {title: "SI영업팀", key: "SI영업팀", folder: true},
+                                    {title: "SM영업팀", key: "SM영업팀", folder: true}
                                 ]
                             },
                             {
-                                title: "R&D본부", folder: true, children: [
-                                    {title: "연구개발팀", key: "개발부"}
+                                title: "R&D본부", key: "R&D본부", folder: true, children: [
+                                    {title: "연구개발팀", key: "연구개발팀", folder: true}
                                 ]
                             }
-                            
                         ]
                     }
                 ],
@@ -55,15 +68,15 @@
 
             function loadEmployees(department) {
                 $.ajax({
-                    url: 'employ',
+                    url: '${pageContext.request.contextPath}/project/employ',
                     method: 'GET',
                     data: { department: department },
                     success: function(data) {
                         updateEmployeeTable(data); // 직원 리스트 업데이트
-                    },
+                    }/*,
                     error: function() {
                         alert('직원 정보를 불러오는 데 실패했습니다.');
-                    }
+                    }*/
                 });
             }
 
@@ -74,10 +87,9 @@
                 $.each(data, function(key, value) {
                     var html = "<tr>";
                     html += "<td><input type='checkbox' class='employee-checkbox' value='" + value.ename + "'>" + value.ename + "</td>";
-                    html += "<td>" + value.mobile + "</td>";
                     html += "<td>" + value.tel + "</td>";
-                    html += "<td>" + value.deptId + "</td>";
-                    html += "<td>" + value.jobId + "</td>";
+                    //html += "<td>" + value.mobile + "</td>"; //부서이름
+                    html += "<td>" + value.school + "</td>"; //job_name 직급
                     html += "</tr>";
                     tableBody.append(html); // 각 행을 테이블에 추가
                 });
@@ -115,34 +127,31 @@
                     alert('선택된 직원이 없습니다.');
                 }
             });
-
-
-
-
-
         });
     </script>
 </head>
 <body>
     <div class="container mt-4">
         <h5>조직도</h5>
-        <div id="tree"></div>
-
-        <h5 class="mt-4">직원 목록</h5>
-        <table class="table table-bordered mt-4">
-            <thead>
-                <tr>
-                    <th>이름</th>
-                    <th>휴대폰</th>
-                    <th>내선번호</th>
-                    <th>부서</th>
-                    <th>직급</th>
-                </tr>
-            </thead>
-            <tbody id="employeeTableBody">
-                <!-- 직원 정보가 AJAX로 로드되어 여기에 추가됩니다. -->
-            </tbody>
-        </table>
+        <div class="content-container">
+            <div id="tree"></div> <!-- 조직도 영역 -->
+            <div id="employeeTableContainer">
+                <h5 class="mt-4">직원 목록</h5>
+                <table class="table table-bordered mt-4">
+                    <thead>
+                        <tr>
+                            <th>이름</th>
+                            <th>내선번호</th>
+                            <!-- <th>부서</th> -->
+                            <th>직급</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeeTableBody">
+                        <!-- 직원 정보가 AJAX로 로드되어 여기에 추가됩니다. -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
         
         <button id="saveSelected" class="btn btn-success mt-2">저장</button>
     </div>

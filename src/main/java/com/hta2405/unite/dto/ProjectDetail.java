@@ -21,4 +21,5 @@ public class ProjectDetail {
     private String taskTitle;  //진행과정 - 제목
     private String taskUpdateDate;  //진행과정 - 작성일
     private String content;
+    private Boolean isManager;
 }

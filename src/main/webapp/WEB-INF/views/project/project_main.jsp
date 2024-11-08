@@ -76,8 +76,8 @@
 	// 진행 중인 프로젝트 데이터 로드 함수
 	function loadOngoingProjects() {
 	    $.ajax({
-	    	url: "${pageContext.request.contextPath}/project/getOngoingProjects",
-			type: "GET",
+	        url: "${pageContext.request.contextPath}/project/getOngoingProjects",
+	        type: "GET",
 	        success: function(data) {
 	            // 테이블에 데이터 추가
 	            var tbody = $(".table tbody");
@@ -95,17 +95,22 @@
 	                        "</div>" + 
 	                    "</td>" +
 	                    "<td>" + project.endDate + "</td>" +
-	                    "<td>" +
-	                    "<select class='form-control project-status' data-project-id='" + project.projectId + "'>" +
-	                    "<option value='ongoing'>진행 중</option>" +
-	                    "<option value='completed'>완료</option>" +
-	                    "<option value='cancelled'>취소</option>" +
-	                    "</select>" +
-	                    "</td>" +
-	                    "<td><button class='btn btn-success save-status' data-project-id='" + project.projectId + "' style='display:none;'>저장</button></td>" +
+	                    // isManager가 true일 때만 상태 변경 select와 저장 버튼 추가
+	                    (project.isManager ?
+	                        "<td>" +
+	                            "<select class='form-control project-status' data-project-id='" + project.projectId + "'>" +
+	                                "<option value='ongoing'>진행 중</option>" +
+	                                "<option value='completed'>완료</option>" +
+	                                "<option value='cancelled'>취소</option>" +
+	                            "</select>" +
+	                        "</td>" +
+	                        "<td><button class='btn btn-success save-status' data-project-id='" + project.projectId + "' style='display:none;'>저장</button></td>" 
+	                        :
+	                        "<td colspan='2'>관리 권한 없음</td>"
+	                    ) +
 	                    "</tr>");
 	            });
-
+	
 	            // 상태 변경 시 저장 버튼 표시
 	            $('.project-status').on('change', function() {
 	                var selectedValue = $(this).val();

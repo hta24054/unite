@@ -8,7 +8,36 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-
+	<style>
+	        /* 모달 크기 조정 */
+	        .modal-lg {
+	            max-width: 100%; /* 모달의 가로 크기를 90%로 설정 */
+	        }
+	        /* 조직도와 직원 목록을 나란히 배치 */
+	        .modal-body {
+	            display: flex;
+	            justify-content: space-between;
+	            align-items: flex-start;
+	        }
+	        .modal-body iframe {
+	            flex: 1;
+	            height: 400px; /* 조직도 iframe 높이 */
+	        }
+	        .employee-table {
+	            flex: 1;
+	            height: 400px; /* 직원 목록 테이블 높이 */
+	            overflow-y: auto; /* 테이블이 넘칠 경우 스크롤이 생기도록 */
+	        }
+	        table {
+	            width: 100%;
+	            border-collapse: collapse;
+	        }
+	        th, td {
+	            padding: 10px;
+	            text-align: left;
+	            border: 1px solid #ddd;
+	        }
+    </style>
     <script>
         $(document).ready(function() {
         	$('.orgChartIcon').on('click', function(event) {

@@ -7,6 +7,7 @@ import jakarta.servlet.annotation.WebServlet;
 @WebServlet("/project/*")
 public class ProjectFrontController extends AbstractFrontController {
 
+    //아래에 URL, Action 추가
     @Override
     public void init() throws ServletException {
         actionMap.put("/main", new ProjectMainAction()); //메인
@@ -21,6 +22,7 @@ public class ProjectFrontController extends AbstractFrontController {
         actionMap.put("/employ", new ProjectEmployAction());
         actionMap.put("/doCreate", new ProjectDoCreateAction());
         actionMap.put("/getOngoingProjects", new ProjectGetOngoingAction());
-        actionMap.put("/updateprogressrate", new ProjectUpdateRateAction());
+        actionMap.put("/updateprogress", new ProjectUpdateProgressAction());
+        actionMap.put("/updatetaskdesign", new ProjectUpdateTaskDesignAction());
     }
 }

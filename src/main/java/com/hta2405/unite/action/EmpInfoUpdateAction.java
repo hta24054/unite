@@ -1,9 +1,8 @@
 package com.hta2405.unite.action;
 
 import java.io.IOException;
-import java.sql.SQLException;
-import com.hta2405.unite.dao.EmpInfoDao;
-import com.hta2405.unite.dto.EmpInfo;
+import com.hta2405.unite.dao.EmpDao;
+import com.hta2405.unite.dto.Emp;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,24 +13,24 @@ public class EmpInfoUpdateAction implements Action {
 	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		ActionForward forward = new ActionForward();
-		EmpInfoDao dao = new EmpInfoDao();
-		EmpInfo empinfo = new EmpInfo();
 
-		empinfo.setEmpId(req.getParameter("id"));
-		empinfo.setEmail(req.getParameter("email"));
-		empinfo.setTel(req.getParameter("tel"));
-		empinfo.setMobile(req.getParameter("mobile"));
-		empinfo.setMobile2(req.getParameter("mobile2"));
-		empinfo.setAddress(req.getParameter("address"));
-		empinfo.setMarried("Y".equals(req.getParameter("married")));
+		String id = (String) req.getSession().getAttribute("id");
 
-		try {
-			dao.updateEmpInfo(empinfo);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		forward.setPath("/empInfo/view?id=" + empinfo.getEmpId());
-		forward.setRedirect(false);
+		EmpDao empDao = new EmpDao();
+		Emp emp = empDao.getEmpById(id);
+
+		emp.setEmpId(req.getParameter("id"));
+		emp.setEmail(req.getParameter("email"));
+		emp.setTel(req.getParameter("tel"));
+		emp.setMobile(req.getParameter("mobile"));
+		emp.setMobile2(req.getParameter("mobile2"));
+		emp.setAddress(req.getParameter("address"));
+		emp.setMarried("Y".equals(req.getParameter("married")));
+
+		empDao.updateMyEmp(emp);
+
+		forward.setPath(req.getContextPath() + "/empInfo/view?id=" + emp.getEmpId());
+		forward.setRedirect(true);
 		return forward;
 	}
 }

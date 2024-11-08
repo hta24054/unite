@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>empInfo</title>
+<title>empinfo</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css"
@@ -74,28 +74,32 @@ caption {
 		<div class="content">
 			<form action="${pageContext.request.contextPath}/empInfo/update"
 				method="post">
-				<input type="hidden" name="id" value="${empinfo.empId}">
+				<input type="hidden" name="id" value="${details.emp.empId}">
 				<table class="table">
 					<caption>
 						<h2>나의 인사정보</h2>
 					</caption>
 					<tr>
-						<td rowspan="4" width="200"><img src="..${empinfo.imgPath}" alt="${empinfo.ename}의 사진" width="200" height="200"></td>
+						<td rowspan="4" width="200"><img
+							src="${pageContext.request.contextPath}/${details.emp.imgPath}" alt="${details.emp.ename}의 사진"
+							width="200" height="200"></td>
 						<th>이름</th>
 						<th>성별</th>
 						<th>이메일</th>
 						<th>내선번호</th>
 					</tr>
 					<tr>
-						<td>${empinfo.ename}</td>
+						<td>${details.emp.ename}</td>
 						<td><select name="gender" disabled>
-								<option value="남성" ${empinfo.gender == '남성' ? 'selected' : ''}>남성</option>
-								<option value="여성" ${empinfo.gender == '여성' ? 'selected' : ''}>여성</option>
+								<option value="남"
+									${details.emp.gender == '남' ? 'selected' : ''}>남성</option>
+								<option value="여"
+									${details.emp.gender == '여' ? 'selected' : ''}>여성</option>
 						</select></td>
 						<td><input type="text" name="email" class="editable"
-							value="${empinfo.email}" readonly></td>
+							value="${details.emp.email}" readonly></td>
 						<td><input type="text" name="tel" class="editable"
-							value="${empinfo.tel}" readonly></td>
+							value="${details.emp.tel}" readonly></td>
 					</tr>
 					<tr>
 						<th>부서</th>
@@ -104,11 +108,11 @@ caption {
 						<th>휴대폰번호</th>
 					</tr>
 					<tr>
-						<td>${empinfo.deptName}</td>
-						<td>${empinfo.empId}</td>
-						<td>${empinfo.jobName}</td>
+						<td>${details.dept.deptName}</td>
+						<td>${details.emp.empId}</td>
+						<td>${details.job.jobName}</td>
 						<td><input type="text" name="mobile" class="editable"
-							value="${empinfo.mobile}" readonly></td>
+							value="${details.emp.mobile}" readonly></td>
 					</tr>
 				</table>
 
@@ -116,63 +120,81 @@ caption {
 					<tr>
 						<th>입사일</th>
 						<td><input type="text" name="hiredate"
-							placeholder="YYYY/MM/DD" value="${empinfo.hireDate}" readonly></td>
+							placeholder="YYYY/MM/DD" value="${details.emp.hireDate}" readonly></td>
 
 						<th rowspan="2">계좌번호</th>
-						<td rowspan="2">${empinfo.bank}${empinfo.account}</td>
+						<td rowspan="2">${details.emp.bank}${details.emp.account}</td>
 						<th>긴급연락처</th>
 						<td><input type="text" name="mobile2" class="editable"
-							value="${empinfo.mobile2}" readonly></td>
+							value="${details.emp.mobile2}" readonly></td>
 					</tr>
 					<tr>
 						<th>채용구분</th>
 						<td><select name="hiretype" disabled>
-								<option value="경력" ${empinfo.hireType == '경력' ? 'selected' : ''}>경력</option>
-								<option value="신입" ${empinfo.hireType == '신입' ? 'selected' : ''}>신입</option>
-								<option value="인턴" ${empinfo.hireType == '인턴' ? 'selected' : ''}>인턴</option>
+								<option value="경력"
+									${details.emp.hireType == '경력' ? 'selected' : ''}>경력</option>
+								<option value="신입"
+									${details.emp.hireType == '신입' ? 'selected' : ''}>신입</option>
+								<option value="인턴"
+									${details.emp.hireType == '인턴' ? 'selected' : ''}>인턴</option>
 						</select></td>
 						<th>직원구분</th>
 						<td><select name="etype" disabled>
-								<option value="정규직" ${empinfo.etype == '정규직' ? 'selected' : ''}>정규직</option>
-								<option value="계약직" ${empinfo.etype == '계약직' ? 'selected' : ''}>계약직</option>
-								<option value="퇴직" ${empinfo.etype == '퇴직' ? 'selected' : ''}>퇴직</option>
+								<option value="정규직"
+									${details.emp.etype == '정규직' ? 'selected' : ''}>정규직</option>
+								<option value="계약직"
+									${details.emp.etype == '계약직' ? 'selected' : ''}>계약직</option>
+								<option value="퇴직"
+									${details.emp.etype == '퇴직' ? 'selected' : ''}>퇴직</option>
 						</select></td>
 					</tr>
 					<tr>
 						<th>생년월일</th>
 						<td><input type="text" name="birthday"
-							placeholder="YYYY/MM/DD" value="${empinfo.birthDay}" readonly>
+							placeholder="YYYY/MM/DD" value="${details.emp.birthday}" readonly>
 							<select name="birthday_type" disabled>
 								<option value="양력"
-									${empinfo.birthdayType == '양력' ? 'selected' : ''}>양력</option>
+									${details.emp.birthdayType == '양력' ? 'selected' : ''}>양력</option>
 								<option value="음력"
-									${empinfo.birthdayType == '음력' ? 'selected' : ''}>음력</option>
+									${details.emp.birthdayType == '음력' ? 'selected' : ''}>음력</option>
 						</select></td>
 						<th>주소</th>
 						<td><input type="text" name="address" class="editable"
-							value="${empinfo.address}" readonly></td>
+							value="${details.emp.address}" readonly></td>
 						<th rowspan="2">자격증</th>
-						<td rowspan="2">${empinfo.certName}</td>
+						<td rowspan="2"><c:forEach var="cert"
+								items="${details.certList}">
+								<span>${cert.certName}</span>
+								<br />
+							</c:forEach></td>
+
+
 					</tr>
+
 					<tr>
 						<th>최종학력</th>
-						<td>${empinfo.school}</td>
+						<td>${details.emp.school}</td>
 						<th>결혼여부</th>
 						<td><select name="married" class="editable" disabled>
-								<option value="Y" ${empinfo.married == 'Y' ? 'selected' : ''}>Y</option>
-								<option value="N" ${empinfo.married == 'N' ? 'selected' : ''}>N</option>
+								<option value="1"
+									${details.emp.married == '1' ? 'selected' : ''}>Y</option>
+								<option value="0"
+									${details.emp.married == '0' ? 'selected' : ''}>N</option>
 						</select></td>
 					</tr>
 					<tr>
 						<th>전공</th>
-						<td>${empinfo.major}</td>
+						<td>${details.emp.major}</td>
 						<th>자녀</th>
 						<td><select name="child" disabled>
-								<option value="Y" ${empinfo.child == 'Y' ? 'selected' : ''}>Y</option>
-								<option value="N" ${empinfo.child == 'N' ? 'selected' : ''}>N</option>
+								<option value="1" ${details.emp.child == '1' ? 'selected' : ''}>Y</option>
+								<option value="0" ${details.emp.child == '0' ? 'selected' : ''}>N</option>
 						</select></td>
 						<th>외국어능력</th>
-						<td>${empinfo.langName}</td>
+						<td><c:forEach var="lang" items="${details.langList}">
+								<span>${lang.langName}</span>
+								<br />
+							</c:forEach></td>
 					</tr>
 				</table>
 

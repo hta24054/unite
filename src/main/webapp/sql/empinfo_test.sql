@@ -182,8 +182,50 @@ VALUES ('E009', '010-2345-6789', TO_DATE('1990-01-01', 'YYYY-MM-DD'), '정규직
 select * from emp_info;
 select * from emp;
 
-DESC emp_info;
+
 
 SELECT * FROM emp_info WHERE emp_id = 'E001';
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+select * from lang where emp_id='admin';
+select * from cert where emp_id='admin';
+select * from emp 
+where emp_id='admin';
+select * from job;
+select * from dept;
+
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (1, 'Java Certification', 'admin');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (2, 'AWS Certified Developer', 'admin');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (3, 'PMP Certification', '241101');
+
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (1, 'English', 'admin');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (2, 'Japanese', 'admin');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (3, 'Spanish', '241101');
+
+
+UPDATE EMP 
+SET img_path='image/Test1.png'
+WHERE emp_id='admin'; 
+SELECT * FROM emp WHERE dept_id = (SELECT dept_id FROM emp WHERE emp_id = '241001');
+SELECT * FROM emp WHERE dept_id = (
+    SELECT dept_id FROM emp WHERE emp_id = '241001' AND dept_id IS NOT NULL
+);
+SELECT emp_id, ename, dept_id, job_id, email, tel	
+				FROM emp 
+				WHERE dept_id = (SELECT dept_id 
+								 FROM emp 
+								 WHERE emp_id = 'admin');

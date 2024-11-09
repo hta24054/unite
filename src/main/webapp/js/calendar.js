@@ -48,24 +48,44 @@ $(document).ready(function(){
                 emp_id: $("#emp_id").val(),
                 schedule_name: eventData.schedule_name,
                 startAt: moment(eventData.startAt).format('YYYY-MM-DD HH:mm'),
-                endAt: moment(eventData.endAt).format('YYYY-MM-DD HH:mm'),
+                endAt: moment(eventData.endAt).format('YYYY-MM-DD HH:mm'), 
                 bgColor: eventData.bgColor,
                 description: eventData.description,
                 allDay: eventData.allDay ? 1 : 0 // true이면 1, false이면 0
             },
             success: function (data) {
                 console.log("일정 추가 성공", data);
+                
+                
 
                 if (data != null) {
 			        for (let i = 0; i < data.length; i++) {
-			            events.push({
-			                title: data[i].schedule_name, 
-			                start: data[i].schedule_start, 
-			                end: data[i].schedule_end, 
-			                backgroundColor: data[i].schedule_color, 
-			                description: data[i].schedule_content,
-			                allDay: data[i].schedule_allDay ? 1 : 0 
-			            });
+						
+						//const isAllDay = data[i].schedule_allDay === "true"
+						const isAllDay = data[i].schedule_allDay === 1;
+						if(isAllDay) {
+							events.push({
+				                title: data[i].schedule_name, 
+				                start: data[i].schedule_start, 
+				                end: data[i].schedule_end,
+				                //end: moment(data[i].schedule_end).add(1, 'days').format('YYYY-MM-DD'), // 종료일 하루 더 추가
+				                backgroundColor: data[i].schedule_color, 
+				                description: data[i].schedule_content,
+				                allDay: isAllDay
+				            });
+						} else {
+							events.push({
+				                title: data[i].schedule_name, 
+				                start: data[i].schedule_start, 
+				                end: data[i].schedule_end,
+				                //end: moment(data[i].schedule_end).add(1, 'days').format('YYYY-MM-DD'), // 종료일 하루 더 추가
+				                backgroundColor: data[i].schedule_color, 
+				                description: data[i].schedule_content,
+				                allDay: isAllDay
+				            });
+						}
+						 
+			            
 			        }
 			    }
 
@@ -82,6 +102,7 @@ $(document).ready(function(){
 		const $scheduleName = $("#schedule_name");
 		const $start = $("#startAt"); 
 		const $end = $("#endAt");
+		const $allDay = $("#allDay");
 		const $description = $("#description");
 
         if ($scheduleName.val().trim() === "") {
@@ -106,12 +127,15 @@ $(document).ready(function(){
             $end.focus();
             return false;
         }
+     
 
+		/*
         if ($description.val().trim() === "") {
             alert("내용을 입력하세요");
             $description.focus();
             return false;
         }
+        */
 
         return true;
     }
@@ -134,12 +158,27 @@ $(document).ready(function(){
     
     // 종일 체크박스 상태 변경 시 
     $("#allDay").on("change", function() {
-        const isAllDayChecked = $(this).is(":checked");
+        const isAllDayChecked = $(this).prop("checked");
         
         if (isAllDayChecked) {
-            $("#startAt, #endAt").attr("type", "date");
+            $("#startAt, #endAt").prop("type", "date");
         } else {
-            $("#startAt, #endAt").attr("type", "datetime-local");
+            $("#startAt, #endAt").prop("type", "datetime-local");
+        }
+    });
+    
+    // 종일 체크시 시작날짜/종료날짜 확인
+    $("#endAt").on("change", function() {
+        const startDate = $("#startAt").val();
+        const endDate = $("#endAt").val();
+        const isAllDayChecked = $("#allDay").prop("checked");
+
+        if (isAllDayChecked && startDate !== endDate) {
+            alert("종일 이벤트의 시작 날짜와 종료 날짜는 같아야 합니다.");
+            $("#endAt").focus();
+            $("#btnRegister").prop("disabled", true); 
+        } else {
+            $("#btnRegister").prop("disabled", false); 
         }
     });
     
@@ -173,6 +212,15 @@ $(document).ready(function(){
 	        dayMaxEvents: true, // 이벤트가 오버되면 높이 제한 (+ 몇 개식으로 표현)
 	        locale: 'ko', // 한국어 설정
 			events: events, // 전역 이벤트 배열 사용
+			
+			// 이벤트 데이터 변환 함수
+            eventDataTransform: function(event) {
+                // allDay 이벤트일 경우 종료 날짜를 하루 더 추가
+                if (event.allDay) {
+                    event.end = moment(event.end).add(1, 'days'); // 종료 날짜를 하루 더함
+                }
+                return event; // 수정된 이벤트 반환
+            }
 		});
 		
 		//선택 상태 해제

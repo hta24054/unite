@@ -66,7 +66,6 @@ $(document).ready(function(){
 				                title: data[i].schedule_name, 
 				                start: data[i].schedule_start, 
 				                end: data[i].schedule_end,
-				                //end: moment(data[i].schedule_end).add(1, 'days').format('YYYY-MM-DD'), // 종료일 하루 더 추가
 				                backgroundColor: data[i].schedule_color, 
 				                description: data[i].schedule_content,
 				                allDay: isAllDay
@@ -76,7 +75,6 @@ $(document).ready(function(){
 				                title: data[i].schedule_name, 
 				                start: data[i].schedule_start, 
 				                end: data[i].schedule_end,
-				                //end: moment(data[i].schedule_end).add(1, 'days').format('YYYY-MM-DD'), // 종료일 하루 더 추가
 				                backgroundColor: data[i].schedule_color, 
 				                description: data[i].schedule_content,
 				                allDay: isAllDay

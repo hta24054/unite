@@ -113,9 +113,10 @@
 						            <option value="#1d4ed8" style="color: #1d4ed8;">Blue200</option>
 						            <option value="#22d3ee" style="color: #22d3ee;">Blue300</option>
 						            <option value="#16a34a" style="color: #16a34a;">Green100</option>
-						            <option value="#22c55e" style="color: #22c55e;">Green200</option>
+						            <option value="#84cc16" style="color: #84cc16;">Green200</option>
 						            <option value="#dc2626" style="color: #dc2626;">Red100</option>
-						             <option value="#f43f5e" style="color: #f43f5e;">Red200</option>
+						            <option value="#f43f5e" style="color: #f43f5e;">Red200</option>
+						            <option value="#facc15" style="color: #facc15;">Yellow</option>
 								</select>
           					</div>
 				        </div>

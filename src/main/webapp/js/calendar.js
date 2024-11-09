@@ -1,6 +1,7 @@
 $(document).ready(function(){
 	let calendar;
 	const events = []; 
+	let isAllDayChk, startDate, endDate;
 	
 	// 일정 리스트 불러오기
 	function fetchListData(){
@@ -24,7 +25,7 @@ $(document).ready(function(){
 			                end: data[i].schedule_end, 
 			                backgroundColor: data[i].schedule_color, 
 			                description: data[i].schedule_content,
-			                allDay: data[i].schedule_allDay === 0
+			                allDay: data[i].schedule_allDay 
 			            });
 			        }
 			    }
@@ -55,12 +56,9 @@ $(document).ready(function(){
             },
             success: function (data) {
                 console.log("일정 추가 성공", data);
-                
-                
 
                 if (data != null) {
 			        for (let i = 0; i < data.length; i++) {
-						
 						//const isAllDay = data[i].schedule_allDay === "true"
 						const isAllDay = data[i].schedule_allDay === 1;
 						if(isAllDay) {
@@ -84,8 +82,6 @@ $(document).ready(function(){
 				                allDay: isAllDay
 				            });
 						}
-						 
-			            
 			        }
 			    }
 
@@ -97,13 +93,11 @@ $(document).ready(function(){
         });
     }
     
-    //form 유효성 검사
+    // form 유효성 검사
     function validateForm() {
 		const $scheduleName = $("#schedule_name");
 		const $start = $("#startAt"); 
 		const $end = $("#endAt");
-		const $allDay = $("#allDay");
-		const $description = $("#description");
 
         if ($scheduleName.val().trim() === "") {
             alert("일정명을 입력하세요");
@@ -128,15 +122,6 @@ $(document).ready(function(){
             return false;
         }
      
-
-		/*
-        if ($description.val().trim() === "") {
-            alert("내용을 입력하세요");
-            $description.focus();
-            return false;
-        }
-        */
-
         return true;
     }
     
@@ -158,27 +143,44 @@ $(document).ready(function(){
     
     // 종일 체크박스 상태 변경 시 
     $("#allDay").on("change", function() {
-        const isAllDayChecked = $(this).prop("checked");
+        isAllDayChk = $(this).prop("checked");
+        startDate = $("#startAt").val();
         
-        if (isAllDayChecked) {
+        if (isAllDayChk) {
             $("#startAt, #endAt").prop("type", "date");
         } else {
             $("#startAt, #endAt").prop("type", "datetime-local");
         }
+        
+        if (isAllDayChk && startDate) {
+            $("#endAt").val(startDate);
+        }
     });
     
-    // 종일 체크시 시작날짜/종료날짜 확인
-    $("#endAt").on("change", function() {
-        const startDate = $("#startAt").val();
-        const endDate = $("#endAt").val();
-        const isAllDayChecked = $("#allDay").prop("checked");
+    // 시작 날짜 변경 시
+    $("#startAt").on("change", function() {
+        startDate = $(this).val();
+        isAllDayChk = $("#allDay").prop("checked");
 
-        if (isAllDayChecked && startDate !== endDate) {
-            alert("종일 이벤트의 시작 날짜와 종료 날짜는 같아야 합니다.");
-            $("#endAt").focus();
-            $("#btnRegister").prop("disabled", true); 
-        } else {
-            $("#btnRegister").prop("disabled", false); 
+        if (isAllDayChk && startDate) {
+            $("#endAt").val(startDate);
+        }
+    });
+    
+    // 종료 날짜 변경 시
+    $("#endAt").on("change", function() {
+        startDate = $("#startAt").val();
+        endDate = $(this).val();
+        isAllDayChk = $("#allDay").prop("checked");
+
+        if (isAllDayChk) {
+            if (startDate !== endDate) {
+                alert("시작 날짜와 종료 날짜는 같아야 합니다.");
+                $(this).focus();
+                $("#btnRegister").prop("disabled", true); 
+            } else {
+                $("#btnRegister").prop("disabled", false); 
+            }
         }
     });
     

@@ -24,9 +24,7 @@ public class ScheduleAddProcessAction implements Action {
 		System.out.println("startAt=" + startAt);
 		System.out.println("endAt=" + endAt);
 		String bgColor = request.getParameter("bgColor");
-		//int allDay = Integer.parseInt(request.getParameter("allDay"));
-		String allDayParam = request.getParameter("allDay");
-		int allDay = (allDayParam != null) ? Integer.parseInt(allDayParam) : 0;
+		int allDay = request.getParameter("allDay") == null ? 0 : Integer.parseInt(request.getParameter("allDay"));
 		
 		Schedule s = new Schedule();
 		

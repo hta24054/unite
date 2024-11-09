@@ -109,13 +109,13 @@
           					<div class="color-group">
           						<p>색상</p>
 					            <select name="bgColor" id="bgColor">
-									<option value="red" style="color:red;">빨강</option>
-						            <option value="orange" style="color:orange;">주황</option>
-						            <option value="yellow" style="color:yellow;">노랑</option>
-						            <option value="green" style="color:green;">초록</option>
-						            <option value="blue" style="color:blue;">파랑</option>
-						            <option value="indigo" style="color:indigo;">남</option>
-						            <option value="purple" style="color:purple;">보라</option>
+									<option value="#1e3a8a" style="color: #1e3a8a;">Blue100</option>
+						            <option value="#1d4ed8" style="color: #1d4ed8;">Blue200</option>
+						            <option value="#22d3ee" style="color: #22d3ee;">Blue300</option>
+						            <option value="#16a34a" style="color: #16a34a;">Green100</option>
+						            <option value="#22c55e" style="color: #22c55e;">Green200</option>
+						            <option value="#dc2626" style="color: #dc2626;">Red100</option>
+						             <option value="#f43f5e" style="color: #f43f5e;">Red200</option>
 								</select>
           					</div>
 				        </div>

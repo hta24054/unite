@@ -50,7 +50,17 @@
 		}
 		
 		.btn_wrap {
-			text-align: center;
+			display: flex;
+		    align-items: center;
+		    justify-content: center;
+		}
+		
+		.btn_wrap button {
+			margin: 0 5px;
+		}
+		
+		.modal-header p {
+			margin: 0;
 		}
 	</style>
 </head>
@@ -60,7 +70,7 @@
 			<div class="col-sm-2 px-5">
 				<aside>
 					<h3>캘린더</h3>
-					<button class="btn btn-info" data-toggle="modal" data-target="#scheduleModal">일정등록</button>
+					<button class="btn btn-info" data-toggle="modal" data-target="#scheduleModal">일정 등록</button>
 					<div>
 						<a href="#">&middot; 공유 일정 등록</a>
 					</div>
@@ -77,7 +87,7 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header" style="align-items: center;">
-					일정등록
+					<p>일정 등록</p>
 					<button type="button" class="btn btn-danger" data-dismiss="modal">X</button>
 				</div>
 				<div class="modal-body">
@@ -126,7 +136,7 @@
 				        </div>
 				        
           				<div class="btn_wrap">
-          					<button type="reset" class="btn btn-danger">취소</button>
+          					<button type="reset" class="btn btn-secondary">취소</button>
 							<button type="submit" class="btn btn-info" id="btnRegister">등록</button>
           				</div>
 					</form>

@@ -315,7 +315,8 @@ $(document).ready(function(){
 			events: events, // 전역 이벤트 배열 사용
 		    dateClick: function(info) {
                 //console.log("dateClick info", info);
-                openDetailModal(moment(info.date)); // 클릭한 날짜로 팝업 열기
+                //openDetailModal(moment(info.date)); // 클릭한 날짜로 팝업 열기
+                openDetailModal(moment(info.event));
             },
             eventClick: function(info) {
                  console.log("eventClick info", info.event);

@@ -8,6 +8,50 @@ DROP TABLE emp_info CASCADE CONSTRAINTS;
 DROP TABLE emp CASCADE CONSTRAINTS;
 DROP TABLE dept CASCADE CONSTRAINTS;
 
+select * from post;
+
+--게시판 데이터 임시
+INSERT ALL
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('전사게시판', '공지사항',9999)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('전사게시판', '주간식단표',9999)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('전사게시판', 'FAQ',9999)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('일반게시판', '일반게시판',9999)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '경영기획본부', 1100)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '재무관리팀', 1110)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '인사관리팀', 1120)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', 'SI사업본부', 1200)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '신용평가팀', 1210)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '금융SI팀', 1220)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '비금융SI팀', 1230)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', 'SM팀', 1240)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '영업본부	', 1300)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '솔루션영업팀', 1310)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', 'SI영업팀', 1320)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', 'SM영업팀', 1330)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', 'R&B본부', 1400)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '연구개발팀', 1410)
+SELECT *
+FROM DUAL;
+
+drop sequence SEQ_board;
+delete from board;
+insert into dept values(9999,'ALL','')
+ALTER TABLE board MODIFY dept_id not null;
+select * from board;
+
+-- 모든 list 출력
+select post.*,board.board_name1,board.board_name2,dept_id, nvl(cnt,0) as cnt
+from post left outer join (select post_id , count(*) as cnt
+						from post_comment
+						group by post_id) pc
+	on post.post_id = pc.post_id
+join board
+	on board.board_id = post.board_id
+order by post_re_ref desc, post_re_seq asc;
+
+
+
+
 update project_member set member_progress_rate = 60 where member_id = 'e002';
 -- 테이블 생성
 CREATE TABLE dept

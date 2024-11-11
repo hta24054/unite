@@ -125,4 +125,21 @@ public class DeptDao {
 		return empList;
 	}
 
+	public Long getDeptIdByDeptName(String deptName) {
+		String sql = """
+				select dept_id from dept
+				where dept_name = ?
+				""";
+		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+			ps.setString(1, deptName);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getLong(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 }

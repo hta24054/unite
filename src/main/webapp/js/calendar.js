@@ -80,6 +80,49 @@ $(document).ready(function(){
         });
     }
     
+    // 일정 수정
+    function updateEvent(){
+		
+	}
+	
+	// 상세 일정 팝업 
+	function openDetailModal(event) {
+	    $("#schedule_name").val(event.title);
+	    $("#startAt").val(moment(event.start).format("YYYY-MM-DD HH:mm"));
+	    $("#endAt").val(moment(event.end).format("YYYY-MM-DD HH:mm"));
+	    $("#description").val(event.description);
+	    $("#bgColor").val(event.backgroundColor);
+	    
+	    // allDay 체크 여부
+	    if (event.allDay) {
+	        $("#allDay").prop("checked", true);
+	        $("#startAt, #endAt").prop("type", "date");
+	    } else {
+	        $("#allDay").prop("checked", false);
+	        $("#startAt, #endAt").prop("type", "datetime-local");
+	    }
+	    
+	    $(".modal-header").find("p").text("상세 일정");
+	    $(".modal-body").find(".btn_wrap").html(`
+	        <button type="reset" class="btn btn-secondary">취소</button>
+	        <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
+	        <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
+	    `);
+	    
+	    // 일정 수정
+	    $("#btnUpdate").off("click").on("click", function() {
+	        console.log("data Update");
+	    });
+	    
+	    // 일정 삭제
+	    $("#btnDelete").off("click").on("click", function() {
+	        console.log("data Delete");
+	    });
+	
+	    $("#scheduleModal").modal('show');
+	}
+    
+    /*
     // 상세 일정 팝업
     function openDetailModal(date) {
         currentDate = date; // 클릭한 날짜 저장
@@ -110,10 +153,12 @@ $(document).ready(function(){
 	            <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
 	        `);
 	        
+	        // 일정 수정
 	        $("#btnUpdate").off("click").on("click", function() {
 	            console.log("data Update");
 	        });
 	        
+	        // 일정 삭제
 	        $("#btnDelete").off("click").on("click", function() {
 	            console.log("data Delete");
 	        });
@@ -127,6 +172,7 @@ $(document).ready(function(){
 	
 	    $("#scheduleModal").modal('show');
     }
+    */
     
     // 일정 등록 버튼 클릭 시 모달 초기화
 	$(".btn.btn-info[data-target='#scheduleModal']").on("click", function() {
@@ -271,7 +317,8 @@ $(document).ready(function(){
             },
             eventClick: function(info) {
                 console.log("eventClick info", info);
-                openDetailModal(moment(info.event.start)); // 일정 클릭 시 수정 팝업 열기
+                 openDetailModal(info.event); 
+                //openDetailModal(moment(info.event.start)); // 일정 클릭 시 수정 팝업 열기
             },
 			eventAdd: function(obj) { // 이벤트가 추가되면 발생하는 이벤트
 	         	 console.log("eventAdd obj", obj);

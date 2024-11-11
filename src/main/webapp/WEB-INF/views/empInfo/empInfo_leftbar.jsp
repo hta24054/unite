@@ -44,7 +44,7 @@ h3 {
 			String empId = (String) session.getAttribute("id");
 			%>
 			<li class="left" style="border: none;"><a
-				href="${pageContext.request.contextPath}/empInfo/viewdept?empId=<%= empId %>">부서
+				href="${pageContext.request.contextPath}/empInfo/viewdept?empId=${sessionScope.id}">부서
 					인사정보</a></li>
 
 			<li class="left" style="border: none;"><a

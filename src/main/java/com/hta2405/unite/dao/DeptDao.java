@@ -98,24 +98,24 @@ public class DeptDao {
 
 	public List<Emp> getDeptEmps(String empId) {
 		String sql = """
-				SELECT emp_id, ename, dept_id, job_id, email, tel	
-				FROM emp 
-				WHERE dept_id = (SELECT dept_id 
-								 FROM emp 
+				SELECT emp_id, ename, dept_id, job_id, email, tel
+				FROM emp
+				WHERE dept_id = (SELECT dept_id
+								 FROM emp
 								 WHERE emp_id = ?)
 				""";
 		List<Emp> empList = new ArrayList<>();
 		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-			ps.setString(1,empId);
+			ps.setString(1, empId);
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next()) {
 					Emp emp = new Emp();
 					emp.setEmpId(rs.getString("emp_id"));
 					emp.setEname(rs.getString("ename"));
-					emp.setDeptId(rs.getLong("dept_id")); 
-					emp.setJobId(rs.getLong("job_id")); 
+					emp.setDeptId(rs.getLong("dept_id"));
+					emp.setJobId(rs.getLong("job_id"));
 					emp.setEmail(rs.getString("email"));
-					emp.setTel(rs.getString("tel")); 
+					emp.setTel(rs.getString("tel"));
 					empList.add(emp);
 				}
 			}

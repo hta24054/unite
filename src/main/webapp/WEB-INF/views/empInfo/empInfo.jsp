@@ -53,6 +53,21 @@ caption {
 	caption-side: top;
 	margin-bottom: 30px;
 } /* 캡션과 테이블 간격 설정 */
+input[readonly] {
+	border: none;
+	text-align:center;
+} /* 테두리 제거 */
+select[disabled] {
+    border: none; /* 기본 테두리 제거 */
+    outline: none; /* 포커스 테두리 제거 */
+    background-color: transparent; /* 배경색 제거 */
+    -webkit-appearance: none; /* 웹킷 브라우저 (Chrome, Safari 등) 기본 스타일 제거 */
+    -moz-appearance: none; /* Firefox 브라우저 기본 스타일 제거 */
+    appearance: none; /* 기타 브라우저 기본 스타일 제거 */
+	color:black;
+	text-align:center;
+}
+
 </style>
 <script>
 	$(document)
@@ -81,8 +96,8 @@ caption {
 					</caption>
 					<tr>
 						<td rowspan="4" width="200"><img
-							src="${pageContext.request.contextPath}/${details.emp.imgPath}" alt="${details.emp.ename}의 사진"
-							width="200" height="200"></td>
+							src="${pageContext.request.contextPath}/${details.emp.imgPath}"
+							alt="${details.emp.ename}의 사진" width="200" height="200"></td>
 						<th>이름</th>
 						<th>성별</th>
 						<th>이메일</th>
@@ -91,10 +106,8 @@ caption {
 					<tr>
 						<td>${details.emp.ename}</td>
 						<td><select name="gender" disabled>
-								<option value="남"
-									${details.emp.gender == '남' ? 'selected' : ''}>남성</option>
-								<option value="여"
-									${details.emp.gender == '여' ? 'selected' : ''}>여성</option>
+								<option value="남" ${details.emp.gender == '남' ? 'selected' : ''}>남성</option>
+								<option value="여" ${details.emp.gender == '여' ? 'selected' : ''}>여성</option>
 						</select></td>
 						<td><input type="text" name="email" class="editable"
 							value="${details.emp.email}" readonly></td>

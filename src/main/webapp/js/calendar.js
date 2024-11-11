@@ -81,8 +81,60 @@ $(document).ready(function(){
     }
     
     // 일정 수정
-    function updateEvent(){
+	function updateEvent(eventData) {
+		console.log("전송할 이벤트 데이터:", eventData);
 		
+	    $.ajax({
+	        url: "ScheduleUpdateAction",
+	        type: "post",
+	        dataType: "json",
+	        data: {
+	            schedule_id: $("#schedule_id").val(),
+	            schedule_name: eventData.schedule_name,
+	            startAt: moment($("#startAt").val()).format('YYYY-MM-DD HH:mm'),
+    			endAt: moment($("#endAt").val()).format('YYYY-MM-DD HH:mm'), 
+	            bgColor: eventData.bgColor,
+	            description: eventData.description,
+	            allDay: eventData.allDay ? 1 : 0 
+
+	        },
+	        success: function(data) {
+	            console.log("일정 수정 성공", data);
+	            // calendar.refetchEvents();  // 일정 목록 새로 고침
+	            
+	            /*
+	            calendar.unselect();
+        
+        		calendar.render();
+	            
+	            $("#scheduleModal").modal("hide");
+	            */
+	            
+	            if (data != null) {
+			        for (let i = 0; i < data.length; i++) {
+						
+			            events.push({
+			                title: data[i].schedule_name, 
+			                start: data[i].schedule_start, 
+			                end: data[i].schedule_end, 
+			                backgroundColor: data[i].schedule_color, 
+			                description: data[i].schedule_content,
+			                allDay: data[i].schedule_allDay 
+			            });
+			        }
+			    }
+			    
+			    calendar.unselect();
+        
+        		calendar.render();
+	            
+	            $("#scheduleModal").modal("hide");
+	            
+	        },
+	        error: function(error) {
+	            console.log("일정 수정 오류", error);
+	        }
+	    });
 	}
 	
 	// 상세 일정 팝업 
@@ -90,7 +142,7 @@ $(document).ready(function(){
 	    $("#schedule_name").val(event.title);
 	    $("#startAt").val(moment(event.start).format("YYYY-MM-DD HH:mm"));
 	    $("#endAt").val(moment(event.end).format("YYYY-MM-DD HH:mm"));
-	    $("#description").val(event.description);
+	    $("#description").val(event.extendedProps.description);
 	    $("#bgColor").val(event.backgroundColor);
 	    
 	    // allDay 체크 여부
@@ -112,6 +164,19 @@ $(document).ready(function(){
 	    // 일정 수정
 	    $("#btnUpdate").off("click").on("click", function() {
 	        console.log("data Update");
+	        
+	        const eventData = {
+	            schedule_id: $("#schedule_id").val(),
+	            schedule_name: $("#schedule_name").val(),
+	            startAt: moment($("#startAt").val()).format('YYYY-MM-DD HH:mm'),
+    			endAt: moment($("#endAt").val()).format('YYYY-MM-DD HH:mm'), 
+	            bgColor: $("#bgColor").val(),
+	            description: $("#description").val(),
+	            allDay: $("#allDay").prop("checked")
+	        };
+	            
+	        updateEvent(eventData); // 수정 함수 호출
+	        
 	    });
 	    
 	    // 일정 삭제
@@ -312,12 +377,13 @@ $(document).ready(function(){
 	        locale: 'ko', // 한국어 설정
 			events: events, // 전역 이벤트 배열 사용
 		    dateClick: function(info) {
-                console.log("dateClick info", info);
+                //console.log("dateClick info", info);
                 openDetailModal(moment(info.date)); // 클릭한 날짜로 팝업 열기
             },
             eventClick: function(info) {
-                console.log("eventClick info", info);
+                 console.log("eventClick info", info.event);
                  openDetailModal(info.event); 
+             
                 //openDetailModal(moment(info.event.start)); // 일정 클릭 시 수정 팝업 열기
             },
 			eventAdd: function(obj) { // 이벤트가 추가되면 발생하는 이벤트

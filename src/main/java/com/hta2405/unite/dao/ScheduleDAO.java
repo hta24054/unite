@@ -111,7 +111,6 @@ public class ScheduleDAO {
 	        pstmt.setString(4, s.getScheduleColor());
 	        pstmt.setString(5, s.getScheduleContent());
 	        pstmt.setInt(6, s.getScheduleAllDay());
-	        
 	        pstmt.setInt(7, s.getScheduleId());
 	        pstmt.setString(8, s.getEmpId()); 
 	        
@@ -125,6 +124,38 @@ public class ScheduleDAO {
 	    
 	    return result;
 	}//updateSchedule end
+
+	public int dragUpdateSchedule(Schedule s) {
+		int result = 0;
+		String drag_update_sql = """
+				UPDATE schedule
+				SET    schedule_start = ?, schedule_end = ?, schedule_allDay = ?
+				WHERE  schedule_id = ? AND emp_id = ?
+				""";
+		
+		try(Connection con = ds.getConnection();
+			PreparedStatement pstmt = con.prepareStatement(drag_update_sql);) {
+			
+			
+			pstmt.setTimestamp(1, Timestamp.valueOf(s.getScheduleStart()));
+	        pstmt.setTimestamp(2, Timestamp.valueOf(s.getScheduleEnd()));
+	        pstmt.setInt(3, s.getScheduleAllDay());
+	        pstmt.setInt(4, s.getScheduleId());
+	        pstmt.setString(5, s.getEmpId());
+
+             pstmt.executeUpdate();
+             if (result == 1)
+				 System.out.println("drag 일정 데이터 수정 되었습니다.");
+			
+		} catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("dragUpdateSchedule() 에러 : " + e);
+        }
+		
+		return result;
+	}//dragUpdateSchedule
+
+
 	
 	
 

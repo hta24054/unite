@@ -118,6 +118,40 @@ $(document).ready(function(){
 	    });
 	}
 	
+	// 드래그 이벤트 (시작/종료 날짜 수정)
+	function updateDragEvent(info) {
+	    console.log("eventChange" + info.event);
+	    
+	    let endAt = info.event.end ? moment(info.event.end).format('YYYY-MM-DD HH:mm') : null;
+	    const startAt = moment(info.event.start).format('YYYY-MM-DD HH:mm');
+	
+	    if (info.event.allDay && endAt === null) {
+	        endAt = startAt;  // allDay 일정의 경우 시작 날짜와 종료 날짜를 동일하게 설정
+	    }
+	    
+	    $.ajax({
+	        url: "ScheduleDragUpdateAction",
+	        type: "post",
+	        dataType: "json",
+	        data: {
+	            emp_id: $("#emp_id").val(),
+	            schedule_id: info.event.id,
+	            startAt: startAt,
+	            endAt: endAt,
+	            allDay: info.event.allDay ? 1 : 0
+	        },
+	        success: function(data) {
+	            console.log("drag 일정 업데이트 성공:", data);
+	            fetchListData(); 
+	        },
+	        error: function(error) {
+	            console.log("drag 일정 업데이트 오류:", error);
+	            alert("drag 일정 업데이트 중 오류가 발생했습니다.");
+	            fetchListData();
+	        }
+	    });
+	}
+	
 	// 상세 일정 팝업 
 	function openDetailModal(event) {
 		$("#schedule_id").val(event.id);
@@ -307,7 +341,7 @@ $(document).ready(function(){
 		    },
 	        initialView: 'dayGridMonth', // 초기 로드 될때 보이는 캘린더 화면(기본 설정: 달)
 	        editable: true, // 수정 가능
-	        selectable: false, // 달력 일자 드래그 설정
+	        selectable: true, // 달력 일자 드래그 설정
 	        nowIndicator: true, // 현재 시간 마크
 	        dayMaxEvents: true, // 이벤트가 오버되면 높이 제한 (+ 몇 개식으로 표현)
 	        locale: 'ko', // 한국어 설정
@@ -322,12 +356,30 @@ $(document).ready(function(){
 			
 			        $("#schedule_name").val("");
 			        $("#startAt").val(moment(info.date).format("YYYY-MM-DD"));
+			      
 			        $("#endAt").val("");
 			        $("#description").val("");
 			        $("#bgColor").val("#1e3a8a");
 			        $("#allDay").prop("checked", false);
 			
 			        $("#scheduleModal").modal("show");
+			        
+			        // 등록 버튼에 이벤트 바인딩
+				    $("#btnRegister").off("click").on("click", function(e) {
+				        e.preventDefault();
+				        const eventData = {
+				            schedule_name: $("#schedule_name").val(),
+				            startAt: $("#startAt").val(),
+				            endAt: $("#endAt").val(),
+				            bgColor: $("#bgColor").val(),
+				            description: $("#description").val(),
+				            allDay: $("#allDay").prop("checked")
+				        };
+				        if (validateForm()) {
+				            addEvent(eventData);
+				        }
+				    });
+			        
 			    } else {
 			        openDetailModal(info.event);
 			    }
@@ -336,57 +388,18 @@ $(document).ready(function(){
                  console.log("eventClick info", info.event);
                  openDetailModal(info.event);
             },
-			eventAdd: function(obj) { // 이벤트가 추가되면 발생하는 이벤트
-	         	 console.log("eventAdd obj", obj);
+			eventAdd: function(info) { // 이벤트가 추가되면 발생하는 이벤트
+	         	 console.log("eventAdd", info);
 	        },
 	        
-	        eventChange: function(obj) { // 이벤트가 수정되면 발생하는 이벤트
-	         	console.log(obj);
+	        eventChange: function(info) { // 이벤트가 수정되면 발생하는 이벤트
+	         	updateDragEvent(info);
 	        },
-	        
 	        eventRemove: function(obj){ // 이벤트가 삭제되면 발생하는 이벤트
 	         	console.log(obj);
 	        },
 	        select: function(info) {
-			    console.log("드래그 선택된 범위:", info);
-			
-			    // 일정 등록 모달 초기화
-			    $(".modal-header").find("p").text("일정 등록");
-			    $(".modal-body").find(".btn_wrap").html(`
-			        <button type="reset" class="btn btn-secondary">취소</button>
-			        <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
-			    `);
-			
-			    $("#schedule_name").val("");
-			    $("#startAt").val(moment(info.start).format("YYYY-MM-DD HH:mm"));
-			    $("#endAt").val(moment(info.end).subtract(1, 'seconds').format("YYYY-MM-DD HH:mm")); // 종료 시간 -1초로 표시
-			    $("#description").val("");
-			    $("#bgColor").val("#1e3a8a");
-			    $("#allDay").prop("checked", info.allDay);
-			
-			    if (info.allDay) {
-			        $("#startAt, #endAt").prop("type", "date");
-			    } else {
-			        $("#startAt, #endAt").prop("type", "datetime-local");
-			    }
-			
-			    $("#scheduleModal").modal("show");
-			
-			    // 등록 버튼 클릭 시 이벤트 등록
-			    $("#btnRegister").off("click").on("click", function(e) {
-			        e.preventDefault();
-			        const eventData = {
-			            schedule_name: $("#schedule_name").val(),
-			            startAt: $("#startAt").val(),
-			            endAt: $("#endAt").val(),
-			            bgColor: $("#bgColor").val(),
-			            description: $("#description").val(),
-			            allDay: $("#allDay").prop("checked")
-			        };
-			        if (validateForm()) {
-			            addEvent(eventData);
-			        }
-			    });
+			    console.log("select:", info);
 			},
             eventDataTransform: function(event) { // 이벤트 데이터 변환 함수
                 // allDay 이벤트일 경우 종료 날짜를 하루 더 추가

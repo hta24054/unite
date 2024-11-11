@@ -110,7 +110,6 @@ $(document).ready(function(){
 	            console.log("일정 수정 성공", data);
 	            
 	            fetchListData();
-	            
 	            $("#scheduleModal").modal("hide");
 	            
 	        },
@@ -167,7 +166,6 @@ $(document).ready(function(){
 	        };
 	            
 	        updateEvent(eventData); // 수정 함수 호출
-	        
 	    });
 	    
 	    // 일정 삭제
@@ -310,7 +308,7 @@ $(document).ready(function(){
 		    },
 	        initialView: 'dayGridMonth', // 초기 로드 될때 보이는 캘린더 화면(기본 설정: 달)
 	        editable: true, // 수정 가능
-	        selectable: true, // 달력 일자 드래그 설정가능
+	        selectable: false, // 달력 일자 드래그 설정
 	        nowIndicator: true, // 현재 시간 마크
 	        dayMaxEvents: true, // 이벤트가 오버되면 높이 제한 (+ 몇 개식으로 표현)
 	        locale: 'ko', // 한국어 설정

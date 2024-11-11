@@ -1,6 +1,6 @@
 $(document).ready(function(){
 	let calendar;
-	const events = []; 
+	let events = []; 
 	let isAllDayChk, startDate, endDate;
 	let currentDate;
 	
@@ -17,6 +17,8 @@ $(document).ready(function(){
 	            console.log("success data", data);
 	            //callback(data); // 데이터가 성공적으로 로드된 후 콜백 함수 호출
 	            
+	            events = []; 
+	            
 	            if (data != null) {
 			        for (let i = 0; i < data.length; i++) {
 						
@@ -26,12 +28,17 @@ $(document).ready(function(){
 			                end: data[i].schedule_end, 
 			                backgroundColor: data[i].schedule_color, 
 			                description: data[i].schedule_content,
-			                allDay: data[i].schedule_allDay 
+			                allDay: data[i].schedule_allDay,
+			                id: data[i].schedule_id
 			            });
 			        }
 			    }
      	        // 캘린더 초기화
 			    initCalendar();
+			    
+			    calendar.unselect();
+        
+       			calendar.render();
 	        },
 	        error: function(error) {
 	            console.log('일정 리스트 불러오기 오류', error);
@@ -82,51 +89,26 @@ $(document).ready(function(){
     
     // 일정 수정
 	function updateEvent(eventData) {
-		console.log("전송할 이벤트 데이터:", eventData);
+		console.log("수정 데이터:", eventData);
 		
 	    $.ajax({
 	        url: "ScheduleUpdateAction",
 	        type: "post",
 	        dataType: "json",
 	        data: {
-	            schedule_id: $("#schedule_id").val(),
+				emp_id: $("#emp_id").val(),
+	            schedule_id: eventData.schedule_id,  // schedule_id 값 전달
 	            schedule_name: eventData.schedule_name,
 	            startAt: moment($("#startAt").val()).format('YYYY-MM-DD HH:mm'),
     			endAt: moment($("#endAt").val()).format('YYYY-MM-DD HH:mm'), 
 	            bgColor: eventData.bgColor,
 	            description: eventData.description,
 	            allDay: eventData.allDay ? 1 : 0 
-
 	        },
 	        success: function(data) {
 	            console.log("일정 수정 성공", data);
-	            // calendar.refetchEvents();  // 일정 목록 새로 고침
 	            
-	            /*
-	            calendar.unselect();
-        
-        		calendar.render();
-	            
-	            $("#scheduleModal").modal("hide");
-	            */
-	            
-	            if (data != null) {
-			        for (let i = 0; i < data.length; i++) {
-						
-			            events.push({
-			                title: data[i].schedule_name, 
-			                start: data[i].schedule_start, 
-			                end: data[i].schedule_end, 
-			                backgroundColor: data[i].schedule_color, 
-			                description: data[i].schedule_content,
-			                allDay: data[i].schedule_allDay 
-			            });
-			        }
-			    }
-			    
-			    calendar.unselect();
-        
-        		calendar.render();
+	            fetchListData();
 	            
 	            $("#scheduleModal").modal("hide");
 	            
@@ -139,10 +121,11 @@ $(document).ready(function(){
 	
 	// 상세 일정 팝업 
 	function openDetailModal(event) {
+		$("#schedule_id").val(event.id);
 	    $("#schedule_name").val(event.title);
 	    $("#startAt").val(moment(event.start).format("YYYY-MM-DD HH:mm"));
 	    $("#endAt").val(moment(event.end).format("YYYY-MM-DD HH:mm"));
-	    $("#description").val(event.extendedProps.description);
+	    $("#description").val(event.description);
 	    $("#bgColor").val(event.backgroundColor);
 	    
 	    // allDay 체크 여부

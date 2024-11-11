@@ -93,6 +93,16 @@ $(document).ready(function(){
 	        $("#endAt").val(moment(event.end).format("YYYY-MM-DD HH:mm"));
 	        $("#description").val(event.description);
 	        $("#bgColor").val(event.backgroundColor);
+	        
+	        // allDay
+	        if (event.allDay) {
+	            $("#allDay").prop("checked", true);
+	            $("#startAt, #endAt").prop("type", "date");
+	        } else {
+	            $("#allDay").prop("checked", false);
+	            $("#startAt, #endAt").prop("type", "datetime-local");
+	        }
+	        
 	        $(".modal-header").find("p").text("상세 일정");
 	        $(".modal-body").find(".btn_wrap").html(`
 	            <button type="reset" class="btn btn-secondary">취소</button>

@@ -1,8 +1,10 @@
-package com.hta2405.unite.action;
+package com.hta2405.unite.action.schedule;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+import com.hta2405.unite.action.Action;
+import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ScheduleDAO;
 import com.hta2405.unite.dto.Schedule;
 

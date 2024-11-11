@@ -1,8 +1,10 @@
-package com.hta2405.unite.action;
+package com.hta2405.unite.action.schedule;
 
 import java.io.IOException;
 
 import com.google.gson.JsonArray;
+import com.hta2405.unite.action.Action;
+import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ScheduleDAO;
 
 import jakarta.servlet.ServletException;
@@ -15,8 +17,6 @@ public class ScheduleListAction implements Action {
     public ActionForward execute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-    	
-//    	String id = request.getParameter("id"); 
     	String id = (String) request.getSession().getAttribute("id");
         
         ScheduleDAO sdao = new ScheduleDAO();
@@ -32,26 +32,5 @@ public class ScheduleListAction implements Action {
         
         System.out.println("ScheduleListAction array" + array); 
 		return null;
-    	
-//    	System.out.println("scheduleId" + request.getParameter("schedule_id")); 
-//    	System.out.println("empId" + request.getParameter("empId")); 
-//    	
-//    	
-//    	int scheduleId = Integer.parseInt(request.getParameter("schedule_id"));
-//    	String empId = request.getParameter("emp_id"); 
-//        
-//        ScheduleDAO sdao = new ScheduleDAO();
-//        JsonArray array = sdao.getListSchedule(scheduleId, empId);
-//
-//        response.setContentType("application/json;charset=utf-8");
-//
-//        if (array != null) {
-//            response.getWriter().print(array);
-//        } else {
-//            response.getWriter().print("[]"); 
-//        }
-//        
-//        System.out.println(array); 
-//		return null;
     }
 }

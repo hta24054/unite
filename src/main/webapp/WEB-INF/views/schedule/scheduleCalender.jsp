@@ -50,7 +50,17 @@
 		}
 		
 		.btn_wrap {
-			text-align: center;
+			display: flex;
+		    align-items: center;
+		    justify-content: center;
+		}
+		
+		.btn_wrap button {
+			margin: 0 5px;
+		}
+		
+		.modal-header p {
+			margin: 0;
 		}
 	</style>
 </head>
@@ -60,7 +70,7 @@
 			<div class="col-sm-2 px-5">
 				<aside>
 					<h3>캘린더</h3>
-					<button class="btn btn-info" data-toggle="modal" data-target="#scheduleModal">일정등록</button>
+					<button class="btn btn-info" data-toggle="modal" data-target="#scheduleModal">일정 등록</button>
 					<div>
 						<a href="#">&middot; 공유 일정 등록</a>
 					</div>
@@ -77,14 +87,12 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header" style="align-items: center;">
-					일정등록
+					<p>일정 등록</p>
 					<button type="button" class="btn btn-danger" data-dismiss="modal">X</button>
 				</div>
 				<div class="modal-body">
 					<form name="scheduleEvent" method="post">
-						<input type="hidden" id="schedule_id" name="schedule_id" value="${param.schedule_id}">
-
-						<!-- EmpLoginProcessAction의 session.setAttribute("id", id)의 값이 value에 들어가야함 -->
+						<input type="hidden" id="schedule_id" name="schedule_id" value="${schedule_id}">
 						<input type="hidden" id="emp_id" name="emp_id" value="${id}">
 						
 						<div class="form-group">
@@ -109,13 +117,14 @@
           					<div class="color-group">
           						<p>색상</p>
 					            <select name="bgColor" id="bgColor">
-									<option value="red" style="color:red;">빨강</option>
-						            <option value="orange" style="color:orange;">주황</option>
-						            <option value="yellow" style="color:yellow;">노랑</option>
-						            <option value="green" style="color:green;">초록</option>
-						            <option value="blue" style="color:blue;">파랑</option>
-						            <option value="indigo" style="color:indigo;">남</option>
-						            <option value="purple" style="color:purple;">보라</option>
+									<option value="#1e3a8a" style="color: #1e3a8a;">Blue100</option>
+						            <option value="#1d4ed8" style="color: #1d4ed8;">Blue200</option>
+						            <option value="#22d3ee" style="color: #22d3ee;">Blue300</option>
+						            <option value="#16a34a" style="color: #16a34a;">Green100</option>
+						            <option value="#84cc16" style="color: #84cc16;">Green200</option>
+						            <option value="#dc2626" style="color: #dc2626;">Red100</option>
+						            <option value="#f43f5e" style="color: #f43f5e;">Red200</option>
+						            <option value="#facc15" style="color: #facc15;">Yellow</option>
 								</select>
           					</div>
 				        </div>
@@ -125,7 +134,7 @@
 				        </div>
 				        
           				<div class="btn_wrap">
-          					<button type="reset" class="btn btn-danger">취소</button>
+          					<button type="reset" class="btn btn-secondary">취소</button>
 							<button type="submit" class="btn btn-info" id="btnRegister">등록</button>
           				</div>
 					</form>

@@ -1,4 +1,4 @@
-package com.hta2405.unite.action;
+package com.hta2405.unite.action.schedule;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

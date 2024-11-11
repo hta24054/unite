@@ -29,7 +29,7 @@ public class EmpTreeAction implements Action {
                 .registerTypeAdapter(LocalDate.class, new LocalDateAdapter()) // 어댑터 등록
                 .create();
 
-        List<Emp> empList = new EmpDao().getEmpByDeptId(deptId);
+        List<Emp> empList = new EmpDao().getHiredEmpByDeptId(deptId);
         JsonElement listToJson = gson.toJsonTree(empList);
         jsonObject.add("empList", listToJson);
 

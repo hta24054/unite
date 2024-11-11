@@ -3,6 +3,7 @@ package com.hta2405.unite.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import javax.naming.Context;
@@ -26,7 +27,7 @@ public class ScheduleDAO {
 	}
 
 	//일정 등록
-	public int scheduleInsert(Schedule s) {
+	public int insertSchedule(Schedule s) {
 		int result = 0;
 		String sql = """
 			    INSERT INTO schedule
@@ -89,6 +90,55 @@ public class ScheduleDAO {
 	    }
 		return array;
 	}
+
+	
+	// 일정 수정
+	public int updateSchedule(Schedule s) {
+		int result = 0;
+		String update_sql = """
+				UPDATE schedule
+				SET    schedule_name = ?, schedule_start = ?, schedule_end = ?, 
+				       schedule_color = ?, schedule_content = ?, schedule_allDay = ?  
+				WHERE  schedule_id = ? AND emp_id = ?
+				""";
+		
+		try(Connection con = ds.getConnection();
+			PreparedStatement pstmt = con.prepareStatement(update_sql);) {
+			
+			pstmt.setString(1, s.getScheduleName());
+	        pstmt.setTimestamp(2, Timestamp.valueOf(s.getScheduleStart()));
+	        pstmt.setTimestamp(3, Timestamp.valueOf(s.getScheduleEnd()));
+	        pstmt.setString(4, s.getScheduleColor());
+	        pstmt.setString(5, s.getScheduleContent());
+	        pstmt.setInt(6, s.getScheduleAllDay());
+	        
+	        pstmt.setInt(7, s.getScheduleId());
+	        pstmt.setString(8, s.getEmpId()); 
+	        
+	        result = pstmt.executeUpdate();
+	        if (result == 1)
+				 System.out.println("일정 데이터 수정 되었습니다.");
+		} catch (Exception e) {
+	        e.printStackTrace();
+	        System.out.println("updateSchedule() 에러 : " + e);
+	    }
+	    
+	    return result;
+	}//updateSchedule end
+	
+	
+
+
+
+	
+
+
+	
+	
+	
+	
+	
+	
 
 
 }

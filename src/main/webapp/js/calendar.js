@@ -69,28 +69,6 @@ $(document).ready(function(){
 			                description: data[i].schedule_content,
 			                allDay: isAllDay
 			            });
-						
-						/*
-						if(isAllDay) {
-							events.push({
-				                title: data[i].schedule_name, 
-				                start: data[i].schedule_start, 
-				                end: data[i].schedule_end,
-				                backgroundColor: data[i].schedule_color, 
-				                description: data[i].schedule_content,
-				                allDay: isAllDay
-				            });
-						} else {
-							events.push({
-				                title: data[i].schedule_name, 
-				                start: data[i].schedule_start, 
-				                end: data[i].schedule_end,
-				                backgroundColor: data[i].schedule_color, 
-				                description: data[i].schedule_content,
-				                allDay: isAllDay
-				            });
-						}
-						*/
 			        }
 			    }
 
@@ -107,35 +85,72 @@ $(document).ready(function(){
         currentDate = date; // 클릭한 날짜 저장
         const scheduleForDate = events.filter(event => moment(event.start).isSame(date, 'day'));
 
-        $("#schedule_name").val("");
-        $("#startAt").val(date.format("YYYY-MM-DD"));
-        $("#endAt").val(date.format("YYYY-MM-DD"));
-        $("#description").val("");
-        
-        $(".modal-body").find(".btn_wrap").empty();
-        const cancelBtn = `<button type="reset" class="btn btn-secondary">취소</button>`;
-	    const updateBtn = `<button type="button" id="btnUpdate" class="btn btn-primary">수정</button>`;
-	    const deleteBtn = `<button type="button" id="btnDelete" class="btn btn-danger">삭제</button>`;
-	    const registerBtn = `<button type="submit" class="btn btn-info" id="btnRegister">등록</button>`; 
-     
-        if (scheduleForDate.length > 0) {
-            const event = scheduleForDate[0]; // 첫 번째 일정 
-            
-            $("#schedule_name").val(event.title);
-            $("#startAt").val(moment(event.start).format("YYYY-MM-DD HH:mm"));
-            $("#endAt").val(moment(event.end).format("YYYY-MM-DD HH:mm"));
-            $("#description").val(event.description);
-            $("#bgColor").val(event.backgroundColor);
-            $(".modal-header").find("p").text("상세 일정"); 
-	        $(".modal-body").find(".btn_wrap").append(cancelBtn, updateBtn, deleteBtn);
-        } else {
-            $(".modal-header").find("p").text("일정 등록"); 
-            $(".modal-body").find(".btn_wrap").append(cancelBtn, registerBtn);
-        }
-        $("#scheduleModal").modal('show');
+	    if (scheduleForDate.length > 0) { // 일정 있을 경우
+	        const event = scheduleForDate[0];
+	
+	        $("#schedule_name").val(event.title);
+	        $("#startAt").val(moment(event.start).format("YYYY-MM-DD HH:mm"));
+	        $("#endAt").val(moment(event.end).format("YYYY-MM-DD HH:mm"));
+	        $("#description").val(event.description);
+	        $("#bgColor").val(event.backgroundColor);
+	        $(".modal-header").find("p").text("상세 일정");
+	        $(".modal-body").find(".btn_wrap").html(`
+	            <button type="reset" class="btn btn-secondary">취소</button>
+	            <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
+	            <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
+	        `);
+	        
+	        $("#btnUpdate").off("click").on("click", function() {
+	            console.log("data Update");
+	        });
+	        
+	        $("#btnDelete").off("click").on("click", function() {
+	            console.log("data Delete");
+	        });
+	    } else { 
+	        $(".modal-header").find("p").text("일정 등록");
+	        $(".modal-body").find(".btn_wrap").html(`
+	            <button type="reset" class="btn btn-secondary">취소</button>
+	            <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
+	        `);
+	    }
+	
+	    $("#scheduleModal").modal('show');
     }
     
-    // form 유효성 검사
+    // 일정 등록 버튼 클릭 시 모달 초기화
+	$(".btn.btn-info[data-target='#scheduleModal']").on("click", function() {
+	    $(".modal-header").find("p").text("일정 등록"); 
+	    $(".modal-body").find(".btn_wrap").html(`
+	        <button type="reset" class="btn btn-secondary">취소</button>
+	        <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
+	    `);
+	
+	    $("#schedule_name").val("");
+	    $("#startAt").val("");
+	    $("#endAt").val("");
+	    $("#description").val("");
+	    $("#bgColor").val("#1e3a8a");
+	    $("#allDay").prop("checked", false);
+	
+	    // 등록 버튼에 이벤트 바인딩
+	    $("#btnRegister").off("click").on("click", function(e) {
+	        e.preventDefault();
+	        const eventData = {
+	            schedule_name: $("#schedule_name").val(),
+	            startAt: $("#startAt").val(),
+	            endAt: $("#endAt").val(),
+	            bgColor: $("#bgColor").val(),
+	            description: $("#description").val(),
+	            allDay: $("#allDay").prop("checked")
+	        };
+	        if (validateForm()) {
+	            addEvent(eventData);
+	        }
+	    });
+	});
+
+	// form 유효성 검사
     function validateForm() {
 		const $scheduleName = $("#schedule_name");
 		const $start = $("#startAt"); 
@@ -166,37 +181,6 @@ $(document).ready(function(){
      
         return true;
     }
-    
-    // 모달 값 초기화
-    /*
-	$('#scheduleModal').on('show.bs.modal', function() {
-	    // 모든 필드 초기화
-	    $("#schedule_name").val(""); 
-	    $("#startAt").val(""); 
-	    $("#endAt").val(""); 
-	    $("#description").val(""); 
-	    $("#bgColor").val("#1e3a8a"); 
-	    $("#allDay").prop("checked", false); 
-	});
-	*/
-    
-    // 등록 버튼 클릭 시 
-    $("#btnRegister").on("click", function(e) {
-		e.preventDefault();
-		
-        const eventData = {
-            schedule_name: $("#schedule_name").val(),
-            startAt: $("#startAt").val(),
-            endAt: $("#endAt").val(),
-            bgColor: $("#bgColor").val(),
-            description: $("#description").val(),
-            allDay: $("#allDay").prop("checked") 
-        };
-
-        if (validateForm()) {
-            addEvent(eventData);
-        }
-    });
     
     // 종일 체크박스 상태 변경 시 
     $("#allDay").on("change", function() {

@@ -124,9 +124,16 @@ $(document).ready(function(){
 	function openDetailModal(event) {
 		$("#schedule_id").val(event.id);
 	    $("#schedule_name").val(event.title);
+	    
 	    $("#startAt").val(moment(event.start).format("YYYY-MM-DD HH:mm"));
 	    $("#endAt").val(moment(event.end).format("YYYY-MM-DD HH:mm"));
-	    $("#description").val(event.description);
+	    
+	    //$("#description").val(event.description);
+	    //$("#description").val(event.extendedProps.description);
+	    
+	    const description = event.extendedProps && event.extendedProps.description ? event.extendedProps.description : '';
+	    $("#description").val(description);
+	    
 	    $("#bgColor").val(event.backgroundColor);
 	    
 	    // allDay 체크 여부

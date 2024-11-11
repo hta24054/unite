@@ -91,7 +91,6 @@ $(document).ready(function(){
     // 일정 수정
 	function updateEvent(eventData) {
 		console.log("수정 데이터:", eventData);
-		
 	    $.ajax({
 	        url: "ScheduleUpdateAction",
 	        type: "post",
@@ -314,15 +313,28 @@ $(document).ready(function(){
 	        locale: 'ko', // 한국어 설정
 			events: events, // 전역 이벤트 배열 사용
 		    dateClick: function(info) {
-                //console.log("dateClick info", info);
-                //openDetailModal(moment(info.date)); // 클릭한 날짜로 팝업 열기
-                openDetailModal(moment(info.event));
-            },
+			    if (!info.event) { // 클릭한 날짜에 일정이 없는 경우
+			        $(".modal-header").find("p").text("일정 등록"); 
+			        $(".modal-body").find(".btn_wrap").html(`
+			            <button type="reset" class="btn btn-secondary">취소</button>
+			            <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
+			        `);
+			
+			        $("#schedule_name").val("");
+			        $("#startAt").val(moment(info.date).format("YYYY-MM-DD"));
+			        $("#endAt").val("");
+			        $("#description").val("");
+			        $("#bgColor").val("#1e3a8a");
+			        $("#allDay").prop("checked", false);
+			
+			        $("#scheduleModal").modal("show");
+			    } else {
+			        openDetailModal(info.event);
+			    }
+			},
             eventClick: function(info) {
                  console.log("eventClick info", info.event);
-                 openDetailModal(info.event); 
-             
-                //openDetailModal(moment(info.event.start)); // 일정 클릭 시 수정 팝업 열기
+                 openDetailModal(info.event);
             },
 			eventAdd: function(obj) { // 이벤트가 추가되면 발생하는 이벤트
 	         	 console.log("eventAdd obj", obj);
@@ -335,9 +347,47 @@ $(document).ready(function(){
 	        eventRemove: function(obj){ // 이벤트가 삭제되면 발생하는 이벤트
 	         	console.log(obj);
 	        },
-	        select: function(arg) {
-                console.log(arg);
-            },
+	        select: function(info) {
+			    console.log("드래그 선택된 범위:", info);
+			
+			    // 일정 등록 모달 초기화
+			    $(".modal-header").find("p").text("일정 등록");
+			    $(".modal-body").find(".btn_wrap").html(`
+			        <button type="reset" class="btn btn-secondary">취소</button>
+			        <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
+			    `);
+			
+			    $("#schedule_name").val("");
+			    $("#startAt").val(moment(info.start).format("YYYY-MM-DD HH:mm"));
+			    $("#endAt").val(moment(info.end).subtract(1, 'seconds').format("YYYY-MM-DD HH:mm")); // 종료 시간 -1초로 표시
+			    $("#description").val("");
+			    $("#bgColor").val("#1e3a8a");
+			    $("#allDay").prop("checked", info.allDay);
+			
+			    if (info.allDay) {
+			        $("#startAt, #endAt").prop("type", "date");
+			    } else {
+			        $("#startAt, #endAt").prop("type", "datetime-local");
+			    }
+			
+			    $("#scheduleModal").modal("show");
+			
+			    // 등록 버튼 클릭 시 이벤트 등록
+			    $("#btnRegister").off("click").on("click", function(e) {
+			        e.preventDefault();
+			        const eventData = {
+			            schedule_name: $("#schedule_name").val(),
+			            startAt: $("#startAt").val(),
+			            endAt: $("#endAt").val(),
+			            bgColor: $("#bgColor").val(),
+			            description: $("#description").val(),
+			            allDay: $("#allDay").prop("checked")
+			        };
+			        if (validateForm()) {
+			            addEvent(eventData);
+			        }
+			    });
+			},
             eventDataTransform: function(event) { // 이벤트 데이터 변환 함수
                 // allDay 이벤트일 경우 종료 날짜를 하루 더 추가
                 if (event.allDay) {

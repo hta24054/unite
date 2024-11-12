@@ -11,7 +11,18 @@
 	label{font-weight: bold}
 	#upfile{display: none}
 	img{width: 20px;}
-	.attachFlie{border: 2px dotted;}
+	.attachFlie{
+		border: 2px dotted;
+		display: flex;
+	    justify-content: center;
+	    align-items: center;
+	    height: 40px;
+	}
+	
+	.fileLabel{
+		margin:0px 3px;
+		cursor: pointer;
+	}
 	
 	.file-list {
 	    height: 130px;
@@ -98,39 +109,45 @@ function deleteFile(num) {
 }
 /* 폼 전송 */
 function submitForm() {
-    // 폼데이터 담기
-    //var form = document.querySelector("form");
+	console.log(filesArr.length)
+    var form = document.querySelector("form[name='boardform']");
     var formData = new FormData(form);
+	var j=0;
+    // 삭제되지 않은 파일만 폼데이터에 담기
     for (var i = 0; i < filesArr.length; i++) {
-        // 삭제되지 않은 파일만 폼데이터에 담기
-        if (!filesArr[i].is_delete) {
-            formData.append("attach_file", filesArr[i]);
-        }
+    	if (filesArr[i] && !filesArr[i].is_delete) {
+    	    formData.append("attach_file"+j++, filesArr[i]);
+    	}
     }
-
+	console.log(filesArr.length)
+	formData.forEach((value, key) => {
+    	console.log(key + ": " + value);
+	});
+	
     $.ajax({
         method: 'POST',
-        url: '/register',
+        url: '../board/post/add',
         dataType: 'json',
         data: formData,
-        async: true,
-        timeout: 30000,
+        processData: false, // 데이터를 문자열로 변환하지 않음
+        contentType: false, // Content-Type 헤더를 multipart/form-data로 설정
         cache: false,
-        headers: {'cache-control': 'no-cache', 'pragma': 'no-cache'},
-        success: function () {
-            alert("파일업로드 성공");
+        success: function (data) {
+            alert(data.message);
+            location.href = "home";
         },
         error: function (xhr, desc, err) {
-            alert('에러가 발생 하였습니다.');
-            return;
+            alert('에러가 발생하였습니다.');
+            location.href = "home";
         }
-    })
+    });
 }
+
 </script>
 </head>
 <body>
  	<form action="../board/post/add" method="post" enctype="multipart/form-data"
- 			name="boardform">
+      name="boardform" onsubmit="event.preventDefault(); submitForm();">
  		<div class="form-group">
  			<label for="target_board">
  				To.
@@ -156,9 +173,9 @@ function submitForm() {
  			<div class="attachFlie">
  				<img src="${pageContext.request.contextPath}/image/attach.png" alt="파일첨부">
  				이 곳에 파일을 드래그 하세요. 또는 
-	 			<label>
+	 			<label class="fileLabel">
 	 				파일선택
- 					<input type="file" id="upfile" name="board_file" onchange="addFile(this);" multiple />
+ 					<input type="file" id="upfile" onchange="addFile(this);" multiple />
 	 			</label>
 	 			<span id="filevalue"></span>
  			</div>

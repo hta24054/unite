@@ -7,8 +7,14 @@ import com.hta2405.unite.action.post.PostAddAction;
 import com.hta2405.unite.action.post.PostWriteAction;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024 * 5,   // 메모리 내 파일 크기 제한 (5MB)
+    maxFileSize = 1024 * 1024 * 10,        // 파일 하나의 최대 크기 (10MB)
+    maxRequestSize = 1024 * 1024 * 50      // 요청 전체 크기 (50MB)
+)
 @WebServlet("/board/*")
 public class BoardFrontController extends AbstractFrontController {
 

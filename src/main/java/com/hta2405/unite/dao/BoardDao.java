@@ -4,12 +4,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import com.hta2405.unite.dto.Board;
 import com.hta2405.unite.dto.Post;
+import com.hta2405.unite.dto.PostFile;
 
 public class BoardDao {
 	private DataSource ds;
@@ -25,9 +27,11 @@ public class BoardDao {
 
 	public ArrayList<Object> getBoardListAll() {
 		ArrayList<Object> list = new ArrayList<>();
+		ArrayList<Board> boards = new ArrayList<>();
+		ArrayList<Post> posts = new ArrayList<>();
 		String sql = """
-					select post.*,board.board_name1,board.board_name2,dept_id, nvl(cnt,0) as cnt
-					from post left outer join (select post_id , count(*) as cnt
+					select post.*, board.*, nvl(cnt,0) as cnt
+					from post left outer join (select post_id, count(*) as cnt
 											from post_comment
 											group by post_id) pc
 						on post.post_id = pc.post_id
@@ -42,6 +46,7 @@ public class BoardDao {
 				while(rs.next()) {
 					Board board = new Board();
 					Post post = new Post();
+					board.setBoardId(rs.getLong("board_id"));
 					board.setBoardName1(rs.getString("board_name1"));
 					board.setBoardName2(rs.getString("board_name2"));
 					board.setDeptId(rs.getLong("dept_id"));
@@ -57,28 +62,31 @@ public class BoardDao {
 					post.setPostReSeq(rs.getLong("post_re_seq"));
 					post.setPostView(rs.getLong("post_view"));
 					post.setPostCommentCnt(rs.getLong("cnt"));
-					list.add(board);
-					list.add(post);
+					boards.add(board);
+					posts.add(post);
 				}
+				list.add(boards);
+				list.add(posts);
+				return list;
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("getBoardList() 에러:"+ e);
+			System.out.println("getBoardListAll() 에러:"+ e);
 		}
 		
-		return list;
+		return null;
 	}
 
 	public Board getBoardListByName2(String boardName2) {
 		Board board = null;
 		String sql = """
-				select * from dept
-				where boardName2 = ?
+				SELECT * FROM BOARD
+				where BOARD_NAME2 = ?
 				""";
 		
 		try (	Connection con = ds.getConnection();
 				PreparedStatement pstmt = con.prepareStatement(sql);){
-			
+			pstmt.setString(1, boardName2);
 			try (ResultSet rs= pstmt.executeQuery()){
 				if(rs.next()) {
 					board = new Board();
@@ -90,29 +98,69 @@ public class BoardDao {
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("getBoardList() 에러:"+ e);
+			System.out.println("getBoardListByName2() 에러:"+ e);
 		}
 		return board;
 	}
 
-	public boolean BoardInsert(Board boarddata) {
-		String sql = """
-				INSERT INTO BOARD(BOARD_NAME1,BOARD_NAME2,DEPT_ID)
-				VALUES(?,?,?)
-				""";
+	public Boolean postAndFileInsert(Post postData, List<PostFile> postFiles) {
 		
-		try (	Connection con = ds.getConnection();
-				PreparedStatement pstmt = con.prepareStatement(sql);){
-			pstmt.setString(1, boarddata.getBoardName1());
-			pstmt.setString(2, boarddata.getBoardName2());
-			pstmt.setLong(3, boarddata.getDeptId());
-			int result = pstmt.executeUpdate();
-			return result == 1 ? true : false;
+		try(Connection con =ds.getConnection();){
+			int num1 = post_insert(con, postData);
+			int num2 = postFile_insert(con, postFiles);
+			if(num1>0 && num2>0) {
+				return true;
+			}
 		}catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("getBoardList() 에러:"+ e);
+			System.out.println("postAndFileInsert() 에러"+e);
 		}
 		return false;
+	}
+
+	private int post_insert(Connection con, Post postData) {
+		String getPostId_sql = "(SELECT NVL(MAX(POST_ID),0)+1 FROM POST)";
+		String sql = """
+				INSERT INTO POST(BOARD_ID,POST_WRITER,POST_SUBJECT,POST_CONTENT,
+				POST_DATE,POST_UPDATE_DATE,POST_RE_REF,POST_RE_LEV,POST_RE_SEQ)
+				VALUES( ?, ?, ?, ?, SYSDATE, SYSDATE, %1$s, 0, 0)
+				""".formatted(getPostId_sql);
+		
+		try (	PreparedStatement pstmt = con.prepareStatement(sql);){
+			pstmt.setLong(1, postData.getBoardId());
+			pstmt.setString(2, postData.getPostWriter());
+			pstmt.setString(3, postData.getPostSubject());
+			pstmt.setString(4, postData.getPostContent());
+			return pstmt.executeUpdate();
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("post_insert() 에러:"+ e);
+		}
+		return 0;
+	}
+
+	private int postFile_insert(Connection con, List<PostFile> postFiles) {
+		int num = 0;
+		String getPostId_sql = "(SELECT MAX(POST_ID) FROM POST)";
+		String sql = """
+				INSERT INTO POST_FILE( POST_ID, POST_FILE_PATH, POST_FILE_ORIGINAL, POST_FILE_UUID, POST_FILE_TYPE)
+				VALUES( %1$s, ?, ?, ?, ?)
+				""".formatted(getPostId_sql);
+		
+		try (	PreparedStatement pstmt = con.prepareStatement(sql);){
+			for(PostFile postFile : postFiles) {
+				pstmt.setString(1, postFile.getPostFilePath());
+				pstmt.setString(2, postFile.getPostFileOriginal());
+				pstmt.setString(3, postFile.getPostFileUUID());
+				pstmt.setString(4, postFile.getPostFileType());
+				num += pstmt.executeUpdate();
+			}
+			return num;
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("postFile_insert() 에러:"+ e);
+		}
+		return 0;
 	}
 	
 	

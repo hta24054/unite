@@ -8,14 +8,26 @@ DROP TABLE emp_info CASCADE CONSTRAINTS;
 DROP TABLE emp CASCADE CONSTRAINTS;
 DROP TABLE dept CASCADE CONSTRAINTS;
 
-select * from post;
+
+
+
+-- 외래키 지정
+ALTER TABLE post
+  DROP CONSTRAINT FK_emp_TO_post;
+--게시판 제약조건 수정
+ALTER TABLE board MODIFY dept_id null;
+ALTER TABLE board MODIFY dept_id default null;
+
+--컬럼 사이즈 및 타입 수정
+ALTER TABLE post MODIFY post_content clob;
+ALTER TABLE POST MODIFY POST_WRITER VARCHAR2(15);
 
 --게시판 데이터 임시
 INSERT ALL
-INTO BOARD(board_name1, board_name2, dept_id) VALUES ('전사게시판', '공지사항',9999)
-INTO BOARD(board_name1, board_name2, dept_id) VALUES ('전사게시판', '주간식단표',9999)
-INTO BOARD(board_name1, board_name2, dept_id) VALUES ('전사게시판', 'FAQ',9999)
-INTO BOARD(board_name1, board_name2, dept_id) VALUES ('일반게시판', '일반게시판',9999)
+INTO BOARD(board_name1, board_name2) VALUES ('전사게시판', '공지사항')
+INTO BOARD(board_name1, board_name2) VALUES ('전사게시판', '주간식단표')
+INTO BOARD(board_name1, board_name2) VALUES ('전사게시판', 'FAQ')
+INTO BOARD(board_name1, board_name2) VALUES ('일반게시판', '일반게시판')
 INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '경영기획본부', 1100)
 INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '재무관리팀', 1110)
 INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '인사관리팀', 1120)
@@ -35,12 +47,17 @@ FROM DUAL;
 
 drop sequence SEQ_board;
 delete from board;
-insert into dept values(9999,'ALL','')
-ALTER TABLE board MODIFY dept_id not null;
+delete from post;
+delete from dept where dept_id = 9999;
+--insert into dept values(9999,'ALL','')
 select * from board;
+select * from dept;
+select * from post;
+select * from post_FILE;
+
 
 -- 모든 list 출력
-select post.*,board.board_name1,board.board_name2,dept_id, nvl(cnt,0) as cnt
+select post.*,board.*, nvl(cnt,0) as cnt
 from post left outer join (select post_id , count(*) as cnt
 						from post_comment
 						group by post_id) pc
@@ -48,8 +65,6 @@ from post left outer join (select post_id , count(*) as cnt
 join board
 	on board.board_id = post.board_id
 order by post_re_ref desc, post_re_seq asc;
-
-
 
 
 update project_member set member_progress_rate = 60 where member_id = 'e002';

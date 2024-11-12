@@ -504,6 +504,7 @@ public class ProjectDAO {
                 join project_member m on p.project_id = m.project_id
                 join emp e on m.member_id = e.emp_id
                 where p.project_id = ?
+                order by e.ename
                 """;
 
         try (Connection conn = ds.getConnection();
@@ -531,21 +532,47 @@ public class ProjectDAO {
     }
 
 
-	public List<ProjectDetail> getProjectDetail2(int projectId) {
+    public List<ProjectDetail> getProjectDetail2(int projectId) {
 		List<ProjectDetail> project = new ArrayList<>(); 
         String sql = """
-                SELECT e.ename, t.task_subject, NVL(t.task_date, t.task_update_date) AS task_date
-				FROM project p
-				JOIN project_member m ON p.project_id = m.project_id
-				JOIN emp e ON m.member_id = e.emp_id
-				JOIN task t ON p.project_id = t.project_id
-				WHERE p.project_id = ?
-				GROUP BY e.ename, t.task_subject, NVL(t.task_date, t.task_update_date)
+			SELECT 
+			    e.ename,
+			    NVL(t.task_subject, '') AS task_subject,
+			    COALESCE(t.task_update_date, t.task_date) AS task_date,
+			    m.member_id
+			FROM 
+			    project p
+			JOIN 
+			    project_member m ON p.project_id = m.project_id
+			JOIN 
+			    emp e ON m.member_id = e.emp_id
+			LEFT JOIN (
+			    SELECT 
+			        task_subject, 
+			        project_id, 
+			        emp_id, 
+			        task_date, 
+			        task_update_date,
+			        ROW_NUMBER() OVER (PARTITION BY emp_id ORDER BY 
+			            task_update_date DESC NULLS LAST, 
+			            task_date DESC NULLS LAST) AS rn
+			    FROM 
+			        task
+			    WHERE 
+			        project_id = ?
+			) t ON p.project_id = t.project_id 
+			    AND m.member_id = t.emp_id 
+			    AND t.rn = 1  
+			WHERE 
+			    p.project_id = ?
+			ORDER BY 
+			    e.ename
                 """;
 
         try (Connection conn = ds.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, projectId); // 프로젝트 ID 설정
+            pstmt.setInt(2, projectId);
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) { 
@@ -553,6 +580,7 @@ public class ProjectDAO {
                 projectDetail.setTaskWriter(rs.getString(1));
                 projectDetail.setTaskTitle(rs.getString(2));
                 projectDetail.setTaskUpdateDate(rs.getString(3));
+                projectDetail.setMemberId(rs.getString(4));
                 project.add(projectDetail);
             }
         } catch (SQLException e) {

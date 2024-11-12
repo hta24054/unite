@@ -90,7 +90,7 @@
             <a class="nav-link a1" href="${pageContext.request.contextPath}/schedule/calender">&nbsp;캘린더&nbsp;</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link a1" href="${pageContext.request.contextPath}/board">&nbsp;게시판&nbsp;</a>
+            <a class="nav-link a1" href="${pageContext.request.contextPath}/board/home">&nbsp;게시판&nbsp;</a>
         </li>
         <li class="nav-item">
             <a class="nav-link a1" href="${pageContext.request.contextPath}/doc/waiting"> 전자문서 </a>

@@ -91,7 +91,6 @@ public class ScheduleDAO {
 		return array;
 	}
 
-	
 	// 일정 수정
 	public int updateSchedule(Schedule s) {
 		int result = 0;
@@ -125,6 +124,7 @@ public class ScheduleDAO {
 	    return result;
 	}//updateSchedule end
 
+	// 일정 수정(드래그)
 	public int dragUpdateSchedule(Schedule s) {
 		int result = 0;
 		String drag_update_sql = """
@@ -153,21 +153,20 @@ public class ScheduleDAO {
 		return result;
 	}//dragUpdateSchedule
 
-
-	
-	
-
-
-
-	
-
-
-	
-	
-	
-	
-	
-	
-
-
+	// 일정 삭제
+	public int deleteSchedule(int scheduleId) {
+		int result = 0;
+		String del_sql = "delete schedule where schedule_id = ?";
+		
+		try (Connection con = ds.getConnection();
+			 PreparedStatement pstmt = con.prepareStatement(del_sql);) {
+			 
+			pstmt.setInt(1, scheduleId);
+			result = pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}//deleteSchedule end
 }

@@ -68,13 +68,13 @@ $(document).ready(function(){
 			        for (let i = 0; i < data.length; i++) {
 						const isAllDay = data[i].schedule_allDay === 1;
 						events.push({
+							id: data[i].schedule_id,
 			                title: data[i].schedule_name, 
 			                start: data[i].schedule_start, 
 			                end: data[i].schedule_end,
 			                backgroundColor: data[i].schedule_color, 
 			                description: data[i].schedule_content,
-			                allDay: isAllDay,
-			                id: data[i].schedule_id
+			                allDay: isAllDay 
 			            });
 			        }
 			    }
@@ -87,6 +87,7 @@ $(document).ready(function(){
             }
         });
     }
+    
     
     // 일정 수정
 	function updateEvent(eventData) {
@@ -118,7 +119,7 @@ $(document).ready(function(){
 	    });
 	}
 	
-	// 드래그 이벤트 (시작/종료 날짜 수정)
+	// 일정 수정 - 드래그 이벤트 (시작/종료 날짜 수정)
 	function updateDragEvent(info) {
 	    console.log("eventChange: ", info.event.start, info.event.end);
 	    
@@ -150,6 +151,33 @@ $(document).ready(function(){
 	            fetchListData();
 	        }
 	    });
+	}
+	
+	// 일정 삭제
+	function deleteEvent(eventData) {
+		
+		if(confirm("정말 삭제하시겠습니까?")) {
+			$.ajax({
+				url: "ScheduleDeleteAction",
+				type: "post",
+		        dataType: "json",
+		        data: {
+		            schedule_id: eventData.schedule_id,  // schedule_id 값 전달
+		        },
+		        success: function(data) {
+		            console.log("일정 삭제 성공:", data);
+		            fetchListData(); 
+		            $("#scheduleModal").modal("hide");
+		        },
+		        error: function(error) {
+		            console.log("일정 삭제 오류:", error);
+		            alert("일정 삭제 중 오류가 발생했습니다.");
+		            fetchListData();
+		        }
+			});
+		}
+		
+		
 	}
 	
 	// 상세 일정 팝업 
@@ -204,6 +232,13 @@ $(document).ready(function(){
 	    // 일정 삭제
 	    $("#btnDelete").off("click").on("click", function() {
 	        console.log("data Delete");
+	        
+	        const eventData = {
+	            schedule_id: $("#schedule_id").val() 
+	        };
+	        
+	        deleteEvent(eventData); // 삭제 함수 호출
+	        
 	    });
 	
 	    $("#scheduleModal").modal('show');
@@ -391,12 +426,8 @@ $(document).ready(function(){
 			eventAdd: function(info) { // 이벤트가 추가되면 발생하는 이벤트
 	         	 console.log("eventAdd", info);
 	        },
-	        
 	        eventChange: function(info) { // 이벤트가 수정되면 발생하는 이벤트
 	         	updateDragEvent(info);
-	        },
-	        eventRemove: function(obj){ // 이벤트가 삭제되면 발생하는 이벤트
-	         	console.log(obj);
 	        },
 	        select: function(info) {
 			    console.log("select:", info);

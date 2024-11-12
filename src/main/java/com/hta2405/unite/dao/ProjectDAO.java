@@ -579,7 +579,8 @@ public class ProjectDAO {
                 ProjectDetail projectDetail = new ProjectDetail();
                 projectDetail.setTaskWriter(rs.getString(1));
                 projectDetail.setTaskTitle(rs.getString(2));
-                projectDetail.setTaskUpdateDate(rs.getString(3));
+                if(rs.getString(3) != null) projectDetail.setTaskUpdateDate(rs.getString(3).substring(0,10));//날짜만
+                else projectDetail.setTaskUpdateDate(rs.getString(3));
                 projectDetail.setMemberId(rs.getString(4));
                 project.add(projectDetail);
             }

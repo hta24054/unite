@@ -4,13 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-import com.hta2405.unite.dto.ProjectInfo;
 import com.hta2405.unite.dto.ProjectTask;
 
 public class ProjectbDao {
@@ -154,6 +154,7 @@ public class ProjectbDao {
 	        while (rs.next()) {
 	            ProjectTask task = new ProjectTask();
 	            task.setMemberName(rs.getString(1));
+	            task.setMemberId(rs.getString("member_id"));
 	            task.setProjectTitle(rs.getString("task_subject"));
 	            task.setProjectContent(rs.getString("task_content"));
 	            task.setProjectUpdateDate(rs.getString("task_date"));
@@ -212,8 +213,11 @@ public class ProjectbDao {
 	                    ProjectTask task = new ProjectTask();
 	                    task.setProjectTitle(rs.getString("task_subject"));
 	                    task.setProjectContent(rs.getString("task_content"));
-	                    task.setProjectDate(rs.getString("task_date"));
-	                    task.setProjectUpdateDate(rs.getString("task_update_date"));
+	                    if(rs.getString("task_date") != null) task.setProjectDate(rs.getString("task_date").substring(0,16));
+	                    else task.setProjectDate(rs.getString("task_date"));
+	                    if(rs.getString("task_update_date") != null) task.setProjectUpdateDate(rs.getString("task_update_date").substring(0,16));
+	                    else task.setProjectUpdateDate(rs.getString("task_update_date"));
+
 	                    task.setBoard_file(rs.getString("task_file_path"));
 	                    taskList.add(task);
 	                }

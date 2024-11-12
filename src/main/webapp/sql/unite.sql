@@ -1,3 +1,20 @@
+select e.ename from project_member m join emp e on m.member_id = e.emp_id where m.project_id = 7 and m.member_id = '241104'
+select * from task where project_id = 7;
+DELETE FROM TASK WHERE PROJECT_ID = 7 AND TASK_SUBJECT = '?' AND EMP_ID = '241103';
+select count(*) from task where emp_id = '241103' and project_id = 7
+SELECT * FROM (
+	            SELECT rownum rnum, t.* FROM (
+	                SELECT *
+	                FROM task t
+	                WHERE t.project_id = 7 AND t.emp_id = '241103'
+	                ORDER BY t.task_date DESC
+	            ) t
+	            WHERE rownum <= 10
+	        ) 
+	        WHERE rnum >= 5 AND rnum <= 10
+
+	        
+	        
 CREATE TABLE attend
 (
   attend_id   NUMBER       NOT NULL,
@@ -772,7 +789,6 @@ CREATE TABLE sign
 CREATE SEQUENCE SEQ_sign
 START WITH 1
 INCREMENT BY 1;
-
 
 COMMENT ON TABLE sign IS '결재';
 

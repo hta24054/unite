@@ -223,6 +223,7 @@ public class ProjectDAO {
 				    ) and p.project_finished = 0 and p.project_canceled = 0
 				GROUP BY
 				    p.project_id, p.project_name, p.project_end_date
+				order by p.project_id
                 """;
 
         try (Connection conn = ds.getConnection();
@@ -579,7 +580,8 @@ public class ProjectDAO {
                 ProjectDetail projectDetail = new ProjectDetail();
                 projectDetail.setTaskWriter(rs.getString(1));
                 projectDetail.setTaskTitle(rs.getString(2));
-                projectDetail.setTaskUpdateDate(rs.getString(3));
+                if(rs.getString(3) != null) projectDetail.setTaskUpdateDate(rs.getString(3).substring(0,10));//날짜만
+                else projectDetail.setTaskUpdateDate(rs.getString(3));
                 projectDetail.setMemberId(rs.getString(4));
                 project.add(projectDetail);
             }
@@ -649,6 +651,16 @@ public class ProjectDAO {
 	        e.printStackTrace();
 	        return false;
 	    }
+	}
+
+	public int getListCount(String userid, int projectid) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public List<ProjectComplete> getBoardList(int page, int limit, String userid, int projectid) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

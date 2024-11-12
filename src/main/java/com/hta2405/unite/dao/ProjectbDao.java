@@ -4,13 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-import com.hta2405.unite.dto.ProjectInfo;
 import com.hta2405.unite.dto.ProjectTask;
 
 public class ProjectbDao {
@@ -62,10 +62,10 @@ public class ProjectbDao {
 		return false;
 	}
 	
-	public static boolean insertOrUpdatePost(String title, String content, String filePath, String empId, int projectId) {
+	public static boolean insertOrUpdatePost(String title, String content, String filePath, String originalFileName, String fileUuid, String fileType, String empId, int projectId) {
 	    String checkSql = "SELECT task_subject FROM task WHERE emp_id = ? AND project_id = ?";
-	    String insertSql = "INSERT INTO task (emp_id, project_id, task_subject, task_content, task_date, task_update_date, task_file_path) VALUES (?, ?, ?, ?, sysdate, sysdate, ?)";
-	    String updateSql = "UPDATE task SET task_subject = ?, task_content = ?, task_update_date = sysdate, task_file_path = ? WHERE emp_id = ? AND project_id = ?";
+	    String insertSql = "INSERT INTO task (emp_id, project_id, task_subject, task_content, task_date, task_update_date, task_file_path, task_file_original, task_file_uuid, task_file_type) VALUES (?, ?, ?, ?, sysdate, sysdate, ?, ?, ?, ?)";
+	    String updateSql = "UPDATE task SET task_subject = ?, task_content = ?, task_update_date = sysdate, task_file_path = ?, task_file_original = ?, task_file_uuid = ?, task_file_type = ? WHERE emp_id = ? AND project_id = ?";
 
 	    try (Connection conn = ds.getConnection()) {
 	        try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
@@ -79,8 +79,11 @@ public class ProjectbDao {
 	                    updateStmt.setString(1, title);
 	                    updateStmt.setString(2, content);
 	                    updateStmt.setString(3, filePath);
-	                    updateStmt.setString(4, empId);
-	                    updateStmt.setInt(5, projectId);
+	                    updateStmt.setString(4, originalFileName);
+	                    updateStmt.setString(5, fileUuid);
+	                    updateStmt.setString(6, fileType);
+	                    updateStmt.setString(7, empId);
+	                    updateStmt.setInt(8, projectId);
 	                    int result = updateStmt.executeUpdate();
 	                    return result > 0;
 	                }
@@ -92,6 +95,9 @@ public class ProjectbDao {
 	                    insertStmt.setString(3, title);
 	                    insertStmt.setString(4, content);
 	                    insertStmt.setString(5, filePath);
+	                    insertStmt.setString(6, originalFileName);
+	                    insertStmt.setString(7, fileUuid);
+	                    insertStmt.setString(8, fileType);
 	                    int result = insertStmt.executeUpdate();
 	                    return result > 0;
 	                }
@@ -102,6 +108,7 @@ public class ProjectbDao {
 	        return false;
 	    }
 	}
+
 
 	public List<ProjectTask> getRecentPosts(String empId, int projectId) {
 	    String sql = """
@@ -154,6 +161,7 @@ public class ProjectbDao {
 	        while (rs.next()) {
 	            ProjectTask task = new ProjectTask();
 	            task.setMemberName(rs.getString(1));
+	            task.setMemberId(rs.getString("member_id"));
 	            task.setProjectTitle(rs.getString("task_subject"));
 	            task.setProjectContent(rs.getString("task_content"));
 	            task.setProjectUpdateDate(rs.getString("task_date"));
@@ -212,8 +220,12 @@ public class ProjectbDao {
 	                    ProjectTask task = new ProjectTask();
 	                    task.setProjectTitle(rs.getString("task_subject"));
 	                    task.setProjectContent(rs.getString("task_content"));
-	                    task.setProjectDate(rs.getString("task_date"));
-	                    task.setProjectUpdateDate(rs.getString("task_update_date"));
+	                    task.setMemberId(rs.getString("emp_id"));
+	                    if(rs.getString("task_date") != null) task.setProjectDate(rs.getString("task_date").substring(0,16));
+	                    else task.setProjectDate(rs.getString("task_date"));
+	                    if(rs.getString("task_update_date") != null) task.setProjectUpdateDate(rs.getString("task_update_date").substring(0,16));
+	                    else task.setProjectUpdateDate(rs.getString("task_update_date"));
+
 	                    task.setBoard_file(rs.getString("task_file_path"));
 	                    taskList.add(task);
 	                }
@@ -224,30 +236,75 @@ public class ProjectbDao {
 	        return taskList;
 	}
 
+	public int getListCount(String userid, int projectid) {
+		String sql = "select count(*) from task where emp_id = ? and project_id = ?";
+		int x = 0; 
+		try(Connection con = ds.getConnection();
+				PreparedStatement pstmt = con.prepareStatement(sql);){
+			pstmt.setString(1, userid);
+			pstmt.setInt(2, projectid);
+			try(ResultSet rs = pstmt.executeQuery()){
+				if(rs.next()) x = rs.getInt(1);
+			}
+		}catch(Exception ex) {
+			ex.printStackTrace();
+			System.out.println("getListCount() 에러 : " + ex);
+		}
+		return x;
+	}
 
-    /* 최근 작성된 게시글 목록 조회 메서드
-    public List<ProjectTask> getRecentPosts() {
-        List<ProjectTask> postList = new ArrayList<>();
-        String sql = "SELECT post_id, title, content, file_path, created_at FROM posts ORDER BY created_at DESC";
+	public List<ProjectTask> getBoardList(int page, int limit, String userid, int projectid) {
+	    List<ProjectTask> tasklist = new ArrayList<>();
+	    
+	    String task_list_sql = """
+	        SELECT * FROM (
+	            SELECT rownum rnum, t.* FROM (
+	                SELECT *
+	                FROM task t
+	                WHERE t.project_id = ? AND t.emp_id = ?
+	                ORDER BY t.task_date DESC
+	            ) t
+	            WHERE rownum <= ?
+	        ) 
+	        WHERE rnum >= ? AND rnum <= ?
+	    """;
+	    
+	    // 시작 row와 끝 row 계산
+	    int startrow = (page - 1) * limit + 1; // 읽기 시작할 row 번호
+	    int endrow = startrow + limit - 1; // 읽을 마지막 row 번호
+	    
+	    try (Connection con = ds.getConnection();
+	         PreparedStatement pstmt = con.prepareStatement(task_list_sql)) {
+	        
+	    	pstmt.setInt(1, projectid);
+	        pstmt.setString(2, userid);
+	        pstmt.setInt(3, endrow);
+	        pstmt.setInt(4, startrow);
+	        pstmt.setInt(5, endrow);
+	        
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            while (rs.next()) {
+	                ProjectTask task = new ProjectTask();
+	                task.setProjectTitle(rs.getString("task_subject"));
+                    task.setProjectContent(rs.getString("task_content"));
+                    task.setProjectDate(rs.getString("task_date") != null ? rs.getString("task_date").substring(0,16) : "");
+                    task.setProjectUpdateDate(rs.getString("task_update_date") != null ? rs.getString("task_update_date").substring(0,16) : "");
+                    task.setBoard_file(rs.getString("task_file_path"));
+	                
+	                tasklist.add(task);
+	            }
+	        }
+	    } catch (Exception ex) {
+	        ex.printStackTrace();
+	        System.out.println("getBoardList() 에러: " + ex);
+	    }
+	    
+	    return tasklist;
+	}
 
-        try (Connection conn = ds.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
 
-            while (rs.next()) {
-                ProjectTask post = new ProjectTask();
-                post.setPostId(rs.getInt("post_id"));
-                post.setTitle(rs.getString("title"));
-                post.setContent(rs.getString("content"));
-                post.setFilePath(rs.getString("file_path"));
-                post.setCreatedAt(rs.getTimestamp("created_at"));
-                postList.add(post);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return postList;
-    }*/
+
+   
 
     
 

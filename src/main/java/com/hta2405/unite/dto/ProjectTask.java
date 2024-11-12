@@ -14,6 +14,7 @@ import lombok.ToString;
 public class ProjectTask {
 	private int projectId; //글번호
 	private String memberName; //글 작성자
+	private String memberId;
 	private String memberPass; //글 비밀번호
 	private String projectTitle; //글 제목
 	private String projectContent; //글 내용

@@ -107,7 +107,7 @@ $(function() {
 	let pathName = window.location.pathname;
 	
     // 현재 페이지 URL을 확인하여 게시판 홈이면 피드형 레이아웃으로 표시
-    if (pathName === '/unite/board') {
+    if (pathName === '/unite/board/home') {
         loadBoardHome(); // 게시판 홈 데이터를 로드
     }
     
@@ -125,7 +125,7 @@ $(function() {
         
         loardBoardWrite("boardWrite"); // 글쓰기 메서드 호출
     });
- 	
+ 	/* 
     window.addEventListener('popstate', function(event) {
         if (event.state && event.state.page) {
             var page = event.state.page;
@@ -144,24 +144,22 @@ $(function() {
                 }
             });
         }
-    });
+    }); */
 
 });
 
 function loardBoardWrite(boardId){
 	console.log(boardId)
 	$.ajax({
-		data:{"boardId":boardId},
-        url:  '${pageContext.request.contextPath}/board/boardWrite',
+		/*data:{"boardId":boardId},*/
+        url:  '${pageContext.request.contextPath}/board/post/postWrite',
         type: 'GET',
         success: function(response) {
         	$(".boardTitle").text('글쓰기');
-            $('.content').append(response);
-            history.pushState({ page: 'writeForm' }, null, '${pageContext.request.contextPath}/board/write');
+            $('.boardContent').html(response);
         },
         error: function() {
-            $('.content').append('<p>글쓰기 폼을 불러오는 데 실패했습니다.</p>');
-            history.pushState({ page: 'writeForm' }, null, '${pageContext.request.contextPath}/board/write');
+            $('.boardContent').html('<p>글쓰기 폼을 불러오는 데 실패했습니다.</p>');
         }
     });
 }
@@ -171,12 +169,13 @@ function loardBoardWrite(boardId){
 function loadBoardHome() {
 	console.log("home")
     $.ajax({
-        url: 'boardHome',
+        url: 'homeProcess',
         method: 'GET',
         dataType: 'json',
         success: function(data) {
+        	console.log(data)
             let html = '<div class="feed-container">';
-            if(data==null){
+            if(data=={}||data==null){
             	html += '등록된 게시글이 없습니다.';
             }else{
 	            data.forEach(post => {
@@ -188,7 +187,7 @@ function loadBoardHome() {
 	            });
             }
             html += '</div>';
-            $('.content').append(html); // 피드형 레이아웃에 게시글 표시
+            $('.boardContent').html(html); // 피드형 레이아웃에 게시글 표시
         },
         error: function() {
             alert('게시판 홈 데이터를 불러오는 데 실패했습니다.');
@@ -215,8 +214,6 @@ function loadBoardList(boardName2) {//매개변수로 boardName2를 가져옴
             html += '</ul>';
             $('.content').append(html); // 리스트형 레이아웃에 게시글 표시
             
-         	// URL을 변경하여 브라우저 기록에 추가
-            history.pushState(null, null, '${pageContext.request.contextPath}/board/${data.boardId}'); // '/게시판id'로 링크 이동했다는 표시
         },
         error: function() {
             alert('게시판 데이터를 불러오는 데 실패했습니다.');
@@ -226,7 +223,6 @@ function loadBoardList(boardName2) {//매개변수로 boardName2를 가져옴
             $('.content').append(html); // 리스트형 레이아웃에 게시글 표시
             
             $(".boardTitle").text(boardName2);//임시
-            history.pushState(null, null, '${pageContext.request.contextPath}/board/20'); // 임시
         }
     });
 }
@@ -271,9 +267,9 @@ function loadBoardList(boardName2) {//매개변수로 boardName2를 가져옴
 
 	<div class="content">
 	  <h2 class="boardTitle">게시판 홈</h2>
+	  <div class="boardContent"><!-- 추가 게시글을 이곳에 추가할 수 있습니다 -->
 	  
-	  
-	  <!-- 추가 게시글을 이곳에 추가할 수 있습니다 -->
+	  </div>
 	</div>
 </div>
 

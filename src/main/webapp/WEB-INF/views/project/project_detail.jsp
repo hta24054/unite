@@ -33,101 +33,6 @@
 	    th:nth-child(1), td:nth-child(1) {width: 20%; }
 	    th:nth-child(2), td:nth-child(2) {width: 60%; }
 	    th:nth-child(3), td:nth-child(3) {width: 20%; }
-	    /* 전체 컨테이너 스타일 */
-.container {
-    max-width: 1200px;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* 제목 스타일 */
-h3, h5 {
-    font-weight: 600;
-    color: #343a40;
-    margin-bottom: 20px;
-}
-
-/* 테이블 스타일 */
-.table {
-    width: 100%;
-    margin-bottom: 30px;
-    background-color: #ffffff;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-}
-
-.table caption {
-    caption-side: top;
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #495057;
-    padding-bottom: 15px;
-}
-
-.table th, .table td {
-    padding: 15px;
-    text-align: left;
-    border-top: 1px solid #dee2e6;
-}
-
-.table th {
-    background-color: #e9ecef;
-    font-weight: 600;
-    color: #495057;
-}
-
-/* 진행률 바 스타일 */
-.progress {
-    height: 24px;
-    border-radius: 8px;
-    background-color: #e9ecef;
-}
-
-.progress-bar {
-    font-weight: 600;
-    color: #ffffff;
-}
-
-/* 알림 스타일 */
-.notification {
-    background-color: #ffffff;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.notification h5 {
-    font-size: 1.1em;
-    font-weight: 600;
-    color: #343a40;
-}
-
-/* 모달 스타일 */
-.modal-content {
-    border-radius: 10px;
-}
-
-.modal-header, .modal-footer {
-    border: none;
-}
-
-.modal-header h5 {
-    font-weight: 600;
-    color: #343a40;
-}
-
-.modal-body input, .modal-body textarea {
-    border-radius: 8px;
-}
-
-.modal-footer .btn {
-    padding: 8px 16px;
-    font-weight: 600;
-}
-	    
 	</style>
 </head>
 <body>
@@ -167,29 +72,29 @@ h3, h5 {
 						</c:forEach>
 					</tbody>
 				</table>
-				<table class="table">
-					<caption>
+				<table id="postTable" class="table">
+				    <caption>
 				        <div class="d-flex justify-content-between align-items-center">
 				            <h5>진행 과정</h5>
 				            <button type="button" class="btn btn-primary btn-sm float-right" data-toggle="modal" data-target="#writeModal">글 작성</button>
 				        </div>
 				    </caption>
-					<thead>
-						<tr>
-							<th>작성자</th>
-							<th>제목</th>
-							<th>작성일자</th>
-						</tr>
-					</thead>
-					<tbody>
-						<c:forEach var="project" items="${project2}"> 
+				    <thead>
+				        <tr>
+				            <th>작성자</th>
+				            <th>제목</th>
+				            <th>작성일자</th>
+				        </tr>
+				    </thead>
+				    <tbody>
+				        <c:forEach var="project" items="${project2}"> 
 						    <tr>
-								<td>${project.taskWriter}</td>
+								<td><a href="${pageContext.request.contextPath}/projectb/membertask?memberId=${project.memberId}">${project.taskWriter}</a></td>
 								<td>${project.taskTitle}</td>
 								<td>${project.taskUpdateDate}</td>
 							</tr>
 						</c:forEach> 
-					</tbody>
+				    </tbody>
 				</table>
 				<a href="${pageContext.request.contextPath}/project/progress" class="btn btn-info btn-sm float-right">상세보기</a> <!-- 제일 우측 하단에 링크 -->
 			</div>
@@ -245,6 +150,7 @@ h3, h5 {
 	</div>
 	
 	<!-- 글 작성 모달 -->
+	
 	<div class="modal fade" id="writeModal" tabindex="-1" role="dialog" aria-labelledby="writeModalLabel" aria-hidden="true">
 	    <div class="modal-dialog" role="document">
 	        <div class="modal-content">
@@ -276,6 +182,6 @@ h3, h5 {
 	            </div>
 	        </div>
 	    </div>
-	</div>
+	</div> 
 </body>
 </html>

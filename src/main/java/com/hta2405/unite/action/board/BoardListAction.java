@@ -1,6 +1,9 @@
-package com.hta2405.unite.action;
+package com.hta2405.unite.action.board;
 
 import java.io.IOException;
+
+import com.hta2405.unite.action.Action;
+import com.hta2405.unite.action.ActionForward;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

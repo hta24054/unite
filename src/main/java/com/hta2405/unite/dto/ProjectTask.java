@@ -22,7 +22,8 @@ public class ProjectTask {
 	private int board_re_lev; //답변 글의 깊이
 	private int board_re_seq; //답변 글의 순서
 	private int board_readcount; //조회수
-	private String projectDate;
+	private String projectDate; //글 등록일자
+	private String projectUpdateDate; //업데이트일자
 	private int board_cnt;
 }
 

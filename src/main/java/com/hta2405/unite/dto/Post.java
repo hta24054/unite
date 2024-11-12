@@ -25,4 +25,5 @@ public class Post {
 	private Long postReLev;
 	private Long postReSeq;
 	private Long postView;
+	private Long postCommentCnt;
 }

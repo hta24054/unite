@@ -1,8 +1,4 @@
 $(function(){
-	$("button").click(function(){
-		location.href="../board/boardWrite";
-	})
-
 	$("#viewcount").change(function(){
 		go(1); //보여줄 페이지를 1페이지로 설정
 	});
@@ -10,8 +6,9 @@ $(function(){
 
 function go(page){
 	const limit = $('#viewcount').val();
+	const memberId = $('.memberId').val(); 
 	//const data = `limit=${limit}&state=ajax&page=${page}`;
-	const data = {limit:limit, state:"ajax", page: page}
+	const data = {limit:limit, state:"ajax", page: page, memberId:memberId}
 	ajax(data);
 }
 
@@ -20,13 +17,12 @@ function ajax(sdata){
 	console.log(sdata);
 	$.ajax({
 		data: sdata,
-		url: "main",
+		url: contextPath + "/projectb/list",
 		dataType: "json",
 		cache: false,
 		success: function(data){
 			$("#viewcount").val(data.limit);
 			$("thead").find("span").text("글 개수 : " + data.listcount);
-			
 			if(data.listcount > 0){
 				$("tbody").remove();
 				updateBoardList(data); //게시판 내용 업데이트
@@ -45,17 +41,18 @@ function updateBoardList(data){
 	
 	$(data.boardlist).each(function(index, item){
 		const blank = '&nbsp;&nbsp;'.repeat(item.board_re_lev * 2);
-		const img = item.board_re_lev > 0 ? "<img src='../img/line.gif'>" : "";
-		const subject = item.board_subject.length >= 20 ? item.board_subject.substr(0, 20) + "..." : item.board_subject;
+		const img = item.board_re_lev > 0 ? `<img src='${contextPath}/image/line.gif'>` : ""; // contextPath 사용
+		const subject = item.projectTitle.length >= 20 ? item.projectTitle.substr(0, 20) + "..." : item.projectTitle;
 		const changeSubject = subject.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-		
 		output += `
 			<tr>
 				<td>${num--}</td>
-				<td><div>${blank}${img}<a href='detail?num=${item.project_num}'>${changeSubject}</a>[${item.project_cnt}]</div></td>
-				<td><div>${item.project_name}</div></td>
-				<td><div>${item.project_content}</div></td>
-				<td><div>${item.project_end_date}</div></td>
+				<td><div>${changeSubject}[${item.board_cnt}]</div></td>
+				<td><div>${item.projectTitle}</div></td>
+				<td><div>${item.projectContent}</div></td>
+				<td><div>${item.projectDate}</div></td>
+				<td><div>${item.projectUpdateDate}</div></td>
+				<td><div>${item.board_file}</div></td>
 			</tr>
 			`;
 	});

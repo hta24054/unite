@@ -223,6 +223,7 @@ public class ProjectDAO {
 				    ) and p.project_finished = 0 and p.project_canceled = 0
 				GROUP BY
 				    p.project_id, p.project_name, p.project_end_date
+				order by p.project_id
                 """;
 
         try (Connection conn = ds.getConnection();
@@ -650,6 +651,16 @@ public class ProjectDAO {
 	        e.printStackTrace();
 	        return false;
 	    }
+	}
+
+	public int getListCount(String userid, int projectid) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public List<ProjectComplete> getBoardList(int page, int limit, String userid, int projectid) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

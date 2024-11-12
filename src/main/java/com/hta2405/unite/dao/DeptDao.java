@@ -98,10 +98,10 @@ public class DeptDao {
 
 	public List<Emp> getDeptEmps(String empId) {
 		String sql = """
-				SELECT emp_id, ename, dept_id, job_id, email, tel	
-				FROM emp 
-				WHERE dept_id = (SELECT dept_id 
-								 FROM emp 
+				SELECT emp_id, ename, dept_id, job_id, email, tel
+				FROM emp
+				WHERE dept_id = (SELECT dept_id
+								 FROM emp
 								 WHERE emp_id = ?)
 				""";
 		List<Emp> empList = new ArrayList<>();

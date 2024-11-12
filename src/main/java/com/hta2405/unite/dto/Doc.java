@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 public class Doc {
-    private int docId;
+    private Long docId;
     private String docWriter;
     private String docType;
     private String docTitle;

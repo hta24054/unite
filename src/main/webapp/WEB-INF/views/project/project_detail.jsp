@@ -89,7 +89,7 @@
 				    <tbody>
 				        <c:forEach var="project" items="${project2}"> 
 						    <tr>
-								<td><a href="${pageContext.request.contextPath}/projectb/membertask?memberId=${project.memberId}">${project.taskWriter}</a></td>
+								<td><a href="${pageContext.request.contextPath}/projectb/list?memberId=${project.memberId}">${project.taskWriter}</a></td>
 								<td>${project.taskTitle}</td>
 								<td>${project.taskUpdateDate}</td>
 							</tr>
@@ -150,38 +150,38 @@
 	</div>
 	
 	<!-- 글 작성 모달 -->
-	
 	<div class="modal fade" id="writeModal" tabindex="-1" role="dialog" aria-labelledby="writeModalLabel" aria-hidden="true">
-	    <div class="modal-dialog" role="document">
-	        <div class="modal-content">
-	            <div class="modal-header">
-	                <h5 class="modal-title" id="writeModalLabel">글 작성</h5>
-	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	                    <span aria-hidden="true">&times;</span>
-	                </button>
-	            </div>
-	            <div class="modal-body">
-	                <form id="writeForm" action="${pageContext.request.contextPath}/projectb/write" method="post" enctype="multipart/form-data">
-	                    <div class="form-group">
-	                        <label for="postTitle">제목</label>
-	                        <input type="text" class="form-control" id="postTitle" name="title" placeholder="제목을 입력하세요" required>
-	                    </div>
-	                    <div class="form-group">
-	                        <label for="postContent">내용</label>
-	                        <textarea class="form-control" id="postContent" name="content" rows="4" placeholder="내용을 입력하세요" required></textarea>
-	                    </div>
-	                    <div class="form-group">
-	                        <label for="postFile">첨부파일</label>
-	                        <input type="file" class="form-control-file" id="postFile" name="file">
-	                    </div>
-	                    <div class="modal-footer">
-	                        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-	                        <button type="submit" class="btn btn-primary">저장</button>
-	                    </div>
-	                </form>
-	            </div>
-	        </div>
-	    </div>
-	</div> 
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="writeModalLabel">글 작성</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="writeForm" action="${pageContext.request.contextPath}/projectb/write" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="postTitle">제목</label>
+                        <input type="text" class="form-control" id="postTitle" name="title" placeholder="제목을 입력하세요" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="postContent">내용</label>
+                        <textarea class="form-control" id="postContent" name="content" rows="4" placeholder="내용을 입력하세요" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="postFile">첨부파일</label>
+                        <input type="file" class="form-control-file" id="postFile" name="file">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                        <button type="submit" class="btn btn-primary">저장</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

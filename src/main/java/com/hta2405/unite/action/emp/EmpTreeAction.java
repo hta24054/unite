@@ -1,9 +1,11 @@
-package com.hta2405.unite.action;
+package com.hta2405.unite.action.emp;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.hta2405.unite.action.Action;
+import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dao.JobDao;
 import com.hta2405.unite.dto.Emp;
@@ -29,7 +31,7 @@ public class EmpTreeAction implements Action {
                 .registerTypeAdapter(LocalDate.class, new LocalDateAdapter()) // 어댑터 등록
                 .create();
 
-        List<Emp> empList = new EmpDao().getEmpByDeptId(deptId);
+        List<Emp> empList = new EmpDao().getHiredEmpByDeptId(deptId);
         JsonElement listToJson = gson.toJsonTree(empList);
         jsonObject.add("empList", listToJson);
 

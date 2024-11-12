@@ -19,5 +19,4 @@ public class BoardHomeAction implements Action {
 		forward.setPath("/WEB-INF/views/board/boardHome.jsp");
 		return forward;
 	}
-
 }

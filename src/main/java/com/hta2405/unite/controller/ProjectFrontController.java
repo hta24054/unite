@@ -38,6 +38,7 @@ public class ProjectFrontController extends AbstractFrontController {
         actionMap.put("/getOngoingProjects", new ProjectGetOngoingAction());
         actionMap.put("/updateprogress", new ProjectUpdateProgressAction());
         actionMap.put("/updatetaskdesign", new ProjectUpdateTaskDesignAction());
+        actionMap.put("/notification", new ProjectNotificationAction());
         
     }
 }

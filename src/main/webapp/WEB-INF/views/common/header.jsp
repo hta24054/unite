@@ -93,7 +93,7 @@
             <a class="nav-link a1" href="${pageContext.request.contextPath}/board/home">&nbsp;게시판&nbsp;</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link a1" href="#">&nbsp;전자문서&nbsp;</a>
+            <a class="nav-link a1" href="${pageContext.request.contextPath}/doc/waiting"> 전자문서 </a>
         </li>
         <li class="nav-item">
             <a class="nav-link a1" href="${pageContext.request.contextPath}/project/main">&nbsp;프로젝트&nbsp;</a>

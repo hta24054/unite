@@ -1,9 +1,9 @@
 package com.hta2405.unite.controller;
 
-import com.hta2405.unite.action.EmpInfoUpdateAction;
-import com.hta2405.unite.action.EmpViewAction;
-import com.hta2405.unite.action.EmpViewDeptAction;
-import com.hta2405.unite.action.EmpViewOtherDeptAction;
+import com.hta2405.unite.action.emp.EmpInfoUpdateAction;
+import com.hta2405.unite.action.emp.EmpViewAction;
+import com.hta2405.unite.action.emp.EmpViewDeptAction;
+import com.hta2405.unite.action.emp.EmpViewOtherDeptAction;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 

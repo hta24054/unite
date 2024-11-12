@@ -6,6 +6,7 @@ import com.hta2405.unite.dao.HolidayDao;
 import com.hta2405.unite.dto.Attend;
 import com.hta2405.unite.dto.Emp;
 import com.hta2405.unite.dto.Holiday;
+import com.hta2405.unite.enums.AttendType;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.Duration;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class AttendUtil {
     public ActionForward getAttendDetail(HttpServletRequest req, Emp targetEmp) {
@@ -41,7 +43,7 @@ public class AttendUtil {
 
         // attendType ={일반, 출장, 외근, 휴가, 결근, 휴일}
         for (Attend attend : allDate) {
-            if(attend.getAttendType()==null){
+            if (attend.getAttendType() == null) {
                 continue;
             }
             if (attend.getAttendType().equals("휴일")) {
@@ -98,11 +100,16 @@ public class AttendUtil {
             }
             dateIdx++;
         }
-        //결근일 확인
+        // 결근일 확인
+        LocalDate today = LocalDate.now();
         for (Attend attend : allDate) {
-            if (attend.getAttendType() == null &&
-                    attend.getAttendDate().isBefore(LocalDate.now())) {
-                attend.setAttendType("결근");
+            String attendType = Optional.ofNullable(attend.getAttendType()).orElse(AttendType.ABSENT.getType());
+            // 오늘보다 이전 날짜, 퇴근 시간이 없고, 휴일 또는 휴가가 아닌 경우 결근 처리
+            if (attend.getAttendDate().isBefore(today)
+                    && attend.getAttendOut() == null
+                    && !attendType.equals(AttendType.HOLIDAY.getType())
+                    && !attendType.equals(AttendType.VACATION.getType())) {
+                attend.setAttendType(AttendType.ABSENT.getType());
             }
         }
     }
@@ -139,9 +146,13 @@ public class AttendUtil {
         LocalDateTime attendIn = attend.getAttendIn();
         LocalDateTime attendOut = attend.getAttendOut();
 
-        LocalTime intTime = attendIn.toLocalTime();
+        if (attendIn == null || attendOut == null) {
+            return false;
+        }
+
+        LocalTime inTime = attendIn.toLocalTime();
         LocalTime outTime = attendOut.toLocalTime();
-        return intTime.isAfter(LocalTime.of(9, 0)) || outTime.isBefore(LocalTime.of(18, 0));
+        return inTime.isAfter(LocalTime.of(9, 0)) || outTime.isBefore(LocalTime.of(18, 0));
     }
 
     public ActionForward getVacationDetail(HttpServletRequest req, Emp targetEmp) {

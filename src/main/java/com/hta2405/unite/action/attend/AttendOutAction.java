@@ -25,7 +25,8 @@ public class AttendOutAction implements Action {
         }
 
         //출근기록 저장
-        int result = attendDao.attendOut(empId);
+        LocalDate date = LocalDate.now();
+        int result = attendDao.attendOut(empId, date);
 
         String status = result == 1 ? "success" : "fail";
         JsonObject jsonObject = new JsonObject();

@@ -24,5 +24,6 @@ public class AdminFrontController extends AbstractFrontController {
         actionMap.put("/notice/update", new AdminNoticeEditAction());
         actionMap.put("/notice/delete", new AdminNoticeDeleteAction());
         actionMap.put("/emp-manage", new AdminEmpManageAction());
+        actionMap.put("/emp-manage/fire", new AdminEmpFireAction());
     }
 }

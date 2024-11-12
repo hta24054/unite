@@ -1,8 +1,8 @@
 package com.hta2405.unite.controller;
 
-import com.hta2405.unite.action.BoardHomeAction;
-import com.hta2405.unite.action.BoardListAction;
-import com.hta2405.unite.action.BoardWriteAction;
+import com.hta2405.unite.action.board.BoardHomeAction;
+import com.hta2405.unite.action.board.BoardListAction;
+import com.hta2405.unite.action.board.BoardWriteAction;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 

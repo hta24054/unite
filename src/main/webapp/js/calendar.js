@@ -7,7 +7,7 @@ $(document).ready(function(){
 	// 일정 리스트 불러오기
 	function fetchListData(){
 		$.ajax({
-	        url: "ScheduleListAction",
+	        url: "ScheduleList",
 	        type: "get",
 	        dataType: "json",
 	        data: {
@@ -48,7 +48,7 @@ $(document).ready(function(){
 	// 일정 등록
     function addEvent(eventData) {
         $.ajax({
-            url: "ScheduleAddProcessAction", 
+            url: "ScheduleAdd", 
             type: "post",
             dataType: "json",
             data: {
@@ -93,7 +93,7 @@ $(document).ready(function(){
 	function updateEvent(eventData) {
 		console.log("수정 데이터:", eventData);
 	    $.ajax({
-	        url: "ScheduleUpdateAction",
+	        url: "ScheduleUpdate",
 	        type: "post",
 	        dataType: "json",
 	        data: {
@@ -131,7 +131,7 @@ $(document).ready(function(){
 	    }
 	    
 	    $.ajax({
-	        url: "ScheduleDragUpdateAction",
+	        url: "ScheduleDragUpdate",
 	        type: "post",
 	        dataType: "json",
 	        data: {
@@ -158,7 +158,7 @@ $(document).ready(function(){
 		
 		if(confirm("정말 삭제하시겠습니까?")) {
 			$.ajax({
-				url: "ScheduleDeleteAction",
+				url: "ScheduleDelete",
 				type: "post",
 		        dataType: "json",
 		        data: {

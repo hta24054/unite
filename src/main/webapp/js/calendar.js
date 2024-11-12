@@ -120,7 +120,7 @@ $(document).ready(function(){
 	
 	// 드래그 이벤트 (시작/종료 날짜 수정)
 	function updateDragEvent(info) {
-	    console.log("eventChange" + info.event);
+	    console.log("eventChange: ", info.event.start, info.event.end);
 	    
 	    let endAt = info.event.end ? moment(info.event.end).format('YYYY-MM-DD HH:mm') : null;
 	    const startAt = moment(info.event.start).format('YYYY-MM-DD HH:mm');

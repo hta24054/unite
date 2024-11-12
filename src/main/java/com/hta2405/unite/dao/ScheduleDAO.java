@@ -91,7 +91,6 @@ public class ScheduleDAO {
 		return array;
 	}
 
-	
 	// 일정 수정
 	public int updateSchedule(Schedule s) {
 		int result = 0;
@@ -111,13 +110,12 @@ public class ScheduleDAO {
 	        pstmt.setString(4, s.getScheduleColor());
 	        pstmt.setString(5, s.getScheduleContent());
 	        pstmt.setInt(6, s.getScheduleAllDay());
-	        
 	        pstmt.setInt(7, s.getScheduleId());
 	        pstmt.setString(8, s.getEmpId()); 
 	        
 	        result = pstmt.executeUpdate();
 	        if (result == 1)
-				 System.out.println("일정 데이터 수정 되었습니다.");
+				System.out.println("일정 데이터 수정 되었습니다.");
 		} catch (Exception e) {
 	        e.printStackTrace();
 	        System.out.println("updateSchedule() 에러 : " + e);
@@ -125,20 +123,50 @@ public class ScheduleDAO {
 	    
 	    return result;
 	}//updateSchedule end
-	
-	
 
+	// 일정 수정(드래그)
+	public int dragUpdateSchedule(Schedule s) {
+		int result = 0;
+		String drag_update_sql = """
+				UPDATE schedule
+				SET    schedule_start = ?, schedule_end = ?, schedule_allDay = ?
+				WHERE  schedule_id = ? AND emp_id = ?
+				""";
+		
+		try(Connection con = ds.getConnection();
+			PreparedStatement pstmt = con.prepareStatement(drag_update_sql);) {
+			
+			pstmt.setTimestamp(1, Timestamp.valueOf(s.getScheduleStart()));
+	        pstmt.setTimestamp(2, Timestamp.valueOf(s.getScheduleEnd()));
+	        pstmt.setInt(3, s.getScheduleAllDay());
+	        pstmt.setInt(4, s.getScheduleId());
+	        pstmt.setString(5, s.getEmpId());
 
+            result = pstmt.executeUpdate();
+            if (result == 1)
+				System.out.println("drag 일정 데이터 수정 되었습니다.");
+		} catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("dragUpdateSchedule() 에러 : " + e);
+        }
 
-	
+		return result;
+	}//dragUpdateSchedule
 
-
-	
-	
-	
-	
-	
-	
-
-
+	// 일정 삭제
+	public int deleteSchedule(int scheduleId) {
+		int result = 0;
+		String del_sql = "delete schedule where schedule_id = ?";
+		
+		try (Connection con = ds.getConnection();
+			 PreparedStatement pstmt = con.prepareStatement(del_sql);) {
+			 
+			pstmt.setInt(1, scheduleId);
+			result = pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}//deleteSchedule end
 }

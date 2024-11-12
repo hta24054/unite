@@ -7,7 +7,7 @@ $(document).ready(function(){
 	// 일정 리스트 불러오기
 	function fetchListData(){
 		$.ajax({
-	        url: "ScheduleListAction",
+	        url: "ScheduleList",
 	        type: "get",
 	        dataType: "json",
 	        data: {
@@ -48,7 +48,7 @@ $(document).ready(function(){
 	// 일정 등록
     function addEvent(eventData) {
         $.ajax({
-            url: "ScheduleAddProcessAction", 
+            url: "ScheduleAdd", 
             type: "post",
             dataType: "json",
             data: {
@@ -68,13 +68,13 @@ $(document).ready(function(){
 			        for (let i = 0; i < data.length; i++) {
 						const isAllDay = data[i].schedule_allDay === 1;
 						events.push({
+							id: data[i].schedule_id,
 			                title: data[i].schedule_name, 
 			                start: data[i].schedule_start, 
 			                end: data[i].schedule_end,
 			                backgroundColor: data[i].schedule_color, 
 			                description: data[i].schedule_content,
-			                allDay: isAllDay,
-			                id: data[i].schedule_id
+			                allDay: isAllDay 
 			            });
 			        }
 			    }
@@ -88,12 +88,12 @@ $(document).ready(function(){
         });
     }
     
+    
     // 일정 수정
 	function updateEvent(eventData) {
 		console.log("수정 데이터:", eventData);
-		
 	    $.ajax({
-	        url: "ScheduleUpdateAction",
+	        url: "ScheduleUpdate",
 	        type: "post",
 	        dataType: "json",
 	        data: {
@@ -117,6 +117,67 @@ $(document).ready(function(){
 	            console.log("일정 수정 오류", error);
 	        }
 	    });
+	}
+	
+	// 일정 수정 - 드래그 이벤트 (시작/종료 날짜 수정)
+	function updateDragEvent(info) {
+	    console.log("eventChange: ", info.event.start, info.event.end);
+	    
+	    let endAt = info.event.end ? moment(info.event.end).format('YYYY-MM-DD HH:mm') : null;
+	    const startAt = moment(info.event.start).format('YYYY-MM-DD HH:mm');
+	
+	    if (info.event.allDay && endAt === null) {
+	        endAt = startAt;  // allDay 일정의 경우 시작 날짜와 종료 날짜를 동일하게 설정
+	    }
+	    
+	    $.ajax({
+	        url: "ScheduleDragUpdate",
+	        type: "post",
+	        dataType: "json",
+	        data: {
+	            emp_id: $("#emp_id").val(),
+	            schedule_id: info.event.id,
+	            startAt: startAt,
+	            endAt: endAt,
+	            allDay: info.event.allDay ? 1 : 0
+	        },
+	        success: function(data) {
+	            console.log("drag 일정 업데이트 성공:", data);
+	            fetchListData(); 
+	        },
+	        error: function(error) {
+	            console.log("drag 일정 업데이트 오류:", error);
+	            alert("drag 일정 업데이트 중 오류가 발생했습니다.");
+	            fetchListData();
+	        }
+	    });
+	}
+	
+	// 일정 삭제
+	function deleteEvent(eventData) {
+		
+		if(confirm("정말 삭제하시겠습니까?")) {
+			$.ajax({
+				url: "ScheduleDelete",
+				type: "post",
+		        dataType: "json",
+		        data: {
+		            schedule_id: eventData.schedule_id,  // schedule_id 값 전달
+		        },
+		        success: function(data) {
+		            console.log("일정 삭제 성공:", data);
+		            fetchListData(); 
+		            $("#scheduleModal").modal("hide");
+		        },
+		        error: function(error) {
+		            console.log("일정 삭제 오류:", error);
+		            alert("일정 삭제 중 오류가 발생했습니다.");
+		            fetchListData();
+		        }
+			});
+		}
+		
+		
 	}
 	
 	// 상세 일정 팝업 
@@ -171,6 +232,13 @@ $(document).ready(function(){
 	    // 일정 삭제
 	    $("#btnDelete").off("click").on("click", function() {
 	        console.log("data Delete");
+	        
+	        const eventData = {
+	            schedule_id: $("#schedule_id").val() 
+	        };
+	        
+	        deleteEvent(eventData); // 삭제 함수 호출
+	        
 	    });
 	
 	    $("#scheduleModal").modal('show');
@@ -308,36 +376,62 @@ $(document).ready(function(){
 		    },
 	        initialView: 'dayGridMonth', // 초기 로드 될때 보이는 캘린더 화면(기본 설정: 달)
 	        editable: true, // 수정 가능
-	        selectable: false, // 달력 일자 드래그 설정
+	        selectable: true, // 달력 일자 드래그 설정
 	        nowIndicator: true, // 현재 시간 마크
 	        dayMaxEvents: true, // 이벤트가 오버되면 높이 제한 (+ 몇 개식으로 표현)
 	        locale: 'ko', // 한국어 설정
 			events: events, // 전역 이벤트 배열 사용
 		    dateClick: function(info) {
-                //console.log("dateClick info", info);
-                //openDetailModal(moment(info.date)); // 클릭한 날짜로 팝업 열기
-                openDetailModal(moment(info.event));
-            },
+			    if (!info.event) { // 클릭한 날짜에 일정이 없는 경우
+			        $(".modal-header").find("p").text("일정 등록"); 
+			        $(".modal-body").find(".btn_wrap").html(`
+			            <button type="reset" class="btn btn-secondary">취소</button>
+			            <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
+			        `);
+			
+			        $("#schedule_name").val("");
+			        $("#startAt").val(moment(info.date).format("YYYY-MM-DD"));
+			      
+			        $("#endAt").val("");
+			        $("#description").val("");
+			        $("#bgColor").val("#1e3a8a");
+			        $("#allDay").prop("checked", false);
+			
+			        $("#scheduleModal").modal("show");
+			        
+			        // 등록 버튼에 이벤트 바인딩
+				    $("#btnRegister").off("click").on("click", function(e) {
+				        e.preventDefault();
+				        const eventData = {
+				            schedule_name: $("#schedule_name").val(),
+				            startAt: $("#startAt").val(),
+				            endAt: $("#endAt").val(),
+				            bgColor: $("#bgColor").val(),
+				            description: $("#description").val(),
+				            allDay: $("#allDay").prop("checked")
+				        };
+				        if (validateForm()) {
+				            addEvent(eventData);
+				        }
+				    });
+			        
+			    } else {
+			        openDetailModal(info.event);
+			    }
+			},
             eventClick: function(info) {
                  console.log("eventClick info", info.event);
-                 openDetailModal(info.event); 
-             
-                //openDetailModal(moment(info.event.start)); // 일정 클릭 시 수정 팝업 열기
+                 openDetailModal(info.event);
             },
-			eventAdd: function(obj) { // 이벤트가 추가되면 발생하는 이벤트
-	         	 console.log("eventAdd obj", obj);
+			eventAdd: function(info) { // 이벤트가 추가되면 발생하는 이벤트
+	         	 console.log("eventAdd", info);
 	        },
-	        
-	        eventChange: function(obj) { // 이벤트가 수정되면 발생하는 이벤트
-	         	console.log(obj);
+	        eventChange: function(info) { // 이벤트가 수정되면 발생하는 이벤트
+	         	updateDragEvent(info);
 	        },
-	        
-	        eventRemove: function(obj){ // 이벤트가 삭제되면 발생하는 이벤트
-	         	console.log(obj);
-	        },
-	        select: function(arg) {
-                console.log(arg);
-            },
+	        select: function(info) {
+			    console.log("select:", info);
+			},
             eventDataTransform: function(event) { // 이벤트 데이터 변환 함수
                 // allDay 이벤트일 경우 종료 날짜를 하루 더 추가
                 if (event.allDay) {

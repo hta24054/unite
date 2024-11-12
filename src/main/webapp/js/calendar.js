@@ -205,7 +205,7 @@ $(document).ready(function(){
 	        $("#startAt, #endAt").prop("type", "datetime-local");
 	    }
 	    
-	    $(".modal-header").find("p").text("상세 일정");
+	    $(".modal-header").find("h5").text("상세 일정");
 	    $(".modal-body").find(".btn_wrap").html(`
 	        <button type="reset" class="btn btn-secondary">취소</button>
 	        <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
@@ -246,7 +246,7 @@ $(document).ready(function(){
     
     // 일정 등록 버튼 클릭 시 모달 초기화
 	$(".btn.btn-info[data-target='#scheduleModal']").on("click", function() {
-	    $(".modal-header").find("p").text("일정 등록"); 
+	    $(".modal-header").find("h5").text("일정 등록"); 
 	    $(".modal-body").find(".btn_wrap").html(`
 	        <button type="reset" class="btn btn-secondary">취소</button>
 	        <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
@@ -383,7 +383,7 @@ $(document).ready(function(){
 			events: events, // 전역 이벤트 배열 사용
 		    dateClick: function(info) {
 			    if (!info.event) { // 클릭한 날짜에 일정이 없는 경우
-			        $(".modal-header").find("p").text("일정 등록"); 
+			        $(".modal-header").find("h5").text("일정 등록"); 
 			        $(".modal-body").find(".btn_wrap").html(`
 			            <button type="reset" class="btn btn-secondary">취소</button>
 			            <button type="submit" class="btn btn-info" id="btnRegister">등록</button>

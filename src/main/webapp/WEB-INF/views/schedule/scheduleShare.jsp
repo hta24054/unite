@@ -5,7 +5,7 @@
 <head>
 	<jsp:include page="../common/header.jsp" />
 	<title>캘린더 - 공유 일정 등록</title> 
-	<script src="${pageContext.request.contextPath}/js/scheduleShare.js"></script>
+	<script src="${pageContext.request.contextPath}/js/calendar.js"></script>
 	<style>
 		.container {
 			max-width: 1900px;
@@ -22,7 +22,6 @@
 			margin: 0;
 		}
 		
-	
 		textarea {
 			width: 100%;
 			height: 100px;
@@ -39,8 +38,12 @@
 			margin: 0 5px;
 		}
 		
-		.modal-dialog {
-			max-width: 700px;
+		#scheduleShareBtn {
+			font-weight: 600;
+		}
+		
+		a:hover {
+		    text-decoration: none;
 		}
 	</style>
 </head>
@@ -70,7 +73,7 @@
 						</div>
 						
 						<div class="form-group row custom-control custom-checkbox">
-							<div class="col-sm-2">&nbsp;&nbsp;</div>
+							
 							<div class="col-sm-7">
 								<input type="checkbox" name="allDay" id="allDay" class="custom-control-input" value="">
 			             		<label for="allDay" class="custom-control-label">하루종일</label>
@@ -108,9 +111,10 @@
 				        </div>
 				        
 				        <div class="form-group row">
-				        	<p class="col-sm-2">참석자</p>
+				        	<p class="col-sm-2">공유자</p>
 				        	<div class="col-sm-8">
-				        		<button type="button" class="btn btn-info" data-toggle="modal" data-target="#scheduleShareModal">+ 참석자 선택</button>
+				        		<div id="scheduleShareEmp"></div>
+				        		<a href="javascript:void(0);" data-target="scheduleShareEmp" id="scheduleShareBtn">+ 공유자 선택</a>
 				        	</div>
 				        </div>
 				        <div class="form-group row">
@@ -129,28 +133,105 @@
 		</div>
 	</div>
 	
-	<%-- modal 시작 --%>
-	<div class="modal" id="scheduleShareModal">
-		<div class="modal-dialog">
+	<%-- 공유 일정 등록 모달 --%>
+	<div class="modal fade" id="scheduleShareModal" tabindex="-1" role="dialog" aria-labelledby="scheduleShareModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
-				<div class="modal-header" style="align-items: center;">
-					<p>조직도</p>
-					<button type="button" class="btn btn-danger" data-dismiss="modal">X</button>
+				<div class="modal-header">
+					<h5 class="modal-title" id="scheduleShareModalLabel">조직도</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
 				</div>
 				<div class="modal-body">
-					<div>
-						<jsp:include page="scheduleShareTree.jsp" />
-					</div>
+					 <jsp:include page="../common/empTree.jsp"/>
 				</div>
 				<div class="modal-footer">
 					<div class="btn_wrap">
-         				<button type="reset" class="btn btn-secondary">취소</button>
 						<button type="submit" class="btn btn-info" id="btnSave">저장</button>
          			</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<%-- modal end --%>
+	<%-- 공유 일정 등록 모달 --%>
+	
+    <script>
+        $(document).ready(function() {
+        	$("#scheduleShareBtn").on("click", function(e) {
+        		e.preventDefault();
+        		
+                const targetId = $(this).data('target');
+                localStorage.setItem('selectedEmpId', targetId);
+                
+                $('#scheduleShareModal').modal('show');
+            });
+        	
+            // "선택" 열 추가
+            $('#employeeTableContainer thead tr').prepend('<th>선택</th>');
+
+            // 직원 목록 행에 체크박스를 추가하는 함수
+            function addCheckboxes() {
+                $('#employeeTableBody tr').each(function () {
+                    const empId = $(this).find('td:eq(0)').text().trim();
+                    $(this).prepend('<td><input type="checkbox" name="selectedEmp" value="' + empId + '"></td>');
+                    $(this).find('td:eq(1)').hide();  // empId 열 숨기기
+                });
+            }
+
+            // 최초 로딩 시 체크박스 추가
+            addCheckboxes();
+
+            // AJAX 후 체크박스를 다시 추가
+            $(document).on('ajaxSuccess', function () {
+                addCheckboxes();
+            });
+
+            // 저장 버튼 클릭 시 직원 정보 등록
+            $('#btnSave').on('click', function() {
+                insertEmp();  // 직원 등록 함수 호출
+            });
+        });
+
+
+        function insertEmp() {
+            const targetEmpId = localStorage.getItem('selectedEmpId');
+            if (!targetEmpId) {
+                alert('유효한 입력 필드가 선택되지 않았습니다.');
+                return;
+            }
+
+            const selectedEmpNames = $('input[name="selectedEmp"]:checked')
+                .map(function () {
+                    return $(this).closest('tr').find('td:eq(2)').text().trim();
+                })
+                .get();
+
+            if (selectedEmpNames.length === 0) {
+                alert('직원 정보를 선택해 주세요.');
+                return;
+            }
+
+            const targetEmp = $('#' + targetEmpId);
+            targetEmp.empty(); // 이전 선택 직원들을 제거
+
+            $(selectedEmpNames).each(function(index, name) {
+                const empEl = $('<a href="javascript:void(0);" class="selected_emp mr-2">' + name + '<span> [x]</span></a>');
+                targetEmp.append(empEl);
+            });
+
+            alert('선택된 직원 : ' + selectedEmpNames.join(', '));
+            $('#scheduleShareModal').modal('hide');
+        }
+        
+        $(document).on('click', '.selected_emp', function(e) {
+            e.preventDefault();
+            $(this).remove();
+        });
+        
+        $('#scheduleShareModal').on('hidden.bs.modal', function() {
+            $('input[name="selectedEmp"]').prop('checked', false); 
+        });
+    </script>
 </body>
 </html>

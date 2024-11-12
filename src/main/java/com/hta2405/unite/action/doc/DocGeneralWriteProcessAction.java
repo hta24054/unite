@@ -21,7 +21,7 @@ public class DocGeneralWriteProcessAction implements com.hta2405.unite.action.Ac
         String content = req.getParameter("content");
         String[] signArr = req.getParameterValues("sign[]");
 
-        Doc doc = new Doc(null, writer, DocType.GENERAL.getType(), title, content, dateTime, false);
+        Doc doc = new Doc(null, writer, DocType.GENERAL, title, content, dateTime, false);
         DocDao docDao = new DocDao();
         int result = docDao.insertGeneralDoc(doc, signArr);
         if (result != 1) {

@@ -116,7 +116,7 @@ public class ScheduleDAO {
 	        
 	        result = pstmt.executeUpdate();
 	        if (result == 1)
-				 System.out.println("일정 데이터 수정 되었습니다.");
+				System.out.println("일정 데이터 수정 되었습니다.");
 		} catch (Exception e) {
 	        e.printStackTrace();
 	        System.out.println("updateSchedule() 에러 : " + e);
@@ -136,22 +136,20 @@ public class ScheduleDAO {
 		try(Connection con = ds.getConnection();
 			PreparedStatement pstmt = con.prepareStatement(drag_update_sql);) {
 			
-			
 			pstmt.setTimestamp(1, Timestamp.valueOf(s.getScheduleStart()));
 	        pstmt.setTimestamp(2, Timestamp.valueOf(s.getScheduleEnd()));
 	        pstmt.setInt(3, s.getScheduleAllDay());
 	        pstmt.setInt(4, s.getScheduleId());
 	        pstmt.setString(5, s.getEmpId());
 
-             pstmt.executeUpdate();
-             if (result == 1)
-				 System.out.println("drag 일정 데이터 수정 되었습니다.");
-			
+            result = pstmt.executeUpdate();
+            if (result == 1)
+				System.out.println("drag 일정 데이터 수정 되었습니다.");
 		} catch (Exception e) {
             e.printStackTrace();
             System.out.println("dragUpdateSchedule() 에러 : " + e);
         }
-		
+
 		return result;
 	}//dragUpdateSchedule
 

@@ -55,7 +55,7 @@
         }
 
         // 최초 로딩 시 체크박스 추가
-        addCheckboxes();
+        addCheckboxes();	
 
         // AJAX 후 체크박스를 다시 추가
         $(document).on('ajaxSuccess', function () {
@@ -106,28 +106,45 @@
 
         // 등록 버튼 클릭 시 textarea에 있는 직원 정보를 실제 폼에 등록
         $('#insertEmpBtn').on('click', function() {
-            const targetInputId = localStorage.getItem('selectedInputId');
-            if (!targetInputId) {
-                alert('유효한 입력 필드가 선택되지 않았습니다.');
-                return;
+		    const targetInputId = localStorage.getItem('selectedInputId');
+		    if (!targetInputId) {
+		        alert('유효한 입력 필드가 선택되지 않았습니다.');
+		        return;
+		    }
+		
+		    const empTextArea = $('#empTextArea');
+		    const selectedEmpNames = empTextArea.val().trim();
+		
+		    if (selectedEmpNames === '') {
+		        alert('직원 정보를 추가해 주세요.');
+		        return;
+		    }
+		
+		    if (targetInputId === 'manager') {
+		        const empNamesArray = selectedEmpNames.split('\n').filter(name => name.trim() !== '');
+		        if (empNamesArray.length > 1) {
+		            alert('책임자는 한 명만 지정할 수 있습니다.');
+		            return;
+		        }
+		    }
+		
+		    const targetInput = $('#' + targetInputId);
+		    targetInput.prop('readonly', false);
+		    targetInput.val(selectedEmpNames);
+		    targetInput.prop('readonly', true);
+		
+		    alert('등록된 직원: ' + selectedEmpNames);
+		    $('#orgChartModal').modal('hide');
+		});
+        
+        $('#projectForm').on('submit', function(e) {
+            const manager = $('#manager').val().trim();
+            if (!manager) {
+                alert('책임자를 지정해 주세요.');
+                e.preventDefault();  // 제출 취소
             }
-
-            const empTextArea = $('#empTextArea');
-            const selectedEmpNames = empTextArea.val().trim();
-
-            if (selectedEmpNames === '') {
-                alert('직원 정보를 추가해 주세요.');
-                return;
-            }
-
-            const targetInput = $('#' + targetInputId);
-            targetInput.prop('readonly', false);
-            targetInput.val(selectedEmpNames);
-            targetInput.prop('readonly', true);
-
-            alert('등록된 직원: ' + selectedEmpNames);
-            $('#orgChartModal').modal('hide');
         });
+        
     });
 
 </script>
@@ -223,7 +240,7 @@
                     </table>
                 </div>
                 <div class="text-area-container mt-3">
-                    <textarea id="empTextArea" class="form-control" rows="3" placeholder="선택된 직원 추가..."></textarea>
+                    <textarea id="empTextArea" class="form-control" rows="3" cols="100"placeholder="선택된 직원 추가..." readOnly></textarea>
                     <button type="button" id="addEmpBtn" class="btn btn-primary mt-2">추가</button>
                     <button type="button" id="deleteEmpBtn" class="btn btn-danger mt-2">삭제</button>
                 </div>

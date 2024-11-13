@@ -548,7 +548,7 @@ public class ProjectDAO {
                 from project p 
                 join project_member m on p.project_id = m.project_id
                 join emp e on m.member_id = e.emp_id
-                where p.project_id = ?
+                where p.project_id = ? and m.member_role != 'VIEWER'
                 order by e.ename
                 """;
 
@@ -613,7 +613,7 @@ public class ProjectDAO {
 			    AND m.member_id = t.emp_id 
 			    AND t.rn = 1  
 			WHERE 
-			    p.project_id = ?
+			    p.project_id = ? and m.member_role != 'VIEWER'
 			ORDER BY 
 			    e.ename
                 """;
@@ -711,6 +711,24 @@ public class ProjectDAO {
 		return null;
 	}
 
+	public String getMemberRole(int projectId, String userId) {
+	    String role = "VIEWER"; // 기본값을 'VIEWER'로 설정 (없는 경우)
+	    String sql = "SELECT m.member_role FROM project_member m WHERE m.project_id = ? AND m.member_id = ?";
+
+	    try (Connection conn = ds.getConnection();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        pstmt.setInt(1, projectId); // 프로젝트 ID 설정
+	        pstmt.setString(2, userId);     // 사용자 ID 설정
+	        ResultSet rs = pstmt.executeQuery();
+
+	        if (rs.next()) {
+	            role = rs.getString("member_role");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return role;
+	}
 
 	
 

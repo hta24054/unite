@@ -21,6 +21,10 @@ public class ProjectDetail {
     private String taskTitle;  //진행과정 - 제목
     private String taskDate;  //진행과정 - 작성일
     private String taskUpdateDate;  //진행과정 - 작성일
+    
+    private String role;
+    private String name;
+    
     private String content;
     private String task_file_path;
     private String task_file_original;

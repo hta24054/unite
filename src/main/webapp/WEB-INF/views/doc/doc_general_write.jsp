@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
 
     <meta charset="UTF-8">
-    <title>일반 문서</title>
+    <title>일반 문서 작성</title>
     <style>
         .header-cell {
             font-size: 36px;
@@ -53,6 +53,10 @@
                         <td class="table-secondary font-weight-bold text-center">기 안 자</td>
                         <td>${emp.ename}</td>
                         <input type="hidden" name="writer" value="${emp.empId}">
+                    </tr>
+                    <tr>
+                        <td class="table-secondary font-weight-bold text-center">작 성 일</td>
+                        <td>${today}</td>
                     </tr>
                 </table>
             </div>

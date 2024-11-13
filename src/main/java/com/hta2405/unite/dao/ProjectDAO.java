@@ -199,31 +199,50 @@ public class ProjectDAO {
     
     //성공하면 메인(나중에 다시 확인 필요.중복확인)
     public List<ProjectInfo> getOngoingProjects(String loginEmp) {
-    	List<ProjectInfo> projectList = new ArrayList<>();
+        List<ProjectInfo> projectList = new ArrayList<>();
         String sql = """
                 SELECT
-				    p.project_id,
-				    p.project_name,
-				    p.project_end_date,
-				    COUNT(pm.project_member_id) AS member_count,  
-				    SUM(pm.MEMBER_PROGRESS_RATE) / COUNT(pm.project_member_id) AS avg_progress,
-				     (SELECT m.member_id
+                    p.project_id,
+                    p.project_name,
+                    p.project_end_date,
+                    COUNT(pm.project_member_id) AS member_count,  
+                    SUM(pm.MEMBER_PROGRESS_RATE) / COUNT(pm.project_member_id) AS avg_progress,
+                    (SELECT e.ename
+                     FROM emp e 
+                     WHERE e.emp_id = (
+                         SELECT m.member_id
+                         FROM project_member m
+                         WHERE m.project_id = p.project_id 
+                         AND m.member_role = 'MANAGER'
+                         AND ROWNUM = 1
+                     )) AS emp_name,
+                     (SELECT m.member_id
                      FROM project_member m 
                      WHERE m.project_id = p.project_id 
-                     AND m.member_role = 'MANAGER') AS manager_id
-				FROM
-				    project p
-				        JOIN
-				    project_member pm ON p.project_id = pm.project_id
-				WHERE
-				    p.project_id IN (
-				        SELECT project_id
-				        FROM project_member
-				        WHERE member_id = ? 
-				    ) and p.project_finished = 0 and p.project_canceled = 0
-				GROUP BY
-				    p.project_id, p.project_name, p.project_end_date
-                """;
+                     AND m.member_role = 'MANAGER') AS manager_id,
+                    LISTAGG(CASE WHEN pm.member_role = 'PARTICIPANT' THEN e.ename END, ', ') 
+                    WITHIN GROUP (ORDER BY e.ename) AS participants,
+                    LISTAGG(CASE WHEN pm.member_role = 'VIEWER' THEN e.ename END, ', ') 
+                    WITHIN GROUP (ORDER BY e.ename) AS viewers
+                FROM
+                    project p
+                JOIN
+                    project_member pm ON p.project_id = pm.project_id
+                LEFT JOIN
+                    emp e ON pm.member_id = e.emp_id
+                WHERE
+                    p.project_id IN (
+                        SELECT project_id
+                        FROM project_member
+                        WHERE member_id = ? 
+                    ) 
+                    AND p.project_finished = 0 
+                    AND p.project_canceled = 0
+                GROUP BY
+                    p.project_id, p.project_name, p.project_end_date
+                ORDER BY 
+                    p.project_id
+        """;
 
         try (Connection conn = ds.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -234,10 +253,35 @@ public class ProjectDAO {
                     project.setProjectId(rs.getInt("project_id"));
                     project.setProjectName(rs.getString("project_name"));
                     project.setEndDate(rs.getDate("project_end_date"));
-                    project.setMemberCount(rs.getInt("member_count")); 
-                    project.setProgressRate(rs.getInt("avg_progress")); 
+                    project.setMemberCount(rs.getInt("member_count"));
+                    project.setProgressRate(rs.getInt("avg_progress"));
 
-                    // manager_id가 loginEmp와 같은지 비교하여 isManager 설정
+                    // 책임자 이름
+                    project.setEmpName(rs.getString("emp_name"));
+
+                    // 참여자 및 열람자 목록 처리
+                    String participants = rs.getString("participants");
+                    if (participants != null) {
+                        String[] participantArray = participants.split(", ");
+                        List<String> participantNames = new ArrayList<>();
+                        for (String participant : participantArray) {
+                            participantNames.add(participant);
+                        }
+                        project.setParticipantNames(participantNames);
+
+                        // 열람자 목록 처리
+                        String viewers = rs.getString("viewers");
+                        if (viewers != null) {
+                            String[] viewerArray = viewers.split(", ");
+                            List<String> viewerList = new ArrayList<>();
+                            for (String viewer : viewerArray) {
+                                viewerList.add(viewer);
+                            }
+                            project.setViewers(viewerList);
+                        }
+                    }
+
+                    
                     String managerId = rs.getString("manager_id");
                     if(managerId != null && managerId.equals(loginEmp)) {
                         project.setIsManager(true);
@@ -252,8 +296,9 @@ public class ProjectDAO {
             e.printStackTrace();
         }
         return projectList;
-
     }
+
+
     
     public boolean updateProjectStatus(int projectId, boolean finished, boolean canceled) {
         String getEndDateSql = "SELECT project_end_date FROM project WHERE project_id = ?";
@@ -553,9 +598,13 @@ public class ProjectDAO {
 			        emp_id, 
 			        task_date, 
 			        task_update_date,
-			        ROW_NUMBER() OVER (PARTITION BY emp_id ORDER BY 
-			            task_update_date DESC NULLS LAST, 
-			            task_date DESC NULLS LAST) AS rn
+			        ROW_NUMBER() OVER (
+			            PARTITION BY emp_id 
+			            ORDER BY 
+			                -- 우선 task_date로 내림차순 정렬, 그다음 task_update_date로 내림차순 정렬
+			                task_date DESC NULLS LAST, 
+			                task_update_date DESC NULLS LAST
+			        ) AS rn
 			    FROM 
 			        task
 			    WHERE 
@@ -579,7 +628,8 @@ public class ProjectDAO {
                 ProjectDetail projectDetail = new ProjectDetail();
                 projectDetail.setTaskWriter(rs.getString(1));
                 projectDetail.setTaskTitle(rs.getString(2));
-                projectDetail.setTaskUpdateDate(rs.getString(3));
+                if(rs.getString(3) != null) projectDetail.setTaskUpdateDate(rs.getString(3).substring(0,10));//날짜만
+                else projectDetail.setTaskUpdateDate(rs.getString(3));
                 projectDetail.setMemberId(rs.getString(4));
                 project.add(projectDetail);
             }
@@ -649,6 +699,16 @@ public class ProjectDAO {
 	        e.printStackTrace();
 	        return false;
 	    }
+	}
+
+	public int getListCount(String userid, int projectid) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public List<ProjectComplete> getBoardList(int page, int limit, String userid, int projectid) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

@@ -33,5 +33,4 @@ public class BoardListAction implements Action {
 		forward.setRedirect(false);
 		return forward;
 	}
-
 }

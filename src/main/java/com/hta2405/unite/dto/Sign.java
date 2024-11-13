@@ -11,5 +11,6 @@ public class Sign {
     private Long signId;
     private String EmpId;
     private Long docId;
-    private Long signOrder;
+    private int signOrder;
+    private boolean signed;
 }

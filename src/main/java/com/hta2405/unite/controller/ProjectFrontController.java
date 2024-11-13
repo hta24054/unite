@@ -1,6 +1,19 @@
 package com.hta2405.unite.controller;
 
-import com.hta2405.unite.action.project.*;
+import com.hta2405.unite.action.project.ProjectCancelAction;
+import com.hta2405.unite.action.project.ProjectChartAction;
+import com.hta2405.unite.action.project.ProjectCompleteAction;
+import com.hta2405.unite.action.project.ProjectCreateAction;
+import com.hta2405.unite.action.project.ProjectDetailAction;
+import com.hta2405.unite.action.project.ProjectDoCreateAction;
+import com.hta2405.unite.action.project.ProjectEmployAction;
+import com.hta2405.unite.action.project.ProjectGetOngoingAction;
+import com.hta2405.unite.action.project.ProjectListAction;
+import com.hta2405.unite.action.project.ProjectMainAction;
+import com.hta2405.unite.action.project.ProjectProgressAction;
+import com.hta2405.unite.action.project.ProjectUpdateProgressAction;
+import com.hta2405.unite.action.project.ProjectUpdateTaskDesignAction;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
@@ -17,6 +30,7 @@ public class ProjectFrontController extends AbstractFrontController {
         actionMap.put("/detail", new ProjectDetailAction());
         actionMap.put("/progress", new ProjectProgressAction());
         actionMap.put("/orgchart", new ProjectChartAction());
+        actionMap.put("/list", new ProjectListAction());
         // actionMap.put("/write", new ProjectWriteAction());
         // actionMap.put("/add", new ProjectAddAction());
         actionMap.put("/employ", new ProjectEmployAction());

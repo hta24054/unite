@@ -125,7 +125,7 @@ public class DeptDao {
 		return empList;
 	}
 
-	public Long getDeptIdByDeptName(String deptName) {
+public Long getDeptIdByDeptName(String deptName) {
 		 Long deptId = null;
 		String sql = """
 				select dept_id from dept
@@ -150,7 +150,6 @@ public class DeptDao {
 	                + "JOIN job j ON e.job_id = j.job_id "
 	                + "JOIN dept d ON e.dept_id = d.dept_id "
 	                + "WHERE e.dept_id = ?";
-
 	        try (Connection conn = ds.getConnection();
 	             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	            pstmt.setInt(1, deptId);  // deptId는 int 타입으로 전달

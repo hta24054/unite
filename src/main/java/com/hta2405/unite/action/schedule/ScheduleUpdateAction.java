@@ -18,8 +18,6 @@ public class ScheduleUpdateAction implements Action {
 	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-			ScheduleDAO sdao = new ScheduleDAO();
-		
 			int scheduleId = Integer.parseInt(req.getParameter("schedule_id"));
 			String empId = req.getParameter("emp_id");
 			String scheduleName = req.getParameter("schedule_name");
@@ -43,7 +41,7 @@ public class ScheduleUpdateAction implements Action {
 			s.setScheduleColor(bgColor);
 			s.setScheduleAllDay(allDay);
 			
-			
+			ScheduleDAO sdao = new ScheduleDAO();
 			
 			int ok = sdao.updateSchedule(s);
 			resp.getWriter().print(ok);

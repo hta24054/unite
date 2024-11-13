@@ -1,6 +1,7 @@
 package com.hta2405.unite.dao;
 
 import com.hta2405.unite.dto.Doc;
+import com.hta2405.unite.dto.DocTrip;
 import com.hta2405.unite.dto.DocWithWaitingSigner;
 import com.hta2405.unite.dto.Sign;
 import com.hta2405.unite.enums.DocType;
@@ -67,57 +68,106 @@ public class DocDao {
         }
     }
 
+    public int insertTripDoc(DocTrip docTrip, String[] signArr) {
+        try (Connection conn = ds.getConnection()) {
+            conn.setAutoCommit(false);
+            int docResult = insertDoc(docTrip, signArr, conn);
+            if (docResult == 1) {
+                long docId = -1L;
+                String idSql = "SELECT seq_doc.CURRVAL FROM dual";
+                try (PreparedStatement idStmt = conn.prepareStatement(idSql);
+                     ResultSet rs = idStmt.executeQuery()) {
+                    if (rs.next()) {
+                        docId = rs.getLong(1);
+                    } else {
+                        throw new SQLException("생성된 키를 가져오지 못했습니다.");
+                    }
+                }
+                String sql = """
+                            INSERT INTO DOC_TRIP(DOC_ID, TRIP_START, TRIP_END, TRIP_LOC, TRIP_PHONE,
+                                                TRIP_INFO, CARD_START, CARD_END, CARD_RETURN)
+                            VALUES (?,?,?,?,?,?,?,?,?)
+                        """;
+                try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setLong(1, docId);
+                    ps.setDate(2, Date.valueOf(docTrip.getTripStart()));
+                    ps.setDate(3, Date.valueOf(docTrip.getTripEnd()));
+                    ps.setString(4, docTrip.getTripLoc());
+                    ps.setString(5, docTrip.getTripPhone());
+                    ps.setString(6, docTrip.getTripInfo());
+                    ps.setDate(7, Date.valueOf(docTrip.getCardStart()));
+                    ps.setDate(8, Date.valueOf(docTrip.getCardEnd()));
+                    ps.setDate(9, Date.valueOf(docTrip.getCardReturn()));
+                    int result = ps.executeUpdate();
+                    if (result == 1) {
+                        conn.commit();
+                        conn.setAutoCommit(true);
+                        return 1;
+                    } else {
+                        conn.rollback();
+                        conn.setAutoCommit(true);
+                        return 0;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
+    }
+
     public int insertGeneralDoc(Doc doc, String[] signArr) {
+        try (Connection conn = ds.getConnection()) {
+            conn.setAutoCommit(false);
+            int result = insertDoc(doc, signArr, conn);
+            if (result == 1) {
+                conn.commit();
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
+    }
+
+    public int insertDoc(Doc doc, String[] signArr, Connection conn) throws SQLException {
         String sql = """
                 INSERT INTO DOC (DOC_WRITER, DOC_TYPE, DOC_TITLE, DOC_CONTENT, DOC_CREATE_DATE)
                 VALUES (?,?,?,?,?)
                 """;
         long docId = -1L;
 
-        try (Connection conn = ds.getConnection()) {
-            conn.setAutoCommit(false);
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, doc.getDocWriter());
+            ps.setString(2, doc.getDocType().getType()); // Enum의 문자열 값 사용
+            ps.setString(3, doc.getDocTitle());
+            ps.setString(4, doc.getDocContent());
+            ps.setTimestamp(5, Timestamp.valueOf(doc.getDocCreateDate()));
+            int result = ps.executeUpdate();
 
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, doc.getDocWriter());
-                ps.setString(2, doc.getDocType().getType()); // Enum의 문자열 값 사용
-                ps.setString(3, doc.getDocTitle());
-                ps.setString(4, doc.getDocContent());
-                ps.setTimestamp(5, Timestamp.valueOf(doc.getDocCreateDate()));
-                int result = ps.executeUpdate();
-
-                // DOC_ID 가져오기
-                if (result == 1) {
-                    String idSql = "SELECT seq_doc.CURRVAL FROM dual";
-                    try (PreparedStatement idStmt = conn.prepareStatement(idSql);
-                         ResultSet rs = idStmt.executeQuery()) {
-                        if (rs.next()) {
-                            docId = rs.getLong(1);
-                        } else {
-                            throw new SQLException("생성된 키를 가져오지 못했습니다.");
-                        }
+            // DOC_ID 가져오기
+            if (result == 1) {
+                String idSql = "SELECT seq_doc.CURRVAL FROM dual";
+                try (PreparedStatement idStmt = conn.prepareStatement(idSql);
+                     ResultSet rs = idStmt.executeQuery()) {
+                    if (rs.next()) {
+                        docId = rs.getLong(1);
+                    } else {
+                        throw new SQLException("생성된 키를 가져오지 못했습니다.");
                     }
                 }
-
-                // SIGN 테이블에 서명 리스트 삽입
-                List<Sign> list = makeSignListByParam(signArr, docId);
-                assert list != null;
-                int signResult = insertSign(list, conn);
-                if (signResult == list.size()) {
-                    conn.commit();
-                    return 1;
-                } else {
-                    conn.rollback();
-                    return 0;
-                }
-
-            } catch (SQLException e) {
-                conn.rollback();
-                throw new RuntimeException("문서 또는 서명 삽입 오류", e);
-            } finally {
-                conn.setAutoCommit(true);
+            }
+            // SIGN 테이블에 서명 리스트 삽입
+            List<Sign> list = makeSignListByParam(signArr, docId);
+            assert list != null;
+            int signResult = insertSign(list, conn);
+            if (signResult == list.size()) {
+                return 1;
+            } else {
+                return 0;
             }
         } catch (SQLException e) {
-            throw new RuntimeException("데이터베이스 연결 오류", e);
+            throw new RuntimeException("문서 또는 서명 삽입 오류", e);
         }
     }
 
@@ -143,7 +193,7 @@ public class DocDao {
         }
     }
 
-    public Doc getDocByDocId(Long docId) {
+    public Doc getGeneralDocByDocId(Long docId) {
         String sql = """
                     SELECT * FROM DOC
                     WHERE DOC_ID = ?
@@ -193,15 +243,47 @@ public class DocDao {
         return list;
     }
 
-    public Doc getBuyDoc(Doc doc) {
+    public Doc getBuyDoc(Long docId) {
         return null;
     }
 
-    public Doc getTripDoc(Doc doc) {
+    public DocTrip getTripDocById(Long docId) {
+        String sql = """
+                    select *
+                    from doc d join DOC_TRIP t
+                    on d.doc_id = t.DOC_ID
+                    WHERE D.DOC_ID = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, docId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new DocTrip(rs.getLong("doc_id"),
+                        rs.getString("doc_writer"),
+                        DocType.fromString(rs.getString("doc_type")),
+                        rs.getString("doc_title"),
+                        rs.getString("doc_content"),
+                        rs.getTimestamp("doc_create_date").toLocalDateTime(),
+                        rs.getInt("sign_finish") == 1,
+                        rs.getLong("doc_trip_id"),
+                        rs.getDate("trip_start").toLocalDate(),
+                        rs.getDate("trip_end").toLocalDate(),
+                        rs.getString("trip_loc"),
+                        rs.getString("trip_phone"),
+                        rs.getString("trip_info"),
+                        rs.getDate("card_start").toLocalDate(),
+                        rs.getDate("card_end").toLocalDate(),
+                        rs.getDate("card_return").toLocalDate()
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
-    public Doc getVacationDoc(Doc doc) {
+    public Doc getVacationDoc(Long docId) {
         return null;
     }
 
@@ -219,4 +301,6 @@ public class DocDao {
         }
         return list;
     }
+
+
 }

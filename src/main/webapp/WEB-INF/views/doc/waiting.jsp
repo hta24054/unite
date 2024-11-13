@@ -56,7 +56,7 @@
                     <td>${waitingDoc.doc.docId}</td>
                     <td class="create-date" data-date="${waitingDoc.doc.docCreateDate}"></td>
                     <td>${waitingDoc.doc.docType.getType()}</td>
-                    <td><a href="${pageContext.request.contextPath}/doc/detail?docId=${waitingDoc.doc.docId}">${waitingDoc.doc.docTitle}</a></td>
+                    <td><a href="${pageContext.request.contextPath}/doc/read?docId=${waitingDoc.doc.docId}">${waitingDoc.doc.docTitle}</a></td>
                     <td>${waitingDoc.signerName}</td>
                 </tr>
             </c:forEach>

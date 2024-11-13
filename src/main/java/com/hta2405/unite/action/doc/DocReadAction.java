@@ -32,7 +32,7 @@ public class DocReadAction implements Action {
         if (!isValidToAccessDoc(loginEmpId, docId)) {
             return CommonUtil.alertAndGoBack(resp, "문서 조회 권한이 없습니다.");
         }
-        Doc doc = docDao.getDocByDocId(docId);
+        Doc doc = docDao.getGeneralDocByDocId(docId);
         setCommonAttr(req, doc, docId);
 
         if (doc.isSignFinish()) {
@@ -70,7 +70,7 @@ public class DocReadAction implements Action {
         조회가능(2번이 중족되면 1번은 자동충족이므로 2번, 3번만 확인)
      */
     private boolean isValidToAccessDoc(String loginEmpId, Long docId) {
-        Doc doc = docDao.getDocByDocId(docId);
+        Doc doc = docDao.getGeneralDocByDocId(docId);
         List<Sign> signList = docDao.getSignListByDocId(docId);
         Long loginDept = empDao.getEmpById(loginEmpId).getDeptId();
         Long writerDept = empDao.getEmpById(doc.getDocWriter()).getDeptId();
@@ -80,7 +80,7 @@ public class DocReadAction implements Action {
     }
 
     private DocRole checkRole(String loginEmpId, Long docId) {
-        Doc doc = docDao.getDocByDocId(docId);
+        Doc doc = docDao.getGeneralDocByDocId(docId);
 
         // 작성자일 경우 바로 설정 후 반환
         if (doc.getDocWriter().equals(loginEmpId)) {
@@ -101,14 +101,14 @@ public class DocReadAction implements Action {
 
     //문서 종류 가져오기
     private Doc getDetailedDocById(Long docId) {
-        Doc doc = docDao.getDocByDocId(docId);
+        Doc doc = docDao.getGeneralDocByDocId(docId);
         DocType docType = doc.getDocType();
 
         return switch (docType) {
             case GENERAL -> doc;
-            case BUY -> docDao.getBuyDoc(doc);
-            case TRIP -> docDao.getTripDoc(doc);
-            case VACATION -> docDao.getVacationDoc(doc);
+            case BUY -> docDao.getBuyDoc(docId);
+            case TRIP -> docDao.getTripDocById(docId);
+            case VACATION -> docDao.getVacationDoc(docId);
         };
     }
 
@@ -121,7 +121,7 @@ public class DocReadAction implements Action {
         }
 
         if (doc instanceof DocTrip docTrip) {
-            req.setAttribute("doc", docTrip);
+            req.setAttribute("docTrip", docTrip);
             return new ActionForward(false, "/WEB-INF/views/doc/doc_trip_read.jsp");
         }
 

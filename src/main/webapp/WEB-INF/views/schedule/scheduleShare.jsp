@@ -64,6 +64,8 @@
 					<form name="scheduleShareEvent" method="post">
 						<input type="hidden" id="schedule_id" name="schedule_id" value="${schedule_id}">
 						<input type="hidden" id="emp_id" name="emp_id" value="${id}">
+						<!-- 선택된 직원 ID -->
+						<input type="hidden" id="share_emp" name="share_emp" value="${share_emp}">
 						
 						<div class="form-group row">
 							<label for="schedule_name" class="col-sm-2 col-form-label">일정명</label>
@@ -192,8 +194,7 @@
                 insertEmp();  // 직원 등록 함수 호출
             });
         });
-
-
+        
         function insertEmp() {
             const targetEmpId = localStorage.getItem('selectedEmpId');
             if (!targetEmpId) {
@@ -201,26 +202,30 @@
                 return;
             }
 
-            const selectedEmpNames = $('input[name="selectedEmp"]:checked')
-                .map(function () {
-                    return $(this).closest('tr').find('td:eq(2)').text().trim();
-                })
-                .get();
+            // 선택된 직원의 ID, 이름 가져오기
+            const selectedEmpData = $('input[name="selectedEmp"]:checked').map(function() {
+                return {
+                    id: $(this).val(),
+                    name: $(this).closest('tr').find('td:eq(2)').text().trim()
+                };
+            }).get();
 
-            if (selectedEmpNames.length === 0) {
+            if (selectedEmpData.length === 0) {
                 alert('직원 정보를 선택해 주세요.');
                 return;
             }
 
+            $('#share_emp').val(selectedEmpData.map(emp => emp.id).join(','));
+
+            // 선택된 직원 이름
             const targetEmp = $('#' + targetEmpId);
             targetEmp.empty(); // 이전 선택 직원들을 제거
-
-            $(selectedEmpNames).each(function(index, name) {
-                const empEl = $('<span class="selected_emp mr-2">' + name + '</span>');
+            selectedEmpData.forEach(emp => {
+                const empEl = $('<span class="selected_emp mr-2">').text(emp.name);
                 targetEmp.append(empEl);
             });
 
-            alert('선택된 직원 : ' + selectedEmpNames.join(', '));
+            alert('선택된 직원 : ' + selectedEmpData.map(emp => emp.name).join(', '));
             $('#scheduleShareModal').modal('hide');
         }
         

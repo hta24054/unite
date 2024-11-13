@@ -22,8 +22,8 @@ public class DocDao {
         }
     }
 
-    public List<DocWithWaitingSigner> getWaitingListByEmpId(String empId) {
-        List<DocWithWaitingSigner> list = new ArrayList<>();
+    public List<DocWithSigner> getWaitingListByEmpId(String empId) {
+        List<DocWithSigner> list = new ArrayList<>();
         String sql = """
                   SELECT d.doc_id AS id,
                          d.DOC_WRITER AS writer,
@@ -56,7 +56,7 @@ public class DocDao {
                         rs.getString("content"),
                         rs.getTimestamp("createDate").toLocalDateTime(),
                         false);
-                list.add(new DocWithWaitingSigner(doc, rs.getString("signer"), rs.getString("signername")));
+                list.add(new DocWithSigner(doc, rs.getString("signer"), rs.getString("signername")));
             }
             return list;
         } catch (SQLException e) {

@@ -53,21 +53,75 @@ caption {
 	caption-side: top;
 	margin-bottom: 30px;
 } /* 캡션과 테이블 간격 설정 */
+input[readonly] {
+	border: none;
+	text-align: center;
+} /* 테두리 제거 */
+select[disabled] {
+	border: none; /* 기본 테두리 제거 */
+	outline: none; /* 포커스 테두리 제거 */
+	background-color: transparent; /* 배경색 제거 */
+	-webkit-appearance: none; /* 웹킷 브라우저 (Chrome, Safari 등) 기본 스타일 제거 */
+	-moz-appearance: none; /* Firefox 브라우저 기본 스타일 제거 */
+	appearance: none; /* 기타 브라우저 기본 스타일 제거 */
+	color: black;
+	text-align: center;
+}
+
+button#editButton {
+	background-color: green;
+	color: white;
+}
+
+button#cancelButton {
+	background-color: red;
+	color: white;
+}
 </style>
 <script>
-	$(document)
-			.ready(
-					function() {
-						$("#editButton")
-								.click(
-										function() {
-											$(".editable").removeAttr(
-													"readonly").removeAttr(
-													"disabled").css("border",
-													"1px solid #000");
-										});
+	$(document).ready(
+			function() {
+				var originalValues = {};
+
+				// 원래 값을 저장하는 함수
+				function saveOriginalValues() {
+					$(".editable").each(function() {
+						var inputName = $(this).attr("name");
+						originalValues[inputName] = $(this).val();
 					});
+				}
+
+				// 수정 버튼 클릭 시
+				$("#editButton").click(
+						function() {
+							if ($(this).text() === "수정") {
+								saveOriginalValues();
+								$(".editable").removeAttr("readonly")
+										.removeAttr("disabled").css("border",
+												"1px solid #000");
+								$(this).text("취소").css("background-color",
+										"red").attr("id", "cancelButton");
+							} else if ($(this).text() === "취소") {
+								$(".editable").each(
+										function() {
+											var inputName = $(this)
+													.attr("name");
+											$(this).val(
+													originalValues[inputName]);
+											$(this)
+													.attr("readonly",
+															"readonly").attr(
+															"disabled",
+															"disabled").css(
+															"border", "none");
+										});
+								$(this).text("수정").css("background-color",
+										"green").attr("id", "editButton");
+							}
+						});
+			});
 </script>
+
 </head>
 <body>
 	<div class="main-container">
@@ -81,8 +135,8 @@ caption {
 					</caption>
 					<tr>
 						<td rowspan="4" width="200"><img
-							src="${pageContext.request.contextPath}/${details.emp.imgPath}" alt="${details.emp.ename}의 사진"
-							width="200" height="200"></td>
+							src="${pageContext.request.contextPath}/${details.emp.imgPath}"
+							alt="${details.emp.ename}의 사진" width="200" height="200"></td>
 						<th>이름</th>
 						<th>성별</th>
 						<th>이메일</th>
@@ -91,10 +145,8 @@ caption {
 					<tr>
 						<td>${details.emp.ename}</td>
 						<td><select name="gender" disabled>
-								<option value="남"
-									${details.emp.gender == '남' ? 'selected' : ''}>남성</option>
-								<option value="여"
-									${details.emp.gender == '여' ? 'selected' : ''}>여성</option>
+								<option value="남" ${details.emp.gender == '남' ? 'selected' : ''}>남성</option>
+								<option value="여" ${details.emp.gender == '여' ? 'selected' : ''}>여성</option>
 						</select></td>
 						<td><input type="text" name="email" class="editable"
 							value="${details.emp.email}" readonly></td>
@@ -198,8 +250,12 @@ caption {
 					</tr>
 				</table>
 
-				<button type="button" id="editButton">수정</button>
-				<button type="submit">저장</button>
+				<c:if test="${details.emp.empId == sessionScope.id}">
+					<button type="button" id="editButton">수정</button>
+					<button type="submit">저장</button>
+				</c:if>
+
+				
 			</form>
 		</div>
 	</div>

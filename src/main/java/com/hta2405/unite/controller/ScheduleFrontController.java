@@ -6,7 +6,7 @@ import com.hta2405.unite.action.schedule.ScheduleDeleteAction;
 import com.hta2405.unite.action.schedule.ScheduleDragUpdateAction;
 import com.hta2405.unite.action.schedule.ScheduleListAction;
 import com.hta2405.unite.action.schedule.ScheduleShareAction;
-import com.hta2405.unite.action.schedule.ScheduleShareEmployAction;
+import com.hta2405.unite.action.schedule.ScheduleShareAddAction;
 import com.hta2405.unite.action.schedule.ScheduleUpdateAction;
 
 import jakarta.servlet.ServletException;
@@ -26,8 +26,7 @@ public class ScheduleFrontController extends AbstractFrontController {
         
         // 공유 일정 등록
         actionMap.put("/scheduleShare", new ScheduleShareAction()); 
-        actionMap.put("/ScheduleShareEmploy", new ScheduleShareEmployAction()); 
-        
+        actionMap.put("/ScheduleShareAdd", new ScheduleShareAddAction()); 
     }
 }
 

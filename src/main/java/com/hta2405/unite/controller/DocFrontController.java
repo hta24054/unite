@@ -10,12 +10,12 @@ public class DocFrontController extends AbstractFrontController {
     public void init() throws ServletException {
         actionMap.put("/waiting", new DocWaitingListAction());
         actionMap.put("/general", new DocGeneralWriteAction());
-        actionMap.put("/general_process", new DocGeneralWriteProcessAction());
+        actionMap.put("/general_write", new DocGeneralWriteProcessAction());
         actionMap.put("/vacation", new DocVacationWriteAction());
         actionMap.put("/trip", new DocTripWriteAction());
-        actionMap.put("/trip_process", new DocTripWriteProcessAction());
+        actionMap.put("/trip_write", new DocTripWriteProcessAction());
         actionMap.put("/buy", new DocBuyWriteAction());
-        actionMap.put("/buy_process", new DocBuyWriteProcessAction());
+        actionMap.put("/buy_write", new DocBuyWriteProcessAction());
         actionMap.put("/dept", new DocDeptListAction());
         actionMap.put("/my-approved", new DocMyApprovedListAction());
         actionMap.put("/read", new DocReadAction());

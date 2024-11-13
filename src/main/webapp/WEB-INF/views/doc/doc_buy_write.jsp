@@ -49,7 +49,7 @@
     </style>
 </head>
 <body>
-<form id="doc_form" action="${pageContext.request.contextPath}/doc/buy_process" method="POST">
+<form id="doc_form" action="${pageContext.request.contextPath}/doc/buy_write" method="POST">
     <div class="container mt-4">
         <!-- 기안용지 제목 -->
         <div class="text-center mb-4">

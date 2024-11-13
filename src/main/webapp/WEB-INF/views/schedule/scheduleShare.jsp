@@ -213,7 +213,7 @@
                 }
 
                 $.ajax({
-                    url: '${pageContext.request.contextPath}/schedule/ScheduleShareAdd',
+                    url: '${pageContext.request.contextPath}/schedule/scheduleShareAdd',
                     method: 'post',
                     dataType: 'json',
                     data: shareData,
@@ -262,7 +262,6 @@
             }
             
             function validateForm() {
-                
             	const $scheduleName = $("#schedule_name");
         		const $start = $("#startAt"); 
         		const $end = $("#endAt");

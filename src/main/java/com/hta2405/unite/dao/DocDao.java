@@ -194,6 +194,7 @@ public class DocDao {
             if (result == 1) {
                 conn.commit();
                 conn.setAutoCommit(true);
+                return 1;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

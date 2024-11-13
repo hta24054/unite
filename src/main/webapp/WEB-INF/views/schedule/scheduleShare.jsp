@@ -216,18 +216,13 @@
             targetEmp.empty(); // 이전 선택 직원들을 제거
 
             $(selectedEmpNames).each(function(index, name) {
-                const empEl = $('<a href="javascript:void(0);" class="selected_emp mr-2">' + name + '<span> [x]</span></a>');
+                const empEl = $('<span class="selected_emp mr-2">' + name + '</span>');
                 targetEmp.append(empEl);
             });
 
             alert('선택된 직원 : ' + selectedEmpNames.join(', '));
             $('#scheduleShareModal').modal('hide');
         }
-        
-        $(document).on('click', '.selected_emp', function(e) {
-            e.preventDefault();
-            $(this).remove();
-        });
         
         $('#scheduleShareModal').on('hidden.bs.modal', function() {
             $('input[name="selectedEmp"]').prop('checked', false); 

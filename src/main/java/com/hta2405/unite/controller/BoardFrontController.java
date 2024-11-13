@@ -23,9 +23,7 @@ public class BoardFrontController extends AbstractFrontController {
         actionMap.put("/home", new BoardHomeAction());//게시판 홈
         actionMap.put("/homeProcess", new BoardHomeProcessAction());//게시판 홈
         actionMap.put("/boardWrite", new PostWriteAction());
-        for(int num=1;num<=30;num++) {//게시판id 개수만큼 반복(임의)
-            actionMap.put("/list"+num, new BoardListAction(num));
-        }
+        actionMap.put("/boardList", new BoardListAction());
         
         actionMap.put("/post/postWrite", new PostWriteAction());//게시글 쓰기
         actionMap.put("/post/add", new PostAddAction());//게시글 추가 액션

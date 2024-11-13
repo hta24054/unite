@@ -9,8 +9,12 @@
 <style>
   .main {
     font-family: Arial, sans-serif;
-    margin-top: -3em;
+    padding: 56px 0px 0px;
     display: flex;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 100%;
   }
   
   .header{
@@ -22,19 +26,19 @@
   
   /* 왼쪽 아코디언 메뉴 */
   .sidebar {
-    width: 200px;
+    width: 250px;
     border-right: 1px solid #ccc;
     height: 100vh;
     position: fixed;
   }
   
   .sidebar .title{
-  	padding: 25px 20px 5px;
+  	padding: 40px 25px 20px;
   }
   
   .sidebar h2 {
     font-size: 2rem;
-    margin-bottom: 10px;
+    margin: 0px;
   }
 
   .accordion button {
@@ -73,9 +77,9 @@
 
   /* 오른쪽 게시판 영역 */
   .content {
-    margin-left: 200px;
+    margin-left: 250px;
     width: calc(100% - 200px);
-    height: 100vh;
+    height: 100%;
     overflow-y: auto;
   }
 
@@ -103,6 +107,20 @@
   	font-weight:normal;
   	padding: 20px;
   	border-bottom: 1px solid #ccc;
+  }
+  #boardHome{
+  	cursor: pointer;
+  }
+  .boardWrite{
+	  padding: 5px 35px 20px;
+	  height: 80px;
+  }
+  .writeBtn{
+      width: 100%;
+      height: 100%;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      background: white;
   }
   
   
@@ -163,16 +181,22 @@
       color: #666;
       margin: 0px 3px 0px 10px;
   }
+  
+  
+	
 </style>
 <script src="${pageContext.request.contextPath}/js/jquery-3.7.1.js"></script>
 <script src="${pageContext.request.contextPath}/js/boardHome.js"></script>
+
 </head>
 <body>
 <jsp:include page="../common/header.jsp"/>
 <div class="main">
 	<div class="sidebar">
 	  <section class="title">
-	    <h2>게시판</h2>
+	    <h2>
+	    	<a id="boardHome">게시판</a>
+	    </h2>
 	  </section>
 	  
 	  <section class="boardWrite">
@@ -210,13 +234,11 @@
 	  </div>
 	</div>
 </div>
-
-
 <script>
-  function togglePanel(panelId) {
-    const panel = document.getElementById(panelId);
-    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-  }
+	function togglePanel(panelId) {
+	  const panel = document.getElementById(panelId);
+	  panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+	}
 </script>
 
 

@@ -6,8 +6,16 @@ $(function() {
         loadBoardHome(); // 게시판 홈 데이터를 로드
     }
     
+    $('#boardHome').click(function(){
+		location.href = "home";
+	})
+    
     // 왼쪽 메뉴 클릭 이벤트 - 리스트형 레이아웃으로 게시글 표시
     $('.boardName2').click(function(e) {
+		
+		//html 초기화
+		$('.boardContent').html('');
+		
         e.preventDefault();
         boardName2 = $(this).text(); // 클릭된 메뉴 항목의 URL
 
@@ -16,10 +24,15 @@ $(function() {
 
  	// 왼쪽 글쓰기 클릭 이벤트
     $('.writeBtn').click(function(e) {
+		
+		//html 초기화
+		$('.boardContent').html('');
+		
         e.preventDefault();
         
         loardBoardWrite("boardWrite"); // 글쓰기 메서드 호출
     });
+    
  	/* 
     window.addEventListener('popstate', function(event) {
         if (event.state && event.state.page) {
@@ -44,21 +57,32 @@ $(function() {
 });
 
 function loardBoardWrite(boardId){
+		    
 	console.log(boardId)
 	$.ajax({
-		/*data:{"boardId":boardId},*/
-        url:  'post/postWrite',
-        type: 'GET',
-        success: function(response) {
-        	$(".boardTitle").text('글쓰기');
-            $('.boardContent').html(response).css('padding','10px 20px');
-        },
-        error: function() {
-            $('.boardContent').html('<p>글쓰기 폼을 불러오는 데 실패했습니다.</p>');
-        }
-    });
-}
+	    url: 'post/postWrite',
+	    type: 'GET'
+	})
+	.done(function(response) {
+	    $(".boardTitle").text('글쓰기');
+	    $('.boardContent').html(response).css('padding', '20px 60px');
+	    // Summernote 스크립트를 동적으로 로드하고 초기화
+	    $.getScript('https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js', function() {
+	        $('.summernote').summernote({
+	            height: 500,
+	            minHeight: 500,
+	            maxHeight: null,
+	            focus: true
+	        });
+	    });
+	    
+	})
+	.fail(function() {
+	    $('.boardContent').html('<p>글쓰기 폼을 불러오는 데 실패했습니다.</p>');
+	});
 
+
+}
 
 // 게시판 홈(피드형) 데이터 로드 함수
 function loadBoardHome() {
@@ -68,7 +92,7 @@ function loadBoardHome() {
         method: 'GET',
         dataType: 'json',
         success: function(data) {
-        	let html = "";
+        	var html = "";
         	console.log(data)
             if(data=={}||data==null){
             	html += '등록된 게시글이 없습니다.';
@@ -97,7 +121,7 @@ function loadBoardHome() {
     });
 }
 
-//board와 post를 가져와 html 출력
+//board와 post를 가져와 boardHome html 출력
 function AddHtmlBoardAndPost(board, post) {
 	
 	let html = `<div class="board-container">
@@ -130,30 +154,22 @@ function AddHtmlBoardAndPost(board, post) {
 
 // 특정 게시판 리스트(리스트형) 데이터 로드 함수
 function loadBoardList(boardName2) {//매개변수로 boardName2를 가져옴
+	console.log('boardName2 = ',boardName2)
+	
     $.ajax({
     	data: {"boardName2":boardName2},
-        url: 'boardListProcess',
+        url: 'boardList',
         method: 'GET',
-        dataType: 'json',
-        success: function(data) {
-        	$(".boardTitle").text(boardName2);
-            let html = '<ul class="board-list">';
-            data.forEach(post => {
-                html += `<li>
-                            <h3>${post.title}</h3>
-                            <p>작성자: ${post.author} | 날짜: ${post.date} | 조회수: ${post.views}</p>
-                         </li>`;
-            });
-            html += '</ul>';
-            $('.content').append(html); // 리스트형 레이아웃에 게시글 표시
-            
+        success: function(response) {
+			$(".boardTitle").text(boardName2);
+	    	$('.boardContent').html(response);
         },
         error: function() {
             alert('게시판 데이터를 불러오는 데 실패했습니다.');
             let html = '<ul class="board-list">';
             html += '등록된 게시글이 없습니다.';
             html += '</ul>';
-            $('.content').append(html); // 리스트형 레이아웃에 게시글 표시
+            $('.boardContent').append(html); // 리스트형 레이아웃에 게시글 표시
             
             $(".boardTitle").text(boardName2);//임시
         }

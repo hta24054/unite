@@ -5,6 +5,7 @@
 <head>
 <script src="${pageContext.request.contextPath}/js/writeform.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.css" rel="stylesheet">
 <style>
 	h1{font-size: 1.5rem; text-align: center; color:#1a92b9}
 	.container{width:60%}
@@ -16,7 +17,9 @@
 		display: flex;
 	    justify-content: center;
 	    align-items: center;
-	    height: 40px;
+	    height: 60px;
+	    width: 85%;
+	    border-radius: 10px;
 	}
 	
 	.fileLabel{
@@ -25,10 +28,13 @@
 	}
 	
 	.file-list {
+	    display: none;
 	    height: 130px;
 	    overflow: auto;
 	    border: 1px solid #989898;
 	    padding: 10px;
+	    margin: 0px 0px 1rem 15%;
+	    border-radius: 10px;
 	}
 	.file-list .filebox p {
 	    font-size: 14px;
@@ -38,6 +44,43 @@
 	.file-list .filebox .delete i{
 	    color: #ff5353;
 	    margin-left: 5px;
+	}
+	.form-group{
+		margin-bottom: 1rem;
+	    display: flex;
+	    align-items: center;
+	    justify-content: space-between;
+	}
+	.boardName{
+		word-wrap: normal;
+	    padding: 5px 15vh 5px 3px;
+	    margin: 0px 5px;
+	    font-size: 18px;
+	    width: 300px;
+	    border: 1px solid #ccc;
+	}
+	.form-control{
+		width: 85%;
+	}
+	.form-group-btn{
+		display: flex;
+	    justify-content: center;
+	    height: 70px;
+	    align-items: center;
+	    margin-top: 10px;
+	}
+	.registerBtn{
+		width: 100px;
+	    background: white;
+	    color: #7f7f7f;
+	    border: 1.5px solid #9d9c9c;
+	    font-weight: bolder;
+	}
+	.labelName{
+		margin: 0px;
+	    font-size: 18px;
+	    font-weight: 600;
+	    padding: 0px 0px 0px 10px;
 	}
 </style>
 <script>
@@ -51,6 +94,11 @@ function addFile(obj){
     var remainFileCnt = maxFileCnt - attFileCnt;    // 추가로 첨부가능한 개수
     var curFileCnt = obj.files.length;  // 현재 선택된 첨부파일 개수
 
+    // 첨부파일을 넣을시 list를 보이게 함
+    if(curFileCnt>0){
+    	$('.file-list').css('display','block');
+    }
+    
     // 첨부파일 개수 확인
     if (curFileCnt > remainFileCnt) {
         alert("첨부파일은 최대 " + maxFileCnt + "개 까지 첨부 가능합니다.");
@@ -106,7 +154,19 @@ function validation(obj){
 function deleteFile(num) {
     document.querySelector("#file" + num).remove();
     filesArr[num].is_delete = true;
+    
+    var j = 0;
+    for (var i = 0; i < filesArr.length; i++) {
+    	if (filesArr[i] && !filesArr[i].is_delete) {
+    	    j++;
+    	}
+    }
+    
+    if(j==0){
+    	$('.file-list').css('display','none');
+    }
 }
+
 /* 폼 전송 */
 function submitForm() {
 	console.log(filesArr.length)
@@ -143,20 +203,45 @@ function submitForm() {
     });
 }
 
+$(function(){
+	$('#boardName1').change(function() {
+		let boardName1Value = $(this).val();  // 첫 번째 select의 선택 값
+		let $boardName2 = $('#boardName2'); // 두 번째 select
+
+	    // 두 번째 select 초기화
+	    $boardName2.empty();
+
+		if (boardName1Value === '전사게시판') {
+			var companyBulletinBoards = ['공지사항', '주간식단표', 'FAQ'];
+			$.each(companyBulletinBoards, function(index, companyBulletinBoard) {
+				$boardName2.append('<option value="' + companyBulletinBoard.toLowerCase() + '">' + companyBulletinBoard + '</option>');
+			});
+		}else if (boardName1Value === '일반게시판') {
+			$boardName2.append('<option value="' + '일반게시판'.toLowerCase() + '">' + '일반게시판' + '</option>');
+		}else if (boardName1Value === '부서게시판') {
+			var DepartmentBoards = ['솔루션영업팀'];
+			$.each(DepartmentBoards, function(index, DepartmentBoard) {
+				$boardName2.append('<option value="' + DepartmentBoard.toLowerCase() + '">' + DepartmentBoard + '</option>');
+			});
+		}
+	});
+	
+	
+});
 </script>
 </head>
 <body>
  	<form action="../board/post/add" method="post" enctype="multipart/form-data"
       name="boardform" onsubmit="event.preventDefault(); submitForm();">
  		<div class="form-group">
- 			<label for="target_board">
+ 			<label for="target_board" class="labelName">
  				To.
- 				<select id="boardName1" name="boardName1">
+ 				<select id="boardName1" name="boardName1" class="boardName">
  					<option value="전사게시판">전사게시판</option>
  					<option value="일반게시판">일반게시판</option>
  					<option value="부서게시판">부서게시판</option>
  				</select>
- 				<select id="boardName2" name="boardName2">
+ 				<select id="boardName2" name="boardName2" class="boardName">
  					<option value="공지사항">공지사항</option>
  					<option value="주간식단표">주간식단표</option>
  					<option value="FAQ">FAQ</option>
@@ -164,12 +249,12 @@ function submitForm() {
  			</label>
  		</div>
  		<div class="form-group">
- 			<label for="board_subject">제목</label>
+ 			<label for="board_subject" class="labelName">제목</label>
  			<input name="board_subject" id="board_subject" type="text" maxlength="100"
  					class="form-control" placeholder="Enter board_subject">
  		</div>
  		<div class="form-group">
- 			<label for="board_attachFile">파일첨부</label>
+ 			<label for="board_attachFile" class="labelName">파일첨부</label>
  			<div class="attachFlie">
  				<img src="${pageContext.request.contextPath}/image/attach.png" alt="파일첨부">
  				이 곳에 파일을 드래그 하세요. 또는 
@@ -179,17 +264,12 @@ function submitForm() {
 	 			</label>
 	 			<span id="filevalue"></span>
  			</div>
-        	<div class="file-list"></div>
  		</div>
- 		<div class="form-group">
- 			<label for="board_content">내용</label>
- 			<textarea name="board_content" id="board_content"
- 					rows="10" class="form-control"></textarea>
- 		</div>
- 		<div class="form-group">
- 			<button type="submit" class="btn btn-primary">등록</button>
+ 		<div class="file-list"></div>
+		<textarea class="summernote form-control" id="board_content" name="content" required></textarea>
+		<div class="form-group-btn">
+	 		<button type="submit" class="btn registerBtn">등록</button>
  		</div>
  	</form>
-  
 </body>
 </html>

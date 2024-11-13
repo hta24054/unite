@@ -197,6 +197,10 @@
             $('#btnShareRegister').on('click', function(e) {
                 e.preventDefault();
                 
+                if (!validateForm()) {
+                    return;
+                }
+                
                 const shareData = {
                     emp_id: $('#emp_id').val(),
                     schedule_name: $('#schedule_name').val(),
@@ -255,6 +259,44 @@
                     description: eventData.description,
                     allDay: eventData.allDay === 1
                 };
+            }
+            
+            function validateForm() {
+                
+            	const $scheduleName = $("#schedule_name");
+        		const $start = $("#startAt"); 
+        		const $end = $("#endAt");
+        		const $shareEmp = $('#share_emp');
+
+                if ($scheduleName.val().trim() === "") {
+                    alert("일정명을 입력하세요");
+                    $scheduleName.focus();
+                    return false;
+                }
+
+                if ($start.val().trim() === "") {
+                    alert("시작 날짜/시간을 선택하세요");
+                    $start.focus();
+                    return false;
+                }
+
+                if (new Date($start.val()) > new Date($end.val())) {
+                    alert("끝나는 날짜/시간이 시작 날짜/시간보다 이전입니다. 다시 확인해 주세요.");
+                    return false;
+                }
+
+                if ($end.val().trim() === "") {
+                    alert("종료 날짜/시간을 선택하세요");
+                    $end.focus();
+                    return false;
+                }
+                
+                if (!$shareEmp.val()) {
+                    alert('공유자를 선택해주세요.');
+                    return false;
+                }
+             
+                return true;
             }
             
             $('#scheduleShareModal').on('hidden.bs.modal', function() {

@@ -213,37 +213,32 @@
                     method: 'post',
                     dataType: 'json',
                     data: shareData,
-                    success: function(response) {
-                    	console.log("서버 응답:", response); 
+                    success: function(data) {
+                    	console.log("서버 응답:", data); 
                     	
-                    	addEventToCalendar(shareData);
-                    	
-                    	/*
-                        if (response > 0) {
-                            alert('공유 일정이 등록되었습니다.');
-                              
-                            
-                            const events = []; 
-                            if (data != null && data.length > 0) {
-            			        for (let i = 0; i < data.length; i++) {
-            						const isAllDay = data[i].schedule_allDay === 1;
-            						events.push({
-            			                title: data[i].schedule_name, 
-            			                start: data[i].schedule_start, 
-            			                end: data[i].schedule_end,
-            			                backgroundColor: data[i].schedule_color, 
-            			                description: data[i].schedule_content,
-            			                allDay: isAllDay 
-            			            });
-            			        }
-            			    }
-                            
-                            $('#calendar').fullCalendar('unselect');
-                            $('#calendar').fullCalendar('render');
-                           
-                        } else {
-                            alert('공유 일정 등록 실패');
-                        }*/
+                    	alert('공유 일정이 등록되었습니다.');
+                        addEventToCalendar(shareData);  
+                        
+                        const events = []; 
+                        if (data != null && data.length > 0) {
+        			        for (let i = 0; i < data.length; i++) {
+        						const isAllDay = data[i].schedule_allDay === 1;
+        						events.push({
+        			                title: data[i].schedule_name, 
+        			                start: data[i].schedule_start, 
+        			                end: data[i].schedule_end,
+        			                backgroundColor: data[i].schedule_color, 
+        			                description: data[i].schedule_content,
+        			                allDay: isAllDay 
+        			            });
+        			        }
+        			    }
+                        
+                        events.forEach(function(event) {
+                            $('#calendar').fullCalendar('renderEvent', event, true);
+                        });
+
+                        window.location.href = '${pageContext.request.contextPath}/schedule/calender';
                     },
                     error: function() {
                         alert('공유 일정 등록 오류');
@@ -260,17 +255,11 @@
                     description: eventData.description,
                     allDay: eventData.allDay === 1
                 };
-
-                // fullCalendar에 새 일정 추가
-                $('#calendar').fullCalendar('renderEvent', event, true); // 'true'는 일정이 저장되었음을 의미
             }
-            
             
             $('#scheduleShareModal').on('hidden.bs.modal', function() {
                 $('input[name="selectedEmp"]').prop('checked', false); 
             });
-
-            
         });
         
         function insertEmp() {

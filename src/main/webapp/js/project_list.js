@@ -88,4 +88,3 @@ function generatePagination(data){
 	$('.pagination').empty().append(output);
 }
 
-

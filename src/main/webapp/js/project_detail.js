@@ -116,64 +116,69 @@ $(document).ready(function() {
 	});
 	
 	$("#writeForm").submit(function(event) {
-	    event.preventDefault(); // 폼 기본 제출 방지
-	
-	    const title = $("#postTitle").val();
-	    const content = $("#postContent").val();
-	
-	    console.log("Title:", title); // 값 확인
-	    console.log("Content:", content); // 값 확인
-	
-	    const data = {
-	        title: title,
-	        content: content,
-	    };
-	
-	    $.ajax({
-	        url: contextPath + "/projectb/write", // 서버 경로
-	        type: "POST", // HTTP 메서드
-	        data: data, // 폼 데이터 전송
-	        success: function(response) {
-	            console.log("Response from server:", response);
-	
-	            if (response.success) {
-	                updatePostList(response.posts); // 새로 고친 게시물 리스트 업데이트
-	                $("#writeModal").modal("hide"); // 모달 창 닫기
-	                $(".modal-backdrop").remove(); // 모달 배경 흐림 제거
-	            } else {
-	                alert("저장 실패. 다시 시도해 주세요.");
-	            }
-	        },
-	        error: function(xhr, status, error) {
-	            console.error("AJAX 오류 발생:", status, error);
-	            console.error("서버 응답:", xhr.responseText);
-	            alert("오류가 발생했습니다. 다시 시도해 주세요.");
-	        }
-	    });
-	});
-	
-	function updatePostList(posts) {
-	    const postListContainer = $("#postTable tbody");
-	    
-	    // 기존 목록 지우기
-	    postListContainer.empty();
-	
-	    if (Array.isArray(posts) && posts.length > 0) {  // posts가 배열인지 확인
-	        posts.forEach(post => {
-	            const postRow = `
-	                <tr>
-					    <td><a href="${contextPath}/projectb/membertask?memberId=${post.memberId}">${post.memberName}</a></td>
-					    <td>${post.projectTitle}</td> <!-- 기존 taskTitle -> projectTitle로 수정 -->
-					    <td>${post.projectUpdateDate}</td> <!-- 기존 taskUpdateDate -> projectContent로 수정 -->
-					</tr>
-	
-	            `;
-	            postListContainer.append(postRow); // 새로운 글을 테이블에 추가
-	        });
-	    } else {
-	        postListContainer.append("<tr><td colspan='3'>게시글이 없습니다.</td></tr>");
-	    }
-	}
+    event.preventDefault(); // 폼 기본 제출 방지
+
+    const title = $("#postTitle").val();
+    const content = $("#postContent").val();
+    const file = $("#postFile")[0].files[0]; // 파일 가져오기 (수정된 부분)
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("content", content);
+    if (file) {
+        formData.append("file", file);
+    }
+
+    $.ajax({
+        url: contextPath + "/projectb/write", // 서버 경로
+        type: "POST", // HTTP 메서드
+        data: formData, // FormData 객체로 전송
+        contentType: false, // jQuery가 자동으로 Content-Type을 설정하지 않도록 설정
+        processData: false, // 데이터를 쿼리 문자열로 변환하지 않도록 설정
+        success: function(response) {
+            console.log("Response from server:", response);
+
+            if (response.success) {
+                updatePostList(response.posts); // 새로 고친 게시물 리스트 업데이트
+                $("#writeModal").modal("hide"); // 모달 창 닫기
+                $(".modal-backdrop").remove(); // 모달 배경 흐림 제거
+                window.location.reload();
+            } else {
+                alert("저장 실패. 다시 시도해 주세요.");
+            }
+            
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX 오류 발생:", status, error);
+            console.error("서버 응답:", xhr.responseText);
+            alert("오류가 발생했습니다. 다시 시도해 주세요.");
+        }
+    });
+});
+
+// 게시물 리스트 업데이트
+function updatePostList(posts) {
+    const postListContainer = $("#postTable tbody");
+    
+    // 기존 목록 지우기
+    postListContainer.empty();
+
+    if (Array.isArray(posts) && posts.length > 0) {  // posts가 배열인지 확인
+        posts.forEach(post => {
+            const postRow = `
+                <tr>
+                    <td><a href="${contextPath}/projectb/membertask?memberId=${post.memberId}">${post.memberName}</a></td>
+                    <td>${post.projectTitle}</td> <!-- 기존 taskTitle -> projectTitle로 수정 -->
+                    <td>${post.projectUpdateDate}</td> <!-- 기존 taskUpdateDate -> projectContent로 수정 -->
+                </tr>
+            `;
+            postListContainer.append(postRow); // 새로운 글을 테이블에 추가
+        });
+    } else {
+        postListContainer.append("<tr><td colspan='3'>게시글이 없습니다.</td></tr>");
+    }
+}
+
 	
 	/*function fetchNotifications() {
 	    $.ajax({

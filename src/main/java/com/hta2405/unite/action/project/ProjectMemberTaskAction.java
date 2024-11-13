@@ -6,7 +6,6 @@ import java.util.List;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ProjectbDao;
-import com.hta2405.unite.dto.ProjectDetail;
 import com.hta2405.unite.dto.ProjectTask;
 
 import jakarta.servlet.ServletException;

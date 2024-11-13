@@ -171,6 +171,85 @@ public class ScheduleDAO {
 		return result;
 	}//deleteSchedule end
 	
+	public int insertScheduleShare(Schedule s, ScheduleShare share) {
+	    int result = 0;
+	    int scheduleId = 0;
+
+	    String sql = """
+	        INSERT INTO schedule
+	        (schedule_id, emp_id, schedule_name, schedule_content, schedule_start, schedule_end, schedule_color, schedule_allDay)
+	        VALUES (SEQ_schedule.NEXTVAL, ?, ?, ?, ?, ?, ?, ?)
+	    """;
+
+	    try (Connection con = ds.getConnection()) {
+	        // 트랜잭션 시작 - 자동 커밋 해제
+	        con.setAutoCommit(false);
+
+	        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+
+	            pstmt.setString(1, s.getEmpId());
+	            pstmt.setString(2, s.getScheduleName());
+	            pstmt.setString(3, s.getScheduleContent());
+	            pstmt.setTimestamp(4, Timestamp.valueOf(s.getScheduleStart()));
+	            pstmt.setTimestamp(5, Timestamp.valueOf(s.getScheduleEnd()));
+	            pstmt.setString(6, s.getScheduleColor());
+	            pstmt.setInt(7, s.getScheduleAllDay());
+
+	            result = pstmt.executeUpdate();
+
+	            // 새로 생성된 schedule_id를 가져오기
+	            String idSql = """
+	                SELECT SEQ_schedule.CURRVAL FROM dual
+	            """;
+
+	            if (result > 0) {
+	                try (PreparedStatement idStmt = con.prepareStatement(idSql);
+	                     ResultSet rs = idStmt.executeQuery()) {
+
+	                    if (rs.next()) {
+	                        scheduleId = rs.getInt(1); // 새로 생성된 schedule_id
+	                    }
+	                }
+	            }
+
+	            // 공유자 정보 추가
+	            if (scheduleId > 0) {
+	                String shareSql = """
+	                    INSERT INTO schedule_share
+	                    (schedule_share_id, share_emp, schedule_id)
+	                    VALUES (SEQ_schedule_share.NEXTVAL, ?, ?)
+	                """;
+
+	                try (PreparedStatement pstmtShare = con.prepareStatement(shareSql)) {
+	                    pstmtShare.setString(1, share.getShareEmp());
+	                    pstmtShare.setInt(2, scheduleId); // 새로 생성된 schedule_id 사용
+
+	                    result = pstmtShare.executeUpdate(); // 일정 공유 정보 삽입
+	                    System.out.println("schedule_share 테이블에 삽입: " + share.getShareEmp() + ", schedule_id: " + scheduleId);
+	                }
+	            }
+
+	            // 모든 작업이 성공하면 커밋
+	            con.commit();
+	        } catch (Exception e) {
+	            // 예외 발생 시 롤백
+	            con.rollback();
+	            e.printStackTrace();
+	            System.out.println("insertScheduleShare() 에러 : " + e);
+	            result = 0;
+	        } finally {
+	            // 자동 커밋을 다시 활성화
+	            con.setAutoCommit(true);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return result;
+	}
+
+	
+	/*
 	// 공유 일정 등록
 	public int insertScheduleShare(Schedule s, ScheduleShare share) {
 	    int result = 0;
@@ -232,5 +311,5 @@ public class ScheduleDAO {
 	    }
 
 	    return result;
-	}
+	}*/
 }

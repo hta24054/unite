@@ -5,6 +5,9 @@
 <head>
 	<jsp:include page="../common/header.jsp" />
 	<title>캘린더 - 공유 일정 등록</title> 
+	<script src='https://cdn.jsdelivr.net/npm/moment@2.27.0/min/moment.min.js'></script>
+	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+	<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/moment@6.1.15/index.global.min.js'></script>
 	<script src="${pageContext.request.contextPath}/js/calendar.js"></script>
 	<style>
 		.container {
@@ -194,28 +197,44 @@
             $('#btnShareRegister').on('click', function(e) {
                 e.preventDefault();
 
-                const formData = {
-                    //schedule_id: $('#schedule_id').val(),
-                    emp_id: $('#emp_id').val(),
-                    schedule_name: $('#schedule_name').val(),
-                    allDay: $('#allDay').prop('checked') ? 1 : 0,
-                    startAt: $('#startAt').val(),
-                    endAt: $('#endAt').val(),
-                    bgColor: $('#bgColor').val(),
-                    share_emp: $('#share_emp').val(),
-                    description: $('#description').val()
-                };
-
-                // AJAX 요청 보내기
                 $.ajax({
                     url: '${pageContext.request.contextPath}/schedule/ScheduleShareAdd', // 공유 일정 저장 URL
                     method: 'POST',
-                    data: formData,
+                    data: {
+                        emp_id: $('#emp_id').val(),
+                        schedule_name: $('#schedule_name').val(),
+                        allDay: $('#allDay').prop('checked') ? 1 : 0,
+                        startAt: moment($("#startAt").val()).format('YYYY-MM-DD HH:mm'),
+            			endAt: moment($("#endAt").val()).format('YYYY-MM-DD HH:mm'), 
+                        bgColor: $('#bgColor').val(),
+                        share_emp: $('#share_emp').val(),
+                        description: $('#description').val()
+                    },
                     success: function(response) {
+                    	console.log("서버 응답:", response); // 응답 값 출력
+                    	
                         if (response > 0) {
                             alert('공유 일정이 등록되었습니다.');
-                            // 일정 등록 성공 시, 캘린더에 새 일정 추가
-                            addEventToCalendar(formData);  // 캘린더에 일정 추가하는 함수 호출
+                            addEventToCalendar(data);  // 캘린더에 일정 추가 함수 
+                            
+                            const events = []; 
+                            if (data != null && data.length > 0) {
+            			        for (let i = 0; i < data.length; i++) {
+            						const isAllDay = data[i].schedule_allDay === 1;
+            						events.push({
+            			                title: data[i].schedule_name, 
+            			                start: data[i].schedule_start, 
+            			                end: data[i].schedule_end,
+            			                backgroundColor: data[i].schedule_color, 
+            			                description: data[i].schedule_content,
+            			                allDay: isAllDay 
+            			            });
+            			        }
+            			    }
+                            
+                            $('#calendar').fullCalendar('unselect');
+                            $('#calendar').fullCalendar('render');
+                           
                         } else {
                             alert('공유 일정 등록 실패');
                         }
@@ -224,6 +243,25 @@
                         alert('공유 일정 등록 오류');
                     }
                 });
+            });
+            
+            function addEventToCalendar(eventData) {
+                const event = {
+                    title: eventData.schedule_name,
+                    start: eventData.startAt,
+                    end: eventData.endAt,
+                    backgroundColor: eventData.bgColor,
+                    description: eventData.description,
+                    allDay: eventData.allDay === 1
+                };
+
+                // fullCalendar에 새 일정 추가
+                $('#calendar').fullCalendar('renderEvent', event, true); // 'true'는 일정이 저장되었음을 의미
+            }
+            
+            
+            $('#scheduleShareModal').on('hidden.bs.modal', function() {
+                $('input[name="selectedEmp"]').prop('checked', false); 
             });
 
             
@@ -262,25 +300,6 @@
             alert('선택된 직원 : ' + selectedEmpData.map(emp => emp.name).join(', '));
             $('#scheduleShareModal').modal('hide');
         }
-        
-        function addEventToCalendar(eventData) {
-            const event = {
-                title: eventData.schedule_name,
-                start: eventData.startAt,
-                end: eventData.endAt,
-                backgroundColor: eventData.bgColor,
-                description: eventData.description,
-                allDay: eventData.allDay === 1
-            };
-
-            // fullCalendar에 새 일정 추가
-            $('#calendar').fullCalendar('renderEvent', event, true); // 'true'는 일정이 저장되었음을 의미
-        }
-        
-        
-        $('#scheduleShareModal').on('hidden.bs.modal', function() {
-            $('input[name="selectedEmp"]').prop('checked', false); 
-        });
     </script>
 </body>
 </html>

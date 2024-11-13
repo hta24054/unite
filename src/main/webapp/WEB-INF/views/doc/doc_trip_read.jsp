@@ -47,8 +47,8 @@
                     <input type="hidden" name="writer" value="${writer.empId}">
                 </tr>
                 <tr>
-                    <td class="table-secondary font-weight-bold text-center">전화번호</td>
-                    <td>${writer.tel}</td>
+                    <td class="table-secondary font-weight-bold text-center">작 성 일</td>
+                    <td>${docTrip.docCreateDate.toLocalDate()}</td>
                 </tr>
             </table>
         </div>

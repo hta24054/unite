@@ -7,7 +7,7 @@
     <jsp:include page="doc_leftbar.jsp"/>
 
     <meta charset="UTF-8">
-    <title>출장명령부</title>
+    <title>출장명령부 작성</title>
     <style>
         .header-cell {
             font-size: 36px;
@@ -53,8 +53,12 @@
                         <input type="hidden" name="writer" value="${emp.empId}">
                     </tr>
                     <tr>
-                        <td class="table-secondary font-weight-bold text-center">전화번호</td>
-                        <td>${emp.tel}</td>
+                        <td class="table-secondary font-weight-bold text-center">작 성 일</td>
+                        <td>${emp.ename}</td>
+                    </tr>
+                    <tr>
+                        <td class="table-secondary font-weight-bold text-center">작 성 일</td>
+                        <td>${today}</td>
                     </tr>
                 </table>
             </div>

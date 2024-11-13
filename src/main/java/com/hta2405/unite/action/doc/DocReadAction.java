@@ -116,7 +116,7 @@ public class DocReadAction implements Action {
         Doc doc = getDetailedDocById(docId);
 
         if (doc instanceof DocBuy docBuy) {
-            req.setAttribute("doc", docBuy);
+            req.setAttribute("docBuy", docBuy);
             return new ActionForward(false, "/WEB-INF/views/doc/doc_buy_read.jsp");
         }
 
@@ -126,7 +126,7 @@ public class DocReadAction implements Action {
         }
 
         if (doc instanceof DocVacation docVacation) {
-            req.setAttribute("doc", docVacation);
+            req.setAttribute("docVacation", docVacation);
             return new ActionForward(false, "/WEB-INF/views/doc/doc_vacation_read.jsp");
         }
         //일반 문서 페이지로 포워딩

@@ -46,8 +46,6 @@ public class PostAddAction implements Action {
 		ActionForward forward = new ActionForward();
 		HttpSession session = req.getSession();
 		
-		//int fileSize = 5 * 1024 * 1024; // 업로드할 파일의 최대 사이즈 입니다. 5MB
-		
 		// 실제 저장 경로를 지정합니다.
 		ServletContext sc = req.getServletContext();
 		String realFolder = sc.getRealPath("boardupload");

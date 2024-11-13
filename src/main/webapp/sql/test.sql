@@ -8,18 +8,49 @@ DROP TABLE emp_info CASCADE CONSTRAINTS;
 DROP TABLE emp CASCADE CONSTRAINTS;
 DROP TABLE dept CASCADE CONSTRAINTS;
 
+-- 영훈
+SELECT
+    c.constraint_name,
+    c.constraint_type,
+    col.column_name,
+    col.position,
+    t.data_type,
+    t.nullable,            -- 컬럼이 NULL을 허용하는지 여부
+    t.data_default         -- 컬럼의 기본값
+FROM
+    all_constraints c
+JOIN
+    all_cons_columns col
+    ON c.constraint_name = col.constraint_name
+JOIN
+    all_tab_columns t
+    ON col.table_name = t.table_name
+    AND col.column_name = t.column_name
+    AND col.owner = t.owner
+WHERE
+    c.table_name = 'POST'
+AND
+    c.owner = 'UNITE'
+ORDER BY
+c.constraint_name, col.position;
 
+
+ALTER TABLE POST ADD (new_post_content CLOB);
+UPDATE POST SET new_post_content = post_content;
+ALTER TABLE POST DROP COLUMN post_content;
+ALTER TABLE POST RENAME COLUMN new_post_content TO post_content;
 
 
 -- 외래키 지정
 ALTER TABLE post
   DROP CONSTRAINT FK_emp_TO_post;
 --게시판 제약조건 수정
+ALTER TABLE POST MODIFY POST_CONTENT NOT NULL;
 ALTER TABLE board MODIFY dept_id null;
-ALTER TABLE board MODIFY dept_id default null;
+ALTER TABLE board MODIFY dept_id default NULL;
 
 --컬럼 사이즈 및 타입 수정
-ALTER TABLE post MODIFY post_content clob;
+ALTER TABLE POST MODIFY post_content CLOB;
 ALTER TABLE POST MODIFY POST_WRITER VARCHAR2(15);
 
 --게시판 데이터 임시
@@ -65,6 +96,8 @@ from post left outer join (select post_id , count(*) as cnt
 join board
 	on board.board_id = post.board_id
 order by post_re_ref desc, post_re_seq asc;
+
+--영훈 끝
 
 
 update project_member set member_progress_rate = 60 where member_id = 'e002';

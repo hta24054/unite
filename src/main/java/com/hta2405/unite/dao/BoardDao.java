@@ -162,6 +162,93 @@ public class BoardDao {
 		}
 		return 0;
 	}
+
+	//글의 갯수 구하기
+	public int getListCountByBoardId(Long boardId) {
+		String sql = """
+				select count(*) from post
+				where board_id = ?
+				""";
+		int x=0;
+		try (	Connection con = ds.getConnection();
+				PreparedStatement pstmt = con.prepareStatement(sql);){
+			pstmt.setLong(1, boardId);
+			
+			try (ResultSet rs = pstmt.executeQuery()){
+				if(rs.next()) {
+					x = rs.getInt(1);
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getListCountByBoardId() 에러: "+e);
+		}
+		return x;
+	}
+	
+	
+	public List<Post> getPostListByBoardId(int page, int limit, Long boardId) {
+		
+		//page : 페이지
+		//limit : 페이지 당 목록의 수
+		//board_re_ref desc, board_re_seq asc에 의해 정렬한 것을
+		//조건절에 맞는 rnum의 범위 만큼 가져오는 쿼리문입니다.
+		
+		String post_list_sql ="""
+				select *
+				from ( select rownum rnum, j.*
+						from (
+								select post.*, nvl(cnt,0) as cnt
+								from post left outer join (select post_id, count(*) cnt
+															from post_comment
+															group by post_id) pc
+								on post.post_id = pc.post_id
+								where board_id = ?
+								order by post_re_ref desc, post_re_seq asc
+						) j
+						where rownum <= ? 
+				)
+				where rnum>=? and rnum<=?
+				""";
+		
+		List<Post> list = new ArrayList<Post>();
+										//한 페이지당 10개씩 목록인 경우 1페이지, 2페이지, 3페이지...
+		int startrow = (page - 1) * limit + 1; //읽기 시작할 row 번호(1		11		21...
+		int endrow = startrow + limit - 1; 	   //읽을 마지막 row 번호(10	20		30...
+		
+		try (	Connection con = ds.getConnection();
+				PreparedStatement pstmt = con.prepareStatement(post_list_sql);){
+			pstmt.setLong(1, boardId);
+			pstmt.setInt(2, endrow);
+			pstmt.setInt(3, startrow);
+			pstmt.setInt(4, endrow);
+			
+			try (ResultSet rs= pstmt.executeQuery()){
+				//DB에서 가져온 데이터를 BoardBean에 담습니다.
+				while(rs.next()) {
+					Post post = new Post();
+					post.setBoardId(rs.getLong("board_id"));
+					post.setPostId(rs.getLong("post_id"));
+					post.setPostWriter(rs.getString("post_writer"));
+					post.setPostSubject(rs.getString("post_subject"));
+					post.setPostContent(rs.getString("post_content"));
+					post.setPostDate(rs.getTimestamp("post_date").toLocalDateTime());
+					post.setPostUpdateDate(rs.getTimestamp("post_update_date").toLocalDateTime());
+					post.setPostReRef(rs.getLong("post_re_ref"));
+					post.setPostReLev(rs.getLong("post_re_lev"));
+					post.setPostReSeq(rs.getLong("post_re_seq"));
+					post.setPostView(rs.getLong("post_view"));
+					post.setPostCommentCnt(rs.getLong("cnt"));
+					list.add(post);//값을 담은 객체를 리스트에 저장합니다.
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getPostListByBoardId() 에러:"+ e);
+		}
+		
+		return list;
+	}
 	
 	
 }

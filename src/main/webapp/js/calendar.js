@@ -4,10 +4,17 @@ $(document).ready(function(){
 	let isAllDayChk, startDate, endDate;
 	let currentDate;
 	
+	// 개인 일정, 공유 일정 모두 불러오기
+	function fetchAllData() {
+	    events = []; 
+	    fetchListData(); 
+	    fetchSharedListData(); 
+	}
+	
 	// 일정 리스트 불러오기
 	function fetchListData(){
 		$.ajax({
-	        url: "ScheduleList",
+	        url: "scheduleList",
 	        type: "get",
 	        dataType: "json",
 	        data: {
@@ -36,8 +43,8 @@ $(document).ready(function(){
      	        // 캘린더 초기화
 			    initCalendar();
 			    
-			    calendar.unselect();
-       			calendar.render();
+			    //calendar.unselect();
+       			//calendar.render();
 	        },
 	        error: function(error) {
 	            console.log('일정 리스트 불러오기 오류', error);
@@ -45,10 +52,46 @@ $(document).ready(function(){
 	    });
 	}
 	
+	// 공유 일정 리스트 불러오기
+	function fetchSharedListData() {
+	    $.ajax({
+	        url: "sharedScheduleList", 
+	        type: "get",
+	        dataType: "json",
+	        data: {
+	            emp_id: $("#emp_id").val(), 
+	        },
+	        success: function(data) {
+	            console.log("공유 일정 리스트 불러오기 성공", data);
+	
+	            if (data != null) {
+	                // 공유 일정 데이터를 기존 이벤트 배열에 추가
+	                for (let i = 0; i < data.length; i++) {
+	                    events.push({
+	                        title: data[i].schedule_name,
+	                        start: data[i].schedule_start,
+	                        end: data[i].schedule_end,
+	                        backgroundColor: data[i].schedule_color,
+	                        description: data[i].schedule_content,
+	                        allDay: data[i].schedule_allDay,
+	                        id: data[i].schedule_id,
+	                        shared: true // 공유 일정 구분
+	                    });
+	                }
+	            }
+	            // 캘린더 초기화
+	            initCalendar();
+	        },
+	        error: function(error) {
+	            console.log("공유 일정 리스트 불러오기 오류", error);
+	        }
+	    });
+	}
+	
 	// 일정 등록
     function addEvent(eventData) {
         $.ajax({
-            url: "ScheduleAdd", 
+            url: "scheduleAdd", 
             type: "post",
             dataType: "json",
             data: {
@@ -93,7 +136,7 @@ $(document).ready(function(){
 	function updateEvent(eventData) {
 		console.log("수정 데이터:", eventData);
 	    $.ajax({
-	        url: "ScheduleUpdate",
+	        url: "scheduleUpdate",
 	        type: "post",
 	        dataType: "json",
 	        data: {
@@ -131,7 +174,7 @@ $(document).ready(function(){
 	    }
 	    
 	    $.ajax({
-	        url: "ScheduleDragUpdate",
+	        url: "scheduleDragUpdate",
 	        type: "post",
 	        dataType: "json",
 	        data: {
@@ -158,7 +201,7 @@ $(document).ready(function(){
 		
 		if(confirm("정말 삭제하시겠습니까?")) {
 			$.ajax({
-				url: "ScheduleDelete",
+				url: "scheduleDelete",
 				type: "post",
 		        dataType: "json",
 		        data: {
@@ -175,9 +218,7 @@ $(document).ready(function(){
 		            fetchListData();
 		        }
 			});
-		}
-		
-		
+		}	
 	}
 	
 	// 상세 일정 팝업 
@@ -205,7 +246,7 @@ $(document).ready(function(){
 	        $("#startAt, #endAt").prop("type", "datetime-local");
 	    }
 	    
-	    $(".modal-header").find("p").text("상세 일정");
+	    $(".modal-header").find("h5").text("상세 일정");
 	    $(".modal-body").find(".btn_wrap").html(`
 	        <button type="reset" class="btn btn-secondary">취소</button>
 	        <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
@@ -246,7 +287,7 @@ $(document).ready(function(){
     
     // 일정 등록 버튼 클릭 시 모달 초기화
 	$(".btn.btn-info[data-target='#scheduleModal']").on("click", function() {
-	    $(".modal-header").find("p").text("일정 등록"); 
+	    $(".modal-header").find("h5").text("일정 등록"); 
 	    $(".modal-body").find(".btn_wrap").html(`
 	        <button type="reset" class="btn btn-secondary">취소</button>
 	        <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
@@ -383,7 +424,7 @@ $(document).ready(function(){
 			events: events, // 전역 이벤트 배열 사용
 		    dateClick: function(info) {
 			    if (!info.event) { // 클릭한 날짜에 일정이 없는 경우
-			        $(".modal-header").find("p").text("일정 등록"); 
+			        $(".modal-header").find("h5").text("일정 등록"); 
 			        $(".modal-body").find(".btn_wrap").html(`
 			            <button type="reset" class="btn btn-secondary">취소</button>
 			            <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
@@ -420,8 +461,8 @@ $(document).ready(function(){
 			    }
 			},
             eventClick: function(info) {
-                 console.log("eventClick info", info.event);
-                 openDetailModal(info.event);
+                console.log("eventClick info", info.event);
+                openDetailModal(info.event);
             },
 			eventAdd: function(info) { // 이벤트가 추가되면 발생하는 이벤트
 	         	 console.log("eventAdd", info);
@@ -446,5 +487,5 @@ $(document).ready(function(){
         calendar.render();
 	}
 	
-	fetchListData();
+	fetchAllData();
 });

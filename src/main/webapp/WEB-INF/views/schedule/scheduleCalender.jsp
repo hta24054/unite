@@ -89,13 +89,15 @@
 		</div>
 	</div>
 	
-	<%-- modal 시작 --%>
+	<%-- 일정 등록 모달 --%>
 	<div class="modal" id="scheduleModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<div class="modal-header" style="align-items: center;">
-					<p>일정 등록</p>
-					<button type="button" class="btn btn-danger" data-dismiss="modal">X</button>
+				<div class="modal-header">
+					<h5 class="modal-title">일정 등록</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
 				</div>
 				<div class="modal-body">
 					<form name="scheduleEvent" method="post">
@@ -149,6 +151,5 @@
 			</div>
 		</div>
 	</div>
-	<%-- modal end --%>
 </body>
 </html>

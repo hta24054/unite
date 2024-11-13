@@ -10,8 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class DocTrip {
-    private Doc doc;
+public class DocTrip extends Doc{
     private LocalDate tripStart;
     private LocalDate tripEnd;
     private String tripLoc;

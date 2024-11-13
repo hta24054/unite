@@ -8,6 +8,7 @@ import com.hta2405.unite.enums.DocType;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,8 +41,8 @@ public class DocDao {
                   WHERE s.SIGN_ORDER = (SELECT MIN(SIGN_ORDER)
                                         FROM sign
                                         WHERE DOC_ID = DOC_ID
-                                          AND SIGNED = 0)
-                    AND s.SIGNED = 0
+                                          AND SIGN_TIME IS NULL)
+                    AND s.SIGN_TIME IS NULL
                     AND s.EMP_ID = ?
                   ORDER BY createDate
                 """;
@@ -98,7 +99,8 @@ public class DocDao {
                 }
 
                 // SIGN 테이블에 서명 리스트 삽입
-                List<Sign> list = makeSignList(signArr, docId);
+                List<Sign> list = makeSignListByParam(signArr, docId);
+                assert list != null;
                 int signResult = insertSign(list, conn);
                 if (signResult == list.size()) {
                     conn.commit();
@@ -121,7 +123,7 @@ public class DocDao {
 
     public int insertSign(List<Sign> list, Connection conn) throws SQLException {
         String sql = """
-                    INSERT INTO SIGN (EMP_ID, DOC_ID, SIGN_ORDER, SIGNED)
+                    INSERT INTO SIGN (EMP_ID, DOC_ID, SIGN_ORDER, SIGN_TIME)
                     VALUES (?,?,?,?)
                 """;
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -129,7 +131,11 @@ public class DocDao {
                 ps.setString(1, sign.getEmpId());
                 ps.setLong(2, sign.getDocId());
                 ps.setInt(3, sign.getSignOrder());
-                ps.setInt(4, sign.isSigned() ? 1 : 0);
+                if (sign.getSignTime() == null) {
+                    ps.setNull(4, Types.DATE);
+                } else {
+                    ps.setTimestamp(4, Timestamp.valueOf(sign.getSignTime()));
+                }
                 ps.addBatch();
             }
             int[] results = ps.executeBatch();
@@ -137,16 +143,78 @@ public class DocDao {
         }
     }
 
-    private List<Sign> makeSignList(String[] signArr, Long docId) {
+    public Doc getDocByDocId(Long docId) {
+        String sql = """
+                    SELECT * FROM DOC
+                    WHERE DOC_ID = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, docId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Doc(rs.getLong("doc_id"),
+                        rs.getString("doc_writer"),
+                        DocType.fromString(rs.getString("doc_type")),
+                        rs.getString("doc_title"),
+                        rs.getString("doc_content"),
+                        rs.getTimestamp("doc_create_date").toLocalDateTime(),
+                        rs.getInt("sign_finish") == 1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("문서 가져오기 오류");
+        }
+        return null;
+    }
+
+    public List<Sign> getSignListByDocId(Long docId) {
+        List<Sign> list = new ArrayList<>();
+        String sql = """
+                    SELECT * FROM SIGN
+                    WHERE DOC_ID = ?
+                    ORDER BY SIGN_ORDER
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, docId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Sign(rs.getLong("sign_id"),
+                        rs.getString("emp_id"),
+                        rs.getLong("doc_id"),
+                        rs.getInt("sign_order"),
+                        rs.getTimestamp("sign_time") == null
+                                ? null : rs.getTimestamp("sign_time").toLocalDateTime()));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return list;
+    }
+
+    public Doc getBuyDoc(Doc doc) {
+        return null;
+    }
+
+    public Doc getTripDoc(Doc doc) {
+        return null;
+    }
+
+    public Doc getVacationDoc(Doc doc) {
+        return null;
+    }
+
+    private List<Sign> makeSignListByParam(String[] signArr, Long docId) {
         if (docId == -1L) {
             return null;
         }
         List<Sign> list = new ArrayList<>();
         for (int i = 0; i < signArr.length; i++) {
             if (i == 0) {
-                list.add(new Sign(null, signArr[i], docId, i, true)); //기안자는 결재완료처리
+                list.add(new Sign(null, signArr[i], docId, i, LocalDateTime.now())); //기안자는 결재완료처리
             } else {
-                list.add(new Sign(null, signArr[i], docId, i, false));
+                list.add(new Sign(null, signArr[i], docId, i, null));
             }
         }
         return list;

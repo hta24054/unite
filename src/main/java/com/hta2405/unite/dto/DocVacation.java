@@ -9,8 +9,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class DocVacation {
-    private Doc doc;
+public class DocVacation extends Doc{
     private LocalDateTime vacationApply;
     private LocalDateTime vacationStart;
     private LocalDateTime vacationEnd;

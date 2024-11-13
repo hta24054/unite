@@ -17,6 +17,6 @@ public class DocFrontController extends AbstractFrontController {
         actionMap.put("/in-progress", new DocInProgressListAction());
         actionMap.put("/dept", new DocDeptListAction());
         actionMap.put("/my-approved", new DocMyApprovedListAction());
-        actionMap.put("/detail", new DocDetailAction());
+        actionMap.put("/detail", new DocReadAction());
     }
 }

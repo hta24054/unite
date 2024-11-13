@@ -61,75 +61,72 @@
 			<div class="col-sm-8 px-5">
 				<h3>공유 일정 등록</h3>
 				<div>
-					<form name="scheduleShareEvent" method="post">
-						<input type="hidden" id="schedule_id" name="schedule_id" value="${schedule_id}">
-						<input type="hidden" id="emp_id" name="emp_id" value="${id}">
-						<!-- 선택된 직원 ID -->
-						<input type="hidden" id="share_emp" name="share_emp" value="${share_emp}">
+					<input type="hidden" id="schedule_id" name="schedule_id" value="${schedule_id}">
+					<input type="hidden" id="emp_id" name="emp_id" value="${id}">
+					<input type="hidden" id="share_emp" name="share_emp" value="${share_emp}">
+					
+					<div class="form-group row">
+						<label for="schedule_name" class="col-sm-2 col-form-label">일정명</label>
+						<div class="col-sm-8">
+		                    <input type="text" class="form-control" placeholder="일정명을 입력하세요" name="schedule_name" id="schedule_name">
+		                </div>
+					</div>
+					
+					<div class="form-group row custom-control custom-checkbox">
 						
-						<div class="form-group row">
-							<label for="schedule_name" class="col-sm-2 col-form-label">일정명</label>
-							<div class="col-sm-8">
-			                    <input type="text" class="form-control" placeholder="일정명을 입력하세요" name="schedule_name" id="schedule_name">
-			                </div>
+						<div class="col-sm-7">
+							<input type="checkbox" name="allDay" id="allDay" class="custom-control-input" value="">
+		             		<label for="allDay" class="custom-control-label">하루종일</label>
 						</div>
-						
-						<div class="form-group row custom-control custom-checkbox">
-							
-							<div class="col-sm-7">
-								<input type="checkbox" name="allDay" id="allDay" class="custom-control-input" value="">
-			             		<label for="allDay" class="custom-control-label">하루종일</label>
-							</div>
+					</div>
+			        
+					<div class="form-group row">
+						<label for="startAt" class="col-sm-2 col-form-label">시작날짜/시간</label>
+						<div class="col-sm-8">
+							<input type="datetime-local" name="startAt" id="startAt" class="form-control">
 						</div>
-				        
-						<div class="form-group row">
-							<label for="startAt" class="col-sm-2 col-form-label">시작날짜/시간</label>
-							<div class="col-sm-8">
-								<input type="datetime-local" name="startAt" id="startAt" class="form-control">
-							</div>
+					</div>
+					
+					<div class="form-group row">
+			            <label for="endAt" class="col-sm-2 col-form-label">종료날짜/시간</label>
+			            <div class="col-sm-8">
+							<input type="datetime-local" name="endAt" id="endAt" class="form-control">
 						</div>
-						
-						<div class="form-group row">
-				            <label for="endAt" class="col-sm-2 col-form-label">종료날짜/시간</label>
-				            <div class="col-sm-8">
-								<input type="datetime-local" name="endAt" id="endAt" class="form-control">
-							</div>
-				        </div>
-				        
-          				<div class="form-group row">
-          					<p class="col-sm-2">색상</p>
-          					<div class="col-sm-8">
-								<select name="bgColor" id="bgColor">
-									<option value="#1e3a8a" style="color: #1e3a8a;">Blue100</option>
-						            <option value="#1d4ed8" style="color: #1d4ed8;">Blue200</option>
-						            <option value="#22d3ee" style="color: #22d3ee;">Blue300</option>
-						            <option value="#16a34a" style="color: #16a34a;">Green100</option>
-						            <option value="#84cc16" style="color: #84cc16;">Green200</option>
-						            <option value="#dc2626" style="color: #dc2626;">Red100</option>
-						            <option value="#f43f5e" style="color: #f43f5e;">Red200</option>
-						            <option value="#facc15" style="color: #facc15;">Yellow</option>
-								</select>
-							</div>
-				        </div>
-				        
-				        <div class="form-group row">
-				        	<p class="col-sm-2">공유자</p>
-				        	<div class="col-sm-8">
-				        		<div id="scheduleShareEmp"></div>
-				        		<a href="javascript:void(0);" data-target="scheduleShareEmp" id="scheduleShareBtn">+ 공유자 선택</a>
-				        	</div>
-				        </div>
-				        <div class="form-group row">
-				        	<p class="col-sm-2">내용</p>
-				        	<div class="col-sm-8">
-				        		<textarea rows="10" name="description" id="description"></textarea>
-				        	</div>
-				        </div>
-          				<div class="btn_wrap">
-          					<button type="reset" class="btn btn-secondary">취소</button>
-							<button type="submit" class="btn btn-info" id="btnRegister">등록</button>
-          				</div>
-					</form>
+			        </div>
+			        
+         				<div class="form-group row">
+         					<p class="col-sm-2">색상</p>
+         					<div class="col-sm-8">
+							<select name="bgColor" id="bgColor">
+								<option value="#1e3a8a" style="color: #1e3a8a;">Blue100</option>
+					            <option value="#1d4ed8" style="color: #1d4ed8;">Blue200</option>
+					            <option value="#22d3ee" style="color: #22d3ee;">Blue300</option>
+					            <option value="#16a34a" style="color: #16a34a;">Green100</option>
+					            <option value="#84cc16" style="color: #84cc16;">Green200</option>
+					            <option value="#dc2626" style="color: #dc2626;">Red100</option>
+					            <option value="#f43f5e" style="color: #f43f5e;">Red200</option>
+					            <option value="#facc15" style="color: #facc15;">Yellow</option>
+							</select>
+						</div>
+			        </div>
+			        
+			        <div class="form-group row">
+			        	<p class="col-sm-2">공유자</p>
+			        	<div class="col-sm-8">
+			        		<div id="scheduleShareEmp"></div>
+			        		<a href="javascript:void(0);" data-target="scheduleShareEmp" id="scheduleShareBtn">+ 공유자 선택</a>
+			        	</div>
+			        </div>
+			        <div class="form-group row">
+			        	<p class="col-sm-2">내용</p>
+			        	<div class="col-sm-8">
+			        		<textarea rows="10" name="description" id="description"></textarea>
+			        	</div>
+			        </div>
+        			<div class="btn_wrap">
+        				<button type="reset" class="btn btn-secondary">취소</button>
+						<button type="button" class="btn btn-info" id="btnShareRegister">등록</button>
+        			</div>
 				</div>
 			</div>
 		</div>
@@ -156,8 +153,8 @@
 			</div>
 		</div>
 	</div>
-	<%-- 공유 일정 등록 모달 --%>
 	
+	<%-- 공유 일정 등록 모달 --%>
     <script>
         $(document).ready(function() {
         	$("#scheduleShareBtn").on("click", function(e) {
@@ -193,6 +190,43 @@
             $('#btnSave').on('click', function() {
                 insertEmp();  // 직원 등록 함수 호출
             });
+             
+            $('#btnShareRegister').on('click', function(e) {
+                e.preventDefault();
+
+                const formData = {
+                    //schedule_id: $('#schedule_id').val(),
+                    emp_id: $('#emp_id').val(),
+                    schedule_name: $('#schedule_name').val(),
+                    allDay: $('#allDay').prop('checked') ? 1 : 0,
+                    startAt: $('#startAt').val(),
+                    endAt: $('#endAt').val(),
+                    bgColor: $('#bgColor').val(),
+                    share_emp: $('#share_emp').val(),
+                    description: $('#description').val()
+                };
+
+                // AJAX 요청 보내기
+                $.ajax({
+                    url: '${pageContext.request.contextPath}/schedule/ScheduleShareAdd', // 공유 일정 저장 URL
+                    method: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        if (response > 0) {
+                            alert('공유 일정이 등록되었습니다.');
+                            // 일정 등록 성공 시, 캘린더에 새 일정 추가
+                            addEventToCalendar(formData);  // 캘린더에 일정 추가하는 함수 호출
+                        } else {
+                            alert('공유 일정 등록 실패');
+                        }
+                    },
+                    error: function() {
+                        alert('공유 일정 등록 오류');
+                    }
+                });
+            });
+
+            
         });
         
         function insertEmp() {
@@ -228,6 +262,21 @@
             alert('선택된 직원 : ' + selectedEmpData.map(emp => emp.name).join(', '));
             $('#scheduleShareModal').modal('hide');
         }
+        
+        function addEventToCalendar(eventData) {
+            const event = {
+                title: eventData.schedule_name,
+                start: eventData.startAt,
+                end: eventData.endAt,
+                backgroundColor: eventData.bgColor,
+                description: eventData.description,
+                allDay: eventData.allDay === 1
+            };
+
+            // fullCalendar에 새 일정 추가
+            $('#calendar').fullCalendar('renderEvent', event, true); // 'true'는 일정이 저장되었음을 의미
+        }
+        
         
         $('#scheduleShareModal').on('hidden.bs.modal', function() {
             $('input[name="selectedEmp"]').prop('checked', false); 

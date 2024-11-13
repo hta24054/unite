@@ -461,13 +461,7 @@ $(document).ready(function(){
 			    }
 			},
             eventClick: function(info) {
-				
                 console.log("eventClick info", info.event);
-
-	            if (info.event.extendedProps.shared) {
-	                alert("공유 일정은 수정할 수 없습니다.");
-	                return;
-	            }
                 openDetailModal(info.event);
             },
 			eventAdd: function(info) { // 이벤트가 추가되면 발생하는 이벤트

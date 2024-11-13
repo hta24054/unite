@@ -36,8 +36,8 @@ $(document).ready(function(){
      	        // 캘린더 초기화
 			    initCalendar();
 			    
-			    calendar.unselect();
-       			calendar.render();
+			    //calendar.unselect();
+       			//calendar.render();
 	        },
 	        error: function(error) {
 	            console.log('일정 리스트 불러오기 오류', error);

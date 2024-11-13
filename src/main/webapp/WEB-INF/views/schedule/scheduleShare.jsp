@@ -196,26 +196,32 @@
              
             $('#btnShareRegister').on('click', function(e) {
                 e.preventDefault();
+                
+                const shareData = {
+                    emp_id: $('#emp_id').val(),
+                    schedule_name: $('#schedule_name').val(),
+                    allDay: $('#allDay').prop('checked') ? 1 : 0,
+                    startAt: moment($("#startAt").val()).format('YYYY-MM-DD HH:mm'),
+        			endAt: moment($("#endAt").val()).format('YYYY-MM-DD HH:mm'), 
+                    bgColor: $('#bgColor').val(),
+                    share_emp: $('#share_emp').val(),
+                    description: $('#description').val()
+                }
 
                 $.ajax({
-                    url: '${pageContext.request.contextPath}/schedule/ScheduleShareAdd', // 공유 일정 저장 URL
-                    method: 'POST',
-                    data: {
-                        emp_id: $('#emp_id').val(),
-                        schedule_name: $('#schedule_name').val(),
-                        allDay: $('#allDay').prop('checked') ? 1 : 0,
-                        startAt: moment($("#startAt").val()).format('YYYY-MM-DD HH:mm'),
-            			endAt: moment($("#endAt").val()).format('YYYY-MM-DD HH:mm'), 
-                        bgColor: $('#bgColor').val(),
-                        share_emp: $('#share_emp').val(),
-                        description: $('#description').val()
-                    },
+                    url: '${pageContext.request.contextPath}/schedule/ScheduleShareAdd',
+                    method: 'post',
+                    dataType: 'json',
+                    data: shareData,
                     success: function(response) {
-                    	console.log("서버 응답:", response); // 응답 값 출력
+                    	console.log("서버 응답:", response); 
                     	
+                    	addEventToCalendar(shareData);
+                    	
+                    	/*
                         if (response > 0) {
                             alert('공유 일정이 등록되었습니다.');
-                            addEventToCalendar(data);  // 캘린더에 일정 추가 함수 
+                              
                             
                             const events = []; 
                             if (data != null && data.length > 0) {
@@ -237,7 +243,7 @@
                            
                         } else {
                             alert('공유 일정 등록 실패');
-                        }
+                        }*/
                     },
                     error: function() {
                         alert('공유 일정 등록 오류');

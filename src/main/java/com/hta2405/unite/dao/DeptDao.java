@@ -126,6 +126,7 @@ public class DeptDao {
 	}
 
 	public Long getDeptIdByDeptName(String deptName) {
+		 Long deptId = null;
 		String sql = """
 				select dept_id from dept
 				where dept_name = ?
@@ -134,12 +135,42 @@ public class DeptDao {
 			ps.setString(1, deptName);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
-				return rs.getLong(1);
+				deptId = rs.getLong("dept_id");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return null;
+		 return deptId;
 	}
+	 public List<Emp> getEmployeesByDepartment(int deptId) {
+	        List<Emp> empList = new ArrayList<>();
+	        String sql = "SELECT emp_id, ename, e.dept_id, gender, email, tel, mobile, "
+	                + "j.job_name, d.dept_name "
+	                + "FROM emp e "
+	                + "JOIN job j ON e.job_id = j.job_id "
+	                + "JOIN dept d ON e.dept_id = d.dept_id "
+	                + "WHERE e.dept_id = ?";
 
+	        try (Connection conn = ds.getConnection();
+	             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	            pstmt.setInt(1, deptId);  // deptId는 int 타입으로 전달
+	            ResultSet rs = pstmt.executeQuery();
+	            
+	            while (rs.next()) {
+	                Emp emp = new Emp();
+	                emp.setEmpId(rs.getString("emp_id"));
+	                emp.setEname(rs.getString("ename"));
+	                emp.setDeptId(rs.getLong("dept_id"));  // dept_id를 int로 받아 설정
+	                emp.setSchool(rs.getString("job_name"));  // job_name을 String으로 설정
+	                emp.setGender(rs.getString("gender"));
+	                emp.setEmail(rs.getString("email"));
+	                emp.setTel(rs.getString("tel"));
+	                emp.setMobile(rs.getString("dept_name"));
+	                empList.add(emp);
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	        return empList;
+	    }
 }

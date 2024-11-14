@@ -19,6 +19,11 @@
  	color: gray;
  }
  
+ .tr-post:hover{
+ 	background-color: rgba(0, 0, 0, .05);
+ 	cursor: pointer;
+ }
+ 
  body > div > table > thead > tr:nth-child(2) > th:nth-child(1){width:8%}
  body > div > table > thead > tr:nth-child(2) > th:nth-child(2){width:50%}
  body > div > table > thead > tr:nth-child(2) > th:nth-child(3){width:14%}
@@ -26,6 +31,31 @@
  body > div > table > thead > tr:nth-child(2) > th:nth-child(5){width:11%}
 </style>
 <script src="${pageContext.request.contextPath}/js/boardList.js"></script>
+<script>
+$(function(){
+	
+	$('.tr-post').click(function(){
+
+		$.ajax({
+	        url: "detail",
+	        method: 'GET',
+	        success: function(response) {
+				$(".boardTitle").text(boardName2);
+		    	$('.boardContent').html(response);
+	        },
+	        error: function() {
+	            alert('게시판 데이터를 불러오는 데 실패했습니다.');
+	            let html = '<ul class="board-list">';
+	            html += '등록된 게시글이 없습니다.';
+	            html += '</ul>';
+	            $('.boardContent').append(html); // 리스트형 레이아웃에 게시글 표시
+	            
+	            $(".boardTitle").text(boardName2);//임시
+	        }
+	    });
+	})
+})
+</script>
 </head>
 <body>
 	<div class="container">
@@ -41,7 +71,7 @@
 		    		<option value="10" selected>10</option>
 		    	</select>
 		    </div>
-		    <table class="table table-striped">
+		    <table class="table">
 		    	<thead>
 		    		<tr>
 		    			<th colspan="4"></th>
@@ -60,7 +90,7 @@
 		    	<tbody>
 		    	<c:set var="num" value="${listCount-(page-1)*limit}"/>
 		    	<c:forEach var="p" items="${postList}">
-		    		<tr>
+		    		<tr class="tr-post">
 		    			<td><%--번호 --%>
 		    				<c:out value="${num}"/><%-- num 출력 --%>
 		    				<c:set var="num" value="${num-1}"/><%-- num=num-1; 의미 --%>
@@ -75,6 +105,10 @@
 			    					<img src='${pageContext.request.contextPath}/image/postLine.png'>
 		    					</c:if>
 		    					
+		    					
+		    					
+		    					
+		    					<input type="hidden" id="${p.postId}" value="${p.postId}"><%--view.js에서 사용하기위해 추가합니다. --%>
 		    					<a href="detail?num=${p.postId}">
 		    						<c:if test="${p.postSubject.length()>=20}">
 		    							<c:out value="${p.postSubject.substring(0,20)}..."/>

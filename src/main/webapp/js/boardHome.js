@@ -33,6 +33,9 @@ $(function() {
         loardBoardWrite("boardWrite"); // 글쓰기 메서드 호출
     });
     
+    
+    
+    
  	/* 
     window.addEventListener('popstate', function(event) {
         if (event.state && event.state.page) {
@@ -67,14 +70,7 @@ function loardBoardWrite(boardId){
 	    $(".boardTitle").text('글쓰기');
 	    $('.boardContent').html(response).css('padding', '20px 60px');
 	    // Summernote 스크립트를 동적으로 로드하고 초기화
-	    $.getScript('https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js', function() {
-	        $('.summernote').summernote({
-	            height: 500,
-	            minHeight: 500,
-	            maxHeight: null,
-	            focus: true
-	        });
-	    });
+	    
 	    
 	})
 	.fail(function() {

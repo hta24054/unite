@@ -12,7 +12,7 @@
 	label{font-weight: bold}
 	#upfile{display: none}
 	img{width: 20px;}
-	.attachFlie{
+	.attachFile{
 		border: 2px dotted;
 		display: flex;
 	    justify-content: center;
@@ -45,7 +45,7 @@
 	    color: #ff5353;
 	    margin-left: 5px;
 	}
-	.form-group{
+	.form-group2{
 		margin-bottom: 1rem;
 	    display: flex;
 	    align-items: center;
@@ -59,7 +59,7 @@
 	    width: 300px;
 	    border: 1px solid #ccc;
 	}
-	.form-control{
+	.form-control2{
 		width: 85%;
 	}
 	.form-group-btn{
@@ -153,37 +153,36 @@ function validation(obj){
 /* 첨부파일 삭제 */
 function deleteFile(num) {
     document.querySelector("#file" + num).remove();
-    filesArr[num].is_delete = true;
-    
-    var j = 0;
-    for (var i = 0; i < filesArr.length; i++) {
-    	if (filesArr[i] && !filesArr[i].is_delete) {
-    	    j++;
-    	}
-    }
-    
-    if(j==0){
-    	$('.file-list').css('display','none');
+    filesArr.splice(num, 1); // 배열에서 해당 파일을 실제로 제거
+    updateFileListVisibility(); // 파일 목록이 비어있으면 숨김 처리
+}
+
+/* 파일 목록이 비어있으면 숨김 처리 */
+function updateFileListVisibility() {
+    var visibleFiles = filesArr.filter(file => !file.is_delete);
+    if (visibleFiles.length === 0) {
+        $('.file-list').css('display', 'none');
     }
 }
 
 /* 폼 전송 */
 function submitForm() {
-	console.log(filesArr.length)
     var form = document.querySelector("form[name='boardform']");
     var formData = new FormData(form);
-	var j=0;
+    var j = 0;
+
     // 삭제되지 않은 파일만 폼데이터에 담기
     for (var i = 0; i < filesArr.length; i++) {
-    	if (filesArr[i] && !filesArr[i].is_delete) {
-    	    formData.append("attach_file"+j++, filesArr[i]);
-    	}
+        if (filesArr[i] && !filesArr[i].is_delete) {
+            formData.append("attach_file" + j++, filesArr[i]);
+        }
     }
-	console.log(filesArr.length)
-	formData.forEach((value, key) => {
-    	console.log(key + ": " + value);
-	});
-	
+	j=0;
+    console.log('filesArr.length=', filesArr.length);
+    formData.forEach((value, key) => {
+        console.log(key + j++ +": " + value);
+    });
+
     $.ajax({
         method: 'POST',
         url: '../board/post/add',
@@ -202,6 +201,7 @@ function submitForm() {
         }
     });
 }
+
 
 $(function(){
 	$('#boardName1').change(function() {
@@ -233,7 +233,7 @@ $(function(){
 <body>
  	<form action="../board/post/add" method="post" enctype="multipart/form-data"
       name="boardform" onsubmit="event.preventDefault(); submitForm();">
- 		<div class="form-group">
+ 		<div class="form-group2">
  			<label for="target_board" class="labelName">
  				To.
  				<select id="boardName1" name="boardName1" class="boardName">
@@ -248,28 +248,39 @@ $(function(){
  				</select>
  			</label>
  		</div>
- 		<div class="form-group">
+ 		<div class="form-group2">
  			<label for="board_subject" class="labelName">제목</label>
  			<input name="board_subject" id="board_subject" type="text" maxlength="100"
- 					class="form-control" placeholder="Enter board_subject">
+ 					class="form-control2" placeholder="Enter board_subject" required>
  		</div>
- 		<div class="form-group">
+ 		<div class="form-group2">
  			<label for="board_attachFile" class="labelName">파일첨부</label>
- 			<div class="attachFlie">
+ 			<div class="attachFile">
  				<img src="${pageContext.request.contextPath}/image/attach.png" alt="파일첨부">
  				이 곳에 파일을 드래그 하세요. 또는 
 	 			<label class="fileLabel">
 	 				파일선택
- 					<input type="file" id="upfile" onchange="addFile(this);" multiple />
+ 					<input type="file" id="upfile" onchange="addFile(this);" name="file" multiple />
 	 			</label>
 	 			<span id="filevalue"></span>
  			</div>
  		</div>
  		<div class="file-list"></div>
-		<textarea class="summernote form-control" id="board_content" name="content" required></textarea>
+		<textarea class="summernote form-control2" id="board_content" name="board_content" required></textarea>
 		<div class="form-group-btn">
 	 		<button type="submit" class="btn registerBtn">등록</button>
  		</div>
  	</form>
+ 	
+ 	<script>
+	 	$.getScript('https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js', function() {
+	        $('.summernote').summernote({
+	            height: 400,
+	            minHeight: 400,
+	            maxHeight: null,
+	            focus: true
+	        });
+	    });
+ 	</script>
 </body>
 </html>

@@ -23,7 +23,6 @@ public class SharedScheduleListAction implements Action {
         
         ScheduleDAO sdao = new ScheduleDAO();
         //JsonArray arr = sdao.getSharedScheduleList(empId, shareEmpArray);
-        
         JsonArray arr = sdao.getSharedScheduleList(empId, shareEmp);
 
         response.setContentType("application/json;charset=utf-8");

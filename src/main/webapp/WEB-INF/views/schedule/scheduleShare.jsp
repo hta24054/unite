@@ -226,6 +226,7 @@
                         const events = []; 
                         if (data != null && data.length > 0) {
         			        for (let i = 0; i < data.length; i++) {
+        			        	
         						const isAllDay = data[i].schedule_allDay === 1;
         						events.push({
         			                title: data[i].schedule_name, 

@@ -6,7 +6,6 @@ $(document).ready(function(){
 	
 	// 개인 일정, 공유 일정 모두 불러오기
 	function fetchAllData() {
-	    events = []; 
 	    fetchListData(); 
 	    fetchSharedListData(); 
 	}
@@ -25,7 +24,6 @@ $(document).ready(function(){
 	            //callback(data); // 데이터가 성공적으로 로드된 후 콜백 함수 호출
 	            
 	            events = []; 
-	            
 	            if (data != null) {
 			        for (let i = 0; i < data.length; i++) {
 						
@@ -65,6 +63,7 @@ $(document).ready(function(){
 	        success: function(data) {
 	            console.log("공유 일정 리스트 불러오기 성공", data);
 	
+				events = [];
 	            if (data != null) {
 	                // 공유 일정 데이터를 기존 이벤트 배열에 추가
 	                for (let i = 0; i < data.length; i++) {

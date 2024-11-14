@@ -110,7 +110,7 @@
     setInterval(() => {
         const now = new Date();
         $("#currentTime").text(now.toLocaleTimeString());
-    }, 1000);
+    }, 100);
 
     // 출근/퇴근 버튼 상태 전환
     $("#startButton").click(function () {

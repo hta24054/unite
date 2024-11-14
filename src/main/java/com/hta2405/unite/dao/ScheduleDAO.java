@@ -248,8 +248,8 @@ public class ScheduleDAO {
 	    String shareEmpIdArray = Arrays.stream(shareEmpArray)
 	                                .map(emp -> "?")
 	                                .collect(Collectors.joining(","));
-
-	    String share_sql = "SELECT s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content, "
+	    
+	    String share_sql = "SELECT s.schedule_id, s.emp_id, ss.share_emp, s.schedule_name, s.schedule_content, "
 	                     + "s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay "
 	                     + "FROM schedule s "
 	                     + "JOIN schedule_share ss ON s.schedule_id = ss.schedule_id "
@@ -266,6 +266,8 @@ public class ScheduleDAO {
 	        for (int i = 0; i < shareEmpArray.length; i++) {
 	            pstmt.setString(i + 2, shareEmpArray[i].trim());
 	        }
+	        
+	        System.out.println("shareEmpIdArray : " + shareEmpIdArray);
 
 	        try (ResultSet rs = pstmt.executeQuery()) {
 	            while (rs.next()) {

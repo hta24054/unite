@@ -35,13 +35,16 @@ table {
 }
 
 td, th {
-	border-collapse: collapse;
-	border: 1px solid black;
+	border: 2px solid black;
 	padding: 25px;
 	color: black;
 	text-align: center;
 	height: 50px;
 	width: 14%;
+}
+
+#tr {
+	border-top: 2px solid black;
 }
 
 h2 {
@@ -133,10 +136,10 @@ button#cancelButton {
 					<caption>
 						<h2>나의 인사정보</h2>
 					</caption>
-					<tr>
-						<td rowspan="4" width="200"><img
+					<tr id="tr">
+						<th rowspan="4" width="200"><img
 							src="${pageContext.request.contextPath}/${details.emp.imgPath}"
-							alt="${details.emp.ename}의 사진" width="200" height="200"></td>
+							alt="${details.emp.ename}의 사진" width="200" height="200"></th>
 						<th>이름</th>
 						<th>성별</th>
 						<th>이메일</th>
@@ -255,7 +258,7 @@ button#cancelButton {
 					<button type="submit">저장</button>
 				</c:if>
 
-				
+
 			</form>
 		</div>
 	</div>

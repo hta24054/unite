@@ -111,30 +111,17 @@
         </table>
 
     </div>
-    <!-- 버튼 영역 -->
-    <div class="text-right mt-3">
-        <c:choose>
-            <c:when test="${role == 'signer'}">
-                <button type="button" class="btn btn-success">결재</button>
-                <button type="button" class="btn btn-danger">반려</button>
-            </c:when>
-            <c:when test="${role == 'writer'}">
-                <button type="button" class="btn btn-warning">회수</button>
-                <button type="button" class="btn btn-danger">삭제</button>
-            </c:when>
-        </c:choose>
-        <button type="button" class="btn btn-secondary">목록으로</button>
-    </div>
+    <jsp:include page="doc_read_button.jsp"/>
 </form>
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         calculateTotal(); // 페이지 로드 시 초기 합계 계산
 
         function calculateTotal() {
             let total = 0;
 
             // 모든 item-row의 금액을 계산하여 총합 계산
-            $(".item-row").each(function() {
+            $(".item-row").each(function () {
                 // 수량과 단가를 정수로 변환하며 콤마 제거
                 const quantity = parseInt($(this).find(".text-right-align").eq(0).text().replace(/,/g, '')) || 0;
                 const price = parseInt($(this).find(".text-right-align").eq(1).text().replace(/,/g, '')) || 0;

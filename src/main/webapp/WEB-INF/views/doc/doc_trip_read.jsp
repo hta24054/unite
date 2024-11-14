@@ -14,6 +14,7 @@
             font-weight: bold;
             padding: 20px 0;
         }
+
         /* 테두리 색상을 검정색으로 설정 */
         .table-bordered, .table-bordered td, .table-bordered th {
             align-content: center;
@@ -101,18 +102,6 @@
     </table>
 </div>
 <!-- 버튼 영역 -->
-<div class="text-right mt-3">
-    <c:choose>
-        <c:when test="${role == 'signer'}">
-            <button type="button" class="btn btn-success">결재</button>
-            <button type="button" class="btn btn-danger">반려</button>
-        </c:when>
-        <c:when test="${role == 'writer'}">
-            <button type="button" class="btn btn-warning">회수</button>
-            <button type="button" class="btn btn-danger">삭제</button>
-        </c:when>
-    </c:choose>
-    <button type="button" class="btn btn-secondary">목록으로</button>
-</div>
+<jsp:include page="doc_read_button.jsp"/>
 </body>
 </html>

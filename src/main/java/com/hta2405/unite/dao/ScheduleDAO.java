@@ -3,8 +3,9 @@ package com.hta2405.unite.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -171,7 +172,6 @@ public class ScheduleDAO {
 		return result;
 	}//deleteSchedule end
 	
-
 	// 공유 일정 등록
 	public int insertScheduleShare(Schedule s, ScheduleShare share) {
 	    int result = 0;
@@ -184,7 +184,7 @@ public class ScheduleDAO {
 	    """;
 
 	    try (Connection con = ds.getConnection();
-	         PreparedStatement pstmt = con.prepareStatement(sql)) {
+	         PreparedStatement pstmt = con.prepareStatement(sql);) {
 
 	        pstmt.setString(1, s.getEmpId());
 	        pstmt.setString(2, s.getScheduleName());
@@ -205,7 +205,7 @@ public class ScheduleDAO {
                       ResultSet rs = idStmt.executeQuery()) {
 
                     if (rs.next()) {
-                        return rs.getInt(1); // 새로 생성된 schedule_id 반환
+                    	scheduleId = rs.getInt(1); // 새로 생성된 schedule_id 반환
                     }
                 }
 	        }
@@ -228,34 +228,72 @@ public class ScheduleDAO {
 	                    pstmtShare.setInt(2, scheduleId); // 새로 생성된 schedule_id 사용
 	                    pstmtShare.executeUpdate();
 	                    
+	            
 	                    System.out.println("schedule_share 테이블에 삽입: " + empId.trim() + ", schedule_id: " + scheduleId);
 	                }
 	            }
 	        }
-
-	        /*
-	        // schedule_id가 생성되었을 경우 공유자 추가
-	        if (scheduleId > 0) {
-	            String share_sql = """
-	                INSERT INTO schedule_share
-	                (schedule_share_id, share_emp, schedule_id)
-	                VALUES (SEQ_schedule_share.NEXTVAL, ?, ?)
-	            """;
-	            
-	            try (PreparedStatement pstmtShare = con.prepareStatement(share_sql)) {
-	            	pstmt.setString(1, share.getShareEmp());
-	            	pstmt.setInt(2, scheduleId); // 새로 생성된 schedule_id 사용
-
-                    result = pstmtShare.executeUpdate(); // 일정 공유 정보 삽입
-                    System.out.println("schedule_share 테이블에 삽입: " + share.getShareEmp() + ", schedule_id: " + scheduleId);
-	            }
-	        }*/
-
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        System.out.println("insertScheduleShare() 에러 : " + e);
 	    }
-
+	    
 	    return result;
-	}
+	}//insertScheduleShare end
+	
+	// 공유 일정 리스트
+	public JsonArray getSharedScheduleList(String empId, String shareEmp) {
+	    // 쉼표로 구분된 shareEmp 문자열을 사용하여 IN 절을 동적으로 생성
+	    String[] shareEmpArray = shareEmp.split(",");
+	    String shareEmpIdArray = Arrays.stream(shareEmpArray)
+	                                .map(emp -> "?")
+	                                .collect(Collectors.joining(","));
+	    
+	    String share_sql = "SELECT s.schedule_id, s.emp_id, ss.share_emp, s.schedule_name, s.schedule_content, "
+	                     + "s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay "
+	                     + "FROM schedule s "
+	                     + "JOIN schedule_share ss ON s.schedule_id = ss.schedule_id "
+	                     + "WHERE s.emp_id = ? AND ss.share_emp IN (" + shareEmpIdArray + ")";
+
+	    JsonArray array = new JsonArray();
+
+	    try (Connection con = ds.getConnection();
+	         PreparedStatement pstmt = con.prepareStatement(share_sql)) {
+
+	        pstmt.setString(1, empId);
+
+	        // shareEmpArray 배열의 값을 IN 절의 자리표시자(?)에 설정
+	        for (int i = 0; i < shareEmpArray.length; i++) {
+	            pstmt.setString(i + 2, shareEmpArray[i].trim());
+	        }
+	        
+	        System.out.println("shareEmpIdArray : " + shareEmpIdArray);
+
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            while (rs.next()) {
+	                JsonObject scheduleObj = new JsonObject();
+
+	                scheduleObj.addProperty("schedule_id", rs.getInt("schedule_id"));
+	                scheduleObj.addProperty("schedule_name", rs.getString("schedule_name"));
+	                scheduleObj.addProperty("schedule_content", rs.getString("schedule_content"));
+	                scheduleObj.addProperty("schedule_start", rs.getString("schedule_start"));
+	                scheduleObj.addProperty("schedule_end", rs.getString("schedule_end"));
+	                scheduleObj.addProperty("schedule_color", rs.getString("schedule_color"));
+	                scheduleObj.addProperty("schedule_allDay", rs.getInt("schedule_allDay"));
+	                array.add(scheduleObj);
+	            }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        System.out.println("getSharedScheduleList() 에러: " + e);
+	    }
+
+	    return array;
+	} // getSharedScheduleList end
+	
+
+
+
+
+	
 }

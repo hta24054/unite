@@ -206,7 +206,7 @@ public class ScheduleDAO {
                       ResultSet rs = idStmt.executeQuery()) {
 
                     if (rs.next()) {
-                        return rs.getInt(1); // 새로 생성된 schedule_id 반환
+                    	scheduleId = rs.getInt(1); // 새로 생성된 schedule_id 반환
                     }
                 }
 	        }

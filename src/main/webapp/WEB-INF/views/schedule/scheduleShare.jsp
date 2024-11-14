@@ -221,7 +221,7 @@
                     dataType: 'json',
                     data: shareData,
                     success: function(data) {
-                    	console.log("서버 응답:", data); 
+                    	console.log("공유 일정 서버 응답:", data); 
                     	
                     	alert('공유 일정이 등록되었습니다.');
                         addEventToCalendar(shareData);  

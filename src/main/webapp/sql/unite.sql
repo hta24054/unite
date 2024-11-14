@@ -12,9 +12,17 @@ SELECT * FROM (
 	            WHERE rownum <= 10
 	        ) 
 	        WHERE rnum >= 5 AND rnum <= 10
+delete from project where project_id = 11
+SELECT * from project where manager_id = '241103' and project_finished= 1;
+select count(*) from project where manager_id = '241103' and project_finished= 1;
 
-	        
-	        
+select count(*) from project where manager_id = '241103' and project_canceled= 1;
+select count(*) from project p join project_member m on p.project_id = m.project_id  where m.member_id = '241103' and project_canceled = 1 order by p.project_id
+select * from project where project_canceled = 1 and manager_id = '241103';
+select * from project p join project_member m on p.project_id = m.project_id  where m.member_id = '241103' and project_canceled = 1 order by p.project_id
+
+select count(*) from project p join project_member m on p.project_id = m.project_id  where m.member_id = '241103' and project_finished = 1 order by p.project_id
+select count(*) from project where manager_id = '241103' and project_finished=1 order by project_id;
 CREATE TABLE attend
 (
   attend_id   NUMBER       NOT NULL,

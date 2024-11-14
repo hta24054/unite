@@ -172,7 +172,6 @@ public class ScheduleDAO {
 		return result;
 	}//deleteSchedule end
 	
-	
 	// 공유 일정 등록
 	public int insertScheduleShare(Schedule s, ScheduleShare share) {
 	    int result = 0;
@@ -229,6 +228,7 @@ public class ScheduleDAO {
 	                    pstmtShare.setInt(2, scheduleId); // 새로 생성된 schedule_id 사용
 	                    pstmtShare.executeUpdate();
 	                    
+	            
 	                    System.out.println("schedule_share 테이블에 삽입: " + empId.trim() + ", schedule_id: " + scheduleId);
 	                }
 	            }
@@ -240,7 +240,7 @@ public class ScheduleDAO {
 	    
 	    return result;
 	}//insertScheduleShare end
-
+	
 	// 공유 일정 리스트
 	public JsonArray getSharedScheduleList(String empId, String shareEmp) {
 	    // 쉼표로 구분된 shareEmp 문자열을 사용하여 IN 절을 동적으로 생성
@@ -290,6 +290,8 @@ public class ScheduleDAO {
 
 	    return array;
 	} // getSharedScheduleList end
+	
+
 
 
 

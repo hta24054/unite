@@ -66,7 +66,7 @@ $(document).ready(function(){
 	        },
 	        success: function(data) {
 	            console.log("공유 일정 리스트 불러오기 성공", data);
-	
+
 				//events = [];
 	            if (data != null) {
 	                // 공유 일정 데이터를 기존 이벤트 배열에 추가

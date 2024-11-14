@@ -66,10 +66,7 @@
 				<div>
 					<input type="hidden" id="schedule_id" name="schedule_id" value="${schedule_id}">
 					<input type="hidden" id="emp_id" name="emp_id" value="${id}">
-					<!-- <input type="hidden" id="share_emp" name="share_emp" value="${share_emp.join(',')}"> -->	
-					
-					<% String shareEmp = (String) request.getAttribute("share_emp"); %>
-					<input type="hidden" id="share_emp" name="share_emp" value="<%= shareEmp %>">
+					<input type="hidden" id="share_emp" name="share_emp" value="${share_emp.join(',')}"> 	
 					
 					<div class="form-group row">
 						<label for="schedule_name" class="col-sm-2 col-form-label">일정명</label>

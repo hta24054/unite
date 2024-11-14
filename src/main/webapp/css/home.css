@@ -14,7 +14,7 @@
         max-width: 1200px;
         margin: 0 auto;
     }
-
+	.left{margin: 0}
     
     /* 오른쪽 영역의 height를 두 행을 합친 높이로 설정 */
     .right {

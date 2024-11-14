@@ -55,14 +55,14 @@
         }
 
         // 최초 로딩 시 체크박스 추가
-        addCheckboxes();	
+        addCheckboxes();    
 
         // AJAX 후 체크박스를 다시 추가
         $(document).on('ajaxSuccess', function () {
             addCheckboxes();
         });
 
-        // 추가 버튼 클릭 시 선택된 직원의 이름을 textarea에 추가
+        // 추가 버튼 클릭 시 선택된 직원의 이름을 쉼표로 구분해 textarea에 추가
         $('#addEmpBtn').on('click', function() {
             const selectedEmpNames = $('input[name="selectedEmp"]:checked')
                 .map(function () {
@@ -74,8 +74,8 @@
                 const empTextArea = $('#empTextArea');
                 let existingText = empTextArea.val();
                 selectedEmpNames.forEach(function(empName) {
-                    if (existingText.indexOf(empName) === -1) {
-                        existingText += empName + '\n';
+                    if (!existingText.includes(empName)) {
+                        existingText += (existingText ? ', ' : '') + empName; // 쉼표로 구분하여 이름 추가
                     }
                 });
                 empTextArea.val(existingText); // 이름 추가
@@ -96,9 +96,11 @@
             if (selectedEmpNames.length > 0) {
                 let existingText = empTextArea.val();
                 selectedEmpNames.forEach(function(empName) {
-                    existingText = existingText.replace(empName + '\n', ''); // 이름 삭제
+                    const regex = new RegExp('(,\\s*)?' + empName + '(,\\s*)?', 'g');
+                    existingText = existingText.replace(regex, ''); // 이름 삭제
+                    existingText = existingText.replace(/,\s*$/, ''); // 마지막 쉼표 제거
                 });
-                empTextArea.val(existingText); // 삭제된 이름 업데이트
+                empTextArea.val(existingText.trim()); // 삭제된 이름 업데이트
             } else {
                 alert('삭제할 직원을 선택해 주세요.');
             }
@@ -106,37 +108,37 @@
 
         // 등록 버튼 클릭 시 textarea에 있는 직원 정보를 실제 폼에 등록
         $('#insertEmpBtn').on('click', function() {
-		    const targetInputId = localStorage.getItem('selectedInputId');
-		    if (!targetInputId) {
-		        alert('유효한 입력 필드가 선택되지 않았습니다.');
-		        return;
-		    }
-		
-		    const empTextArea = $('#empTextArea');
-		    const selectedEmpNames = empTextArea.val().trim();
-		
-		    if (selectedEmpNames === '') {
-		        alert('직원 정보를 추가해 주세요.');
-		        return;
-		    }
-		
-		    if (targetInputId === 'manager') {
-		        const empNamesArray = selectedEmpNames.split('\n').filter(name => name.trim() !== '');
-		        if (empNamesArray.length > 1) {
-		            alert('책임자는 한 명만 지정할 수 있습니다.');
-		            return;
-		        }
-		    }
-		
-		    const targetInput = $('#' + targetInputId);
-		    targetInput.prop('readonly', false);
-		    targetInput.val(selectedEmpNames);
-		    targetInput.prop('readonly', true);
-		
-		    alert('등록된 직원: ' + selectedEmpNames);
-		    $('#orgChartModal').modal('hide');
-		});
-        
+            const targetInputId = localStorage.getItem('selectedInputId');
+            if (!targetInputId) {
+                alert('유효한 입력 필드가 선택되지 않았습니다.');
+                return;
+            }
+
+            const empTextArea = $('#empTextArea');
+            const selectedEmpNames = empTextArea.val().trim();
+
+            if (selectedEmpNames === '') {
+                alert('직원 정보를 추가해 주세요.');
+                return;
+            }
+
+            if (targetInputId === 'manager') {
+                const empNamesArray = selectedEmpNames.split(',').filter(name => name.trim() !== '');
+                if (empNamesArray.length > 1) {
+                    alert('책임자는 한 명만 지정할 수 있습니다.');
+                    return;
+                }
+            }
+
+            const targetInput = $('#' + targetInputId);
+            targetInput.prop('readonly', false);
+            targetInput.val(selectedEmpNames);
+            targetInput.prop('readonly', true);
+
+            alert('등록된 직원: ' + selectedEmpNames);
+            $('#orgChartModal').modal('hide');
+        });
+
         $('#projectForm').on('submit', function(e) {
             const manager = $('#manager').val().trim();
             if (!manager) {
@@ -144,8 +146,8 @@
                 e.preventDefault();  // 제출 취소
             }
         });
-        
     });
+
 
 </script>
 

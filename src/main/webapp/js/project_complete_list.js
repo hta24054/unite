@@ -7,9 +7,7 @@ $(function(){
 
 function go(page){
 	const limit = $('#viewcount').val();
-	const memberId = $('.memberId').val(); 
-	//const data = `limit=${limit}&state=ajax&page=${page}`;
-	const data = {limit:limit, state:"ajax", page: page, memberId:memberId}
+	const data = {limit:limit, state:"ajax", page: page}
 	ajax(data);
 }
 
@@ -18,7 +16,7 @@ function ajax(sdata){
 	console.log(sdata);
 	$.ajax({
 		data: sdata,
-		url: contextPath + "/projectb/list",
+		url: "complete",
 		dataType: "json",
 		cache: false,
 		success: function(data){
@@ -28,7 +26,10 @@ function ajax(sdata){
 				$("tbody").remove();
 				updateBoardList(data); //게시판 내용 업데이트
 				generatePagination(data);
-			}
+			}else {
+                // 데이터가 없을 경우, "등록된 글이 없습니다" 메시지를 표시
+                $("tbody").html("<tr><td colspan='7' style='text-align:center;'>등록된 글이 없습니다</td></tr>");
+            }
 		},
 		error: function(){
 			console.log('에러');
@@ -37,24 +38,28 @@ function ajax(sdata){
 }
 
 function updateBoardList(data){
-	let num = data.listcount - (data.page - 1) * data.limit;
 	let output = "<tbody>";
 	
 	$(data.boardlist).each(function(index, item){
-		const blank = '&nbsp;&nbsp;'.repeat(item.board_re_lev * 2);
-		const img = item.board_re_lev > 0 ? `<img src='${contextPath}/image/line.gif'>` : ""; // contextPath 사용
-		const subject = item.projectTitle.length >= 20 ? item.projectTitle.substr(0, 20) + "..." : item.projectTitle;
-		const changeSubject = subject.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-		const taskFileOriginal = item.task_file_original ? item.task_file_original : "";
-		
+		var participantNames = item.participantNames || [];
+	    var viewerNames = item.viewers || [];
+	    var participants = participantNames.length > 1 
+	        ? "<span title='" + participantNames.slice(1).join(', ') + "'>" + participantNames[0] + " 외 " + (participantNames.length - 1) + "명</span>"
+	        : (participantNames[0] || '없음');
+	    var viewers = viewerNames.length > 1 
+	        ? "<span title='" + viewerNames.slice(1).join(', ') + "'>" + viewerNames[0] + " 외 " + (viewerNames.length - 1) + "명</span>"
+	        : (viewerNames[0] || '없음');
+
 		output += `
 			<tr>
-				<td>${num--}</td>
-				<td><div>${changeSubject}[${item.board_cnt}]</div></td>
-				<td><div>${item.projectContent}</div></td>
-				<td><div>${item.projectDate}</div></td>
-				<td><div>${item.projectUpdateDate}</div></td>
-				<td><div>${taskFileOriginal}</div></td>
+				<td>${item.projectId}</td>
+				<td><div>${item.projectName}</div></td>
+				<td><div>${item.empName}</div></td>
+				<td><div>${participants}</div></td>
+				<td><div>${viewers}</div></td>
+				<td><div>${item.projectStartDate}</div></td>
+				<td><div>${item.projectEndDate}</div></td>
+				<td><div>${item.projectFilePath}</div></td>
 			</tr>
 			`;
 	});

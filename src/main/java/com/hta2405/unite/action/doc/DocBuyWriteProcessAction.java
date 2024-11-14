@@ -53,6 +53,6 @@ public class DocBuyWriteProcessAction implements Action {
         if (result != 1) {
             return CommonUtil.alertAndGoBack(resp, "문서 작성 실패");
         }
-        return CommonUtil.alertAndGoBack(resp, "문서 작성 성공");
+        return new ActionForward(true, req.getContextPath() + "/doc/in-progress");
     }
 }

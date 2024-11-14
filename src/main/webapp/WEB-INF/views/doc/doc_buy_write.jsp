@@ -234,6 +234,13 @@
         function parseNumber(value) {
             return parseFloat(value.replace(/,/g, '')) || 0;
         }
+
+        $('#doc_form').on('submit', function (event) {
+            const confirmSubmission = confirm("문서를 작성하시겠습니까?");
+            if (!confirmSubmission) {
+                event.preventDefault(); // "취소"를 누르면 제출 취소
+            }
+        });
     });
 </script>
 </body>

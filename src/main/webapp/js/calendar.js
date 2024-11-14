@@ -5,12 +5,6 @@ $(document).ready(function(){
 	let currentDate;
 	
 	// 개인 일정, 공유 일정 모두 불러오기
-	/*
-	function fetchAllData() {
-	    fetchListData(); 
-	    fetchSharedListData(); 
-	}
-	*/	
 	function fetchAllData() {
 	    Promise.all([fetchListData(), fetchSharedListData()])
 	        .then(() => {
@@ -239,9 +233,6 @@ $(document).ready(function(){
 	    $("#startAt").val(moment(event.start).format("YYYY-MM-DD HH:mm"));
 	    $("#endAt").val(moment(event.end).format("YYYY-MM-DD HH:mm"));
 	    
-	    //$("#description").val(event.description);
-	    //$("#description").val(event.extendedProps.description);
-	    
 	    const description = event.extendedProps && event.extendedProps.description ? event.extendedProps.description : '';
 	    $("#description").val(description);
 	    
@@ -289,7 +280,6 @@ $(document).ready(function(){
 	        };
 	        
 	        deleteEvent(eventData); // 삭제 함수 호출
-	        
 	    });
 	
 	    $("#scheduleModal").modal('show');

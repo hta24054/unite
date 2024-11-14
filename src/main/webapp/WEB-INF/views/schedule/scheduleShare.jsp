@@ -139,7 +139,7 @@
 		</div>
 	</div>
 	
-	<%-- 공유 일정 등록 모달 --%>
+	<%-- 공유자 선택 모달 --%>
 	<div class="modal fade" id="scheduleShareModal" tabindex="-1" role="dialog" aria-labelledby="scheduleShareModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
@@ -160,8 +160,7 @@
 			</div>
 		</div>
 	</div>
-	
-	<%-- 공유자 선택 모달 --%>
+
     <script>
         $(document).ready(function() {
         	$("#scheduleShareBtn").on("click", function(e) {

@@ -464,4 +464,61 @@ public class DocDao {
         }
         return list;
     }
+
+    public List<Doc> getFinishedSignedDocListByEmpId(String empId) {
+        List<Doc> list = new ArrayList<>();
+        String sql = """
+                    select *
+                    from DOC JOIN SIGN
+                    ON DOC.DOC_ID = SIGN.DOC_ID
+                    WHERE EMP_ID = ? and SIGN_FINISH = 1
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, empId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Doc(rs.getLong("doc_id"),
+                        rs.getString("doc_writer"),
+                        DocType.fromString(rs.getString("doc_type")),
+                        rs.getString("doc_title"),
+                        rs.getString("doc_content"),
+                        rs.getTimestamp("doc_create_date").toLocalDateTime(),
+                        rs.getInt("sign_finish") == 1
+                ));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return list;
+    }
+
+    public List<Doc> getFinishedDeptDocListByEmpId(String empId) {
+        List<Doc> list = new ArrayList<>();
+        String sql = """
+                    SELECT *
+                    FROM DOC
+                    JOIN EMP ON EMP.EMP_ID = DOC.DOC_WRITER
+                    WHERE EMP.DEPT_ID = (SELECT DEPT_ID FROM EMP WHERE EMP_ID = ?)
+                    AND SIGN_FINISH = 1
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, empId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Doc(rs.getLong("doc_id"),
+                        rs.getString("doc_writer"),
+                        DocType.fromString(rs.getString("doc_type")),
+                        rs.getString("doc_title"),
+                        rs.getString("doc_content"),
+                        rs.getTimestamp("doc_create_date").toLocalDateTime(),
+                        rs.getInt("sign_finish") == 1
+                ));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return list;
+    }
 }

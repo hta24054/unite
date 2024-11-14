@@ -1,7 +1,7 @@
 package com.hta2405.unite.action.doc;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.DocDao;
 import com.hta2405.unite.dto.DocTrip;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
-public class DocTripWriteProcessAction implements com.hta2405.unite.action.Action {
+public class DocTripWriteProcessAction implements Action {
     DocDao docDao = new DocDao();
 
     @Override
@@ -27,11 +27,11 @@ public class DocTripWriteProcessAction implements com.hta2405.unite.action.Actio
         BufferedReader reader = req.getReader();
         DocTripRequest docTripRequest = gson.fromJson(reader, DocTripWriteProcessAction.DocTripRequest.class);
 
-        LocalDate tripStart = docTripRequest.trip_start != null ? LocalDate.parse(docTripRequest.trip_start) : null;
-        LocalDate tripEnd = docTripRequest.trip_end != null ? LocalDate.parse(docTripRequest.trip_end) : null;
-        LocalDate cardStart = docTripRequest.card_start != null ? LocalDate.parse(docTripRequest.card_start) : null;
-        LocalDate cardEnd = docTripRequest.card_end != null ? LocalDate.parse(docTripRequest.card_end) : null;
-        LocalDate cardReturn = docTripRequest.card_return != null ? LocalDate.parse(docTripRequest.card_return) : null;
+        LocalDate tripStart = LocalDate.parse(docTripRequest.trip_start);
+        LocalDate tripEnd = LocalDate.parse(docTripRequest.trip_end);
+        LocalDate cardStart = LocalDate.parse(docTripRequest.card_start);
+        LocalDate cardEnd = LocalDate.parse(docTripRequest.card_end);
+        LocalDate cardReturn = LocalDate.parse(docTripRequest.card_return);
 
 
         System.out.println(docTripRequest);
@@ -55,17 +55,12 @@ public class DocTripWriteProcessAction implements com.hta2405.unite.action.Actio
         );
 
         int result = docDao.insertTripDoc(docTrip, docTripRequest.signers);
-        String status = "success";
-        if (result != 1) {
-            status = "fail";
-        }
-
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("status", status);
-
-        resp.getWriter().print(jsonObject);
+        String status = result == 1 ? "success" : "fail";
+        resp.setContentType("application/json");
+        resp.getWriter().print("{\"status\":\"" + status + "\"}");
         return null;
     }
+
     // 요청 데이터를 매핑할 내부 클래스 정의
     @ToString
     private static class DocTripRequest {

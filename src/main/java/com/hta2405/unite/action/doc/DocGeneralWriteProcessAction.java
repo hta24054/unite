@@ -35,14 +35,10 @@ public class DocGeneralWriteProcessAction implements com.hta2405.unite.action.Ac
         );
 
         int result = docDao.insertGeneralDoc(doc, docBuyRequest.signers);
-        String status = "success";
-        if (result != 1) {
-            status = "fail";
-        }
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("status", status);
 
-        resp.getWriter().print(jsonObject);
+        String status = result == 1 ? "success" : "fail";
+        resp.setContentType("application/json");
+        resp.getWriter().print("{\"status\":\"" + status + "\"}");
         return null;
     }
 

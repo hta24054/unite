@@ -185,7 +185,7 @@ public class ScheduleDAO {
 	    """;
 
 	    try (Connection con = ds.getConnection();
-	         PreparedStatement pstmt = con.prepareStatement(sql)) {
+	         PreparedStatement pstmt = con.prepareStatement(sql);) {
 
 	        pstmt.setString(1, s.getEmpId());
 	        pstmt.setString(2, s.getScheduleName());

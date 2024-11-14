@@ -5,14 +5,25 @@ $(document).ready(function(){
 	let currentDate;
 	
 	// 개인 일정, 공유 일정 모두 불러오기
+	/*
 	function fetchAllData() {
 	    fetchListData(); 
 	    fetchSharedListData(); 
 	}
+	*/	
+	function fetchAllData() {
+	    Promise.all([fetchListData(), fetchSharedListData()])
+	        .then(() => {
+	            initCalendar(); 
+	        })
+	        .catch(error => 
+	        	console.log("데이터 로드 오류:", error)
+	        );
+	}
 	
 	// 일정 리스트 불러오기
 	function fetchListData(){
-		$.ajax({
+		return $.ajax({
 	        url: "scheduleList",
 	        type: "get",
 	        dataType: "json",
@@ -23,10 +34,9 @@ $(document).ready(function(){
 	            console.log("success data", data);
 	            //callback(data); // 데이터가 성공적으로 로드된 후 콜백 함수 호출
 	            
-	            events = []; 
+	            //events = []; 
 	            if (data != null) {
 			        for (let i = 0; i < data.length; i++) {
-						
 			            events.push({
 			                title: data[i].schedule_name, 
 			                start: data[i].schedule_start, 
@@ -39,7 +49,7 @@ $(document).ready(function(){
 			        }
 			    }
      	        // 캘린더 초기화
-			    initCalendar();
+			    //initCalendar();
 			    
 			    //calendar.unselect();
        			//calendar.render();
@@ -52,7 +62,7 @@ $(document).ready(function(){
 	
 	// 공유 일정 리스트 불러오기
 	function fetchSharedListData() {
-	    $.ajax({
+	    return $.ajax({
 	        url: "sharedScheduleList", 
 	        type: "get",
 	        dataType: "json",
@@ -63,7 +73,7 @@ $(document).ready(function(){
 	        success: function(data) {
 	            console.log("공유 일정 리스트 불러오기 성공", data);
 	
-				events = [];
+				//events = [];
 	            if (data != null) {
 	                // 공유 일정 데이터를 기존 이벤트 배열에 추가
 	                for (let i = 0; i < data.length; i++) {
@@ -80,7 +90,7 @@ $(document).ready(function(){
 	                }
 	            }
 	            // 캘린더 초기화
-	            initCalendar();
+	            //initCalendar();
 	        },
 	        error: function(error) {
 	            console.log("공유 일정 리스트 불러오기 오류", error);

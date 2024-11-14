@@ -115,7 +115,6 @@ public class DocDao {
             throw new RuntimeException(e);
         }
         return 0;
-
     }
 
     private int insertBuyItem(DocBuy docBuy, Long docBuyId, Connection conn) {
@@ -137,6 +136,55 @@ public class DocDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public int insertVacationDoc(DocVacation docVacation, List<String> signList) {
+        try (Connection conn = ds.getConnection()) {
+            conn.setAutoCommit(false);
+            int docResult = insertDoc(docVacation, signList, conn);
+            if (docResult == 1) {
+                long docId = -1L;
+                String idSql = "SELECT seq_doc.CURRVAL FROM dual";
+                try (PreparedStatement idStmt = conn.prepareStatement(idSql);
+                     ResultSet rs = idStmt.executeQuery()) {
+                    if (rs.next()) {
+                        docId = rs.getLong(1);
+                    } else {
+                        throw new SQLException("생성된 키를 가져오지 못했습니다.");
+                    }
+                }
+                String sql = """
+                            INSERT INTO DOC_VACATION(DOC_ID, VACATION_START, VACATION_END, VACATION_TYPE, 
+                                                    VACATION_COUNT, VACATION_FILE_PATH, VACATION_FILE_ORIGINAL,
+                                                    VACATION_FILE_UUID, VACATION_FILE_TYPE)
+                            VALUES (?,?,?,?,?,?,?,?,?)
+                        """;
+                try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setLong(1, docId);
+                    ps.setDate(2, Date.valueOf(docVacation.getVacationStart()));
+                    ps.setDate(3, Date.valueOf(docVacation.getVacationEnd()));
+                    ps.setString(4, docVacation.getVacationType());
+                    ps.setInt(5, docVacation.getVacationCount());
+                    ps.setString(6, docVacation.getVacationFilePath());
+                    ps.setString(7, docVacation.getVacationFileOriginal());
+                    ps.setString(8, docVacation.getVacationFileUUID());
+                    ps.setString(9, docVacation.getVacationFileType());
+                    int result = ps.executeUpdate();
+                    if (result == 1) {
+                        conn.commit();
+                        conn.setAutoCommit(true);
+                        return 1;
+                    } else {
+                        conn.rollback();
+                        conn.setAutoCommit(true);
+                        return 0;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
     }
 
     public int insertTripDoc(DocTrip docTrip, List<String> signList) {
@@ -406,7 +454,39 @@ public class DocDao {
         return null;
     }
 
-    public Doc getVacationDoc(Long docId) {
+    public DocVacation getVacationDoc(Long docId) {
+        String sql = """
+                    select *
+                    from doc d join DOC_VACATION v
+                    on d.doc_id = v.DOC_ID
+                    WHERE D.DOC_ID = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, docId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new DocVacation(rs.getLong("doc_id"),
+                        rs.getString("doc_writer"),
+                        DocType.fromString(rs.getString("doc_type")),
+                        rs.getString("doc_title"),
+                        rs.getString("doc_content"),
+                        rs.getTimestamp("doc_create_date").toLocalDateTime(),
+                        rs.getInt("sign_finish") == 1,
+                        rs.getDate("doc_create_date").toLocalDate(),
+                        rs.getDate("vacation_start").toLocalDate(),
+                        rs.getDate("vacation_end").toLocalDate(),
+                        rs.getInt("vacation_count"),
+                        rs.getString("vacation_type"),
+                        rs.getString("vacation_file_Path"),
+                        rs.getString("vacation_file_original"),
+                        rs.getString("vacation_file_uuid"),
+                        rs.getString("vacation_file_type")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 

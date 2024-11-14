@@ -2,8 +2,14 @@ package com.hta2405.unite.controller;
 
 import com.hta2405.unite.action.doc.*;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024 * 2,  // 2MB
+        maxFileSize = 1024 * 1024 * 10,       // 10MB
+        maxRequestSize = 1024 * 1024 * 50     // 50MB
+)
 @WebServlet("/doc/*")
 public class DocFrontController extends AbstractFrontController {
     @Override
@@ -23,5 +29,6 @@ public class DocFrontController extends AbstractFrontController {
         actionMap.put("/countVacation", new DocCountVacationAction());
         actionMap.put("/list/dept", new DocDeptListAction());
         actionMap.put("/list/sign", new DocSignListAction());
+        actionMap.put("/download", new DocVacationFileDownloadAction());
     }
 }

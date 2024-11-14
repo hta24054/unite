@@ -7,7 +7,7 @@
     <jsp:include page="doc_leftbar.jsp"/>
 
     <meta charset="UTF-8">
-    <title>구매신청서 조회</title>
+    <title>구매신청서</title>
     <style>
         .header-cell {
             font-size: 36px;

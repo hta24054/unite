@@ -159,150 +159,148 @@
 	</div>
 
     <script>
-        $(document).ready(function() {
-        	$("#scheduleShareBtn").on("click", function(e) {
-        		e.preventDefault();
-        		
-                const targetId = $(this).data('target');
-                localStorage.setItem('selectedEmpId', targetId);
-                
-                $('#scheduleShareModal').modal('show');
-            });
-        	
-            // "선택" 열 추가
-            $('#employeeTableContainer thead tr').prepend('<th>선택</th>');
-
-            // 직원 목록 행에 체크박스를 추가하는 함수
-            function addCheckboxes() {
-                $('#employeeTableBody tr').each(function () {
-                    const empId = $(this).find('td:eq(0)').text().trim();
-                    $(this).prepend('<td><input type="checkbox" name="selectedEmp" value="' + empId + '"></td>');
-                    $(this).find('td:eq(1)').hide();  // empId 열 숨기기
-                });
-            }
-
-            // 최초 로딩 시 체크박스 추가
-            addCheckboxes();
-
-            // AJAX 후 체크박스를 다시 추가
-            $(document).on('ajaxSuccess', function () {
-                addCheckboxes();
-            });
-
-            // 저장 버튼 클릭 시 직원 정보 등록
-            $('#btnSave').on('click', function() {
-                insertEmp();  // 직원 등록 함수 호출
-            });
-             
-            $('#btnShareRegister').on('click', function(e) {
-                e.preventDefault();
-                
-                if (!validateForm()) {
-                    return;
-                }
-                
-                const shareData = {
-                    emp_id: $('#emp_id').val(),
-                    schedule_name: $('#schedule_name').val(),
-                    allDay: $('#allDay').prop('checked') ? 1 : 0,
-                    startAt: moment($("#startAt").val()).format('YYYY-MM-DD HH:mm'),
-        			endAt: moment($("#endAt").val()).format('YYYY-MM-DD HH:mm'), 
-                    bgColor: $('#bgColor').val(),
-                    share_emp: $('#share_emp').val(),
-                    description: $('#description').val()
-                }
-
-                $.ajax({
-                    url: '${pageContext.request.contextPath}/schedule/scheduleShareAdd',
-                    method: 'post',
-                    dataType: 'json',
-                    data: shareData,
-                    success: function(data) {
-                    	console.log("공유 일정 서버 응답:", data); 
-                    	
-                    	alert('공유 일정이 등록되었습니다.');
-                        addEventToCalendar(shareData);  
-                        
-                        const events = []; 
-                        if (data != null && data.length > 0) {
-        			        for (let i = 0; i < data.length; i++) {
-        			        	
-        						const isAllDay = data[i].schedule_allDay === 1;
-        						events.push({
-        			                title: data[i].schedule_name, 
-        			                start: data[i].schedule_start, 
-        			                end: data[i].schedule_end,
-        			                backgroundColor: data[i].schedule_color, 
-        			                description: data[i].schedule_content,
-        			                allDay: isAllDay 
-        			            });
-        			        }
-        			    }
-                        
-                        events.forEach(function(event) {
-                            $('#calendar').fullCalendar('renderEvent', event, true);
-                        });
-
-                        window.location.href = '${pageContext.request.contextPath}/schedule/calender';
-                    },
-                    error: function() {
-                        alert('공유 일정 등록 오류');
-                    }
-                });
-            });
-            
-            function addEventToCalendar(eventData) {
-                const event = {
-                    title: eventData.schedule_name,
-                    start: eventData.startAt,
-                    end: eventData.endAt,
-                    backgroundColor: eventData.bgColor,
-                    description: eventData.description,
-                    allDay: eventData.allDay === 1
-                };
-            }
-            
-            function validateForm() {
-            	const $scheduleName = $("#schedule_name");
-        		const $start = $("#startAt"); 
-        		const $end = $("#endAt");
-        		const $shareEmp = $('#share_emp');
-
-                if ($scheduleName.val().trim() === "") {
-                    alert("일정명을 입력하세요");
-                    $scheduleName.focus();
-                    return false;
-                }
-
-                if ($start.val().trim() === "") {
-                    alert("시작 날짜/시간을 선택하세요");
-                    $start.focus();
-                    return false;
-                }
-
-                if (new Date($start.val()) > new Date($end.val())) {
-                    alert("끝나는 날짜/시간이 시작 날짜/시간보다 이전입니다. 다시 확인해 주세요.");
-                    return false;
-                }
-
-                if ($end.val().trim() === "") {
-                    alert("종료 날짜/시간을 선택하세요");
-                    $end.focus();
-                    return false;
-                }
-                
-                if (!$shareEmp.val()) {
-                    alert('공유자를 선택해주세요.');
-                    return false;
-                }
-             
-                return true;
-            }
-            
-            $('#scheduleShareModal').on('hidden.bs.modal', function() {
-                $('input[name="selectedEmp"]').prop('checked', false); 
-            });
-        });
+	    $("#scheduleShareBtn").on("click", function(e) {
+			e.preventDefault();
+			
+	        const targetId = $(this).data('target');
+	        localStorage.setItem('selectedEmpId', targetId);
+	        
+	        $('#scheduleShareModal').modal('show');
+	    });
+		
+	    // "선택" 열 추가
+	    $('#employeeTableContainer thead tr').prepend('<th>선택</th>');
+	
+	    // 직원 목록 행에 체크박스를 추가하는 함수
+	    function addCheckboxes() {
+	        $('#employeeTableBody tr').each(function () {
+	            const empId = $(this).find('td:eq(0)').text().trim();
+	            $(this).prepend('<td><input type="checkbox" name="selectedEmp" value="' + empId + '"></td>');
+	            $(this).find('td:eq(1)').hide();  // empId 열 숨기기
+	        });
+	    }
+	
+	    // 최초 로딩 시 체크박스 추가
+	    addCheckboxes();
+	
+	    // AJAX 후 체크박스를 다시 추가
+	    $(document).on('ajaxSuccess', function () {
+	        addCheckboxes();
+	    });
+	
+	    // 저장 버튼 클릭 시 직원 정보 등록
+	    $('#btnSave').on('click', function() {
+	        insertEmp();  // 직원 등록 함수 호출
+	    });
+	     
+	    $('#btnShareRegister').on('click', function(e) {
+	        e.preventDefault();
+	        
+	        if (!validateForm()) {
+	            return;
+	        }
+	        
+	        const shareData = {
+	            emp_id: $('#emp_id').val(),
+	            schedule_name: $('#schedule_name').val(),
+	            allDay: $('#allDay').prop('checked') ? 1 : 0,
+	            startAt: moment($("#startAt").val()).format('YYYY-MM-DD HH:mm'),
+				endAt: moment($("#endAt").val()).format('YYYY-MM-DD HH:mm'), 
+	            bgColor: $('#bgColor').val(),
+	            share_emp: $('#share_emp').val(),
+	            description: $('#description').val()
+	        }
+	
+	        $.ajax({
+	            url: '${pageContext.request.contextPath}/schedule/scheduleShareAdd',
+	            method: 'post',
+	            dataType: 'json',
+	            data: shareData,
+	            success: function(data) {
+	            	console.log("공유 일정 서버 응답:", data); 
+	            	
+	            	alert('공유 일정이 등록되었습니다.');
+	                addEventToCalendar(shareData);  
+	                
+	                const events = []; 
+	                if (data != null && data.length > 0) {
+				        for (let i = 0; i < data.length; i++) {
+				        	
+							const isAllDay = data[i].schedule_allDay === 1;
+							events.push({
+				                title: data[i].schedule_name, 
+				                start: data[i].schedule_start, 
+				                end: data[i].schedule_end,
+				                backgroundColor: data[i].schedule_color, 
+				                description: data[i].schedule_content,
+				                allDay: isAllDay 
+				            });
+				        }
+				    }
+	                
+	                events.forEach(function(event) {
+	                    $('#calendar').fullCalendar('renderEvent', event, true);
+	                });
+	
+	                window.location.href = '${pageContext.request.contextPath}/schedule/calender';
+	            },
+	            error: function() {
+	                alert('공유 일정 등록 오류');
+	            }
+	        });
+	    });
+	    
+	    function addEventToCalendar(eventData) {
+	        const event = {
+	            title: eventData.schedule_name,
+	            start: eventData.startAt,
+	            end: eventData.endAt,
+	            backgroundColor: eventData.bgColor,
+	            description: eventData.description,
+	            allDay: eventData.allDay === 1
+	        };
+	    }
+	    
+	    function validateForm() {
+	    	const $scheduleName = $("#schedule_name");
+			const $start = $("#startAt"); 
+			const $end = $("#endAt");
+			const $shareEmp = $('#share_emp');
+	
+	        if ($scheduleName.val().trim() === "") {
+	            alert("일정명을 입력하세요");
+	            $scheduleName.focus();
+	            return false;
+	        }
+	
+	        if ($start.val().trim() === "") {
+	            alert("시작 날짜/시간을 선택하세요");
+	            $start.focus();
+	            return false;
+	        }
+	
+	        if (new Date($start.val()) > new Date($end.val())) {
+	            alert("끝나는 날짜/시간이 시작 날짜/시간보다 이전입니다. 다시 확인해 주세요.");
+	            return false;
+	        }
+	
+	        if ($end.val().trim() === "") {
+	            alert("종료 날짜/시간을 선택하세요");
+	            $end.focus();
+	            return false;
+	        }
+	        
+	        if (!$shareEmp.val()) {
+	            alert('공유자를 선택해주세요.');
+	            return false;
+	        }
+	     
+	        return true;
+	    }
+	    
+	    $('#scheduleShareModal').on('hidden.bs.modal', function() {
+	        $('input[name="selectedEmp"]').prop('checked', false); 
+	    });
         
         function insertEmp() {
             const targetEmpId = localStorage.getItem('selectedEmpId');

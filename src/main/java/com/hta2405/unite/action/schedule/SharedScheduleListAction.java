@@ -18,15 +18,13 @@ public class SharedScheduleListAction implements Action {
 			throws ServletException, IOException {
 		
         String empId = request.getParameter("emp_id"); // 일정 등록자 ID (로그인된 사용자)
-        
-        //String[] shareEmpArray = request.getParameterValues("share_emp"); // 공유자 ID (선택된 직원들)
-        String shareEmp = request.getParameter("share_emp");
-        
-        System.out.println("shareEmp값 확인 : " + shareEmp);
-        
+        String[] shareEmpArray = request.getParameterValues("share_emp"); // 공유자 ID (선택된 직원들)
+        if (shareEmpArray == null) {
+            shareEmpArray = new String[0]; // 기본값으로 빈 배열 설정
+        }
+  
         ScheduleDAO sdao = new ScheduleDAO();
-        //JsonArray arr = sdao.getSharedScheduleList(empId, shareEmpArray);
-        JsonArray arr = sdao.getSharedScheduleList(empId, shareEmp);
+        JsonArray arr = sdao.getSharedScheduleList(empId, shareEmpArray);
 
         response.setContentType("application/json;charset=utf-8");
         response.getWriter().write(arr.toString());

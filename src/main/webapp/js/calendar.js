@@ -60,6 +60,7 @@ $(document).ready(function(){
 	        dataType: "json",
 	        data: {
 	            emp_id: $("#emp_id").val(), 
+	            share_emp: $('#share_emp').val()
 	        },
 	        success: function(data) {
 	            console.log("공유 일정 리스트 불러오기 성공", data);

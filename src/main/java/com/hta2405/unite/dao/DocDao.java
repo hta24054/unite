@@ -424,4 +424,44 @@ public class DocDao {
         }
         return list;
     }
+
+    public List<DocWithSigner> getInProgressDocByEmpId(String empId) {
+        List<DocWithSigner> list = new ArrayList<>();
+        String sql = """
+                    SELECT DOC.*, EMP.EMP_ID, EMP.ENAME
+                    FROM DOC
+                             JOIN SIGN ON DOC.DOC_ID = SIGN.DOC_ID
+                             JOIN EMP ON SIGN.EMP_ID = EMP.EMP_ID
+                             JOIN (
+                        SELECT DOC_ID, MIN(SIGN_ORDER) AS min_sign_order
+                        FROM SIGN
+                        WHERE SIGN_TIME IS NULL
+                        GROUP BY DOC_ID
+                    ) min_sign ON SIGN.DOC_ID = min_sign.DOC_ID AND SIGN.SIGN_ORDER = min_sign.min_sign_order
+                    WHERE doc.SIGN_FINISH = 0 AND SIGN.SIGN_TIME IS NULL AND DOC_WRITER = ?
+                    ORDER BY DOC_CREATE_DATE
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, empId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Doc doc = new Doc(rs.getLong("doc_id"),
+                        rs.getString("doc_writer"),
+                        DocType.fromString(rs.getString("doc_type")),
+                        rs.getString("doc_title"),
+                        rs.getString("doc_content"),
+                        rs.getTimestamp("doc_create_date").toLocalDateTime(),
+                        rs.getInt("sign_finish") == 1
+                );
+                list.add(new DocWithSigner(doc,
+                        rs.getString("emp_id"),
+                        rs.getString("ename"))
+                );
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return list;
+    }
 }

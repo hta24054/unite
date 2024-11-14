@@ -55,10 +55,6 @@
                     </tr>
                     <tr>
                         <td class="table-secondary font-weight-bold text-center">작 성 일</td>
-                        <td>${emp.ename}</td>
-                    </tr>
-                    <tr>
-                        <td class="table-secondary font-weight-bold text-center">작 성 일</td>
                         <td>${today}</td>
                     </tr>
                 </table>

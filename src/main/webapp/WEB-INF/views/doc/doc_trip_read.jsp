@@ -78,7 +78,7 @@
         </tr>
         <tr>
             <td class="table-secondary font-weight-bold text-center">목적 및 내용</td>
-            <td><${docTrip.tripInfo}/td>
+            <td>${docTrip.tripInfo}</td>
         </tr>
     </table>
     <table class="table table-bordered mt-4">

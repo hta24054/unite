@@ -1,58 +1,81 @@
 package com.hta2405.unite.action.doc;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.DocDao;
 import com.hta2405.unite.dto.DocBuy;
 import com.hta2405.unite.dto.DocBuyItem;
 import com.hta2405.unite.enums.DocType;
-import com.hta2405.unite.util.CommonUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class DocBuyWriteProcessAction implements Action {
+    DocDao docDao = new DocDao();
+
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String[] productNames = req.getParameterValues("product_name");
-        String[] standards = req.getParameterValues("standard");
-        long[] quantities = Arrays.stream(req.getParameterValues("quantity"))
-                .map(i -> i.replaceAll(",", ""))
-                .mapToLong(Long::parseLong)
-                .toArray();
-        long[] prices = Arrays.stream(req.getParameterValues("price"))
-                .map(i -> i.replaceAll(",", ""))
-                .mapToLong(Long::parseLong)
-                .toArray();
+        Gson gson = new Gson();
+        BufferedReader reader = req.getReader();
+        DocBuyRequest docBuyRequest = gson.fromJson(reader, DocBuyRequest.class);
 
         List<DocBuyItem> items = new ArrayList<>();
-        for (int i = 0; i < productNames.length; i++) {
-            items.add(new DocBuyItem(null, null, productNames[i], standards[i], quantities[i], prices[i]));
+        for (DocBuyRequest.Product product : docBuyRequest.productDetails) {
+            items.add(new DocBuyItem(
+                    null,
+                    null,
+                    product.product_name,
+                    product.standard,
+                    product.quantity,
+                    product.price
+            ));
         }
 
-        DocBuy docBuy = new DocBuy(null,
-                req.getParameter("writer"),
+        DocBuy docBuy = new DocBuy(
+                null,
+                docBuyRequest.writer,
                 DocType.BUY,
-                req.getParameter("title"),
-                req.getParameter("content"),
+                docBuyRequest.title,
+                docBuyRequest.content,
                 LocalDateTime.now(),
                 false,
                 null,
                 items
         );
 
-        DocDao docDao = new DocDao();
-        String[] signArr = req.getParameterValues("sign[]");
-        int result = docDao.insertBuyDoc(docBuy, signArr);
+        int result = docDao.insertBuyDoc(docBuy, docBuyRequest.signers);
+        String status = "success";
         if (result != 1) {
-            return CommonUtil.alertAndGoBack(resp, "문서 작성 실패");
+            status = "fail";
         }
-        return new ActionForward(true, req.getContextPath() + "/doc/in-progress");
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("status", status);
+
+        resp.getWriter().print(jsonObject);
+        return null;
+    }
+
+    // 요청 데이터를 매핑할 내부 클래스 정의
+    private static class DocBuyRequest {
+        String writer;
+        String title;
+        String content;
+        List<String> signers;
+        List<Product> productDetails;
+
+        private static class Product {
+            String product_name;
+            String standard;
+            long quantity;
+            long price;
+        }
     }
 }

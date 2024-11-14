@@ -65,7 +65,7 @@ public class DocDao {
         }
     }
 
-    public int insertBuyDoc(DocBuy docBuy, String[] signArr) {
+    public int insertBuyDoc(DocBuy docBuy, List<String> signArr) {
         try (Connection conn = ds.getConnection()) {
             conn.setAutoCommit(false);
             int docResult = insertDoc(docBuy, signArr, conn);
@@ -139,10 +139,10 @@ public class DocDao {
         }
     }
 
-    public int insertTripDoc(DocTrip docTrip, String[] signArr) {
+    public int insertTripDoc(DocTrip docTrip, List<String> signList) {
         try (Connection conn = ds.getConnection()) {
             conn.setAutoCommit(false);
-            int docResult = insertDoc(docTrip, signArr, conn);
+            int docResult = insertDoc(docTrip, signList, conn);
             if (docResult == 1) {
                 long docId = -1L;
                 String idSql = "SELECT seq_doc.CURRVAL FROM dual";
@@ -187,10 +187,10 @@ public class DocDao {
         return 0;
     }
 
-    public int insertGeneralDoc(Doc doc, String[] signArr) {
+    public int insertGeneralDoc(Doc doc, List<String> signList) {
         try (Connection conn = ds.getConnection()) {
             conn.setAutoCommit(false);
-            int result = insertDoc(doc, signArr, conn);
+            int result = insertDoc(doc, signList, conn);
             if (result == 1) {
                 conn.commit();
                 conn.setAutoCommit(true);
@@ -202,7 +202,7 @@ public class DocDao {
         return 0;
     }
 
-    public int insertDoc(Doc doc, String[] signArr, Connection conn) throws SQLException {
+    public int insertDoc(Doc doc, List<String> signList, Connection conn) throws SQLException {
         String sql = """
                 INSERT INTO DOC (DOC_WRITER, DOC_TYPE, DOC_TITLE, DOC_CONTENT, DOC_CREATE_DATE)
                 VALUES (?,?,?,?,?)
@@ -230,7 +230,7 @@ public class DocDao {
                 }
             }
             // SIGN 테이블에 서명 리스트 삽입
-            List<Sign> list = makeSignListByParam(signArr, docId);
+            List<Sign> list = makeSignListByParam(signList, docId);
             assert list != null;
             int signResult = insertSign(list, conn);
             if (signResult == list.size()) {
@@ -410,16 +410,16 @@ public class DocDao {
         return null;
     }
 
-    private List<Sign> makeSignListByParam(String[] signArr, Long docId) {
+    private List<Sign> makeSignListByParam(List<String> signList, Long docId) {
         if (docId == -1L) {
             return null;
         }
         List<Sign> list = new ArrayList<>();
-        for (int i = 0; i < signArr.length; i++) {
+        for (int i = 0; i < signList.size(); i++) {
             if (i == 0) {
-                list.add(new Sign(null, signArr[i], docId, i, LocalDateTime.now())); //기안자는 결재완료처리
+                list.add(new Sign(null, signList.get(i), docId, i, LocalDateTime.now())); //기안자는 결재완료처리
             } else {
-                list.add(new Sign(null, signArr[i], docId, i, null));
+                list.add(new Sign(null, signList.get(i), docId, i, null));
             }
         }
         return list;

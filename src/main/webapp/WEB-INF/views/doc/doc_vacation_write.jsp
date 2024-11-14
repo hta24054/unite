@@ -5,6 +5,7 @@
 <head>
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="doc_leftbar.jsp"/>
+    <script src="${pageContext.request.contextPath }/js/sign_write.js"></script>
 
     <meta charset="UTF-8">
     <title>휴가신청서 작성</title>
@@ -112,7 +113,7 @@
 
     </div>
     <div class="text-right mt-3">
-        <button type="button" class="btn btn-success" id="submit-button">결재 상신</button>
+        <button type="button" form="doc_form" class="btn btn-success" id="submit-button">결재 상신</button>
         <button type="reset" class="btn btn-secondary">초기화</button>
     </div>
 </form>

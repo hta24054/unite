@@ -4,20 +4,9 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>결재대기함</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <title>문서등록대장 - 부서 기안문서</title>
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="doc_leftbar.jsp"/>
-
-    <script>
-        $(document).ready(function () {
-            let result = '${message}';
-            if (result && result.trim() !== '') {
-                alert(result);
-                <% session.removeAttribute("message"); %>
-            }
-        });
-    </script>
     <style>
         #main_title {
             color: #334466;
@@ -31,7 +20,7 @@
         }
     </style>
 <body>
-<h2 id="main_title">결재 대기함</h2>
+<h2 id="main_title">문서등록대장 - ${deptMap[deptId]}</h2>
 <div class="container text-center">
     <table class="table table-striped table-bordered" id="waiting_table">
         <thead>
@@ -40,21 +29,19 @@
             <th style="width: 15%">기안일</th>
             <th style="width: 15%">문서구분</th>
             <th style="width: 40%">문서제목</th>
-            <th style="width: 20%">결재 대기</th>
         </tr>
         </thead>
         <tbody>
         <c:if test="${empty list}">
-            <td colspan="5">대기중인 결재문서가 없습니다.</td>
+            <td colspan="5">내가 결재한 문서가 없습니다.</td>
         </c:if>
         <c:if test="${!empty list}">
-            <c:forEach var="waitingDoc" items="${list}">
+            <c:forEach var="doc" items="${list}">
                 <tr>
-                    <td>${waitingDoc.doc.docId}</td>
-                    <td class="create-date" data-date="${waitingDoc.doc.docCreateDate}"></td>
-                    <td>${waitingDoc.doc.docType.getType()}</td>
-                    <td><a href="${pageContext.request.contextPath}/doc/read?docId=${waitingDoc.doc.docId}">${waitingDoc.doc.docTitle}</a></td>
-                    <td>${waitingDoc.signerName}</td>
+                    <td>${doc.docId}</td>
+                    <td class="create-date" data-date="${doc.docCreateDate}"></td>
+                    <td>${doc.docType.getType()}</td>
+                    <td><a href="${pageContext.request.contextPath}/doc/read?docId=${doc.docId}">${doc.docTitle}</a></td>
                 </tr>
             </c:forEach>
         </c:if>

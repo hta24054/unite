@@ -63,10 +63,10 @@
             <a href="#" onclick="toggleSubMenu('#submenu-doc-list')">문서등록대장</a>
             <ul class="submenu" id="submenu-doc-list">
                 <li class="left" style="border: none;">
-                    <a href="${pageContext.request.contextPath}/doc/dept" class="submenu-link">부서 기안문서</a>
+                    <a href="${pageContext.request.contextPath}/doc/list/dept" class="submenu-link">부서 기안문서</a>
                 </li>
                 <li class="left" style="border: none;">
-                    <a href="${pageContext.request.contextPath}/doc/my-approved" class="submenu-link">내가 결재한 문서</a>
+                    <a href="${pageContext.request.contextPath}/doc/list/sign" class="submenu-link">내가 결재한 문서</a>
                 </li>
             </ul>
         </li>

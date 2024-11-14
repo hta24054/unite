@@ -4,20 +4,11 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>결재대기함</title>
+    <title>결재 진행 문서</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="doc_leftbar.jsp"/>
 
-    <script>
-        $(document).ready(function () {
-            let result = '${message}';
-            if (result && result.trim() !== '') {
-                alert(result);
-                <% session.removeAttribute("message"); %>
-            }
-        });
-    </script>
     <style>
         #main_title {
             color: #334466;
@@ -31,7 +22,7 @@
         }
     </style>
 <body>
-<h2 id="main_title">결재 대기함</h2>
+<h2 id="main_title">결재 진행문서</h2>
 <div class="container text-center">
     <table class="table table-striped table-bordered" id="waiting_table">
         <thead>
@@ -45,7 +36,7 @@
         </thead>
         <tbody>
         <c:if test="${empty list}">
-            <td colspan="5">대기중인 결재문서가 없습니다.</td>
+            <td colspan="5">결재 진행중인 문서가 없습니다.</td>
         </c:if>
         <c:if test="${!empty list}">
             <c:forEach var="waitingDoc" items="${list}">

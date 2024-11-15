@@ -15,6 +15,16 @@ $(document).ready(function () {//결재자관련
 
 // 결재자 칸 추가 함수
     function addSigner(name, empId) {
+        //이미 추가된 결재자면 등록 불가
+        const exists = $('input[name="sign[]"]').filter(function () {
+            return $(this).val() === empId;
+        }).length > 0;
+
+        if (exists) {
+            alert("이미 추가된 결재자입니다.");
+            return;
+        }
+
         if (signCount >= maxSignCount) {
             alert("최대 3명까지 결재자를 추가할 수 있습니다.");
             return;

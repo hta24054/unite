@@ -18,8 +18,10 @@ public class DocRevokeAction implements com.hta2405.unite.action.Action {
 
         String status = "success";
 
-        //결재한적이 없는 사람 또는 문서회수에 실패한다면
-        if (!docDao.isDocSignedByEmp(docId, empId) || docDao.revokeDoc(docId, empId) < 1) {
+        //결재한적이 없는 사람 또는 최종 결재가 완료된 문서거나 문서회수에 실패한다면 fail
+        if (!docDao.isDocSignedByEmp(docId, empId)
+                || docDao.getGeneralDocByDocId(docId).isSignFinish()
+                || docDao.revokeDoc(docId, empId) < 1) {
             status = "fail";
         }
         resp.setContentType("application/json");

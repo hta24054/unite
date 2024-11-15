@@ -751,4 +751,20 @@ public class DocDao {
             throw new RuntimeException(e);
         }
     }
+
+    public boolean deleteDoc(Long docId) {
+        String sql = """
+                DELETE DOC
+                WHERE DOC_ID = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, docId);
+            return ps.executeUpdate() == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("문서 작성 실패");
+        }
+        return false;
+    }
 }

@@ -4,7 +4,7 @@
     <c:choose>
         <c:when test="${role == 'preSignedWriter'}">
             <button type="button" class="btn btn-success" id="sign">결재</button>
-            <button type="button" class="btn btn-danger">삭제</button>
+            <button type="button" class="btn btn-danger" id="delete">삭제</button>
         </c:when>
         <c:when test="${role == 'preSigner'}">
             <button type="button" class="btn btn-success" id="sign">결재</button>
@@ -63,6 +63,26 @@
                 },
                 error: function () {
                     alert("문서 회수 중 오류가 발생했습니다.");
+                }
+            });
+        }
+    });
+    $('#delete').click(function () {
+        if (confirm('문서를 삭제하시겠습니까?')) {
+            $.ajax({
+                url: '${pageContext.request.contextPath}/doc/delete',
+                data: {docId: ${param.docId}},
+                dataType: "json",
+                success: function (response) {
+                    if (response.status === 'success') {
+                        alert("문서를 삭제하였습니다.");
+                        window.location.href ="${pageContext.request.contextPath}/doc/waiting"
+                    } else {
+                        alert("문서 삭제 중 오류가 발생했습니다.");
+                    }
+                },
+                error: function () {
+                    alert("문서 삭제 중 오류가 발생했습니다.");
                 }
             });
         }

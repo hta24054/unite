@@ -16,7 +16,7 @@
         }
 
         .approval-table th, .approval-table td {
-            padding: 10px;
+            padding: 5px;
             text-align: center;
             vertical-align: middle;
             border-color: black; /* 테두리 검정색 */

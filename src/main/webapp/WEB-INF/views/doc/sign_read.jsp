@@ -16,7 +16,7 @@
         }
 
         .approval-table th, .approval-table td {
-            padding: 10px;
+            padding : 5px;
             text-align: center;
             vertical-align: middle;
             border-color: black; /* 테두리 검정색 */
@@ -47,6 +47,8 @@
 
         .sign-time {
             font-size: 12px;
+            height: 40px;
+            min-height: 40px;
         }
     </style>
 </head>
@@ -76,7 +78,7 @@
         <tr>
             <c:forEach var="sign" items="${signList}">
                 <td class="date">
-                    <span class="sign-time" data-sign-time="${sign.signTime}"></span>
+                    <span class="sign-time" data-sign-time="${sign.signTime}">&nbsp;</span>
                 </td>
             </c:forEach>
         </tr>

@@ -1,11 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Address Book</title>
+<title>조직도 및 직원 검색</title>
 <jsp:include page="../common/header.jsp" />
 <jsp:include page="contact_leftbar.jsp" />
 
@@ -21,243 +21,209 @@
 	href="https://cdnjs.cloudflare.com/ajax/libs/jquery.fancytree/2.38.0/skin-win8/ui.fancytree.min.css">
 
 <style>
-table {
-	width: 100%;
-	border-collapse: collapse;
+.content-container {
+	display: flex;
+	gap: 30px;
 }
 
+#treeContainer, #employeeTableContainer {
+	width: 50%;
+}
 
+.table {
+	width: 100%;
+}
+
+.title {
+	color: #334466;
+	font-size: 18px;
+	font-weight: bold;
+	border-bottom: 1px solid black;
+	padding-bottom: 10px;
+	margin-bottom: 25px;
+}
+
+#tree_table {
+	text-align: center;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 </style>
 </head>
 <body>
+	<div class="container mt-4">
+		<div class="content-container">
+			<div id="treeContainer">
+				<h5 class="title" id="tree_title">조직도</h5>
+				<div id="tree"></div>
+			</div>
 
-	<h1>Address Book</h1>
-	<!-- JSP에서 contextPath를 JavaScript 변수로 설정 -->
-	<!-- JavaScript 코드 시작 -->
+			<div id="employeeTableContainer">
+				<h5 class="title">직원 목록</h5>
+				<input type="text" id="searchInput" class="form-control mb-3"
+					placeholder="검색어를 입력하세요">
+				<div class="btn-group mb-3">
+					<button onclick="loadAllEmployees('ename')" class="btn btn-primary">이름순</button>
+					<button onclick="loadAllEmployees('job_name')"
+						class="btn btn-secondary">직급순</button>
+				</div>
+				<table class="table table-bordered mt-4" id="tree_table">
+					<thead>
+						<tr>
+							<th style="display: none;">id</th>
+							<th>이름</th>
+							<th>휴대폰</th>
+							<th>내선번호</th>
+							<th>부서</th>
+							<th>직급</th>
+						</tr>
+					</thead>
+					<tbody id="employeeTableBody">
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
 	<script>
-		// 페이지 로드 시 모든 사원의 주소록 정보를 가져옵니다.
-		$(document).ready(function() {
-			loadContacts('ename'); // 초기 정렬 기준을 'ename'으로 설정합니다.
-		});
+    $(document).ready(function () {
+        $("#tree").fancytree({
+            source: [
+                {
+                    title: "대표이사", key: "1000", folder: true, children: [
+                        {title: "부사장", key: "1001", folder: true},
+                        {
+                            title: "경영기획본부", key: "1100", folder: true, children: [
+                                {title: "재무관리팀", key: "1110", folder: true},
+                                {title: "인사관리팀", key: "1120", folder: true}
+                            ]
+                        },
+                        {
+                            title: "SI사업본부", key: "1200", folder: true, children: [
+                                {title: "신용평가팀", key: "1210", folder: true},
+                                {title: "금융SI팀", key: "1220", folder: true},
+                                {title: "비금융SI팀", key: "1230", folder: true},
+                                {title: "SM팀", key: "1240", folder: true}
+                            ]
+                        },
+                        {
+                            title: "영업본부", key: "1300", folder: true, children: [
+                                {title: "솔루션영업팀", key: "1310", folder: true},
+                                {title: "SI영업팀", key: "1320", folder: true},
+                                {title: "SM영업팀", key: "1330", folder: true}
+                            ]
+                        },
+                        {
+                            title: "R&D본부", key: "1400", folder: true, children: [
+                                {title: "연구개발팀", key: "1410", folder: true}
+                            ]
+                        }
+                    ]
+                }
+            ],
+            click: function (event, data) {
+                const deptId = data.node.key;
+                loadEmployees(deptId);
+            }
+        });
+        showInitialMessage();
 
-		function loadContacts(orderBy) {
-			console.log('orderBy 파라미터:', orderBy); // 추가 로그
+        // 처음 접속 시 모든 직원 정보를 로드
+        loadAllEmployees();
 
-			if (!orderBy) {
-				console.error('orderBy 파라미터가 설정되지 않았습니다.');
-				return;
-			}
+        function loadEmployees(deptId) {
+            $.ajax({
+                url: '${pageContext.request.contextPath}/contact/view',
+                method: 'GET',
+                data: { deptId: deptId },
+                success: function (data) {
+                    console.log("AJAX 응답 데이터:", data); // 응답 데이터 로깅
+                    updateEmployeeTable(data.empList, data.jobName, data.deptName);
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX 요청 실패:", status, error);
+                }
+            });
+        }
 
-			$.ajax({
-				url : `${pageContext.request.contextPath}/contact/view`,
-				method : 'GET',
-				data : {
-					orderBy : orderBy
-				},
-				success : function(data) {
-					console.log('데이터를 성공적으로 가져왔습니다:', data); // 응답 데이터 로그
-					const tbody = $('#employeeTableBody');
-					tbody.empty();
+       
+	
 
-					$.each(data, function(index, contact) {
-						const row = $('<tr></tr>');
-						row.append(`<td>${contact.emp.ename}</td>`);
-						row.append(`<td>${contact.emp.mobile}</td>`);
-						row.append(`<td>${contact.emp.tel}</td>`);
-						row.append(`<td>${contact.dept.deptName}</td>`);
-						row.append(`<td>${contact.job.jobName}</td>`);
-						tbody.append(row);
-					});
-				},
-				error : function() {
-					console.error('AJAX 요청 실패');
-				}
-			});
-		}
+        function loadAllEmployees(orderBy = 'ename') {
+            $.ajax({
+                url: '${pageContext.request.contextPath}/contact/allEmployees',
+                method: 'GET',
+                data: { orderBy: orderBy },
+                success: function (data) {
+                	
+                    updateEmployeeTable(data.empList, data.jobName);
+                }
+            });
+        }
 
-		function loadContactsByDept(departmentName) {
-			console.log('departmentName 파라미터:', departmentName); // 추가 로그
-
-			if (!departmentName) {
-				console.error('departmentName 파라미터가 설정되지 않았습니다.');
-				return;
-			}
-
-			$.ajax({
-				url : `${pageContext.request.contextPath}/contact/viewdept`,
-				method : 'GET',
-				data : {
-					departmentName : departmentName
-				},
-				success : function(data) {
-					console.log('데이터를 성공적으로 가져왔습니다:', data); // 응답 데이터 로그
-					const tbody = $('#employeeTableBody');
-					tbody.empty();
-
-					$.each(data, function(index, contact) {
-						const row = $('<tr></tr>');
-						row.append(`<td>${contact.emp.ename}</td>`);
-						row.append(`<td>${contact.emp.mobile}</td>`);
-						row.append(`<td>${contact.emp.tel}</td>`);
-						row.append(`<td>${contact.dept.deptName}</td>`);
-						row.append(`<td>${contact.job.jobName}</td>`);
-						tbody.append(row);
-					});
-				},
-				error : function() {
-					console.error('AJAX 요청 실패');
-				}
-			});
-		}
-
-		function searchByName() {
-			const name = $('#searchInput').val();
-			console.log('name 파라미터:', name); // 추가 로그
-
-			$.ajax({
-				url : `${pageContext.request.contextPath}/contact/viewname`,
-				method : 'GET',
-				data : {
-					name : name
-				},
-				success : function(data) {
-					console.log('데이터를 성공적으로 가져왔습니다:', data); // 응답 데이터 로그
-					const tbody = $('#employeeTableBody');
-					tbody.empty();
-
-					$.each(data, function(index, contact) {
-						const row = $('<tr></tr>');
-						row.append(`<td>${contact.emp.ename}</td>`);
-						row.append(`<td>${contact.emp.mobile}</td>`);
-						row.append(`<td>${contact.emp.tel}</td>`);
-						row.append(`<td>${contact.dept.deptName}</td>`);
-						row.append(`<td>${contact.job.jobName}</td>`);
-						tbody.append(row);
-					});
-				},
-				error : function() {
-					console.error('AJAX 요청 실패');
-				}
-			});
-		}
-
-		$(document).ready(function() {
-			if ($.fn.fancytree) {
-				$("#tree").fancytree({
-					source : [ {
-						title : "대표이사",
-						key : "대표이사",
-						folder : true,
-						children : [ {
-							title : "부사장",
-							key : "부사장",
-							folder : true
-						}, {
-							title : "경영기획본부",
-							key : "경영기획본부",
-							folder : true,
-							children : [ {
-								title : "재무관리팀",
-								key : "재무관리팀",
-								folder : true
-							}, {
-								title : "인사관리팀",
-								key : "인사관리팀",
-								folder : true
-							} ]
-						}, {
-							title : "SI사업본부",
-							key : "SI사업본부",
-							folder : true,
-							children : [ {
-								title : "신용평가팀",
-								key : "신용평가팀",
-								folder : true
-							}, {
-								title : "금융SI팀",
-								key : "금융SI팀",
-								folder : true
-							}, {
-								title : "비금융SI팀",
-								key : "비금융SI팀",
-								folder : true
-							}, {
-								title : "SM팀",
-								key : "SM팀",
-								folder : true
-							} ]
-						}, {
-							title : "영업본부",
-							key : "영업본부",
-							folder : true,
-							children : [ {
-								title : "솔루션영업팀",
-								key : "솔루션영업팀",
-								folder : true
-							}, {
-								title : "SI영업팀",
-								key : "SI영업팀",
-								folder : true
-							}, {
-								title : "SM영업팀",
-								key : "SM영업팀",
-								folder : true
-							} ]
-						}, {
-							title : "R&D본부",
-							key : "R&D본부",
-							folder : true,
-							children : [ {
-								title : "연구개발팀",
-								key : "연구개발팀",
-								folder : true
-							} ]
-						} ]
-					} ],
-					click : function(event, data) {
-						const department = data.node.key;
-						console.log("선택된 부서: " + department);
-						loadContactsByDept(department); // 선택된 부서명을 사용
-					}
-				});
-			} else {
-				console.error('fancytree 플러그인이 로드되지 않았습니다.');
-			}
-		});
-	</script>
-	<div>
-		<label for="searchInput">이름 검색:</label> <input type="text"
-			id="searchInput" onkeyup="searchByName()" placeholder="이름을 입력하세요">
-	</div>
-	<div>
-		<label for="deptSelect">부서 선택:</label> <select id="deptSelect"
-			onchange="loadContactsByDept()">
-			<option value="1">부서 1</option>
-			<option value="2">부서 2</option>
-			<!-- 필요한 부서 옵션 추가 -->
-		</select>
-	</div>
-	<button onclick="loadContacts('ename')">이름순</button>
-	<button onclick="loadContacts('job_name')">직급순</button>
-	<table id="contactTable">
-		<thead>
-			<tr>
-				<th data-orderby="ename">이름</th>
-				<th data-orderby="mobile">휴대폰</th>
-				<th data-orderby="tel">내선번호</th>
-				<th data-orderby="deptName">부서</th>
-				<th data-orderby="jobName">직급</th>
-			</tr>
-		</thead>
-		<tbody id="employeeTableBody">
-			<!-- 직원 정보가 여기에 표시됩니다 -->
-		</tbody>
-	</table>
-
-	<!-- 조직도 -->
-	<div id="tree"></div>
+        function searchEmployees(query) {
+            const url = '${pageContext.request.contextPath}/contact/search';
+            $.ajax({
+                url: url,
+                method: 'GET',
+                data: { query: query },
+                success: function (data) {
+                    updateEmployeeTable(data.empList, data.jobName);
+                }
+            });
+        }
 
 
-	<!-- JavaScript 코드 끝 -->
+        function updateEmployeeTable(empList, jobName, deptName) {
+            const tableBody = $('#employeeTableBody');
+            tableBody.empty();
+            $('#noDataMessage').remove();
+
+            console.log("empList:", empList); // empList 로그
+            console.log("jobName:", jobName); // jobName 로그
+            console.log("deptName:", deptName); // deptName 로그
+
+            if (empList.length === 0) {
+                tableBody.append("<tr><td colspan='6'>직원이 없습니다.</td></tr>");
+            } else {
+                $.each(empList, function (index, emp) {
+                    let html = "<tr>";
+                    html += "<td style='display: none;'>" + emp.empId + "</td>";
+                    html += "<td>" + emp.ename + "</td>";
+                    html += "<td>" + emp.mobile + "</td>";
+                    html += "<td>" + emp.tel + "</td>";
+                    html += "<td>" + jobName[emp.jobId] + "</td>";
+                    html += "<td>" + deptName[emp.deptId] + "</td>";
+                    html += "</tr>";
+                    tableBody.append(html);
+                });
+            }
+        }
+
+        function showInitialMessage() {
+            const tableBody = $('#employeeTableBody');
+            tableBody.empty();
+            $('#employeeTableContainer').append(
+                "<div id='noDataMessage' style='text-align: center; padding: 20px; font-weight: bold;'>부서를 선택해주세요</div>"
+            );
+        }
+
+        $('#searchInput').on('keyup', function() {
+            const query = $(this).val();
+            if (query.length > 2) { // 최소 3자 이상 입력 시 검색
+                searchEmployees(query);
+            }
+        });
+
+        $('.btn-primary').click(function() {
+            loadAllEmployees('ename'); // 이름순 정렬
+        });
+
+        $('.btn-secondary').click(function() {
+            loadAllEmployees('job_name'); // 직급순 정렬
+        });
+    });
+</script>
 </body>
 </html>

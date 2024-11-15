@@ -113,7 +113,7 @@
         </table>
     </div>
     <!-- 버튼 영역 -->
-    <jsp:include page="doc_read_button.jsp"/>
+    <jsp:include page="read_button.jsp"/>
 </form>
 </body>
 </html>

@@ -1,6 +1,6 @@
 .table { width: 70%; margin: auto; }
 
-table, td, th { border-collapse: collapse; }
+table, td, th { border-collapse: collapse; text-align: center;  vertical-align: bottom; }
 
 h2 { text-align: left; color: black; margin: 0; }
 

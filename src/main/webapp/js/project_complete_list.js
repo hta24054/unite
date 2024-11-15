@@ -49,7 +49,7 @@ function updateBoardList(data){
 	    var viewers = viewerNames.length > 1 
 	        ? "<span title='" + viewerNames.slice(1).join(', ') + "'>" + viewerNames[0] + " 외 " + (viewerNames.length - 1) + "명</span>"
 	        : (viewerNames[0] || '없음');
-
+		const ProjectFileOriginal = item.project_file_original ? item.project_file_original : "";
 		output += `
 			<tr>
 				<td>${item.projectId}</td>
@@ -59,7 +59,14 @@ function updateBoardList(data){
 				<td><div>${viewers}</div></td>
 				<td><div>${item.projectStartDate}</div></td>
 				<td><div>${item.projectEndDate}</div></td>
-				<td><div>${item.projectFilePath}</div></td>
+				<td>
+					<div>
+						${ProjectFileOriginal ? 
+							`<a href="${contextPath}/projectb/down?filename=${item.project_file_uuid}${item.project_file_type}&originalFilename=${item.project_file_original}">
+									${item.project_file_original}
+							</a>` : ''}
+					</div>
+				</td>
 			</tr>
 			`;
 	});

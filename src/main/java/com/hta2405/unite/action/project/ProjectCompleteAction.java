@@ -97,10 +97,6 @@ public class ProjectCompleteAction implements Action {
 			System.out.println("boardlist = " + je.toString());
 			object.add("boardlist", je);
 			
-
-			
-			
-			
 			response.setContentType("application/json; charset = utf-8");
 			response.getWriter().print(object);
 			System.out.println(object.toString());

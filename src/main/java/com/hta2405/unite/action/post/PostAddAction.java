@@ -2,6 +2,7 @@ package com.hta2405.unite.action.post;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -33,18 +34,24 @@ public class PostAddAction implements Action {
 			throws ServletException, IOException {
 		
 		BoardDao boardDao = new BoardDao();
-		DeptDao deptDao = new DeptDao();
 		
 		Post postData = new Post();
-		PostFile postFileData = new PostFile();
 		List<PostFile> postFiles = new ArrayList<>();
+		
+		HttpSession session = req.getSession();
 
 		//boardName2로 boardId 구하기
         String boardName2 = req.getParameter("boardName2");
-		Long boardId = (boardDao.getBoardListByName2(boardName2)).getBoardId();
-		
-		ActionForward forward = new ActionForward();
-		HttpSession session = req.getSession();
+        
+        if(boardName2 != null) {
+        	Long boardId = (boardDao.getBoardListByName2(boardName2)).getBoardId();
+    		
+    		postData.setBoardId(boardId);
+    		postData.setPostWriter((String) session.getAttribute("ename"));
+    		postData.setPostSubject(req.getParameter("board_subject"));
+    		postData.setPostContent(req.getParameter("board_content"));
+    		postData.setEmpId((String) session.getAttribute("id"));
+        }
 		
 		// 실제 저장 경로를 지정합니다.
 		ServletContext sc = req.getServletContext();
@@ -56,19 +63,18 @@ public class PostAddAction implements Action {
         if (!uploadDirectory.exists()) {
             uploadDirectory.mkdir();
         }
-		
-		postData.setBoardId(boardId);
-		postData.setPostWriter((String) session.getAttribute("ename"));
-		postData.setPostSubject(req.getParameter("board_subject"));
-		postData.setPostContent(req.getParameter("board_content"));
         
         // 모든 파일 파트를 가져옴
         Collection<Part> fileParts = req.getParts();
 
         // 각 파일 처리
         for (Part filePart : fileParts) {
+        	
+        	System.out.println("filePart ContentType=" + filePart.getContentType());
+        	System.out.println("filePart Headers=" + filePart.getHeaderNames());
+        	
             // 파일 파트인지 확인
-            if (filePart.getContentType() != null) {
+            if (filePart.getContentType() != null && filePart.getSubmittedFileName().contains(".")) {
                 // UUID로 고유한 파일명 생성
                 String fileName = UUID.randomUUID().toString();
                 System.out.println("fileName="+fileName);
@@ -76,6 +82,14 @@ public class PostAddAction implements Action {
                 // 원래 파일의 확장자 가져오기
                 String originalFileName = filePart.getSubmittedFileName();
                 System.out.println("originalFileName="+originalFileName);
+                
+                
+                if (originalFileName == null) {
+                    System.out.println("Error: originalFileName is null");
+                } else {
+                    System.out.println("originalFileName=" + originalFileName);
+                }
+                
                 String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
                 System.out.println("fileExtension="+fileExtension);
                 
@@ -90,7 +104,8 @@ public class PostAddAction implements Action {
                 // 저장된 파일명 출력 (필요에 따라 다른 처리 가능)
                 System.out.println("Saved file: " + savedFileName);
                 
-                
+
+        		PostFile postFileData = new PostFile();
     			postFileData.setPostFilePath(realFolder);
     			postFileData.setPostFileOriginal(originalFileName);
     			postFileData.setPostFileUUID(fileName);
@@ -98,9 +113,14 @@ public class PostAddAction implements Action {
     			
     			//리스트에 저장
     			postFiles.add(postFileData);
+            } else { // 일반 텍스트 필드인 경우
+                String fieldName = filePart.getName();
+                String fieldValue = new String(filePart.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                System.out.println("Field Part: " + fieldName);
+                System.out.println("Value: " + fieldValue);
             }
         }
-		
+		System.out.println("postFiles="+postFiles);
         Boolean postAndFileCheck = boardDao.postAndFileInsert(postData, postFiles);
 		JsonObject jObject = new JsonObject();
         

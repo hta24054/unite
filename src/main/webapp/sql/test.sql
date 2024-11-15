@@ -9,6 +9,8 @@ DROP TABLE emp CASCADE CONSTRAINTS;
 DROP TABLE dept CASCADE CONSTRAINTS;
 
 -- 영훈
+
+
 SELECT
     c.constraint_name,
     c.constraint_type,
@@ -40,10 +42,15 @@ UPDATE POST SET new_post_content = post_content;
 ALTER TABLE POST DROP COLUMN post_content;
 ALTER TABLE POST RENAME COLUMN new_post_content TO post_content;
 
-
--- 외래키 지정
+-- 외래키 지정 --emp_id 추가
 ALTER TABLE post
   DROP CONSTRAINT FK_emp_TO_post;
+ALTER TABLE POST ADD (emp_id VARCHAR2(10) not null);
+ALTER TABLE post
+  ADD CONSTRAINT FK_emp_TO_post
+    FOREIGN KEY (emp_id)
+    REFERENCES emp (emp_id);
+    
 --게시판 제약조건 수정
 ALTER TABLE POST MODIFY POST_CONTENT NOT NULL;
 ALTER TABLE board MODIFY dept_id null;
@@ -79,6 +86,7 @@ FROM DUAL;
 drop sequence SEQ_board;
 delete from board;
 delete from post;
+delete from post_file;
 delete from dept where dept_id = 9999;
 --insert into dept values(9999,'ALL','')
 select * from board;
@@ -86,6 +94,10 @@ select * from dept;
 select * from post;
 select * from post_FILE;
 
+--post와 post_file 출력
+select post.*, post_file.* 
+from post join post_file
+on post.post_id = post_file.post_id;
 
 -- 모든 list 출력
 select post.*,board.*, nvl(cnt,0) as cnt

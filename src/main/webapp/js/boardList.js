@@ -1,7 +1,8 @@
 function go(page){
-	const limit = $('#viewcount').val();
+	const limit = $('#viewCount').val();
 	/*const data =`limit=${limit}&state=ajax&page=${page}`; */
-	const data = {limit:limit, state:"ajax", page:page}
+	const boardName2 = $('#boardName2').val();
+	const data = {boardName2:boardName2,limit:limit, state:"ajax", page:page}
 	ajax(data);
 }
 //총 2페이지 페이징 처리된 경우
@@ -28,42 +29,54 @@ function setPaging(href, digit, isActive = false){
 function generatePagination(data){
 	let output="";
 	
+	//맨 처음으로 이동 버튼
+	let firstPreHref = data.page > 1 ? `href=javascript:go(1)` : "";
+	output += setPaging(firstPreHref, '<<');
+	
 	//이전 버튼
 	let preHref = data.page > 1 ? `href=javascript:go(${data.page - 1})` : "";
-	output += setPaging(preHref, '이전&nbsp;');
+	output += setPaging(preHref, '<');
 	
 	//페이지 번호
-	for(let i = data.startpage; i <= data.endpage; i++){
+	for(let i = data.startPage; i <= data.endPage; i++){
 		const isActive = (i == data.page);
 		let pageHref = !isActive ? `href=javascript:go(${i})` : "";
 		output += setPaging(pageHref, i, isActive);
 	}
 	
 	//다음 버튼
-	let nextHref = (data.page < data.maxpage) ? `href=javascript:go(${data.page + 1})` : "";
-	output += setPaging(nextHref, '&nbsp;다음&nbsp;');
+	let nextHref = (data.page < data.maxPage) ? `href=javascript:go(${data.page + 1})` : "";
+	output += setPaging(nextHref, '>');
+	
+	//맨 마지막으로 이동 버튼
+	let lastNextHref = (data.page < data.maxPage) ? `href=javascript:go(${data.maxPage})` : "";
+	output += setPaging(lastNextHref, '>>');
 	
 	$('.pagination').empty().append(output);
+	
+	
 }//end
 
 
 function updateBoardList(data){
-	let num = data.listcount - (data.page - 1) * data.limit;
+	let num = data.listCount - (data.page - 1) * data.limit;
 	let output = "<tbody>";
 	
-	$(data.boardlist).each(function(index, item){
-		const blank = '&nbsp;&nbsp;'.repeat(item.board_re_lev * 2);
-		const img = item.board_re_lev > 0 ? "<img src='../image/line.gif'>" : "";
-		const subject = item.board_subject.length >= 20 ? item.board_subject.substr(0,20) + "..." : item.board_subject;
+	$(data.postList).each(function(index, item){
+		const blank = '&nbsp;&nbsp;'.repeat(item.postReLev * 2);
+		const img = item.postReLev > 0 ? "<img class='lineImg' src='/unite/image/postLine.png'>" : "";
+		const subject = item.postSubject.length >= 20 ? item.postSubject.substr(0,20) + "..." : item.postSubject;
 		const changeSubject = subject.replace(/</g,'&lt;').replace(/>/g,'&gt;');
 		
+		console.log(index)
+		
 		output +=`
-			<tr>
+			<tr class="tr-post" data-page="${item.postId}">
 				<td>${num--}</td>
-				<td><div>${blank}${img}<a href='detail?num=${item.board_num}'>${changeSubject}</a>[${item.cnt}]</div></td>
-				<td><div>${item.board_name}</div></td>
-				<td><div>${item.board_date}</div></td>
-				<td><div>${item.board_readcount}</div></td>
+				<td><div>${blank}${img}${changeSubject}[${item.postCommentCnt}]</div></td>
+				<td><div>${item.postWriter}</div></td>
+				<td><div>${item.postDate}</div></td>
+				<td><div>${item.postView}</div></td>
 			</tr>
 		`;
 	});
@@ -75,14 +88,14 @@ function ajax(sdata){
 	console.log(sdata)
 	$.ajax({
 		data: sdata,
-		url: "list",
+		url: "boardList",
 		dataType: "json",
 		cache: false,
 		success: function(data){
-			$("#viewcount").val(data.limit);
-			$("thead").find("span").text("글 개수 : "+data.listcount);
+			$("#viewCount").val(data.limit);
+			$("thead").find("span").text("글 개수 : "+data.listCount);
 			
-			if(data.listcount>0){
+			if(data.listCount>0){
 				$("tbody").remove();
 				updateBoardList(data);// 게시판 내용 업데이트
 				generatePagination(data);// 페이지네이션 생성
@@ -96,7 +109,10 @@ function ajax(sdata){
 
 $(function(){
 	
-	$("#viewcount").change(function(){
+	$("#viewCount").change(function(){
 		go(1);//보여줄 페이지를 1페이지로 설정합니다.
 	});//change end
+	
+	
+	
 })

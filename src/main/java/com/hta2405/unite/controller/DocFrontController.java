@@ -21,7 +21,8 @@ public class DocFrontController extends AbstractFrontController {
         actionMap.put("/vacation", new DocVacationWriteAction());
         actionMap.put("/vacation_write", new DocVacationWriteProcessAction());
         actionMap.put("/trip", new DocTripWriteAction());
-        actionMap.put("/trip_write", new DocTripWriteProcessAction());
+        actionMap.put("/trip_write", new DocTripWriteAndEditProcessAction());
+        actionMap.put("/trip_edit", new DocTripWriteAndEditProcessAction());
         actionMap.put("/buy", new DocBuyWriteAction());
         actionMap.put("/buy_write", new DocBuyWriteAndEditProcessAction());
         actionMap.put("/buy_edit", new DocBuyWriteAndEditProcessAction());

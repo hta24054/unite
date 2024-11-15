@@ -5,6 +5,7 @@
 <head>
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="doc_leftbar.jsp"/>
+    <script src="${pageContext.request.contextPath }/js/doc_trip.js"></script>
 
     <meta charset="UTF-8">
     <title>출장명령부 작성</title>
@@ -19,7 +20,6 @@
             font-size: 16px;
         }
 
-        /* 테두리 색상을 검정색으로 설정 */
         .table-bordered, .table-bordered td, .table-bordered th {
             align-content: center;
             border-color: black !important;
@@ -29,14 +29,11 @@
 <body>
 <form id="doc_form" action="${pageContext.request.contextPath}/doc/trip_write" method="POST">
     <div class="container mt-4">
-        <!-- 기안용지 제목 -->
         <div class="text-center mb-4">
             <h1 class="header-cell">출장명령부</h1>
         </div>
 
-        <!-- 문서 정보 및 결재자 테이블을 좌우로 배치 -->
         <div class="row">
-            <!-- 문서 정보 테이블 -->
             <div class="col-md-6 mb-3">
                 <table class="table table-bordered">
                     <tr>
@@ -58,7 +55,7 @@
                     </tr>
                 </table>
             </div>
-            <!-- 결재자 테이블 -->
+            <!-- 결재자 -->
             <div class="col-md-6">
                 <jsp:include page="sign_write.jsp"/>
             </div>
@@ -68,23 +65,28 @@
         <table class="table table-bordered mt-4">
             <tr>
                 <td class="table-secondary font-weight-bold text-center">출장 시작일</td>
-                <td><input type="date" class="form-control title-input" name="trip_start" data-name="출장 시작일" required></td>
+                <td><input type="date" class="form-control title-input" name="trip_start" data-name="출장 시작일" required>
+                </td>
             </tr>
             <tr>
                 <td class="table-secondary font-weight-bold text-center">출장 종료일</td>
-                <td><input type="date" class="form-control title-input" name="trip_end" data-name="출장 종료일" required></td>
+                <td><input type="date" class="form-control title-input" name="trip_end" data-name="출장 종료일" required>
+                </td>
             </tr>
             <tr>
                 <td class="table-secondary font-weight-bold text-center">출장지</td>
-                <td><input type="text" class="form-control title-input" name="trip_loc" placeholder="출장지를 입력하세요" data-name="출장지" required></td>
+                <td><input type="text" class="form-control title-input" name="trip_loc" placeholder="출장지를 입력하세요"
+                           data-name="출장지" maxlength="120" required></td>
             </tr>
             <tr>
                 <td class="table-secondary font-weight-bold text-center">출장지 연락처</td>
-                <td><input type="text" class="form-control title-input" name="trip_phone" placeholder="출장지를 입력하세요" data-name="출장지 연락처" required></td>
+                <td><input type="text" class="form-control title-input" name="trip_phone" placeholder="출장지를 입력하세요"
+                           data-name="출장지 연락처" maxlength="13" required></td>
             </tr>
             <tr>
                 <td class="table-secondary font-weight-bold text-center">목적 및 내용</td>
-                <td><input type="text" class="form-control title-input" name="trip_info" placeholder="내용을 입력하세요" data-name="내용" required></td>
+                <td><input type="text" class="form-control title-input" name="trip_info" placeholder="내용을 입력하세요"
+                           data-name="내용" maxlength="255" required></td>
             </tr>
         </table>
         <table class="table table-bordered mt-4">
@@ -113,30 +115,15 @@
     </div>
 </form>
 <script>
-    $(document).ready(function() {
-        const $tripStartInput = $("input[name='trip_start']");
-        const $tripEndInput = $("input[name='trip_end']");
-        const $cardStartInput = $("input[name='card_start']");
-        const $cardEndInput = $("input[name='card_end']");
-        const $cardReturnInput = $("input[name='card_return']");
 
-        // 출장 시작일과 종료일에 따라 카드 사용 일자를 자동 설정
-        $tripStartInput.on("change", function() {
-            $cardStartInput.val($tripStartInput.val());
-        });
-
-        $tripEndInput.on("change", function() {
-            $cardEndInput.val($tripEndInput.val());
-            $cardReturnInput.val($tripEndInput.val());
-        });
-
+    $(document).ready(function () {
         // 제출 버튼 클릭 시 실행
-        $('#submit-button').on('click', function(event) {
+        $('#submit-button').on('click', function (event) {
             event.preventDefault();
 
             // 필수 입력 필드 유효성 검사
             let isValid = true;
-            $('#doc_form [required]').each(function() {
+            $('#doc_form [required]').each(function () {
                 if ($(this).val() === '') {
                     const errorMessage = $(this).data('name');
                     alert(errorMessage + '을(를) 입력해 주세요');
@@ -154,36 +141,25 @@
                 return;
             }
 
-            // 출장 시작일과 종료일 유효성 검사
-            const startDate = $tripStartInput.val();
-            const endDate = $tripEndInput.val();
-            if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
-                alert("종료일은 시작일 이후여야 합니다. 다시 선택해 주세요.");
-                $tripStartInput.val('');
-                $tripEndInput.val('');
-                return;
-            }
-
             // 제출 확인 메시지
             const confirmSubmission = confirm("문서를 작성하시겠습니까?");
             if (!confirmSubmission) return;
-
             // 폼 데이터 수집
             const formData = {
                 writer: $('input[name="writer"]').val(),
-                trip_start: startDate,
-                trip_end: endDate,
+                trip_start: $('input[name="trip_start"]').val(),
+                trip_end: $('input[name="trip_end"]').val(),
                 trip_loc: $('input[name="trip_loc"]').val(),
                 trip_phone: $('input[name="trip_phone"]').val(),
                 trip_info: $('input[name="trip_info"]').val(),
-                card_start: $cardStartInput.val(),
-                card_end: $cardEndInput.val(),
-                card_return: $cardReturnInput.val(),
+                card_start: $('input[name="card_start"]').val(),
+                card_end: $('input[name="card_end"]').val(),
+                card_return: $('input[name="card_return"]').val(),
                 signers: []
             };
 
             // 결재자 정보 추가
-            $('input[name="sign[]"]').each(function() {
+            $('input[name="sign[]"]').each(function () {
                 formData.signers.push($(this).val());
             });
 
@@ -194,7 +170,7 @@
                 data: JSON.stringify(formData),
                 contentType: "application/json; charset=UTF-8",
                 dataType: "json",
-                success: function(response) {
+                success: function (response) {
                     if (response.status === 'success') {
                         alert("문서 작성이 완료되었습니다.");
                         window.location.href = "${pageContext.request.contextPath}/doc/in-progress";
@@ -202,7 +178,7 @@
                         alert("문서 작성 중 오류가 발생했습니다.");
                     }
                 },
-                error: function() {
+                error: function () {
                     alert("문서 작성 중 오류가 발생했습니다.");
                 }
             });

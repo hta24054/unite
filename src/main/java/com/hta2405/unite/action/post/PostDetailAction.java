@@ -1,4 +1,4 @@
-package com.hta2405.unite.action.board;
+package com.hta2405.unite.action.post;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-public class BoardDetailAction implements Action {
+public class PostDetailAction implements Action {
 
 	@Override
 	public ActionForward execute(HttpServletRequest request, HttpServletResponse response)

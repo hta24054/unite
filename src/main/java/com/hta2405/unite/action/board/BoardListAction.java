@@ -32,7 +32,11 @@ public class BoardListAction implements Action {
 		
 		BoardDao boardDao = new BoardDao();
 		
-		Long boardId = boardDao.getBoardListByName2(req.getParameter("boardName2")).getBoardId();
+		String boardName2 = req.getParameter("boardName2");
+		req.setAttribute("boardName2", boardName2);
+		System.out.println("boardName2="+boardName2);
+		
+		Long boardId = boardDao.getBoardListByName2(boardName2).getBoardId();
 		System.out.println("boardId="+boardId);
 		
 		

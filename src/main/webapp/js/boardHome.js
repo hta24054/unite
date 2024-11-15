@@ -19,7 +19,7 @@ $(function() {
         e.preventDefault();
         boardName2 = $(this).text(); // 클릭된 메뉴 항목의 URL
 
-        loadBoardList(boardName2); // 클릭한 메뉴에 맞는 게시판 데이터를 로드
+        loadBoardList(boardName2, 1); // 클릭한 메뉴에 맞는 게시판 데이터를 로드
     });
 
  	// 왼쪽 글쓰기 클릭 이벤트
@@ -33,8 +33,24 @@ $(function() {
         loardBoardWrite("boardWrite"); // 글쓰기 메서드 호출
     });
     
+    $(document).on('click', '.page-link', function(event) {
+		var nextPage = $(this).data('page');  // data-page에서 페이지 번호 가져오기
+		if(nextPage != null ){
+		    event.preventDefault();  // 기본 동작 방지 (링크 이동 방지)
+		
+			if(nextPage != ''){
+				loadBoardList(boardName2, nextPage);
+			}
+		}
+	});
     
-    
+    $(document).on('click', '.tr-post', function(event) {
+	    event.preventDefault();  // 기본 동작 방지 (링크 이동 방지)
+	
+	    var postPage = $(this).data('page');  // data-page에서 페이지 번호 가져오기
+		
+		loadBoardPost(boardName2, postPage);
+	});
     
  	/* 
     window.addEventListener('popstate', function(event) {
@@ -101,9 +117,6 @@ function loadBoardHome() {
                     const board = boards[i];
                     const post = posts[i];
 
-                    console.log("Board:", board);
-                    console.log("Post:", post);
-
                     html += AddHtmlBoardAndPost(board, post); // 각 board와 해당 post를 렌더링
                 }
             	
@@ -149,12 +162,43 @@ function AddHtmlBoardAndPost(board, post) {
 }
 
 // 특정 게시판 리스트(리스트형) 데이터 로드 함수
-function loadBoardList(boardName2) {//매개변수로 boardName2를 가져옴
+function loadBoardList(boardName2,page) {//매개변수로 boardName2를 가져옴
 	console.log('boardName2 = ',boardName2)
-	
+	console.log(page)
+	//page가 1번이거나 게시판을 눌러서 불러올때는 boarList
+	//page를 눌러서 불러온 경우는 boardList?page=${nextPage}
+	const url = 'boardList'+ ( page==1? '': '?page='+page );
     $.ajax({
     	data: {"boardName2":boardName2},
-        url: 'boardList',
+        url: url,
+        method: 'GET',
+        success: function(response) {
+			$(".boardTitle").text(boardName2);
+	    	$('.boardContent').html(response);
+	    	
+	    	$('.content').scrollTop(0);
+        },
+        error: function() {
+            alert('게시판 데이터를 불러오는 데 실패했습니다.');
+            let html = '<ul class="board-list">';
+            html += '등록된 게시글이 없습니다.';
+            html += '</ul>';
+            $('.boardContent').append(html); // 리스트형 레이아웃에 게시글 표시
+            
+            $(".boardTitle").text(boardName2);//임시
+        }
+    });
+}
+
+//특정 게시판의 게시글 데이터 로드 함수
+function loadBoardPost(boardName2, postPage){
+	console.log('boardName2 = ',boardName2)
+	console.log(postPage)
+	
+	const url = 'post/detail?num='+postPage;
+    $.ajax({
+    	data: {"boardName2":boardName2},
+        url: url,
         method: 'GET',
         success: function(response) {
 			$(".boardTitle").text(boardName2);

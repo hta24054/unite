@@ -11,7 +11,6 @@ DROP TABLE dept CASCADE CONSTRAINTS;
 -- 영훈
 
 
-
 SELECT
     c.constraint_name,
     c.constraint_type,

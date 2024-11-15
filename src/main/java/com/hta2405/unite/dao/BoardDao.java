@@ -246,6 +246,7 @@ public class BoardDao {
 					post.setPostReSeq(rs.getLong("post_re_seq"));
 					post.setPostView(rs.getLong("post_view"));
 					post.setPostCommentCnt(rs.getLong("cnt"));
+					post.setEmpId(rs.getString("emp_id"));
 					list.add(post);//값을 담은 객체를 리스트에 저장합니다.
 				}
 			}
@@ -277,9 +278,13 @@ public class BoardDao {
 
 	public List<Object> getDetail(int num) {
 		String sql = """
-				select post.*, post_file.* 
-				from post join post_file
-				on post.post_id = post_file.post_id
+				select post.*, nvl(cnt,0) as cnt, post_file.* 
+				from post left outer join (select post_id, count(*) as cnt
+											from post_comment
+											group by post_id) pc
+					on post.post_id = pc.post_id
+				join post_file
+					on post.post_id = post_file.post_id
 				where  post.post_id = ?
 				""";
 		boolean isFirstRecord = true; // 첫 번째 레코드만 처리하도록 설정

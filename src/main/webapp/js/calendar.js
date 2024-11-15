@@ -3,16 +3,7 @@ $(document).ready(function(){
 	let events = []; 
 	let isAllDayChk, startDate, endDate;
 	let currentDate;
-	
-	
-	/*
-	function fetchAllData() {
-	    events = []; 
-	    fetchListData(); 
-	    fetchSharedListData(); 
-	}
-	*/
-	
+
 	// 개인 일정, 공유 일정 모두 불러오기
 	function fetchAllData() {
 	    events = []; // 배열 초기화
@@ -138,7 +129,7 @@ $(document).ready(function(){
 			        }
 			    }
 			    
-			    fetchListData();
+			    fetchAllData();
                 $("#scheduleModal").modal("hide"); 
             },
             error: function() {
@@ -167,8 +158,7 @@ $(document).ready(function(){
 	        },
 	        success: function(data) {
 	            console.log("일정 수정 성공", data);
-	            
-	            fetchListData();
+	            fetchAllData();
 	            $("#scheduleModal").modal("hide");
 	            
 	        },
@@ -202,12 +192,11 @@ $(document).ready(function(){
 	        },
 	        success: function(data) {
 	            console.log("drag 일정 업데이트 성공:", data);
-	            fetchListData(); 
+	            fetchAllData();
 	        },
 	        error: function(error) {
 	            console.log("drag 일정 업데이트 오류:", error);
 	            alert("drag 일정 업데이트 중 오류가 발생했습니다.");
-	            fetchListData();
 	        }
 	    });
 	}
@@ -225,13 +214,13 @@ $(document).ready(function(){
 		        },
 		        success: function(data) {
 		            console.log("일정 삭제 성공:", data);
-		            fetchListData(); 
+		            
+		            fetchAllData();
 		            $("#scheduleModal").modal("hide");
 		        },
 		        error: function(error) {
 		            console.log("일정 삭제 오류:", error);
 		            alert("일정 삭제 중 오류가 발생했습니다.");
-		            fetchListData();
 		        }
 			});
 		}	

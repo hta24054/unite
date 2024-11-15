@@ -24,22 +24,29 @@
 <title>인사 정보</title>
 
 <style>
-table {
-	width: 100%;
+table, .table {
+	width: 90%;
 	border-collapse: collapse;
 	margin: auto;
 }
 
-.table {
-	
+th {
+	background-color: #f2f2f2;
+	font-weight: bold;
+}
+
+
+table {
+	margin-top: 10px;
 }
 
 td, th {
 	border: 2px solid black;
 	padding: 25px;
 	color: black;
+	vertical-align: middle;
 	text-align: center;
-	height: 50px;
+	
 	width: 14%;
 }
 
@@ -79,6 +86,9 @@ button#editButton {
 button#cancelButton {
 	background-color: red;
 	color: white;
+}
+button#saveButton {
+	margin-right : 5%;
 }
 </style>
 <script>
@@ -255,7 +265,7 @@ button#cancelButton {
 
 				<c:if test="${details.emp.empId == sessionScope.id}">
 					<button type="button" id="editButton">수정</button>
-					<button type="submit">저장</button>
+					<button type="submit" id="saveButton">저장</button>
 				</c:if>
 
 

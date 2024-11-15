@@ -7,10 +7,9 @@ import com.google.gson.JsonObject;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ContactDao;
-import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dao.DeptDao;
 import com.hta2405.unite.dao.JobDao;
-import com.hta2405.unite.dto.Emp;
+import com.hta2405.unite.dto.EmpDetails;
 import com.hta2405.unite.util.LocalDateAdapter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,19 +20,19 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 
-public class ContactViewAction implements Action {
+public class SearchAction implements Action {
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         try {
-            long deptId = Long.parseLong(req.getParameter("deptId"));
+            String query = req.getParameter("query");
 
             JsonObject jsonObject = new JsonObject();
 
             Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
 
-           
-            List<Emp> empList = new ContactDao().getContactEmpByDeptId(deptId);
+            ContactDao contactDao = new ContactDao();
+            List<EmpDetails> empList = contactDao.getContactsByName(query);
             JsonElement listToJson = gson.toJsonTree(empList);
             jsonObject.add("empList", listToJson);
 

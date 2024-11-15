@@ -202,14 +202,16 @@
 	        
 	        const shareData = {
 	            emp_id: $('#emp_id').val(),
+	            share_emp: $('#share_emp').val(),
 	            schedule_name: $('#schedule_name').val(),
 	            allDay: $('#allDay').prop('checked') ? 1 : 0,
 	            startAt: moment($("#startAt").val()).format('YYYY-MM-DD HH:mm'),
 				endAt: moment($("#endAt").val()).format('YYYY-MM-DD HH:mm'), 
 	            bgColor: $('#bgColor').val(),
-	            share_emp: $('#share_emp').val(),
 	            description: $('#description').val()
 	        }
+	        
+	        console.log("shareData:", shareData);
 	
 	        $.ajax({
 	            url: '${pageContext.request.contextPath}/schedule/scheduleShareAdd',
@@ -233,15 +235,20 @@
 				                end: data[i].schedule_end,
 				                backgroundColor: data[i].schedule_color, 
 				                description: data[i].schedule_content,
-				                allDay: isAllDay 
+				                allDay: isAllDay
 				            });
 				        }
 				    }
+
+	                events.forEach(function(event) {
+	                    $('#calendar').fullCalendar('addEvent', event);  // `addEvent` 사용
+	                });
 	                
+	                /*
 	                events.forEach(function(event) {
 	                    $('#calendar').fullCalendar('renderEvent', event, true);
 	                });
-	
+	                */
 	                window.location.href = '${pageContext.request.contextPath}/schedule/calender';
 	            },
 	            error: function() {

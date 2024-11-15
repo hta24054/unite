@@ -22,49 +22,6 @@ public class DocDao {
         }
     }
 
-    public List<DocWithSigner> getWaitingListByEmpId(String empId) {
-        List<DocWithSigner> list = new ArrayList<>();
-        String sql = """
-                 SELECT d.doc_id          AS id,
-                        d.DOC_WRITER      AS writer,
-                        d.DOC_TYPE        AS type,
-                        d.DOC_TITLE       AS title,
-                        d.DOC_CONTENT     AS content,
-                        d.DOC_CREATE_DATE AS createDate,
-                        s.EMP_ID          AS signer,
-                        e.ENAME           AS signerName
-                 FROM doc d
-                          JOIN sign s ON d.DOC_ID = s.DOC_ID
-                          JOIN emp e ON s.EMP_ID = e.EMP_ID
-                 WHERE (d.doc_id, s.SIGN_ORDER) in (SELECT doc_id, MIN(SIGN_ORDER)
-                                                   FROM sign
-                                                   where SIGN_TIME IS NULL
-                                                   group by doc_id)
-                   AND s.SIGN_TIME IS NULL
-                   AND s.EMP_ID = ?
-                 ORDER BY createDate
-                """;
-        try (Connection conn = ds.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, empId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Doc doc = new Doc(rs.getLong("id"),
-                        rs.getString("writer"),
-                        DocType.fromString(rs.getString("type")),
-                        rs.getString("title"),
-                        rs.getString("content"),
-                        rs.getTimestamp("createDate").toLocalDateTime(),
-                        false);
-                list.add(new DocWithSigner(doc, rs.getString("signer"), rs.getString("signername")));
-            }
-            return list;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public int insertBuyDoc(DocBuy docBuy, List<String> signArr) {
         try (Connection conn = ds.getConnection()) {
             conn.setAutoCommit(false);
@@ -250,6 +207,111 @@ public class DocDao {
         return 0;
     }
 
+    public int updateGeneralDoc(Doc doc, List<String> signList) {
+        try (Connection conn = ds.getConnection()) {
+            conn.setAutoCommit(false);
+            if (updateDoc(doc, signList, conn) != 1) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 0;
+            }
+            conn.commit();
+            conn.setAutoCommit(true);
+            return 1;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int updateBuyDoc(DocBuy docBuy, List<String> signList) {
+        try (Connection conn = ds.getConnection()) {
+            conn.setAutoCommit(false);
+            if (updateDoc(docBuy, signList, conn) != 1) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 0;
+            }
+            if (deleteBuyItem(docBuy.getDocBuyId(), conn) <= 0) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 0;
+            }
+            if (insertBuyItem(docBuy, docBuy.getDocBuyId(), conn) <= 0) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 0;
+            }
+            conn.commit();
+            conn.setAutoCommit(true);
+            return 1;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private int deleteBuyItem(Long docBuyId, Connection conn) {
+        String sql = """
+                DELETE BUY_ITEM
+                WHERE DOC_BUY_ID = ?
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, docBuyId);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private int updateDoc(Doc doc, List<String> signList, Connection conn) {
+        String sql = """
+                UPDATE DOC
+                SET DOC_WRITER = ?,
+                    DOC_TYPE= ?,
+                    DOC_TITLE = ?,
+                    DOC_CONTENT = ?,
+                    DOC_CREATE_DATE = ?
+                WHERE DOC_ID = ?
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, doc.getDocWriter());
+            ps.setString(2, doc.getDocType().getType()); // Enum의 문자열 값 사용
+            ps.setString(3, doc.getDocTitle());
+            ps.setString(4, doc.getDocContent());
+            ps.setTimestamp(5, Timestamp.valueOf(doc.getDocCreateDate()));
+            ps.setLong(6, doc.getDocId());
+            if (ps.executeUpdate() != 1) {
+                conn.rollback();
+                return 0;
+            }
+            if (deleteSign(doc.getDocId(), conn) == 0) {
+                conn.rollback();
+                return 0;
+            }
+            List<Sign> list = makeSignListByParam(signList, doc.getDocId());
+            assert list != null;
+            if (insertSign(list, conn) == 0) {
+                conn.rollback();
+                return 0;
+            }
+            return 1;
+        } catch (SQLException e) {
+            throw new RuntimeException("문서 또는 서명 삽입 오류", e);
+        }
+    }
+
+    private int deleteSign(Long docId, Connection conn) {
+        String sql = """
+                DELETE SIGN
+                WHERE DOC_ID = ?
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, docId);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("문서 또는 서명 삽입 오류", e);
+        }
+    }
+
     public int insertDoc(Doc doc, List<String> signList, Connection conn) throws SQLException {
         String sql = """
                 INSERT INTO DOC (DOC_WRITER, DOC_TYPE, DOC_TITLE, DOC_CONTENT, DOC_CREATE_DATE)
@@ -336,6 +398,49 @@ public class DocDao {
             System.out.println("문서 가져오기 오류");
         }
         return null;
+    }
+
+    public List<DocWithSigner> getWaitingListByEmpId(String empId) {
+        List<DocWithSigner> list = new ArrayList<>();
+        String sql = """
+                 SELECT d.doc_id          AS id,
+                        d.DOC_WRITER      AS writer,
+                        d.DOC_TYPE        AS type,
+                        d.DOC_TITLE       AS title,
+                        d.DOC_CONTENT     AS content,
+                        d.DOC_CREATE_DATE AS createDate,
+                        s.EMP_ID          AS signer,
+                        e.ENAME           AS signerName
+                 FROM doc d
+                          JOIN sign s ON d.DOC_ID = s.DOC_ID
+                          JOIN emp e ON s.EMP_ID = e.EMP_ID
+                 WHERE (d.doc_id, s.SIGN_ORDER) in (SELECT doc_id, MIN(SIGN_ORDER)
+                                                   FROM sign
+                                                   where SIGN_TIME IS NULL
+                                                   group by doc_id)
+                   AND s.SIGN_TIME IS NULL
+                   AND s.EMP_ID = ?
+                 ORDER BY createDate
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, empId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Doc doc = new Doc(rs.getLong("id"),
+                        rs.getString("writer"),
+                        DocType.fromString(rs.getString("type")),
+                        rs.getString("title"),
+                        rs.getString("content"),
+                        rs.getTimestamp("createDate").toLocalDateTime(),
+                        false);
+                list.add(new DocWithSigner(doc, rs.getString("signer"), rs.getString("signername")));
+            }
+            return list;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public List<Sign> getSignListByDocId(Long docId) {
@@ -767,4 +872,6 @@ public class DocDao {
         }
         return false;
     }
+
+
 }

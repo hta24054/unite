@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -56,13 +57,27 @@
     <table class="approval-table table table-bordered" id="approvalTable">
         <tr>
             <td rowspan="3" class="label-cell" id="title">결재</td>
-            <th class="label-cell">기안자</th>
+            <c:forEach var="sign" items="${signList}" varStatus="status">
+                <th class="label-cell">
+                    <c:choose>
+                        <c:when test="${status.index == 0}">
+                            기안자
+                        </c:when>
+                        <c:otherwise>
+                            결재자${status.index}
+                        </c:otherwise>
+                    </c:choose>
+                </th>
+            </c:forEach>
         </tr>
         <tr>
-            <td class="name">${emp.ename}</td>
+            <c:forEach var="sign" items="${signList}">
+                <td class="name">${nameMap[sign.empId]}</td>
+            </c:forEach>
         </tr>
-        <!-- 숨겨진 필드로 기안자의 empId 추가 -->
-        <input type="hidden" name="sign[]" value="${emp.empId}">
+        <c:forEach var="sign" items="${signList}">
+            <input type="hidden" name="sign[]" value="${sign.empId}">
+        </c:forEach>
     </table>
 
     <!-- 버튼 컨테이너: 버튼을 테이블 우측 하단에 배치 -->

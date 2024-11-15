@@ -51,7 +51,7 @@
                 <table class="table table-bordered">
                     <tr>
                         <td class="table-secondary font-weight-bold text-center">문서번호</td>
-                        <td>${docBuy.docId}</td>
+                        <td>${doc.docId}</td>
                     </tr>
                     <tr>
                         <td class="table-secondary font-weight-bold text-center">부&nbsp;&nbsp;&nbsp;서</td>
@@ -64,7 +64,7 @@
                     </tr>
                     <tr>
                         <td class="table-secondary font-weight-bold text-center">작 성 일</td>
-                        <td>${docBuy.docCreateDate.toLocalDate()}</td>
+                        <td>${doc.docCreateDate.toLocalDate()}</td>
                     </tr>
                 </table>
             </div>
@@ -78,7 +78,7 @@
         <table class="table table-bordered mt-4 item_table" id="itemTable">
             <tr>
                 <th colspan="1" class="table-secondary font-weight-bold text-center">제목</th>
-                <td colspan="4">${docBuy.docTitle}</td>
+                <td colspan="4">${doc.docTitle}</td>
             </tr>
             <tr>
                 <th class="table-secondary font-weight-bold text-center item_form">품명</th>
@@ -87,7 +87,7 @@
                 <th class="table-secondary font-weight-bold text-center item_form text-right-align">단가</th>
                 <th class="table-secondary font-weight-bold text-center item_form text-right-align">금액</th>
             </tr>
-            <c:forEach var="item" items="${docBuy.buyList}">
+            <c:forEach var="item" items="${doc.buyList}">
                 <tr class="item-row">
                     <td>${item.productName}</td>
                     <td>${item.standard}</td>
@@ -105,7 +105,7 @@
             </tr>
             <tr>
                 <td colspan="5">
-                    ${docBuy.docContent}
+                    ${doc.docContent}
                 </td>
             </tr>
         </table>
@@ -113,6 +113,7 @@
     </div>
     <jsp:include page="doc_read_button.jsp"/>
 </form>
+
 <script>
     $(document).ready(function () {
         calculateTotal(); // 페이지 로드 시 초기 합계 계산

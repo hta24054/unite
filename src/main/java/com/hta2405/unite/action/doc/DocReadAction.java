@@ -80,16 +80,24 @@ public class DocReadAction implements Action {
     private DocRole checkRole(String loginEmpId, Long docId) {
         Doc doc = docDao.getGeneralDocByDocId(docId);
 
-        // 작성자일 경우 바로 설정 후 반환
-        if (doc.getDocWriter().equals(loginEmpId)) {
-            return DocRole.WRITER;
+        // 결재 완료된 문서 -> 뷰어로 설정
+        if (doc.isSignFinish()) {
+            return DocRole.VIEWER;
         }
 
-        // 결재자 리스트에서 현재 결재 순번의 결재자인 경우 설정
+        // 작성자 -> 결재 여부에 따라 구분하여 설정
+        if (doc.getDocWriter().equals(loginEmpId)) {
+            return docDao.isDocSignedByEmp(docId, loginEmpId) ? DocRole.POST_SIGNED_WRITER : DocRole.PRE_SIGNED_WRITER;
+        }
+
+        // 결재자 -> 결재 여부에따라 구분하여 설정
         List<Sign> signList = docDao.getSignListByDocId(docId);
         for (Sign sign : signList) {
-            if (sign.getSignTime() == null) {
-                return sign.getEmpId().equals(loginEmpId) ? DocRole.SIGNER : DocRole.VIEWER;
+            if (sign.getEmpId().equals(loginEmpId)) {
+                if (sign.getSignTime() != null) {
+                    return DocRole.POST_SIGNER;
+                }
+                return DocRole.PRE_SIGNER;
             }
         }
 
@@ -114,17 +122,17 @@ public class DocReadAction implements Action {
         Doc doc = getDetailedDocById(docId);
 
         if (doc instanceof DocBuy docBuy) {
-            req.setAttribute("docBuy", docBuy);
+            req.setAttribute("doc", docBuy);
             return new ActionForward(false, "/WEB-INF/views/doc/doc_buy_read.jsp");
         }
 
         if (doc instanceof DocTrip docTrip) {
-            req.setAttribute("docTrip", docTrip);
+            req.setAttribute("doc", docTrip);
             return new ActionForward(false, "/WEB-INF/views/doc/doc_trip_read.jsp");
         }
 
         if (doc instanceof DocVacation docVacation) {
-            req.setAttribute("docVacation", docVacation);
+            req.setAttribute("doc", docVacation);
             return new ActionForward(false, "/WEB-INF/views/doc/doc_vacation_read.jsp");
         }
         //일반 문서 페이지로 포워딩

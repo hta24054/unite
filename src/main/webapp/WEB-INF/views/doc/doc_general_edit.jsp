@@ -43,7 +43,7 @@
                 <table class="table table-bordered">
                     <tr>
                         <td class="table-secondary font-weight-bold text-center">문서번호</td>
-                        <td>&nbsp;</td>
+                        <td><input type="text" name="docId" value = "${doc.docId}" readonly></td>
                     </tr>
                     <tr>
                         <td class="table-secondary font-weight-bold text-center">부&nbsp;&nbsp;&nbsp;서</td>
@@ -51,18 +51,18 @@
                     </tr>
                     <tr>
                         <td class="table-secondary font-weight-bold text-center">기 안 자</td>
-                        <td>${emp.ename}</td>
-                        <input type="hidden" name="writer" value="${emp.empId}">
+                        <td>${writer.ename}</td>
+                        <input type="hidden" name="writer" value="${writer.empId}">
                     </tr>
                     <tr>
                         <td class="table-secondary font-weight-bold text-center">작 성 일</td>
-                        <td>${today}</td>
+                        <td>${doc.docCreateDate}</td>
                     </tr>
                 </table>
             </div>
             <!-- 결재자 테이블 -->
             <div class="col-md-6">
-                <jsp:include page="sign_write.jsp"/>
+                <jsp:include page="sign_edit.jsp"/>
             </div>
         </div>
 
@@ -71,7 +71,7 @@
             <tr>
                 <td class="table-secondary font-weight-bold text-center">제&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;목</td>
                 <td><input type="text" class="form-control title-input" name="title" placeholder="제목을 입력하세요."
-                           data-name="제목" required>
+                           data-name="제목" value="${doc.docTitle}" required>
                 </td>
             </tr>
             <tr>
@@ -80,14 +80,14 @@
             <tr>
                 <td colspan="2">
                     <textarea class="summernote form-control" id="content" name="content" data-name="상세내용"
-                              required></textarea>
+                              required>${doc.docContent}</textarea>
                 </td>
             </tr>
         </table>
     </div>
     <!-- 버튼 영역 -->
     <div class="text-right mt-3">
-        <button type="button" form="doc_form" class="btn btn-success" id="submit-button">결재 상신</button>
+        <button type="button" form="doc_form" class="btn btn-success" id="submit-button">수정 완료</button>
         <button type="reset" form="doc_form" class="btn btn-secondary">초기화</button>
     </div>
 </form>
@@ -124,16 +124,17 @@
                 return;
             }
 
-            const confirmSubmission = confirm("문서를 작성하시겠습니까?");
+            const confirmSubmission = confirm("문서를 수정하시겠습니까?");
             if (!confirmSubmission) return;
 
             // 폼 데이터 수집
             const formData = {
+                docId: $('input[name="docId"]').val(),
                 title: $('input[name="title"]').val(),
                 content: $('textarea[name="content"]').val(),
                 writer: $('input[name="writer"]').val(),
                 signers: []
-            };
+            }
 
             // 결재자 정보 추가
             $('input[name="sign[]"]').each(function () {
@@ -141,21 +142,21 @@
             });
 
             $.ajax({
-                url: "${pageContext.request.contextPath}/doc/general_write",
+                url: "${pageContext.request.contextPath}/doc/general_edit",
                 type: "POST",
                 data: JSON.stringify(formData),
                 contentType: "application/json; charset=UTF-8",
                 dataType: "json",
                 success: function (response) {
                     if (response.status === 'success') {
-                        alert("문서 작성이 완료되었습니다.");
+                        alert("문서 수정이 완료되었습니다.");
                         window.location.href = "${pageContext.request.contextPath}/doc/in-progress";
                     } else {
-                        alert("문서 작성 중 오류가 발생했습니다.");
+                        alert("문서 수정 중 오류가 발생했습니다.");
                     }
                 },
                 error: function () {
-                    alert("문서 작성 중 오류가 발생했습니다.");
+                    alert("문서 수정 중 오류가 발생했습니다.");
                 }
             });
         });

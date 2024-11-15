@@ -35,14 +35,12 @@
         <div class="text-center mb-4">
             <h1 class="header-cell">휴가신청서</h1>
         </div>
-
         <div class="row">
-
             <div class="col-md-6 mb-3">
                 <table class="table table-bordered">
                     <tr>
                         <td class="table-secondary font-weight-bold text-center">문서번호</td>
-                        <td>${docVacation.docId}</td>
+                        <td>${doc.docId}</td>
                     </tr>
                     <tr>
                         <td class="table-secondary font-weight-bold text-center">부&nbsp;&nbsp;&nbsp;서</td>
@@ -54,7 +52,7 @@
                     </tr>
                     <tr>
                         <td class="table-secondary font-weight-bold text-center">작 성 일</td>
-                        <td>${docVacation.docCreateDate.toLocalDate()}</td>
+                        <td>${doc.docCreateDate.toLocalDate()}</td>
                     </tr>
                 </table>
             </div>
@@ -66,36 +64,36 @@
         <table class="table table-bordered mt-4 item_table" id="itemTable">
             <tr>
                 <th class="table-secondary font-weight-bold text-center">제목</th>
-                <td>${docVacation.docTitle}</td>
+                <td>${doc.docTitle}</td>
             </tr>
             <tr>
                 <th class="table-secondary font-weight-bold text-center">휴가 종류</th>
-                <td>${docVacation.vacationType}
+                <td>${doc.vacationType}
                 </td>
             </tr>
             <tr>
                 <th class="table-secondary font-weight-bold text-center">시작일</th>
-                <td>${docVacation.vacationStart}</td>
+                <td>${doc.vacationStart}</td>
             </tr>
             <tr>
                 <th class="table-secondary font-weight-bold text-center">종료일</th>
-                <td>${docVacation.vacationEnd}</td>
+                <td>${doc.vacationEnd}</td>
             </tr>
             <tr>
                 <th class="table-secondary font-weight-bold text-center">휴가 일수</th>
-                <td>${docVacation.vacationCount}</td>
+                <td>${doc.vacationCount}</td>
             </tr>
             <tr>
                 <th class="table-secondary font-weight-bold text-center">휴가 사유</th>
-                <td>${docVacation.docContent}</td>
+                <td>${doc.docContent}</td>
             </tr>
             <tr>
                 <th class="table-secondary font-weight-bold text-center">첨부 파일</th>
                 <td>
                     <c:choose>
-                        <c:when test="${docVacation.vacationFileOriginal != null}">
-                            <a href="${pageContext.request.contextPath}/doc/download?fileName=${docVacation.vacationFileOriginal}&fileUUID=${docVacation.vacationFileUUID}">
-                                    ${docVacation.vacationFileOriginal}
+                        <c:when test="${doc.vacationFileOriginal != null}">
+                            <a href="${pageContext.request.contextPath}/doc/download?fileName=${doc.vacationFileOriginal}&fileUUID=${doc.vacationFileUUID}">
+                                    ${doc.vacationFileOriginal}
                             </a>
                         </c:when>
                         <c:otherwise>

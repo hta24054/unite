@@ -4,7 +4,11 @@ import lombok.Getter;
 
 @Getter
 public enum DocRole {
-    WRITER("writer"), SIGNER("signer"), VIEWER("viewer");
+    PRE_SIGNED_WRITER("preSignedWriter"),
+    POST_SIGNED_WRITER("postSignedWriter"),
+    PRE_SIGNER("preSigner"),
+    POST_SIGNER("postSigner"),
+    VIEWER("viewer");
 
     private final String type;
 

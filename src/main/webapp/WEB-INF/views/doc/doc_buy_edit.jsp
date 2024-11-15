@@ -7,7 +7,7 @@
     <jsp:include page="doc_leftbar.jsp"/>
 
     <meta charset="UTF-8">
-    <title>구매신청서 작성</title>
+    <title>구매신청서 수정</title>
     <style>
         .header-cell {
             font-size: 36px;
@@ -56,33 +56,32 @@
             <h1 class="header-cell">구매신청서</h1>
         </div>
 
-        <!-- 문서 정보 및 결재자 테이블을 좌우로 배치 -->
         <div class="row">
-            <!-- 문서 정보 테이블 -->
             <div class="col-md-6 mb-3">
                 <table class="table table-bordered">
                     <tr>
                         <td class="table-secondary font-weight-bold text-center">문서번호</td>
-                        <td>&nbsp;</td>
+                        <td><input type="text" name="docId" value="${doc.docId}" readonly></td>
+                        <input type="hidden" name="docBuyId" value="${doc.docBuyId}">
                     </tr>
                     <tr>
                         <td class="table-secondary font-weight-bold text-center">부&nbsp;&nbsp;&nbsp;서</td>
                         <td>${dept.deptName}</td>
                     </tr>
                     <tr>
-                        <td class="table-secondary font-weight-bold text-center">신 청 자</td>
-                        <td>${emp.ename}</td>
-                        <input type="hidden" name="writer" value="${emp.empId}">
+                        <td class="table-secondary font-weight-bold text-center">기 안 자</td>
+                        <td>${writer.ename}</td>
+                        <input type="hidden" name="writer" value="${writer.empId}">
                     </tr>
                     <tr>
                         <td class="table-secondary font-weight-bold text-center">작 성 일</td>
-                        <td>${today}</td>
+                        <td>${doc.docCreateDate}</td>
                     </tr>
                 </table>
             </div>
             <!-- 결재자 테이블 -->
             <div class="col-md-6">
-                <jsp:include page="sign_write.jsp"/>
+                <jsp:include page="sign_edit.jsp"/>
             </div>
         </div>
 
@@ -92,6 +91,7 @@
                 <th colspan="1" class="table-secondary font-weight-bold text-center">제목</th>
                 <td colspan="5">
                     <input type="text" name="title" class="form-control" placeholder="제목을 입력하세요" data-name="제목"
+                           value="${doc.docTitle}"
                            required>
                 </td>
             </tr>
@@ -103,19 +103,27 @@
                 <th class="table-secondary font-weight-bold text-center item_form text-right-align">금액</th>
                 <th class="table-secondary font-weight-bold text-center" id="modify">추가/삭제</th>
             </tr>
-            <tr class="item-row">
-                <td><input type="text" class="form-control title-input" name="product_name" data-name="품명" required>
-                </td>
-                <td><input type="text" class="form-control title-input" name="standard" data-name="규격" required></td>
-                <td><input type="text" class="form-control title-input quantity text-right-align" name="quantity"
-                           data-name="수량" required></td>
-                <td><input type="text" class="form-control title-input price text-right-align" name="price" data-name="단가" required></td>
-                <td class="subTotal text-right-align"></td>
-                <td class="text-center">
-                    <button type="button" class="btn btn-sm btn-light add-row">+</button>
-                    <button type="button" class="btn btn-sm btn-light remove-row">-</button>
-                </td>
-            </tr>
+            <c:forEach var="item" items="${doc.buyList}">
+                <tr class="item-row">
+                    <td><input type="text" class="form-control title-input" name="product_name" data-name="품명"
+                               value="${item.productName}" required>
+                    </td>
+                    <td><input type="text" class="form-control title-input" name="standard" data-name="규격"
+                               value="${item.standard}" required>
+                    </td>
+                    <td><input type="text" class="form-control title-input quantity text-right-align" name="quantity"
+                               value="${item.quantity}"
+                               data-name="수량" required></td>
+                    <td><input type="text" class="form-control title-input price text-right-align" name="price"
+                               value="${item.price}"
+                               data-name="단가" required></td>
+                    <td class="subTotal text-right-align"></td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-sm btn-light add-row">+</button>
+                        <button type="button" class="btn btn-sm btn-light remove-row">-</button>
+                    </td>
+                </tr>
+            </c:forEach>
             <tr>
                 <td colspan="4" class="table-secondary font-weight-bold text-center">합계</td>
                 <td id="total" class="text-right-align"></td>
@@ -127,7 +135,7 @@
             <tr>
                 <td colspan="6">
                     <textarea name="content" class="form-control" rows="4" placeholder="내용을 입력하세요" data-name="내용"
-                              required></textarea>
+                              required>${doc.docContent}</textarea>
                 </td>
             </tr>
         </table>
@@ -238,7 +246,7 @@
             $('#doc_form [required]').each(function () {
                 if ($(this).val() === '') {
                     const errorMessage = $(this).data('name'); // data-error 속성 값 가져오기
-                    alert(errorMessage+'을(를) 입력해 주세요');
+                    alert(errorMessage + '을(를) 입력해 주세요');
                     $(this).focus();
                     isValid = false;
                     return false;
@@ -261,6 +269,8 @@
 
             // 폼 데이터 수집
             const formData = {
+                docId: $('input[name="docId"]').val(),
+                docBuyId: $('input[name="docBuyId"]').val(),
                 title: $('input[name="title"]').val(),
                 content: $('textarea[name="content"]').val(),
                 writer: $('input[name="writer"]').val(),
@@ -283,10 +293,9 @@
                 };
                 formData.productDetails.push(product);
             });
-            console.log(formData);
 
             $.ajax({
-                url: "${pageContext.request.contextPath}/doc/buy_write",
+                url: "${pageContext.request.contextPath}/doc/buy_edit",
                 type: "POST",
                 data: JSON.stringify(formData),
                 contentType: "application/json; charset=UTF-8",

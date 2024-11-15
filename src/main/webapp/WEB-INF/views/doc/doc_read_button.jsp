@@ -11,7 +11,7 @@
             <button type="button" class="btn btn-danger">반려</button>
         </c:when>
         <c:when test="${role == 'postSignedWriter'|| role == 'postSigner'}">
-            <button type="button" class="btn btn-warning">회수</button>
+            <button type="button" class="btn btn-warning" id="revoke">회수</button>
         </c:when>
     </c:choose>
     <button type="button" class="btn btn-secondary" id="back">목록으로</button>
@@ -36,13 +36,33 @@
                 success: function (response) {
                     if (response.status === 'success') {
                         alert("문서를 결재하였습니다.");
-                        window.location.href = "${pageContext.request.contextPath}/doc/waiting";
+                        location.reload();
                     } else {
                         alert("문서 결재 중 오류가 발생했습니다.");
                     }
                 },
                 error: function () {
                     alert("문서 결재 중 오류가 발생했습니다.");
+                }
+            });
+        }
+    });
+    $('#revoke').click(function () {
+        if (confirm('결재한 문서를 회수하시겠습니까?')) {
+            $.ajax({
+                url: '${pageContext.request.contextPath}/doc/revoke',
+                data: {docId: ${param.docId}},
+                dataType: "json",
+                success: function (response) {
+                    if (response.status === 'success') {
+                        alert("문서를 회수하였습니다.");
+                        location.reload();
+                    } else {
+                        alert("문서 회수 중 오류가 발생했습니다.");
+                    }
+                },
+                error: function () {
+                    alert("문서 회수 중 오류가 발생했습니다.");
                 }
             });
         }

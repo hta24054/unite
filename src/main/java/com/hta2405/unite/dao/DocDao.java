@@ -730,4 +730,25 @@ public class DocDao {
         }
         return false;
     }
+
+    public int revokeDoc(Long docId, String empId) {
+        String sql = """
+                UPDATE SIGN
+                SET SIGN_TIME = NULL
+                WHERE DOC_ID = ?
+                  AND SIGN_ORDER >= (SELECT SIGN_ORDER
+                                    FROM SIGN
+                                    WHERE DOC_ID = ?
+                                    AND EMP_ID = ?)
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, docId);
+            ps.setLong(2, docId);
+            ps.setString(3, empId);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

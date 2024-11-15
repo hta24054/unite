@@ -4,11 +4,19 @@ $(document).ready(function(){
 	let isAllDayChk, startDate, endDate;
 	let currentDate;
 	
-	// 개인 일정, 공유 일정 모두 불러오기
+	
+	/*
 	function fetchAllData() {
-	    //events = []; 
+	    events = []; 
 	    fetchListData(); 
 	    fetchSharedListData(); 
+	}
+	*/
+	
+	// 개인 일정, 공유 일정 모두 불러오기
+	function fetchAllData() {
+	    events = []; // 배열 초기화
+	    Promise.all([fetchListData(), fetchSharedListData()]);
 	}
 	
 	// 일정 리스트 불러오기
@@ -23,18 +31,22 @@ $(document).ready(function(){
 	        success: function(data) {
 	            console.log("개인 일정 리스트 불러오기 성공", data);
 	            
-	            events = []; 
+	            //events = []; 
 	            if (data != null) {
 			        for (let i = 0; i < data.length; i++) {
-			            events.push({
-			                title: data[i].schedule_name, 
-			                start: data[i].schedule_start, 
-			                end: data[i].schedule_end, 
-			                backgroundColor: data[i].schedule_color, 
-			                description: data[i].schedule_content,
-			                allDay: data[i].schedule_allDay,
-			                id: data[i].schedule_id
-			            });
+			            
+			            // 중복 체크: schedule_id로 중복 여부 확인
+	                    if (!events.some(event => event.id === data[i].schedule_id)) {
+	                        events.push({
+	                            title: data[i].schedule_name,
+	                            start: data[i].schedule_start,
+	                            end: data[i].schedule_end,
+	                            backgroundColor: data[i].schedule_color,
+	                            description: data[i].schedule_content,
+	                            allDay: data[i].schedule_allDay,
+	                            id: data[i].schedule_id
+	                        });
+	                    }
 			        }
 			    }
      	        // 캘린더 초기화
@@ -61,19 +73,23 @@ $(document).ready(function(){
 	        success: function(data) {
 	            console.log("공유 일정 리스트 불러오기 성공", data);
 	
-				events = []; 
+				//events = []; 
 	            if (data != null) {
 	                // 공유 일정 데이터를 기존 이벤트 배열에 추가
 	                for (let i = 0; i < data.length; i++) {
-	                    events.push({
-	                        title: data[i].schedule_name,
-	                        start: data[i].schedule_start,
-	                        end: data[i].schedule_end,
-	                        backgroundColor: data[i].schedule_color,
-	                        description: data[i].schedule_content,
-	                        allDay: data[i].schedule_allDay,
-	                        id: data[i].schedule_id
-	                    });
+						
+	                    // 중복 체크: schedule_id로 중복 여부 확인
+	                    if (!events.some(event => event.id === data[i].schedule_id)) {
+	                        events.push({
+	                            title: data[i].schedule_name,
+	                            start: data[i].schedule_start,
+	                            end: data[i].schedule_end,
+	                            backgroundColor: data[i].schedule_color,
+	                            description: data[i].schedule_content,
+	                            allDay: data[i].schedule_allDay,
+	                            id: data[i].schedule_id
+	                        });
+	                    }
 	                }
 	            }
 	            // 캘린더 초기화

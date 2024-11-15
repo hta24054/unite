@@ -12,7 +12,9 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="${pageContext.request.contextPath }/js/project_cancel_list.js"></script> 
-    
+    <script>	
+    	const contextPath = "${pageContext.request.contextPath}";    
+   	</script>
     <jsp:include page="../common/header.jsp"/>
 	<jsp:include page="project_leftbar.jsp"/>
 

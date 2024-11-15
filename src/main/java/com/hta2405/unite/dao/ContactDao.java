@@ -27,14 +27,13 @@ public class ContactDao {
 		}
 	}
 
-	// ContactDao 클래스의 일부
+// ContactDao 클래스의 일부
 	public List<Emp> getAllContacts(String orderBy) {
 		List<Emp> list = new ArrayList<>();
 		// SQL 쿼리 문자열을 동적으로 생성
 		String sql = "SELECT e.emp_id, e.ename, e.mobile, e.tel, d.dept_name, j.job_name " + "FROM emp e "
 				+ "JOIN dept d ON e.dept_id = d.dept_id " + "JOIN job j ON e.job_id = j.job_id " + "ORDER BY "
 				+ orderBy; // orderBy 부분 동적 처리
-
 		try (Connection conn = ds.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			ResultSet rs = pstmt.executeQuery();
 

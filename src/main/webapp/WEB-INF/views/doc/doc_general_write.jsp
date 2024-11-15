@@ -7,7 +7,6 @@
     <jsp:include page="doc_leftbar.jsp"/>
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
-    <script src="${pageContext.request.contextPath }/js/sign_write.js"></script>
 
     <meta charset="UTF-8">
     <title>일반 문서 작성</title>

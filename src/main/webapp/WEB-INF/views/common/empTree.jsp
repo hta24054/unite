@@ -36,6 +36,7 @@
         #tree_title {
             margin-bottom: 25px;
         }
+
         #tree_table {
             text-align: center;
             white-space: nowrap;
@@ -74,89 +75,86 @@
     </div>
 </div>
 <script>
-    $(document).ready(function () {
-        $(document).ready(function () {
-            $("#tree").fancytree({
-                source: [
+    $("#tree").fancytree({
+        source: [
+            {
+                title: "대표이사", key: "1000", folder: true, children: [
+                    {title: "부사장", key: "1001", folder: true},
                     {
-                        title: "대표이사", key: "1000", folder: true, children: [
-                            {title: "부사장", key: "1001", folder: true},
-                            {
-                                title: "경영기획본부", key: "1100", folder: true, children: [
-                                    {title: "재무관리팀", key: "1110", folder: true},
-                                    {title: "인사관리팀", key: "1120", folder: true}
-                                ]
-                            },
-                            {
-                                title: "SI사업본부", key: "1200", folder: true, children: [
-                                    {title: "신용평가팀", key: "1210", folder: true},
-                                    {title: "금융SI팀", key: "1220", folder: true},
-                                    {title: "비금융SI팀", key: "1230", folder: true},
-                                    {title: "SM팀", key: "1240", folder: true}
-                                ]
-                            },
-                            {
-                                title: "영업본부", key: "1300", folder: true, children: [
-                                    {title: "솔루션영업팀", key: "1310", folder: true},
-                                    {title: "SI영업팀", key: "1320", folder: true},
-                                    {title: "SM영업팀", key: "1330", folder: true}
-                                ]
-                            },
-                            {
-                                title: "R&D본부", key: "1400", folder: true, children: [
-                                    {title: "연구개발팀", key: "1410", folder: true}
-                                ]
-                            }
+                        title: "경영기획본부", key: "1100", folder: true, children: [
+                            {title: "재무관리팀", key: "1110", folder: true},
+                            {title: "인사관리팀", key: "1120", folder: true}
+                        ]
+                    },
+                    {
+                        title: "SI사업본부", key: "1200", folder: true, children: [
+                            {title: "신용평가팀", key: "1210", folder: true},
+                            {title: "금융SI팀", key: "1220", folder: true},
+                            {title: "비금융SI팀", key: "1230", folder: true},
+                            {title: "SM팀", key: "1240", folder: true}
+                        ]
+                    },
+                    {
+                        title: "영업본부", key: "1300", folder: true, children: [
+                            {title: "솔루션영업팀", key: "1310", folder: true},
+                            {title: "SI영업팀", key: "1320", folder: true},
+                            {title: "SM영업팀", key: "1330", folder: true}
+                        ]
+                    },
+                    {
+                        title: "R&D본부", key: "1400", folder: true, children: [
+                            {title: "연구개발팀", key: "1410", folder: true}
                         ]
                     }
-                ],
-                click: function (event, data) {
-                    const deptId = data.node.key;
-                    loadEmployees(deptId);
-                }
-            });
-            showInitialMessage();
-
-            function loadEmployees(deptId) {
-                $.ajax({
-                    url: '${pageContext.request.contextPath}/emp/empTree',
-                    method: 'GET',
-                    data: {deptId: deptId},
-                    success: function (data) {
-                        updateEmployeeTable(data.empList, data.jobName);
-                    }
-                });
+                ]
             }
-
-            function updateEmployeeTable(empList, jobName) {
-                const tableBody = $('#employeeTableBody');
-                tableBody.empty();
-                $('#noDataMessage').remove()
-
-                if (empList.length === 0) {
-                    tableBody.append("<tr><td colspan='4'>직원이 없습니다.</td></tr>");
-                } else {
-                    $.each(empList, function (index, emp) {
-                        let html = "<tr>";
-                        html += "<td style='display: none;'>" + emp.empId + "</td>"; // 숨긴 empId 열
-                        html += "<td>" + emp.ename + "</td>";
-                        html += "<td>" + emp.tel + "</td>";
-                        html += "<td>" + jobName[emp.jobId] + "</td>";
-                        html += "</tr>";
-                        tableBody.append(html);
-                    });
-                }
-            }
-            //부서 선택 전
-            function showInitialMessage() {
-                const tableBody = $('#employeeTableBody');
-                tableBody.empty();
-                $('#employeeTableContainer').append(
-                    "<div id='noDataMessage' style='text-align: center; padding: 20px; font-weight: bold;'>부서를 선택해주세요</div>"
-                );
-            }
-        })
+        ],
+        click: function (event, data) {
+            const deptId = data.node.key;
+            loadEmployees(deptId);
+        }
     });
+    showInitialMessage();
+
+    function loadEmployees(deptId) {
+        $.ajax({
+            url: '${pageContext.request.contextPath}/emp/empTree',
+            method: 'GET',
+            data: {deptId: deptId},
+            success: function (data) {
+                updateEmployeeTable(data.empList, data.jobName);
+            }
+        });
+    }
+
+    function updateEmployeeTable(empList, jobName) {
+        const tableBody = $('#employeeTableBody');
+        tableBody.empty();
+        $('#noDataMessage').remove()
+
+        if (empList.length === 0) {
+            tableBody.append("<tr><td colspan='4'>직원이 없습니다.</td></tr>");
+        } else {
+            $.each(empList, function (index, emp) {
+                let html = "<tr>";
+                html += "<td style='display: none;'>" + emp.empId + "</td>"; // 숨긴 empId 열
+                html += "<td>" + emp.ename + "</td>";
+                html += "<td>" + emp.tel + "</td>";
+                html += "<td>" + jobName[emp.jobId] + "</td>";
+                html += "</tr>";
+                tableBody.append(html);
+            });
+        }
+    }
+
+    //부서 선택 전
+    function showInitialMessage() {
+        const tableBody = $('#employeeTableBody');
+        tableBody.empty();
+        $('#employeeTableContainer').append(
+            "<div id='noDataMessage' style='text-align: center; padding: 20px; font-weight: bold;'>부서를 선택해주세요</div>"
+        );
+    }
 </script>
 </body>
 </html>

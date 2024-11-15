@@ -16,13 +16,15 @@ public class DocFrontController extends AbstractFrontController {
     public void init() throws ServletException {
         actionMap.put("/waiting", new DocWaitingListAction());
         actionMap.put("/general", new DocGeneralWriteAction());
-        actionMap.put("/general_write", new DocGeneralWriteProcessAction());
+        actionMap.put("/general_write", new DocGeneralWriteAndEditProcessAction());
+        actionMap.put("/general_edit", new DocGeneralWriteAndEditProcessAction());
         actionMap.put("/vacation", new DocVacationWriteAction());
-        actionMap.put("/vacation_write",new DocVacationWriteProcessAction());
+        actionMap.put("/vacation_write", new DocVacationWriteProcessAction());
         actionMap.put("/trip", new DocTripWriteAction());
         actionMap.put("/trip_write", new DocTripWriteProcessAction());
         actionMap.put("/buy", new DocBuyWriteAction());
-        actionMap.put("/buy_write", new DocBuyWriteProcessAction());
+        actionMap.put("/buy_write", new DocBuyWriteAndEditProcessAction());
+        actionMap.put("/buy_edit", new DocBuyWriteAndEditProcessAction());
         actionMap.put("/my-approved", new DocMyApprovedListAction());
         actionMap.put("/read", new DocReadAction());
         actionMap.put("/in-progress", new DocInProgressAction());
@@ -30,5 +32,9 @@ public class DocFrontController extends AbstractFrontController {
         actionMap.put("/list/dept", new DocDeptListAction());
         actionMap.put("/list/sign", new DocSignListAction());
         actionMap.put("/download", new DocVacationFileDownloadAction());
+        actionMap.put("/sign", new DocSignAction());
+        actionMap.put("/revoke", new DocRevokeAction());
+        actionMap.put("/delete", new DocDeleteAction());
+        actionMap.put("/edit", new DocEditAction());
     }
 }

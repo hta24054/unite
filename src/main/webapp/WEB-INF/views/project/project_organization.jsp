@@ -230,7 +230,6 @@
                 </button>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="insertEmpBtn">등록</button>
                 <jsp:include page="../common/empTree.jsp"/>
             </div>
             <div class="modal-body">
@@ -245,6 +244,7 @@
                     <textarea id="empTextArea" class="form-control" rows="3" cols="100"placeholder="선택된 직원 추가..." readOnly></textarea>
                     <button type="button" id="addEmpBtn" class="btn btn-primary mt-2">추가</button>
                     <button type="button" id="deleteEmpBtn" class="btn btn-danger mt-2">삭제</button>
+	                <button type="button" class="btn btn-success mt-2" id="insertEmpBtn">등록</button>
                 </div>
             </div>
         </div>

@@ -42,7 +42,7 @@ h2 {
 }
 
 table {
-	width: 90%;
+  width: 90%;
 	border-collapse: collapse;
 	margin-top: 20px;
 }

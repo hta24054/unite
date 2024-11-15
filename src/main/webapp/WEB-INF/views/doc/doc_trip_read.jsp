@@ -36,7 +36,7 @@
             <table class="table table-bordered">
                 <tr>
                     <td class="table-secondary font-weight-bold text-center">문서번호</td>
-                    <td>${docTrip.docId}</td>
+                    <td>${doc.docId}</td>
                 </tr>
                 <tr>
                     <td class="table-secondary font-weight-bold text-center">부&nbsp;&nbsp;&nbsp;서</td>
@@ -49,7 +49,7 @@
                 </tr>
                 <tr>
                     <td class="table-secondary font-weight-bold text-center">작 성 일</td>
-                    <td>${docTrip.docCreateDate.toLocalDate()}</td>
+                    <td>${doc.docCreateDate.toLocalDate()}</td>
                 </tr>
             </table>
         </div>
@@ -63,23 +63,23 @@
     <table class="table table-bordered mt-4">
         <tr>
             <td class="table-secondary font-weight-bold text-center">출장 시작일</td>
-            <td>${docTrip.tripStart}</td>
+            <td>${doc.tripStart}</td>
         </tr>
         <tr>
             <td class="table-secondary font-weight-bold text-center">출장 종료일</td>
-            <td>${docTrip.tripEnd}</td>
+            <td>${doc.tripEnd}</td>
         </tr>
         <tr>
             <td class="table-secondary font-weight-bold text-center">출장지</td>
-            <td>${docTrip.tripLoc}</td>
+            <td>${doc.tripLoc}</td>
         </tr>
         <tr>
             <td class="table-secondary font-weight-bold text-center">출장지 연락처</td>
-            <td>${docTrip.tripPhone}</td>
+            <td>${doc.tripPhone}</td>
         </tr>
         <tr>
             <td class="table-secondary font-weight-bold text-center">목적 및 내용</td>
-            <td>${docTrip.tripInfo}</td>
+            <td>${doc.tripInfo}</td>
         </tr>
     </table>
     <table class="table table-bordered mt-4">
@@ -88,16 +88,16 @@
         </tr>
         <tr>
             <td class="table-secondary font-weight-bold text-center">사용 시작일</td>
-            <td>${docTrip.cardStart}</td>
+            <td>${doc.cardStart}</td>
 
             <td class="table-secondary font-weight-bold text-center">사용 종료일</td>
-            <td>${docTrip.cardEnd}</td>
+            <td>${doc.cardEnd}</td>
         </tr>
         <tr>
             <td class="table-secondary font-weight-bold text-center">사용 예정자</td>
             <td>${writer.ename}</td>
             <td class="table-secondary font-weight-bold text-center">반납 예정일</td>
-            <td>${docTrip.cardReturn}</td>
+            <td>${doc.cardReturn}</td>
         </tr>
     </table>
 </div>

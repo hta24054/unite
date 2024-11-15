@@ -19,6 +19,16 @@
  	color: gray;
  }
  
+ .tr-post:hover{
+ 	background-color: rgba(0, 0, 0, .05);
+ 	cursor: pointer;
+ }
+ 
+ .lineImg{
+ 	width: 13px;
+    margin-bottom: 2px;
+ }
+ 
  body > div > table > thead > tr:nth-child(2) > th:nth-child(1){width:8%}
  body > div > table > thead > tr:nth-child(2) > th:nth-child(2){width:50%}
  body > div > table > thead > tr:nth-child(2) > th:nth-child(3){width:14%}
@@ -28,12 +38,13 @@
 <script src="${pageContext.request.contextPath}/js/boardList.js"></script>
 </head>
 <body>
+	<input type="hidden" id="boardName2" value="${boardName2}"><%--view.js에서 사용하기위해 추가합니다. --%>
 	<div class="container">
 		<%--게시글이 있는 경우 --%>
 		  <c:if test="${listCount > 0}">
 		    <div class="rows">
 		    	<span>줄보기</span>
-		    	<select class="form-control" id="viewcount">
+		    	<select class="form-control" id="viewCount">
 		    		<option value="1">1</option>
 		    		<option value="3">3</option>
 		    		<option value="5">5</option>
@@ -41,7 +52,7 @@
 		    		<option value="10" selected>10</option>
 		    	</select>
 		    </div>
-		    <table class="table table-striped">
+		    <table class="table">
 		    	<thead>
 		    		<tr>
 		    			<th colspan="4"></th>
@@ -60,7 +71,8 @@
 		    	<tbody>
 		    	<c:set var="num" value="${listCount-(page-1)*limit}"/>
 		    	<c:forEach var="p" items="${postList}">
-		    		<tr>
+		    		<tr class="tr-post"
+		    			data-page="${p.postId}">
 		    			<td><%--번호 --%>
 		    				<c:out value="${num}"/><%-- num 출력 --%>
 		    				<c:set var="num" value="${num-1}"/><%-- num=num-1; 의미 --%>
@@ -72,17 +84,18 @@
 			    					<c:forEach var="a" begin="0" end="${p.postReLev*2}" step="1">
 			    					&nbsp;
 			    					</c:forEach>
-			    					<img src='${pageContext.request.contextPath}/image/postLine.png'>
+			    					<img class="lineImg" src='/unite/image/postLine.png'>
 		    					</c:if>
 		    					
-		    					<a href="detail?num=${p.postId}">
-		    						<c:if test="${p.postSubject.length()>=20}">
-		    							<c:out value="${p.postSubject.substring(0,20)}..."/>
-		    						</c:if>
-		    						<c:if test="${p.postSubject.length()<20}">
-		    							<c:out value="${p.postSubject}"/>
-		    						</c:if>
-		    					</a>[${p.postCommentCnt}]
+		    					<input type="hidden" id="${p.postId}" value="${p.postId}"><%--view.js에서 사용하기위해 추가합니다. --%>
+
+	    						<c:if test="${p.postSubject.length()>=20}">
+	    							<c:out value="${p.postSubject.substring(0,20)}..."/>
+	    						</c:if>
+	    						<c:if test="${p.postSubject.length()<20}">
+	    							<c:out value="${p.postSubject}"/>
+	    						</c:if>
+		    					[${p.postCommentCnt}]
 		    				</div>
 		    			</td>
 		    			<td><div>${p.postWriter}</div></td>
@@ -96,20 +109,34 @@
 		    <div class="center-block">
 		    	<ul class="pagination justify-content-center">
 		    		<li class="page-item">
-		    			<a ${page > 1 ? 'href=list?page=' += (page - 1) : ''}
-		    				class="page-link ${page <= 1 ? 'gray' : ''}">
-		    			이전&nbsp;	
+		    			<a class="page-link ${page <= 1 ? 'gray' : ''}"
+		    				data-page="${page > 1 ? 1 : ''}">
+		    			&lt;&lt;
+		    			</a>
+		    		</li>
+		    		<li class="page-item">
+		    			<a class="page-link ${page <= 1 ? 'gray' : ''}"
+		    				data-page="${page > 1 ? page - 1 : ''}">
+		    			&lt;
 		    			</a>
 		    		</li>
 		    		<c:forEach var="a" begin="${startPage}" end="${endPage}">
 		    			<li class="page-item ${a == page ? 'active' : ''}">
-			    			<a ${a == page ? '' : 'href=list?page=' += a}
-			    				class="page-link">${a}</a>
+			    			<a class="page-link"
+			    				data-page="${a == page ? '' : a}">${a}</a>
 		    			</li>
 		    		</c:forEach>
 		    		<li class="page-item">
-		    			<a ${page < maxPage ? 'href=list?page=' += (page + 1) : ''}
-		    				class="page-link ${page >= maxPage ? 'gray' : '' }">&nbsp;다음</a>
+		    			<a class="page-link ${page >= maxPage ? 'gray' : ''}" 
+						   	data-page="${page < maxPage ? page + 1 : ''}">
+						   	&gt;
+						</a>
+		    		</li>
+		    		<li class="page-item">
+		    			<a class="page-link ${page < maxPage ? '' : 'gray'}" 
+						   	data-page="${page < maxPage ? maxPage : ''}">
+						   	&gt;&gt;
+						</a>
 		    		</li>
 		    	</ul>
 		    </div>
@@ -121,7 +148,6 @@
 		  	<h3 style = "text-align: center">등록된 글이 없습니다.</h3>
 		  </c:if>
 		  
-		  <button type="button" class="btn btn-info float-right">글 쓰 기</button>
 	</div> <%-- <div class="container"> end --%>
 </body>
 </html>

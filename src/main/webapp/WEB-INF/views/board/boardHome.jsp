@@ -130,15 +130,20 @@
       border-bottom: 1px solid #ccc;
       padding: 15px 25px;
       width: 100%;
+      height: 200px;
+	  display: flex;
+	  flex-direction: column;
+	  justify-content: space-between;
   }
   .board-header {
-      font-size: 14px;
+      font-size: 17px;
       color: #666;
-      margin-bottom: 8px;
+      margin-top: 8px;
+      font-weight: 500;
   }
   .board-title {
-      font-size: 16px;
-      font-weight: bold;
+      font-size: 20px;
+      font-weight: 600;
       margin-bottom: 4px;
       display: flex;
       align-items: center;
@@ -147,14 +152,14 @@
       color: #999;
   }
   .board-content {
-      font-size: 14px;
+      font-size: 18px;
       color: #999;
       margin-bottom: 10px;
   }
   .board-footer {
       display: flex;
       align-items: center;
-      font-size: 12px;
+      font-size: 15px;
       color: #666;
   }
   .board-footer img {
@@ -182,7 +187,9 @@
       margin: 0px 3px 0px 10px;
   }
   
-  
+  nav{
+  	  z-index:1;
+  }
 	
 </style>
 <script src="${pageContext.request.contextPath}/js/jquery-3.7.1.js"></script>

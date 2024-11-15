@@ -4,6 +4,7 @@ import com.hta2405.unite.action.board.BoardHomeAction;
 import com.hta2405.unite.action.board.BoardHomeProcessAction;
 import com.hta2405.unite.action.board.BoardListAction;
 import com.hta2405.unite.action.post.PostAddAction;
+import com.hta2405.unite.action.post.PostDetailAction;
 import com.hta2405.unite.action.post.PostWriteAction;
 
 import jakarta.servlet.ServletException;
@@ -24,7 +25,7 @@ public class BoardFrontController extends AbstractFrontController {
         actionMap.put("/homeProcess", new BoardHomeProcessAction());//게시판 홈
         actionMap.put("/boardWrite", new PostWriteAction());
         actionMap.put("/boardList", new BoardListAction());
-        
+        actionMap.put("/post/detail", new PostDetailAction());
         actionMap.put("/post/postWrite", new PostWriteAction());//게시글 쓰기
         actionMap.put("/post/add", new PostAddAction());//게시글 추가 액션
     }

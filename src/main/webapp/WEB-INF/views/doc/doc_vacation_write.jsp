@@ -5,8 +5,6 @@
 <head>
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="doc_leftbar.jsp"/>
-    <script src="${pageContext.request.contextPath }/js/sign_write.js"></script>
-
     <meta charset="UTF-8">
     <title>휴가신청서 작성</title>
     <style>

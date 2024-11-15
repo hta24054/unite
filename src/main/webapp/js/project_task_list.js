@@ -50,11 +50,11 @@ function updateBoardList(data){
 		output += `
 			<tr>
 				<td>${num--}</td>
-				<td><div>${changeSubject}[${item.board_cnt}]</div></td>
+				<td><a href="comm?num=${item.taskNum}&userid=${item.memberId}">${changeSubject}</a> [${item.board_cnt}]</td>
 				<td><div>${item.projectContent}</div></td>
 				<td><div>${item.projectDate}</div></td>
 				<td><div>${item.projectUpdateDate}</div></td>
-				<td><div>${taskFileOriginal}</div></td>
+				<td>${taskFileOriginal ? `<a href="down?filename=${item.task_file_uuid}${item.task_file_type}&originalFilename=${item.task_file_original}">${item.task_file_original}</a>` : ''}</td>
 			</tr>
 			`;
 	});

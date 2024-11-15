@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
+    <script src="${pageContext.request.contextPath }/js/sign_write.js"></script>
     <title>결재자</title>
     <style>
         .approval-table-container {

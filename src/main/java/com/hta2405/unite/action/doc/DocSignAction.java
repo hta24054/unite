@@ -2,7 +2,6 @@ package com.hta2405.unite.action.doc;
 
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.DocDao;
-import com.hta2405.unite.util.DocUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,7 +17,7 @@ public class DocSignAction implements com.hta2405.unite.action.Action {
         Long docId = Long.parseLong(req.getParameter("docId"));
 
         String status = "success";
-        if (!DocUtil.isMySignTurn(docId, empId) || docDao.signDoc(docId, empId) != 1) {
+        if (!docDao.getNowSigner(docId).equals(empId) || docDao.signDoc(docId, empId) != 1) {
             status = "fail";
         }
 

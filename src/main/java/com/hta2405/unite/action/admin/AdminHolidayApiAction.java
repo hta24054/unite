@@ -3,6 +3,7 @@ package com.hta2405.unite.action.admin;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.HolidayDao;
+import com.hta2405.unite.util.ConfigUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,7 +28,7 @@ public class AdminHolidayApiAction implements Action {
 
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String apiKey = getApiKey();
+        String apiKey = ConfigUtil.getProperty("apiKey");
         System.out.println("apiKey = " + apiKey);
         TreeMap<LocalDate, String> map = getYearlyHolidays(apiKey);
 
@@ -43,24 +44,6 @@ public class AdminHolidayApiAction implements Action {
             }
         }
         return alertAndGoBack(resp, "향후 1년간의 공휴일이 업데이트 되었습니다.");
-    }
-
-    /**
-     * resource 하위 config.properties 파일 생성 후
-     * apiKey=abcde 꼴로 작성한 apikey를 불러옴
-     */
-    private String getApiKey() {
-        Properties properties = new Properties();
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties")) {
-            if (input == null) {
-                System.out.println("API 키 받아오기 오류, config.properties 파일을 확인하세요");
-                return null;
-            }
-            properties.load(input);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return properties.getProperty("apiKey");
     }
 
     //순서 보장을 위해 TreeMap 선언

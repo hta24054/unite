@@ -66,7 +66,7 @@
 				<div>
 					<input type="hidden" id="schedule_id" name="schedule_id" value="${schedule_id}">
 					<input type="hidden" id="emp_id" name="emp_id" value="${id}">
-					<input type="hidden" id="share_emp" name="share_emp" value="${share_emp}">
+					<input type="hidden" id="share_emp" name="share_emp" value="${share_emp.join(',')}"> 	
 					
 					<div class="form-group row">
 						<label for="schedule_name" class="col-sm-2 col-form-label">일정명</label>
@@ -76,7 +76,6 @@
 					</div>
 					
 					<div class="form-group row custom-control custom-checkbox">
-						
 						<div class="col-sm-7">
 							<input type="checkbox" name="allDay" id="allDay" class="custom-control-input" value="">
 		             		<label for="allDay" class="custom-control-label">하루종일</label>
@@ -89,17 +88,17 @@
 							<input type="datetime-local" name="startAt" id="startAt" class="form-control">
 						</div>
 					</div>
-					
+				
 					<div class="form-group row">
 			            <label for="endAt" class="col-sm-2 col-form-label">종료날짜/시간</label>
 			            <div class="col-sm-8">
 							<input type="datetime-local" name="endAt" id="endAt" class="form-control">
 						</div>
 			        </div>
-			        
-         				<div class="form-group row">
-         					<p class="col-sm-2">색상</p>
-         					<div class="col-sm-8">
+		        
+        			<div class="form-group row">
+        				<p class="col-sm-2">색상</p>
+        				<div class="col-sm-8">
 							<select name="bgColor" id="bgColor">
 								<option value="#1e3a8a" style="color: #1e3a8a;">Blue100</option>
 					            <option value="#1d4ed8" style="color: #1d4ed8;">Blue200</option>
@@ -112,7 +111,7 @@
 							</select>
 						</div>
 			        </div>
-			        
+		        
 			        <div class="form-group row">
 			        	<p class="col-sm-2">공유자</p>
 			        	<div class="col-sm-8">
@@ -120,12 +119,14 @@
 			        		<a href="javascript:void(0);" data-target="scheduleShareEmp" id="scheduleShareBtn">+ 공유자 선택</a>
 			        	</div>
 			        </div>
+		        
 			        <div class="form-group row">
 			        	<p class="col-sm-2">내용</p>
 			        	<div class="col-sm-8">
 			        		<textarea rows="10" name="description" id="description"></textarea>
 			        	</div>
 			        </div>
+		        
         			<div class="btn_wrap">
         				<button type="reset" class="btn btn-secondary">취소</button>
 						<button type="button" class="btn btn-info" id="btnShareRegister">등록</button>
@@ -135,7 +136,7 @@
 		</div>
 	</div>
 	
-	<%-- 공유 일정 등록 모달 --%>
+	<%-- 공유자 선택 모달 --%>
 	<div class="modal fade" id="scheduleShareModal" tabindex="-1" role="dialog" aria-labelledby="scheduleShareModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
@@ -156,8 +157,7 @@
 			</div>
 		</div>
 	</div>
-	
-	<%-- 공유 일정 등록 모달 --%>
+
     <script>
         $(document).ready(function() {
         	$("#scheduleShareBtn").on("click", function(e) {
@@ -218,7 +218,7 @@
                     dataType: 'json',
                     data: shareData,
                     success: function(data) {
-                    	console.log("서버 응답:", data); 
+                    	console.log("공유 일정 서버 응답:", data); 
                     	
                     	alert('공유 일정이 등록되었습니다.');
                         addEventToCalendar(shareData);  
@@ -226,6 +226,7 @@
                         const events = []; 
                         if (data != null && data.length > 0) {
         			        for (let i = 0; i < data.length; i++) {
+        			        	
         						const isAllDay = data[i].schedule_allDay === 1;
         						events.push({
         			                title: data[i].schedule_name, 

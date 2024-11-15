@@ -54,7 +54,6 @@ public class DocReadAction implements Action {
         //결재자 정보 추가
         List<Sign> signList = docDao.getSignListByDocId(docId);
         req.setAttribute("signList", signList);
-        System.out.println(signList);
 
         //결재자 이름 표시를 위한 Map 추가
         HashMap<String, String> nameMap = new HashMap<>();
@@ -62,7 +61,6 @@ public class DocReadAction implements Action {
             nameMap.put(sign.getEmpId(), empDao.getEmpById(sign.getEmpId()).getEname());
         }
         req.setAttribute("nameMap", nameMap);
-        System.out.println(nameMap);
     }
 
     /*

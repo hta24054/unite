@@ -8,7 +8,6 @@ import com.hta2405.unite.action.project.ProjectDetailAction;
 import com.hta2405.unite.action.project.ProjectDoCreateAction;
 import com.hta2405.unite.action.project.ProjectEmployAction;
 import com.hta2405.unite.action.project.ProjectGetOngoingAction;
-import com.hta2405.unite.action.project.ProjectListAction;
 import com.hta2405.unite.action.project.ProjectMainAction;
 import com.hta2405.unite.action.project.ProjectProgressAction;
 import com.hta2405.unite.action.project.ProjectUpdateProgressAction;
@@ -25,12 +24,11 @@ public class ProjectFrontController extends AbstractFrontController {
     public void init() throws ServletException {
         actionMap.put("/main", new ProjectMainAction()); //메인
         actionMap.put("/create", new ProjectCreateAction());
-        actionMap.put("/complete", new ProjectCompleteAction());
         actionMap.put("/cancel", new ProjectCancelAction());
         actionMap.put("/detail", new ProjectDetailAction());
         actionMap.put("/progress", new ProjectProgressAction());
         actionMap.put("/orgchart", new ProjectChartAction());
-        actionMap.put("/list", new ProjectListAction());
+        actionMap.put("/complete", new ProjectCompleteAction());
         // actionMap.put("/write", new ProjectWriteAction());
         // actionMap.put("/add", new ProjectAddAction());
         actionMap.put("/employ", new ProjectEmployAction());

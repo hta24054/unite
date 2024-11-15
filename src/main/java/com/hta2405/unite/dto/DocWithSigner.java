@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class DocWithWaitingSigner {
+public class DocWithSigner {
     private Doc doc;
     private String signerId;
     private String signerName;

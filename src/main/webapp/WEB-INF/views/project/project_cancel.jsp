@@ -7,18 +7,18 @@
     <meta charset="UTF-8">
     <title>취소 프로젝트</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/project_left.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="${pageContext.request.contextPath }/js/project_cancel_list.js"></script> 
+    
     <jsp:include page="../common/header.jsp"/>
 	<jsp:include page="project_leftbar.jsp"/>
-    <style>
-        .table { width: 70%; margin: auto; }
-        table, td, th { border-collapse: collapse; }
-        h2 { text-align: left; color: black; margin: 0; }
-        caption { caption-side: top; margin-bottom: 30px; }
-    </style>
+
 </head>
 <body>
+	<jsp:include page="limit.jsp"/>
     <table class="table">
         <caption><h2>취소 프로젝트</h2></caption>
         <thead>
@@ -27,32 +27,16 @@
                 <th>프로젝트명</th>
                 <th>책임자</th>
                 <th>참여자</th>
+                <th>열람자</th>
                 <th>시작일</th>
                 <th>취소일</th>
                 <th>첨부파일</th>
             </tr>
         </thead>
         <tbody>
-            <c:forEach var="project" items="${cancelProjects}">
-            <tr>
-                <td>${project.projectId}</td>
-                <td>${project.projectName}</td>
-                <td>${project.empName}</td>
-                <td>
-                    <c:set var="numParticipants" value="${fn:length(project.participantNames)}" />
-                    <c:if test="${numParticipants > 0}">
-                        ${project.participantNames[0]}
-                        <c:if test="${numParticipants > 1}">
-                            외 ${numParticipants - 1}명
-                        </c:if>
-                    </c:if>
-                </td>
-                <td>${project.projectStartDate}</td>
-                <td>${project.projectEndDate}</td>
-                <td>${project.projectFilePath}</td>
-            </tr>
-       		</c:forEach>
+           
         </tbody>
     </table>
+    <jsp:include page="page.jsp"/>
 </body>
 </html>

@@ -103,6 +103,7 @@
 					<form name="scheduleEvent" method="post">
 						<input type="hidden" id="schedule_id" name="schedule_id" value="${schedule_id}">
 						<input type="hidden" id="emp_id" name="emp_id" value="${id}">
+						<input type="hidden" id="share_emp" name="share_emp" value="${share_emp.join(',')}">
 						
 						<div class="form-group">
 							<label for="schedule_name">일정명</label>

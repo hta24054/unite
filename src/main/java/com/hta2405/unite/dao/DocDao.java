@@ -22,8 +22,8 @@ public class DocDao {
         }
     }
 
-    public List<DocWithWaitingSigner> getWaitingListByEmpId(String empId) {
-        List<DocWithWaitingSigner> list = new ArrayList<>();
+    public List<DocWithSigner> getWaitingListByEmpId(String empId) {
+        List<DocWithSigner> list = new ArrayList<>();
         String sql = """
                   SELECT d.doc_id AS id,
                          d.DOC_WRITER AS writer,
@@ -56,7 +56,7 @@ public class DocDao {
                         rs.getString("content"),
                         rs.getTimestamp("createDate").toLocalDateTime(),
                         false);
-                list.add(new DocWithWaitingSigner(doc, rs.getString("signer"), rs.getString("signername")));
+                list.add(new DocWithSigner(doc, rs.getString("signer"), rs.getString("signername")));
             }
             return list;
         } catch (SQLException e) {
@@ -65,7 +65,7 @@ public class DocDao {
         }
     }
 
-    public int insertBuyDoc(DocBuy docBuy, String[] signArr) {
+    public int insertBuyDoc(DocBuy docBuy, List<String> signArr) {
         try (Connection conn = ds.getConnection()) {
             conn.setAutoCommit(false);
             int docResult = insertDoc(docBuy, signArr, conn);
@@ -115,7 +115,6 @@ public class DocDao {
             throw new RuntimeException(e);
         }
         return 0;
-
     }
 
     private int insertBuyItem(DocBuy docBuy, Long docBuyId, Connection conn) {
@@ -139,10 +138,59 @@ public class DocDao {
         }
     }
 
-    public int insertTripDoc(DocTrip docTrip, String[] signArr) {
+    public int insertVacationDoc(DocVacation docVacation, List<String> signList) {
         try (Connection conn = ds.getConnection()) {
             conn.setAutoCommit(false);
-            int docResult = insertDoc(docTrip, signArr, conn);
+            int docResult = insertDoc(docVacation, signList, conn);
+            if (docResult == 1) {
+                long docId = -1L;
+                String idSql = "SELECT seq_doc.CURRVAL FROM dual";
+                try (PreparedStatement idStmt = conn.prepareStatement(idSql);
+                     ResultSet rs = idStmt.executeQuery()) {
+                    if (rs.next()) {
+                        docId = rs.getLong(1);
+                    } else {
+                        throw new SQLException("생성된 키를 가져오지 못했습니다.");
+                    }
+                }
+                String sql = """
+                            INSERT INTO DOC_VACATION(DOC_ID, VACATION_START, VACATION_END, VACATION_TYPE, 
+                                                    VACATION_COUNT, VACATION_FILE_PATH, VACATION_FILE_ORIGINAL,
+                                                    VACATION_FILE_UUID, VACATION_FILE_TYPE)
+                            VALUES (?,?,?,?,?,?,?,?,?)
+                        """;
+                try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setLong(1, docId);
+                    ps.setDate(2, Date.valueOf(docVacation.getVacationStart()));
+                    ps.setDate(3, Date.valueOf(docVacation.getVacationEnd()));
+                    ps.setString(4, docVacation.getVacationType());
+                    ps.setInt(5, docVacation.getVacationCount());
+                    ps.setString(6, docVacation.getVacationFilePath());
+                    ps.setString(7, docVacation.getVacationFileOriginal());
+                    ps.setString(8, docVacation.getVacationFileUUID());
+                    ps.setString(9, docVacation.getVacationFileType());
+                    int result = ps.executeUpdate();
+                    if (result == 1) {
+                        conn.commit();
+                        conn.setAutoCommit(true);
+                        return 1;
+                    } else {
+                        conn.rollback();
+                        conn.setAutoCommit(true);
+                        return 0;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
+    }
+
+    public int insertTripDoc(DocTrip docTrip, List<String> signList) {
+        try (Connection conn = ds.getConnection()) {
+            conn.setAutoCommit(false);
+            int docResult = insertDoc(docTrip, signList, conn);
             if (docResult == 1) {
                 long docId = -1L;
                 String idSql = "SELECT seq_doc.CURRVAL FROM dual";
@@ -187,13 +235,14 @@ public class DocDao {
         return 0;
     }
 
-    public int insertGeneralDoc(Doc doc, String[] signArr) {
+    public int insertGeneralDoc(Doc doc, List<String> signList) {
         try (Connection conn = ds.getConnection()) {
             conn.setAutoCommit(false);
-            int result = insertDoc(doc, signArr, conn);
+            int result = insertDoc(doc, signList, conn);
             if (result == 1) {
                 conn.commit();
                 conn.setAutoCommit(true);
+                return 1;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -201,7 +250,7 @@ public class DocDao {
         return 0;
     }
 
-    public int insertDoc(Doc doc, String[] signArr, Connection conn) throws SQLException {
+    public int insertDoc(Doc doc, List<String> signList, Connection conn) throws SQLException {
         String sql = """
                 INSERT INTO DOC (DOC_WRITER, DOC_TYPE, DOC_TITLE, DOC_CONTENT, DOC_CREATE_DATE)
                 VALUES (?,?,?,?,?)
@@ -229,7 +278,7 @@ public class DocDao {
                 }
             }
             // SIGN 테이블에 서명 리스트 삽입
-            List<Sign> list = makeSignListByParam(signArr, docId);
+            List<Sign> list = makeSignListByParam(signList, docId);
             assert list != null;
             int signResult = insertSign(list, conn);
             if (signResult == list.size()) {
@@ -405,21 +454,150 @@ public class DocDao {
         return null;
     }
 
-    public Doc getVacationDoc(Long docId) {
+    public DocVacation getVacationDoc(Long docId) {
+        String sql = """
+                    select *
+                    from doc d join DOC_VACATION v
+                    on d.doc_id = v.DOC_ID
+                    WHERE D.DOC_ID = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, docId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new DocVacation(rs.getLong("doc_id"),
+                        rs.getString("doc_writer"),
+                        DocType.fromString(rs.getString("doc_type")),
+                        rs.getString("doc_title"),
+                        rs.getString("doc_content"),
+                        rs.getTimestamp("doc_create_date").toLocalDateTime(),
+                        rs.getInt("sign_finish") == 1,
+                        rs.getDate("doc_create_date").toLocalDate(),
+                        rs.getDate("vacation_start").toLocalDate(),
+                        rs.getDate("vacation_end").toLocalDate(),
+                        rs.getInt("vacation_count"),
+                        rs.getString("vacation_type"),
+                        rs.getString("vacation_file_Path"),
+                        rs.getString("vacation_file_original"),
+                        rs.getString("vacation_file_uuid"),
+                        rs.getString("vacation_file_type")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
-    private List<Sign> makeSignListByParam(String[] signArr, Long docId) {
+    private List<Sign> makeSignListByParam(List<String> signList, Long docId) {
         if (docId == -1L) {
             return null;
         }
         List<Sign> list = new ArrayList<>();
-        for (int i = 0; i < signArr.length; i++) {
+        for (int i = 0; i < signList.size(); i++) {
             if (i == 0) {
-                list.add(new Sign(null, signArr[i], docId, i, LocalDateTime.now())); //기안자는 결재완료처리
+                list.add(new Sign(null, signList.get(i), docId, i, LocalDateTime.now())); //기안자는 결재완료처리
             } else {
-                list.add(new Sign(null, signArr[i], docId, i, null));
+                list.add(new Sign(null, signList.get(i), docId, i, null));
             }
+        }
+        return list;
+    }
+
+    public List<DocWithSigner> getInProgressDocByEmpId(String empId) {
+        List<DocWithSigner> list = new ArrayList<>();
+        String sql = """
+                    SELECT DOC.*, EMP.EMP_ID, EMP.ENAME
+                    FROM DOC
+                             JOIN SIGN ON DOC.DOC_ID = SIGN.DOC_ID
+                             JOIN EMP ON SIGN.EMP_ID = EMP.EMP_ID
+                             JOIN (
+                        SELECT DOC_ID, MIN(SIGN_ORDER) AS min_sign_order
+                        FROM SIGN
+                        WHERE SIGN_TIME IS NULL
+                        GROUP BY DOC_ID
+                    ) min_sign ON SIGN.DOC_ID = min_sign.DOC_ID AND SIGN.SIGN_ORDER = min_sign.min_sign_order
+                    WHERE doc.SIGN_FINISH = 0 AND SIGN.SIGN_TIME IS NULL AND DOC_WRITER = ?
+                    ORDER BY DOC_CREATE_DATE
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, empId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Doc doc = new Doc(rs.getLong("doc_id"),
+                        rs.getString("doc_writer"),
+                        DocType.fromString(rs.getString("doc_type")),
+                        rs.getString("doc_title"),
+                        rs.getString("doc_content"),
+                        rs.getTimestamp("doc_create_date").toLocalDateTime(),
+                        rs.getInt("sign_finish") == 1
+                );
+                list.add(new DocWithSigner(doc,
+                        rs.getString("emp_id"),
+                        rs.getString("ename"))
+                );
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return list;
+    }
+
+    public List<Doc> getFinishedSignedDocListByEmpId(String empId) {
+        List<Doc> list = new ArrayList<>();
+        String sql = """
+                    select *
+                    from DOC JOIN SIGN
+                    ON DOC.DOC_ID = SIGN.DOC_ID
+                    WHERE EMP_ID = ? and SIGN_FINISH = 1
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, empId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Doc(rs.getLong("doc_id"),
+                        rs.getString("doc_writer"),
+                        DocType.fromString(rs.getString("doc_type")),
+                        rs.getString("doc_title"),
+                        rs.getString("doc_content"),
+                        rs.getTimestamp("doc_create_date").toLocalDateTime(),
+                        rs.getInt("sign_finish") == 1
+                ));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return list;
+    }
+
+    public List<Doc> getFinishedDeptDocListByEmpId(String empId) {
+        List<Doc> list = new ArrayList<>();
+        String sql = """
+                    SELECT *
+                    FROM DOC
+                    JOIN EMP ON EMP.EMP_ID = DOC.DOC_WRITER
+                    WHERE EMP.DEPT_ID = (SELECT DEPT_ID FROM EMP WHERE EMP_ID = ?)
+                    AND SIGN_FINISH = 1
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, empId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Doc(rs.getLong("doc_id"),
+                        rs.getString("doc_writer"),
+                        DocType.fromString(rs.getString("doc_type")),
+                        rs.getString("doc_title"),
+                        rs.getString("doc_content"),
+                        rs.getTimestamp("doc_create_date").toLocalDateTime(),
+                        rs.getInt("sign_finish") == 1
+                ));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return list;
     }

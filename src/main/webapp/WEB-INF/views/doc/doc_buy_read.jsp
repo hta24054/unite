@@ -7,7 +7,7 @@
     <jsp:include page="doc_leftbar.jsp"/>
 
     <meta charset="UTF-8">
-    <title>구매신청서 조회</title>
+    <title>구매신청서</title>
     <style>
         .header-cell {
             font-size: 36px;
@@ -111,21 +111,17 @@
         </table>
 
     </div>
-    <!-- 버튼 영역 -->
-    <div class="text-right mt-3">
-        <button type="submit" form="doc_form" class="btn btn-success">결재 상신</button>
-        <button type="reset" form="doc_form" class="btn btn-secondary">초기화</button>
-    </div>
+    <jsp:include page="doc_read_button.jsp"/>
 </form>
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         calculateTotal(); // 페이지 로드 시 초기 합계 계산
 
         function calculateTotal() {
             let total = 0;
 
             // 모든 item-row의 금액을 계산하여 총합 계산
-            $(".item-row").each(function() {
+            $(".item-row").each(function () {
                 // 수량과 단가를 정수로 변환하며 콤마 제거
                 const quantity = parseInt($(this).find(".text-right-align").eq(0).text().replace(/,/g, '')) || 0;
                 const price = parseInt($(this).find(".text-right-align").eq(1).text().replace(/,/g, '')) || 0;

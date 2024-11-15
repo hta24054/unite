@@ -59,7 +59,6 @@ $(document).ready(function(){
 	        dataType: "json",
 	        data: {
 	            emp_id: $("#emp_id").val(), 
-	            share_emp: $('#share_emp').val()
 	        },
 	        success: function(data) {
 	            console.log("공유 일정 리스트 불러오기 성공", data);
@@ -75,8 +74,7 @@ $(document).ready(function(){
 	                        backgroundColor: data[i].schedule_color,
 	                        description: data[i].schedule_content,
 	                        allDay: data[i].schedule_allDay,
-	                        id: data[i].schedule_id,
-	                        shared: true // 공유 일정 구분
+	                        id: data[i].schedule_id
 	                    });
 	                }
 	            }
@@ -463,6 +461,7 @@ $(document).ready(function(){
 			},
             eventClick: function(info) {
                 console.log("eventClick info", info.event);
+
                 openDetailModal(info.event);
             },
 			eventAdd: function(info) { // 이벤트가 추가되면 발생하는 이벤트

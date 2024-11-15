@@ -213,17 +213,18 @@ public class ScheduleDAO {
 	        
 	        // schedule_id가 생성되었을 경우 공유자 추가
 	        if (scheduleId > 0) {
-	            String shareSql = """
+	            String share_sql = """
 	                INSERT INTO schedule_share
 	                (schedule_share_id, share_emp, schedule_id)
 	                VALUES (SEQ_schedule_share.NEXTVAL, ?, ?)
 	            """;
 
 	            // share_emp 값에서 여러 공유자 ID를 가져옴
-	            String[] shareEmpIds = share.getShareEmp().split(",");
+	            //String[] shareEmpIds = share.getShareEmp().split(",");
+	            String[] shareEmpIds = share.getShareEmp() != null ? share.getShareEmp().split(",") : new String[0];
 
 	            // 공유자 각각을 개별 행으로 추가
-	            try (PreparedStatement pstmtShare = con.prepareStatement(shareSql)) {
+	            try (PreparedStatement pstmtShare = con.prepareStatement(share_sql)) {
 	                for (String empId : shareEmpIds) {
 	                    pstmtShare.setString(1, empId.trim());
 	                    pstmtShare.setInt(2, scheduleId); // 새로 생성된 schedule_id 사용
@@ -240,46 +241,106 @@ public class ScheduleDAO {
 	    
 	    return result;
 	}//insertScheduleShare end
-	
-	// 공유 일정 리스트
-	public JsonArray getSharedScheduleList(String empId, String[] shareEmpArray) {
-        String share_sql = "SELECT s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content, "
-                   + "s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay "
-                   + "FROM schedule s "
-                   + "JOIN schedule_share ss ON s.schedule_id = ss.schedule_id "
-                   + "WHERE s.emp_id = ? AND ss.share_emp IN ("
-                   + Arrays.stream(shareEmpArray)
-                           .sorted()  // 배열 정렬
-                           .map(emp -> "?")  // 각 값에 대해 '?'를 매핑
-                           .collect(Collectors.joining(","))  // ','로 구분하여 문자열로 결합
-                   + ")";
-        JsonArray array = new JsonArray();
-        
-        try(Connection con = ds.getConnection();
-            PreparedStatement pstmt = con.prepareStatement(share_sql);) {
-            pstmt.setString(1, empId);
-            for (int i = 0; i < shareEmpArray.length; i++) {
-                pstmt.setString(i + 2, shareEmpArray[i]); // 두 번째 ?부터 share_emp 배열 값 설정
-            }
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    JsonObject scheduleObj = new JsonObject();
-                    scheduleObj.addProperty("schedule_id", rs.getInt("schedule_id"));
-                    scheduleObj.addProperty("schedule_name", rs.getString("schedule_name"));
-                    scheduleObj.addProperty("schedule_content", rs.getString("schedule_content"));
-                    scheduleObj.addProperty("schedule_start", rs.getString("schedule_start"));
-                    scheduleObj.addProperty("schedule_end", rs.getString("schedule_end"));
-                    scheduleObj.addProperty("schedule_color", rs.getString("schedule_color"));
-                    scheduleObj.addProperty("schedule_allDay", rs.getInt("schedule_allDay"));
-                    array.add(scheduleObj);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("getSharedScheduleList() 에러: " + e);
-        }
-        return array;
-	}//getSharedScheduleList end
 
+	// 공유 일정 리스트
+	public JsonArray getListSharedSchedule(String empId) {
+		
+		String share_sql = """
+				SELECT *
+				FROM schedule s
+				JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
+				WHERE s.emp_id = ? OR ss.share_emp = ?
+				""";
+		
+		 JsonArray array = new JsonArray();
+		
+		 System.out.println("share_sql" + share_sql);
+		 
+		 try (Connection con = ds.getConnection();
+		         PreparedStatement pstmt = con.prepareStatement(share_sql);) {
+		        
+		        pstmt.setString(1, empId);
+		        pstmt.setString(2, empId);
+		        
+		        try (ResultSet rs = pstmt.executeQuery()) {
+		            while (rs.next()) {
+		                JsonObject scheduleObj = new JsonObject();
+		                scheduleObj.addProperty("schedule_id", rs.getInt("schedule_id"));
+		                scheduleObj.addProperty("emp_id", rs.getString("emp_id"));
+		                scheduleObj.addProperty("share_emp", rs.getString("share_emp"));
+		                scheduleObj.addProperty("schedule_name", rs.getString("schedule_name"));
+		                scheduleObj.addProperty("schedule_content", rs.getString("schedule_content"));
+		                scheduleObj.addProperty("schedule_start", rs.getString("schedule_start"));
+		                scheduleObj.addProperty("schedule_end", rs.getString("schedule_end"));
+		                scheduleObj.addProperty("schedule_color", rs.getString("schedule_color"));
+		                scheduleObj.addProperty("schedule_allDay", rs.getInt("schedule_allDay"));
+		                
+		                array.add(scheduleObj);
+		            }
+		        }
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		        System.out.println("getListSharedSchedule() 에러: " + e);
+		    }
+		    
+		    return array;
+	}
+	
+	
+	
+	
+	/*
+	public JsonArray getListSharedSchedule(String empId, String shareEmp) {
+	    // shareEmp 값이 쉼표로 구분된 문자열이므로 이를 배열로 변환
+	    String[] shareEmpArray = shareEmp.split(",");
+	    
+	    String share_sql = "SELECT s.schedule_id, s.emp_id, ss.share_emp, s.schedule_name, s.schedule_content, "
+			                + "s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay "
+			                + "FROM schedule s "
+			                + "JOIN schedule_share ss ON s.schedule_id = ss.schedule_id "
+			                + "WHERE s.emp_id = ? AND ss.share_emp IN ("
+			                + shareEmp
+			                + ")";
+	    
+	    System.out.println("share_sql" + share_sql);
+
+	    JsonArray array = new JsonArray();
+	    
+	    try (Connection con = ds.getConnection();
+	         PreparedStatement pstmt = con.prepareStatement(share_sql)) {
+	        
+	        pstmt.setString(1, empId);
+
+	        // 각 ?에 대해 shareEmpArray 값을 설정
+	        for (int i = 0; i < shareEmpArray.length; i++) {
+	            pstmt.setString(i + 2, shareEmpArray[i]); // 두 번째 ?부터 share_emp 배열 값 설정
+	        }
+
+	        // 쿼리 실행
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            while (rs.next()) {
+	                JsonObject scheduleObj = new JsonObject();
+	                scheduleObj.addProperty("schedule_id", rs.getInt("schedule_id"));
+	                scheduleObj.addProperty("schedule_name", rs.getString("schedule_name"));
+	                scheduleObj.addProperty("schedule_content", rs.getString("schedule_content"));
+	                scheduleObj.addProperty("schedule_start", rs.getString("schedule_start"));
+	                scheduleObj.addProperty("schedule_end", rs.getString("schedule_end"));
+	                scheduleObj.addProperty("schedule_color", rs.getString("schedule_color"));
+	                scheduleObj.addProperty("schedule_allDay", rs.getInt("schedule_allDay"));
+	               
+	                // 공유된 직원 ID 
+	                scheduleObj.addProperty("share_emp", rs.getString("share_emp"));  
+
+	                array.add(scheduleObj);
+	            }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        System.out.println("getListSharedSchedule() 에러: " + e);
+	    }
+
+	    return array;
+	}// getListSharedSchedule end
+	*/
 	
 }

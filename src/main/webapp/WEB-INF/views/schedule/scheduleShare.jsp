@@ -211,7 +211,7 @@
 	            description: $('#description').val()
 	        }
 	        
-	        console.log("shareData:", shareData);
+	        alert('shareData' + JSON.stringify(shareData, null, 2));
 	
 	        $.ajax({
 	            url: '${pageContext.request.contextPath}/schedule/scheduleShareAdd',
@@ -241,7 +241,7 @@
 				    }
 
 	                events.forEach(function(event) {
-	                    $('#calendar').fullCalendar('addEvent', event);  // `addEvent` 사용
+	                    $('#calendar').fullCalendar('addEvent', event); 
 	                });
 	                
 	                /*

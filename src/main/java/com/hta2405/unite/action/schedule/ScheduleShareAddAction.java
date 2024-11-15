@@ -28,6 +28,8 @@ public class ScheduleShareAddAction implements Action {
 		int allDay = request.getParameter("allDay") == null ? 0 : Integer.parseInt(request.getParameter("allDay"));
 		String shareEmp = request.getParameter("share_emp"); // 공유자 ID(선택된 직원)
 		
+		request.getSession().setAttribute("share_emp", shareEmp);
+		
 		Schedule s = new Schedule();
 	
 		s.setEmpId(empId);

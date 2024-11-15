@@ -207,111 +207,6 @@ public class DocDao {
         return 0;
     }
 
-    public int updateGeneralDoc(Doc doc, List<String> signList) {
-        try (Connection conn = ds.getConnection()) {
-            conn.setAutoCommit(false);
-            if (updateDoc(doc, signList, conn) != 1) {
-                conn.rollback();
-                conn.setAutoCommit(true);
-                return 0;
-            }
-            conn.commit();
-            conn.setAutoCommit(true);
-            return 1;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public int updateBuyDoc(DocBuy docBuy, List<String> signList) {
-        try (Connection conn = ds.getConnection()) {
-            conn.setAutoCommit(false);
-            if (updateDoc(docBuy, signList, conn) != 1) {
-                conn.rollback();
-                conn.setAutoCommit(true);
-                return 0;
-            }
-            if (deleteBuyItem(docBuy.getDocBuyId(), conn) <= 0) {
-                conn.rollback();
-                conn.setAutoCommit(true);
-                return 0;
-            }
-            if (insertBuyItem(docBuy, docBuy.getDocBuyId(), conn) <= 0) {
-                conn.rollback();
-                conn.setAutoCommit(true);
-                return 0;
-            }
-            conn.commit();
-            conn.setAutoCommit(true);
-            return 1;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private int deleteBuyItem(Long docBuyId, Connection conn) {
-        String sql = """
-                DELETE BUY_ITEM
-                WHERE DOC_BUY_ID = ?
-                """;
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, docBuyId);
-            return ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private int updateDoc(Doc doc, List<String> signList, Connection conn) {
-        String sql = """
-                UPDATE DOC
-                SET DOC_WRITER = ?,
-                    DOC_TYPE= ?,
-                    DOC_TITLE = ?,
-                    DOC_CONTENT = ?,
-                    DOC_CREATE_DATE = ?
-                WHERE DOC_ID = ?
-                """;
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, doc.getDocWriter());
-            ps.setString(2, doc.getDocType().getType()); // Enum의 문자열 값 사용
-            ps.setString(3, doc.getDocTitle());
-            ps.setString(4, doc.getDocContent());
-            ps.setTimestamp(5, Timestamp.valueOf(doc.getDocCreateDate()));
-            ps.setLong(6, doc.getDocId());
-            if (ps.executeUpdate() != 1) {
-                conn.rollback();
-                return 0;
-            }
-            if (deleteSign(doc.getDocId(), conn) == 0) {
-                conn.rollback();
-                return 0;
-            }
-            List<Sign> list = makeSignListByParam(signList, doc.getDocId());
-            assert list != null;
-            if (insertSign(list, conn) == 0) {
-                conn.rollback();
-                return 0;
-            }
-            return 1;
-        } catch (SQLException e) {
-            throw new RuntimeException("문서 또는 서명 삽입 오류", e);
-        }
-    }
-
-    private int deleteSign(Long docId, Connection conn) {
-        String sql = """
-                DELETE SIGN
-                WHERE DOC_ID = ?
-                """;
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, docId);
-            return ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("문서 또는 서명 삽입 오류", e);
-        }
-    }
-
     public int insertDoc(Doc doc, List<String> signList, Connection conn) throws SQLException {
         String sql = """
                 INSERT INTO DOC (DOC_WRITER, DOC_TYPE, DOC_TITLE, DOC_CONTENT, DOC_CREATE_DATE)
@@ -372,6 +267,233 @@ public class DocDao {
             }
             int[] results = ps.executeBatch();
             return results.length;
+        }
+    }
+
+    public int signDoc(Long docId, String empId) {
+        String sql = """
+                    UPDATE SIGN
+                    SET sign_time = sysdate
+                    WHERE doc_id = ? and emp_id = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            conn.setAutoCommit(false);
+
+            ps.setLong(1, docId);
+            ps.setString(2, empId);
+            int result = ps.executeUpdate();
+
+            if (result == 1) { // 결재 성공
+                if (checkFinished(docId, conn)) { // 결재 성공 + 마지막 결재자 결재
+                    if (setSignFinished(docId, conn) == 1) {
+                        conn.commit();
+                        return 1;
+                    } else {
+                        conn.rollback();
+                        return 0;
+                    }
+                }
+                conn.commit(); // 결재 성공 (마지막 결재자가 아님)
+                return 1;
+            }
+            conn.rollback(); // 결재 실패
+            return 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try (Connection conn = ds.getConnection()) {
+                conn.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("오토커밋 복원 실패");
+            }
+        }
+    }
+
+    public boolean checkFinished(Long docId, Connection conn) {
+        String sql = """
+                SELECT CASE
+                       WHEN COUNT(*) = SUM(CASE WHEN sign_time IS NOT NULL THEN 1 ELSE 0 END)
+                           THEN 1
+                       ELSE 0
+                       END AS all_signed
+                FROM SIGN
+                WHERE doc_id = ?
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, docId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) == 1;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
+    public int setSignFinished(Long docId, Connection conn) {
+        String sql = """
+                    UPDATE DOC
+                    SET SIGN_FINISH = 1
+                    WHERE doc_id = ?
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, docId);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean isDocSignedByEmp(Long docId, String empId) {
+        String sql = """
+                    SELECT
+                        CASE WHEN SIGN_TIME IS NULL THEN 0
+                        ELSE 1
+                        END
+                    FROM SIGN
+                    WHERE DOC_ID = ? AND EMP_ID = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, docId);
+            ps.setString(2, empId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) == 1;
+            }
+            return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("결재여부 확인 오류");
+        }
+        return false;
+    }
+
+    public int updateGeneralDoc(Doc doc, List<String> signList) {
+        try (Connection conn = ds.getConnection()) {
+            conn.setAutoCommit(false);
+            if (updateDoc(doc, signList, conn) != 1) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 0;
+            }
+            conn.commit();
+            conn.setAutoCommit(true);
+            return 1;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int updateBuyDoc(DocBuy docBuy, List<String> signList) {
+        try (Connection conn = ds.getConnection()) {
+            conn.setAutoCommit(false);
+            if (updateDoc(docBuy, signList, conn) != 1) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 0;
+            }
+            if (deleteBuyItem(docBuy.getDocBuyId(), conn) <= 0) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 0;
+            }
+            if (insertBuyItem(docBuy, docBuy.getDocBuyId(), conn) <= 0) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 0;
+            }
+            conn.commit();
+            conn.setAutoCommit(true);
+            return 1;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int updateTripDoc(DocTrip docTrip, List<String> signList) {
+        String sql = """
+                    UPDATE DOC_TRIP
+                    SET TRIP_START = ?,
+                        TRIP_END= ?,
+                        TRIP_LOC = ?,
+                        TRIP_PHONE = ?,
+                        TRIP_INFO= ?,
+                        CARD_START= ?,
+                        CARD_END= ?,
+                        CARD_RETURN= ?
+                    WHERE DOC_Trip_ID = ?;
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            conn.setAutoCommit(false);
+            if (updateDoc(docTrip, signList, conn) != 1) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 0;
+            }
+            ps.setDate(1, Date.valueOf(docTrip.getTripStart()));
+            ps.setDate(2, Date.valueOf(docTrip.getTripEnd()));
+            ps.setString(3, docTrip.getTripLoc());
+            ps.setString(4, docTrip.getTripPhone());
+            ps.setString(5, docTrip.getTripInfo());
+            ps.setDate(6, Date.valueOf(docTrip.getCardStart()));
+            ps.setDate(7, Date.valueOf(docTrip.getCardEnd()));
+            ps.setDate(8, Date.valueOf(docTrip.getCardReturn()));
+            ps.setLong(9, docTrip.getDocTripId());
+
+            if (ps.executeUpdate() != 1) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 1;
+            }
+            conn.commit();
+            conn.setAutoCommit(true);
+            return 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("출장신청서 수정 오류");
+            return 0;
+        }
+    }
+
+    private int updateDoc(Doc doc, List<String> signList, Connection conn) {
+        String sql = """
+                UPDATE DOC
+                SET DOC_WRITER = ?,
+                    DOC_TYPE= ?,
+                    DOC_TITLE = ?,
+                    DOC_CONTENT = ?,
+                    DOC_CREATE_DATE = ?
+                WHERE DOC_ID = ?
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, doc.getDocWriter());
+            ps.setString(2, doc.getDocType().getType());
+            ps.setString(3, doc.getDocTitle());
+            ps.setString(4, doc.getDocContent());
+            ps.setTimestamp(5, Timestamp.valueOf(doc.getDocCreateDate()));
+            ps.setLong(6, doc.getDocId());
+            if (ps.executeUpdate() != 1) {
+                conn.rollback();
+                return 0;
+            }
+            if (deleteSign(doc.getDocId(), conn) == 0) {
+                conn.rollback();
+                return 0;
+            }
+            List<Sign> list = makeSignListByParam(signList, doc.getDocId());
+            assert list != null;
+            if (insertSign(list, conn) == 0) {
+                conn.rollback();
+                return 0;
+            }
+            return 1;
+        } catch (SQLException e) {
+            throw new RuntimeException("문서 또는 서명 삽입 오류", e);
         }
     }
 
@@ -595,21 +717,6 @@ public class DocDao {
         return null;
     }
 
-    private List<Sign> makeSignListByParam(List<String> signList, Long docId) {
-        if (docId == -1L) {
-            return null;
-        }
-        List<Sign> list = new ArrayList<>();
-        for (int i = 0; i < signList.size(); i++) {
-            if (i == 0) {
-                list.add(new Sign(null, signList.get(i), docId, i, LocalDateTime.now())); //기안자는 결재완료처리
-            } else {
-                list.add(new Sign(null, signList.get(i), docId, i, null));
-            }
-        }
-        return list;
-    }
-
     public List<DocWithSigner> getInProgressDocByEmpId(String empId) {
         List<DocWithSigner> list = new ArrayList<>();
         String sql = """
@@ -734,106 +841,19 @@ public class DocDao {
         return null;
     }
 
-    public int signDoc(Long docId, String empId) {
-        String sql = """
-                    UPDATE SIGN
-                    SET sign_time = sysdate
-                    WHERE doc_id = ? and emp_id = ?
-                """;
-        try (Connection conn = ds.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            conn.setAutoCommit(false);
-
-            ps.setLong(1, docId);
-            ps.setString(2, empId);
-            int result = ps.executeUpdate();
-
-            if (result == 1) { // 결재 성공
-                if (checkFinished(docId, conn)) { // 결재 성공 + 마지막 결재자 결재
-                    if (setSignFinished(docId, conn) == 1) {
-                        conn.commit();
-                        return 1;
-                    } else {
-                        conn.rollback();
-                        return 0;
-                    }
-                }
-                conn.commit(); // 결재 성공 (마지막 결재자가 아님)
-                return 1;
-            }
-            conn.rollback(); // 결재 실패
-            return 0;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            try (Connection conn = ds.getConnection()) {
-                conn.setAutoCommit(true);
-            } catch (SQLException e) {
-                e.printStackTrace();
-                System.out.println("오토커밋 복원 실패");
+    private List<Sign> makeSignListByParam(List<String> signList, Long docId) {
+        if (docId == -1L) {
+            return null;
+        }
+        List<Sign> list = new ArrayList<>();
+        for (int i = 0; i < signList.size(); i++) {
+            if (i == 0) {
+                list.add(new Sign(null, signList.get(i), docId, i, LocalDateTime.now())); //기안자는 결재완료처리
+            } else {
+                list.add(new Sign(null, signList.get(i), docId, i, null));
             }
         }
-    }
-
-    public boolean checkFinished(Long docId, Connection conn) {
-        String sql = """
-                SELECT CASE
-                       WHEN COUNT(*) = SUM(CASE WHEN sign_time IS NOT NULL THEN 1 ELSE 0 END)
-                           THEN 1
-                       ELSE 0
-                       END AS all_signed
-                FROM SIGN
-                WHERE doc_id = ?
-                """;
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, docId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) == 1;
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return false;
-    }
-
-    public int setSignFinished(Long docId, Connection conn) {
-        String sql = """
-                    UPDATE DOC
-                    SET SIGN_FINISH = 1
-                    WHERE doc_id = ?
-                """;
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, docId);
-            return ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public boolean isDocSignedByEmp(Long docId, String empId) {
-        String sql = """
-                    SELECT
-                        CASE WHEN SIGN_TIME IS NULL THEN 0
-                        ELSE 1
-                        END
-                    FROM SIGN
-                    WHERE DOC_ID = ? AND EMP_ID = ?
-                """;
-        try (Connection conn = ds.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, docId);
-            ps.setString(2, empId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) == 1;
-            }
-            return false;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("결재여부 확인 오류");
-        }
-        return false;
+        return list;
     }
 
     public int revokeDoc(Long docId, String empId) {
@@ -873,5 +893,29 @@ public class DocDao {
         return false;
     }
 
+    private int deleteBuyItem(Long docBuyId, Connection conn) {
+        String sql = """
+                DELETE BUY_ITEM
+                WHERE DOC_BUY_ID = ?
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, docBuyId);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    private int deleteSign(Long docId, Connection conn) {
+        String sql = """
+                DELETE SIGN
+                WHERE DOC_ID = ?
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, docId);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("문서 또는 서명 삽입 오류", e);
+        }
+    }
 }

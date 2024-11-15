@@ -21,13 +21,11 @@ $(document).ready(function(){
 				emp_id: $("#emp_id").val(),
 			},
 	        success: function(data) {
-	            console.log("success data", data);
-	            //callback(data); // 데이터가 성공적으로 로드된 후 콜백 함수 호출
+	            console.log("개인 일정 리스트 불러오기 성공", data);
 	            
 	            events = []; 
 	            if (data != null) {
 			        for (let i = 0; i < data.length; i++) {
-						
 			            events.push({
 			                title: data[i].schedule_name, 
 			                start: data[i].schedule_start, 
@@ -46,7 +44,7 @@ $(document).ready(function(){
        			//calendar.render();
 	        },
 	        error: function(error) {
-	            console.log('일정 리스트 불러오기 오류', error);
+	            console.log('개인 일정 리스트 불러오기 오류', error);
 	        }
 	    });
 	}
@@ -79,7 +77,10 @@ $(document).ready(function(){
 	                }
 	            }
 	            // 캘린더 초기화
-	            //initCalendar();
+	            initCalendar();
+	            
+	            //calendar.unselect();
+       			//calendar.render();
 	        },
 	        error: function(error) {
 	            console.log("공유 일정 리스트 불러오기 오류", error);

@@ -30,5 +30,7 @@ public class DocFrontController extends AbstractFrontController {
         actionMap.put("/list/dept", new DocDeptListAction());
         actionMap.put("/list/sign", new DocSignListAction());
         actionMap.put("/download", new DocVacationFileDownloadAction());
+        actionMap.put("/sign", new DocSignAction());
+        actionMap.put("/reject", new DocRejectAction());
     }
 }

@@ -208,7 +208,8 @@
 	            startAt: moment($("#startAt").val()).format('YYYY-MM-DD HH:mm'),
 				endAt: moment($("#endAt").val()).format('YYYY-MM-DD HH:mm'), 
 	            bgColor: $('#bgColor').val(),
-	            description: $('#description').val()
+	            description: $('#description').val(),
+	            isShared : true,
 	        }
 	        
 	        alert('shareData' + JSON.stringify(shareData, null, 2));

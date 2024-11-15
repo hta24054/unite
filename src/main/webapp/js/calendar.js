@@ -78,7 +78,8 @@ $(document).ready(function(){
 	                            backgroundColor: data[i].schedule_color,
 	                            description: data[i].schedule_content,
 	                            allDay: data[i].schedule_allDay,
-	                            id: data[i].schedule_id
+	                            id: data[i].schedule_id,
+	                            isShared: true
 	                        });
 	                    }
 	                }
@@ -257,6 +258,15 @@ $(document).ready(function(){
 	        <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
 	        <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
 	    `);
+	    
+	    console.log("event.isShared", event.extendedProps.isShared)
+	    
+	    
+    
+	    if (event.isShared) {
+	        // Hide the update and delete buttons for shared events
+	        $(".modal-body").find(".btn_wrap").remove();
+	    }
 	    
 	    // 일정 수정
 	    $("#btnUpdate").off("click").on("click", function() {
@@ -486,6 +496,10 @@ $(document).ready(function(){
                 }
                 return event; // 수정된 이벤트 반환
             },
+            eventDidMount: function(info) {
+				 console.log(info.event.extendedProps.isShared)
+				 console.log(info.event.extendedProps)
+			}
 		});
 		
 		//선택 상태 해제

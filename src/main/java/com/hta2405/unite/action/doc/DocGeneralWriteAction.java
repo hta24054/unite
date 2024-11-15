@@ -19,6 +19,6 @@ public class DocGeneralWriteAction implements com.hta2405.unite.action.Action {
         req.setAttribute("emp", emp);
         req.setAttribute("dept", new DeptDao().getDeptByEmpId(empId));
         req.setAttribute("today", LocalDate.now());
-        return new ActionForward(false, "/WEB-INF/views/doc/doc_general_write.jsp");
+        return new ActionForward(false, "/WEB-INF/views/doc/general_write.jsp");
     }
 }

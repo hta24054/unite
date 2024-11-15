@@ -75,12 +75,12 @@ public class DocEditAction implements com.hta2405.unite.action.Action {
         Doc doc = getDetailedDocById(docId);
         if (doc instanceof DocBuy docBuy) {
             req.setAttribute("doc", docBuy);
-            return new ActionForward(false, "/WEB-INF/views/doc/doc_buy_edit.jsp");
+            return new ActionForward(false, "/WEB-INF/views/doc/buy_edit.jsp");
         }
 
         if (doc instanceof DocTrip docTrip) {
             req.setAttribute("doc", docTrip);
-            return new ActionForward(false, "/WEB-INF/views/doc/doc_trip_edit.jsp");
+            return new ActionForward(false, "/WEB-INF/views/doc/trip_edit.jsp");
         }
 
         if (doc instanceof DocVacation docVacation) {
@@ -89,7 +89,7 @@ public class DocEditAction implements com.hta2405.unite.action.Action {
         }
         //일반 문서 페이지로 포워딩
         req.setAttribute("doc", doc);
-        return new ActionForward(false, "/WEB-INF/views/doc/doc_general_edit.jsp");
+        return new ActionForward(false, "/WEB-INF/views/doc/general_edit.jsp");
     }
 
 

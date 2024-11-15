@@ -123,20 +123,20 @@ public class DocReadAction implements Action {
 
         if (doc instanceof DocBuy docBuy) {
             req.setAttribute("doc", docBuy);
-            return new ActionForward(false, "/WEB-INF/views/doc/doc_buy_read.jsp");
+            return new ActionForward(false, "/WEB-INF/views/doc/buy_read.jsp");
         }
 
         if (doc instanceof DocTrip docTrip) {
             req.setAttribute("doc", docTrip);
-            return new ActionForward(false, "/WEB-INF/views/doc/doc_trip_read.jsp");
+            return new ActionForward(false, "/WEB-INF/views/doc/trip_read.jsp");
         }
 
         if (doc instanceof DocVacation docVacation) {
             req.setAttribute("doc", docVacation);
-            return new ActionForward(false, "/WEB-INF/views/doc/doc_vacation_read.jsp");
+            return new ActionForward(false, "/WEB-INF/views/doc/vacation_read.jsp");
         }
         //일반 문서 페이지로 포워딩
         req.setAttribute("doc", doc);
-        return new ActionForward(false, "/WEB-INF/views/doc/doc_general_read.jsp");
+        return new ActionForward(false, "/WEB-INF/views/doc/general_read.jsp");
     }
 }

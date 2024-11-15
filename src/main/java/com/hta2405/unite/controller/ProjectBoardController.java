@@ -1,5 +1,6 @@
 package com.hta2405.unite.controller;
 
+import com.hta2405.unite.action.project.ProjectCommentAction;
 import com.hta2405.unite.action.project.ProjectDownAction;
 import com.hta2405.unite.action.project.ProjectMemberTaskAction;
 import com.hta2405.unite.action.project.ProjectTaskListAction;
@@ -18,5 +19,6 @@ public class ProjectBoardController extends AbstractFrontController{
         actionMap.put("/membertask", new ProjectMemberTaskAction());
         actionMap.put("/list", new ProjectTaskListAction());
         actionMap.put("/down", new ProjectDownAction());
+        actionMap.put("/comm", new ProjectCommentAction());
     }
 }

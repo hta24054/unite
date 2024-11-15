@@ -176,7 +176,7 @@ public class ProjectbDao {
 				LEFT JOIN (
 				    SELECT 
 				        task_subject, 
-				        task_content,  -- 추가된 부분
+				        task_content,  
 				        project_id, 
 				        emp_id, 
 				        task_date, 
@@ -342,6 +342,8 @@ public class ProjectbDao {
                     task.setTask_file_uuid(rs.getString("task_file_uuid"));
                     task.setTask_file_type(rs.getString("task_file_type"));
 	                
+                    task.setTaskNum(rs.getInt("task_id")); //글번호
+                    task.setMemberId(userid);
 	                tasklist.add(task);
 	            }
 	        }
@@ -362,6 +364,37 @@ public class ProjectbDao {
 		}
 		return null;
 	}
+
+	public List<ProjectTask> getUserTaskDetail(String userid, int projectid, int task_num) {
+		List<ProjectTask> taskList = new ArrayList<>();
+	    String sql = "SELECT t.*, e.ename FROM task t join emp e on t.emp_id = e.emp_id WHERE t.emp_id = ? AND t.project_id = ? and t.task_id = ?";
+
+	    try (Connection conn = ds.getConnection();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        
+	    	pstmt.setString(1, userid);
+	        pstmt.setInt(2, projectid);
+	        pstmt.setInt(3, task_num);
+
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            while (rs.next()) {
+	                ProjectTask task = new ProjectTask();
+	                task.setMemberName(rs.getString("ename"));
+	                task.setProjectTitle(rs.getString("task_subject"));
+	                task.setProjectContent(rs.getString("task_content"));
+	                task.setMemberId(rs.getString("emp_id"));
+	                
+	                taskList.add(task);
+	            }
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return taskList;
+	}
+
+	
+}
 
 	
 
@@ -457,4 +490,3 @@ public class ProjectbDao {
 
 
 
-} 

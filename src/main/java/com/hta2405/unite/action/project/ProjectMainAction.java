@@ -1,46 +1,117 @@
 	package com.hta2405.unite.action.project;
 	
-	import java.io.IOException;
+	import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
+import com.google.gson.Gson;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ProjectDAO;
-	
-	import jakarta.servlet.ServletException;
-	import jakarta.servlet.http.HttpServletRequest;
-	import jakarta.servlet.http.HttpServletResponse;
-	
-	//메인 db값 가져오기. 추후 관리자만 관리 창 뜨게 수정 필요
+import com.hta2405.unite.dto.ProjectDetail;
+import com.hta2405.unite.dto.ProjectInfo;
+
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+
+	@MultipartConfig(
+	    fileSizeThreshold = 1024 * 1024 * 1, // 1MB
+	    maxFileSize = 1024 * 1024 * 10,      // 10MB
+	    maxRequestSize = 1024 * 1024 * 50    // 50MB
+	)
 	public class ProjectMainAction implements Action {
 	    @Override
 	    public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 	        String action = req.getParameter("action");
-	
-	        // 상태 업데이트 요청 처리
+
 	        if ("updateStatus".equals(action)) {
 	            int projectId = Integer.parseInt(req.getParameter("projectId"));
 	            String status = req.getParameter("status");
-	
 	            ProjectDAO projectDAO = new ProjectDAO();
 	            boolean success = false;
-	
-	            // 프로젝트 상태에 따라 업데이트
-	            if ("completed".equals(status)) {
-	                success = projectDAO.updateProjectStatus(projectId, true, false); // 완료
-	            } else if ("cancelled".equals(status)) {
-	                success = projectDAO.updateProjectStatus(projectId, false, true); // 취소
+
+	            // 프로젝트 상태에 따라 업데이트하고, 파일을 업로드 처리
+	            List<ProjectInfo> uploadedFiles = processFileUpload(req, resp);
+	            if (!uploadedFiles.isEmpty()) {
+	                // 파일 업로드 후 상태에 따른 처리
+	                if ("completed".equals(status)) {
+	                    // 프로젝트 완료 상태로 업데이트
+	                    success = projectDAO.updateProjectStatus(projectId, true, false);
+	                    // 완료 상태의 파일 정보 저장
+	                    success = projectDAO.saveUploadedFiles(projectId, uploadedFiles, 1);
+	                } else if ("cancelled".equals(status)) {
+	                    // 프로젝트 취소 상태로 업데이트
+	                    success = projectDAO.updateProjectStatus(projectId, false, true);
+	                    // 취소 상태의 파일 정보 저장
+	                    success = projectDAO.saveUploadedFiles(projectId, uploadedFiles, 2);
+	                }
 	            }
-	
+
+
 	            // JSON 응답 반환
 	            resp.setContentType("application/json");
 	            resp.getWriter().write("{\"success\":" + success + "}");
-	            return null; // AJAX 호출이므로 포워딩 필요 없음
+	            return null;
 	        }
-	
-	        // 일반 페이지 요청 처리
+
 	        ActionForward forward = new ActionForward();
-	        forward.setPath("/WEB-INF/views/project/project_main.jsp"); // 프로젝트 메인 페이지로 이동
+	        forward.setPath("/WEB-INF/views/project/project_main.jsp");
 	        forward.setRedirect(false);
 	        return forward;
 	    }
-	} 
+
+	    private List<ProjectInfo> processFileUpload(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+	        List<ProjectInfo> uploadedFiles = new ArrayList<>();
+	        ServletContext sc = req.getServletContext();
+	        String uploadDir = sc.getRealPath("projectupload");
+	        File uploadDirectory = new File(uploadDir);
+	        
+	        if (!uploadDirectory.exists()) {
+	            uploadDirectory.mkdir();
+	        }
+
+	        Collection<Part> fileParts = req.getParts();
+	        for (Part filePart : fileParts) {
+	            if (filePart.getContentType() != null) {
+	                ProjectInfo fileDetail = new ProjectInfo();
+
+	                String originalFileName = filePart.getSubmittedFileName();
+	                String fileUUID = UUID.randomUUID().toString();
+	                String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+	                String savedFileName = fileUUID + fileExtension;
+	                String filePath = uploadDir + File.separator + savedFileName;
+
+	                try {
+	                    filePart.write(filePath); // 파일 저장
+	                } catch (IOException e) {
+	                    sendErrorResponse(resp, "파일 저장에 실패했습니다.");
+	                    e.printStackTrace();
+	                    return uploadedFiles;
+	                }
+
+	                fileDetail.setProject_file_path(filePath);
+	                fileDetail.setProject_file_original(originalFileName);
+	                fileDetail.setProject_file_uuid(fileUUID);
+	                fileDetail.setProject_file_type(fileExtension);
+
+	                uploadedFiles.add(fileDetail); // 파일 정보 리스트에 추가
+	            }
+	        }
+
+	        return uploadedFiles;
+	    }
+
+	    private void sendErrorResponse(HttpServletResponse response, String errorMessage) throws IOException {
+	        response.setContentType("application/json; charset=utf-8");
+	        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+	        response.getWriter().write(new Gson().toJson(Map.of("error", errorMessage)));
+	    }
+	}

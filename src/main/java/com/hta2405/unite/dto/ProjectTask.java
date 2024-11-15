@@ -13,6 +13,7 @@ import lombok.ToString;
 @ToString
 public class ProjectTask {
 	private int projectId; //글번호
+	private int taskNum; //글번호
 	private String memberName; //글 작성자
 	private String memberId;
 	private String memberPass; //글 비밀번호

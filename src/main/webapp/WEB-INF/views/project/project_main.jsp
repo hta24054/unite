@@ -19,13 +19,20 @@
 	<jsp:include page="project_leftbar.jsp"/>
 </head>
 <body>
-	<jsp:include page="limit.jsp"/>
+	<div class="rows">
+		<span>줄보기</span>
+		<select class="form-control" id="viewcount">
+			<option value="1">1</option>
+			<option value="3">3</option>
+			<option value="5" selected>5</option>
+		</select>
+	</div>
 	<table class="table">
 		<caption><h2>진행 중 프로젝트</h2></caption>
 		<thead>
 			<tr>
-				<th>프로젝트 코드</th>
-				<th>프로젝트 이름</th>
+				<th>코드명</th>
+				<th>프로젝트명</th>
 				<th>책임자</th>
 				<th>참여자</th>
 				<th>열람자</th>
@@ -43,5 +50,26 @@
 	<c:if test="${listcount == 0 }">
 		<h3 style="text-align:center">등록된 글이 없습니다</h3>
 	</c:if>
+	
+	<!-- 첨부파일 모달 -->
+	<div id="fileModal" class="modal fade" tabindex="-1" role="dialog">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title">첨부파일 등록</h5>
+	                <button type="button" class="close" data-dismiss="modal">&times;</button>
+	            </div>
+	            <div class="modal-body">
+	                <p>최종 첨부파일을 등록하시겠습니까?</p>
+	                <input type="file" id="fileInput" name="file" multiple>
+	            </div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-primary" id="confirmFileUpload">저장</button>
+	                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+		
 </body>
 </html>

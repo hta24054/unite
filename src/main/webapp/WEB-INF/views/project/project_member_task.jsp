@@ -130,9 +130,7 @@
 				        <td><div>${t.projectUpdateDate}</div></td>
 				        <td><div><a href="down?filename=${t.task_file_uuid }${t.task_file_type}&originalFilename=${t.task_file_original}">${t.task_file_original}</a></div></td>
 				        <td>
-				        	
-				            	<img src="${pageContext.request.contextPath}/image/plus.png" width="20px" onclick="toggleOptions(${status.index})">
-				            
+			            	<img src="${pageContext.request.contextPath}/image/plus.png" width="20px" onclick="toggleOptions(${status.index})">
 				        </td>
 				    </tr>
 				    <!-- 숨겨진 버튼 행 -->

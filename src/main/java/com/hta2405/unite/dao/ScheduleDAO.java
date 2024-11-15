@@ -244,21 +244,39 @@ public class ScheduleDAO {
 
 	// 공유 일정 리스트
 	public JsonArray getListSharedSchedule(String empId) {
-		
+		/*
 		String share_sql = """
 				SELECT *
 				FROM schedule s
 				JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
 				WHERE s.emp_id = ? OR ss.share_emp = ?
 				""";
+		*/
+		String share_sql = """
+				SELECT s.schedule_id,
+				       s.emp_id,
+				       s.schedule_name,
+				       s.schedule_content,
+				       s.schedule_start,
+				       s.schedule_end,
+				       s.schedule_color,
+				       s.schedule_allDay,
+				       MIN(ss.share_emp) AS share_emp 
+				       
+				FROM schedule s
+				JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
+				WHERE s.emp_id = ? OR ss.share_emp = ?
+				GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
+						 s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay
+				""";
 		
-		 JsonArray array = new JsonArray();
+		JsonArray array = new JsonArray();
 		
-		 System.out.println("share_sql" + share_sql);
+		System.out.println("share_sql" + share_sql);
 		 
-		 try (Connection con = ds.getConnection();
-		      PreparedStatement pstmt = con.prepareStatement(share_sql);) {
-		        
+		try (Connection con = ds.getConnection();
+		     PreparedStatement pstmt = con.prepareStatement(share_sql);) {
+			 	
 		        pstmt.setString(1, empId);
 		        pstmt.setString(2, empId);
 		        
@@ -285,7 +303,7 @@ public class ScheduleDAO {
 		 
 		    System.out.println("share_sql array " + array);
 		    return array;
-	}
+	}//getListSharedSchedule end
 	
 	
 }

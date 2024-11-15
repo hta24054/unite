@@ -3,48 +3,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sign.css">
     <title>결재자</title>
     <style>
-        .approval-table-container {
-            float: right;
-            position: relative;
-        }
-
-        .approval-table {
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        .approval-table th, .approval-table td {
-            padding : 5px;
-            text-align: center;
-            vertical-align: middle;
-            border-color: black; /* 테두리 검정색 */
-        }
-
-        .label-cell {
-            background: #f8f9fa;
-            font-weight: bold;
-        }
-
-        #title {
-            writing-mode: vertical-lr;
-            font-weight: bold;
-            font-size: 15px;
-            width: 20px;
-        }
-
-        .name {
-            width: 100px;
-            height: 100px;
-            font-size: 15px;
-            font-weight: bold;
-        }
-
-        .table-bordered, .table-bordered td, .table-bordered th {
-            border-color: black !important;
-        }
-
         .sign-time {
             font-size: 12px;
             height: 40px;

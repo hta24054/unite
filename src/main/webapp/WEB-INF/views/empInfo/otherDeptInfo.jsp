@@ -5,77 +5,14 @@
 <head>
 <meta charset="UTF-8">
 <title>부서 인사정보</title>
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-<script
-	src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-<script
-	src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+ <jsp:include page="../common/header.jsp" />
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/jquery.fancytree/2.38.0/jquery.fancytree-all-deps.min.js"></script>
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/jquery.fancytree/2.38.0/skin-win8/ui.fancytree.min.css">
 
+
 <jsp:include page="empInfo_leftbar.jsp" />
-
-<style>
-.main-container {
-    display: flex;
-    gap: 10px; /* 간격을 줄임 */
-}
-.content {
-    width: 35%; /* 조직도의 너비 조정 */
-    margin-right: 0; /* 오른쪽 여백 제거 */
-}
-#tree {
-    border: 2px solid black;
-    height: 1000px; /* 고정된 높이 설정 */
-    overflow-y: auto; /* 세로 스크롤 추가 */
-    margin-bottom: 30px;
-    margin-left: 0; /* 왼쪽 여백 제거 */
-}
-#employeeTableContainer {
-    width: 65%; /* 정보 테이블의 너비 조정 */
-    margin-top: 30px;
-    margin-right: 0; /* 오른쪽 여백 제거 */
-}
-h2 {
-    text-align: left;
-    color: rgb(51, 68, 102);
-    margin-left: 0; /* 제목의 왼쪽 여백 제거 */
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-th, td {
-    border: 1px solid black;
-    padding: 8px;
-    text-align: center;
-    color: black;
-}
-th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-}
-.title {
-    color: #334466;
-    font-size: 18px;
-    margin: 0;
-    font-weight: bold;
-    border-bottom: 1px solid black;
-    padding-bottom: 10px;
-}
-#tree_table {
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-</style>
-
-
 
 
 <script>
@@ -201,6 +138,70 @@ th {
 						}
 					});
 </script>
+<style>
+.main-container {
+	display: flex;
+	gap: 50px; /* 간격을 줄임 */
+	justify-content: center;
+}
+
+.content {
+	margin-left : 0;
+	width: 30%; /* 조직도의 너비 조정 */
+	
+}
+
+#tree {
+	margin-top: 100px;
+	border: 2px solid black;
+	width: 100%;
+	overflow-y: auto; /* 세로 스크롤 추가 */
+	margin-bottom: 30px;
+	margin-right: auto;
+	border: 2px solid black; /* 왼쪽 여백 제거 */
+}
+
+#employeeTableContainer {
+	width: 70%; /* 정보 테이블의 너비 조정 */
+	margin-top: 150px;
+	margin-left: auto; /* 오른쪽 여백 제거 */
+}
+
+h2 {
+	margin-top: 50px;
+	text-align: left;
+	color: rgb(51, 68, 102);
+	margin-left: auto;
+	text-align: left; /* 제목의 왼쪽 여백 제거 */
+}
+
+table {
+	width: 70%;
+	border-collapse: collapse;
+	margin-top: 20px;
+}
+
+th, td {
+	border: 1px solid black;
+	padding: 8px;
+	text-align: center;
+	color: black;
+}
+
+th {
+	background-color: #f2f2f2;
+	font-weight: bold;
+}
+
+#tree_table {
+	text-align: center;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align: center;
+	width: 1000px;
+}
+</style>
 </head>
 <body>
 	<div class="container mt-4">

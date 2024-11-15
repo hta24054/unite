@@ -3,21 +3,16 @@ $(document).ready(function(){
 	let events = []; 
 	let isAllDayChk, startDate, endDate;
 	let currentDate;
-	
+
 	// 개인 일정, 공유 일정 모두 불러오기
 	function fetchAllData() {
-	    Promise.all([fetchListData(), fetchSharedListData()])
-	        .then(() => {
-	            initCalendar(); 
-	        })
-	        .catch(error => 
-	        	console.log("데이터 로드 오류:", error)
-	        );
+	    events = []; // 배열 초기화
+	    Promise.all([fetchListData(), fetchSharedListData()]);
 	}
 	
 	// 일정 리스트 불러오기
 	function fetchListData(){
-		return $.ajax({
+		$.ajax({
 	        url: "scheduleList",
 	        type: "get",
 	        dataType: "json",
@@ -25,66 +20,75 @@ $(document).ready(function(){
 				emp_id: $("#emp_id").val(),
 			},
 	        success: function(data) {
-	            console.log("success data", data);
-	            //callback(data); // 데이터가 성공적으로 로드된 후 콜백 함수 호출
+	            console.log("개인 일정 리스트 불러오기 성공", data);
 	            
 	            //events = []; 
 	            if (data != null) {
 			        for (let i = 0; i < data.length; i++) {
-			            events.push({
-			                title: data[i].schedule_name, 
-			                start: data[i].schedule_start, 
-			                end: data[i].schedule_end, 
-			                backgroundColor: data[i].schedule_color, 
-			                description: data[i].schedule_content,
-			                allDay: data[i].schedule_allDay,
-			                id: data[i].schedule_id
-			            });
+			            
+			            // 중복 체크: schedule_id로 중복 여부 확인
+	                    if (!events.some(event => event.id === data[i].schedule_id)) {
+	                        events.push({
+	                            title: data[i].schedule_name,
+	                            start: data[i].schedule_start,
+	                            end: data[i].schedule_end,
+	                            backgroundColor: data[i].schedule_color,
+	                            description: data[i].schedule_content,
+	                            allDay: data[i].schedule_allDay,
+	                            id: data[i].schedule_id
+	                        });
+	                    }
 			        }
 			    }
      	        // 캘린더 초기화
-			    //initCalendar();
+			    initCalendar();
 			    
 			    //calendar.unselect();
        			//calendar.render();
 	        },
 	        error: function(error) {
-	            console.log('일정 리스트 불러오기 오류', error);
+	            console.log('개인 일정 리스트 불러오기 오류', error);
 	        }
 	    });
 	}
 	
 	// 공유 일정 리스트 불러오기
 	function fetchSharedListData() {
-	    return $.ajax({
+	    $.ajax({
 	        url: "sharedScheduleList", 
 	        type: "get",
 	        dataType: "json",
 	        data: {
 	            emp_id: $("#emp_id").val(), 
-	            share_emp: $('#share_emp').val()
 	        },
 	        success: function(data) {
 	            console.log("공유 일정 리스트 불러오기 성공", data);
-
-				//events = [];
+	
+				//events = []; 
 	            if (data != null) {
 	                // 공유 일정 데이터를 기존 이벤트 배열에 추가
 	                for (let i = 0; i < data.length; i++) {
-	                    events.push({
-	                        title: data[i].schedule_name,
-	                        start: data[i].schedule_start,
-	                        end: data[i].schedule_end,
-	                        backgroundColor: data[i].schedule_color,
-	                        description: data[i].schedule_content,
-	                        allDay: data[i].schedule_allDay,
-	                        id: data[i].schedule_id,
-	                        shared: true // 공유 일정 구분
-	                    });
+						
+	                    // 중복 체크: schedule_id로 중복 여부 확인
+	                    if (!events.some(event => event.id === data[i].schedule_id)) {
+	                        events.push({
+	                            title: data[i].schedule_name,
+	                            start: data[i].schedule_start,
+	                            end: data[i].schedule_end,
+	                            backgroundColor: data[i].schedule_color,
+	                            description: data[i].schedule_content,
+	                            allDay: data[i].schedule_allDay,
+	                            id: data[i].schedule_id,
+	                            isShared: true
+	                        });
+	                    }
 	                }
 	            }
 	            // 캘린더 초기화
-	            //initCalendar();
+	            initCalendar();
+	            
+	            //calendar.unselect();
+       			//calendar.render();
 	        },
 	        error: function(error) {
 	            console.log("공유 일정 리스트 불러오기 오류", error);
@@ -126,7 +130,7 @@ $(document).ready(function(){
 			        }
 			    }
 			    
-			    fetchListData();
+			    fetchAllData();
                 $("#scheduleModal").modal("hide"); 
             },
             error: function() {
@@ -155,8 +159,7 @@ $(document).ready(function(){
 	        },
 	        success: function(data) {
 	            console.log("일정 수정 성공", data);
-	            
-	            fetchListData();
+	            fetchAllData();
 	            $("#scheduleModal").modal("hide");
 	            
 	        },
@@ -190,12 +193,11 @@ $(document).ready(function(){
 	        },
 	        success: function(data) {
 	            console.log("drag 일정 업데이트 성공:", data);
-	            fetchListData(); 
+	            fetchAllData();
 	        },
 	        error: function(error) {
 	            console.log("drag 일정 업데이트 오류:", error);
 	            alert("drag 일정 업데이트 중 오류가 발생했습니다.");
-	            fetchListData();
 	        }
 	    });
 	}
@@ -213,13 +215,13 @@ $(document).ready(function(){
 		        },
 		        success: function(data) {
 		            console.log("일정 삭제 성공:", data);
-		            fetchListData(); 
+		            
+		            fetchAllData();
 		            $("#scheduleModal").modal("hide");
 		        },
 		        error: function(error) {
 		            console.log("일정 삭제 오류:", error);
 		            alert("일정 삭제 중 오류가 발생했습니다.");
-		            fetchListData();
 		        }
 			});
 		}	
@@ -232,6 +234,9 @@ $(document).ready(function(){
 	    
 	    $("#startAt").val(moment(event.start).format("YYYY-MM-DD HH:mm"));
 	    $("#endAt").val(moment(event.end).format("YYYY-MM-DD HH:mm"));
+	    
+	    //$("#description").val(event.description);
+	    //$("#description").val(event.extendedProps.description);
 	    
 	    const description = event.extendedProps && event.extendedProps.description ? event.extendedProps.description : '';
 	    $("#description").val(description);
@@ -253,6 +258,15 @@ $(document).ready(function(){
 	        <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
 	        <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
 	    `);
+	    
+	    console.log("event.isShared", event.extendedProps.isShared)
+	    
+	    
+    
+	    if (event.isShared) {
+	        // Hide the update and delete buttons for shared events
+	        $(".modal-body").find(".btn_wrap").remove();
+	    }
 	    
 	    // 일정 수정
 	    $("#btnUpdate").off("click").on("click", function() {
@@ -280,6 +294,7 @@ $(document).ready(function(){
 	        };
 	        
 	        deleteEvent(eventData); // 삭제 함수 호출
+	        
 	    });
 	
 	    $("#scheduleModal").modal('show');
@@ -462,6 +477,7 @@ $(document).ready(function(){
 			},
             eventClick: function(info) {
                 console.log("eventClick info", info.event);
+
                 openDetailModal(info.event);
             },
 			eventAdd: function(info) { // 이벤트가 추가되면 발생하는 이벤트
@@ -480,6 +496,10 @@ $(document).ready(function(){
                 }
                 return event; // 수정된 이벤트 반환
             },
+            eventDidMount: function(info) {
+				 console.log(info.event.extendedProps.isShared)
+				 console.log(info.event.extendedProps)
+			}
 		});
 		
 		//선택 상태 해제

@@ -18,6 +18,7 @@ public class ScheduleListAction implements Action {
             throws ServletException, IOException {
 
     	String id = (String) request.getSession().getAttribute("id");
+    	//String share_emp = (String) request.getSession().getAttribute("share_emp");
         
         ScheduleDAO sdao = new ScheduleDAO();
         JsonArray array = sdao.getListSchedule(id);

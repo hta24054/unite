@@ -236,7 +236,10 @@
 				                end: data[i].schedule_end,
 				                backgroundColor: data[i].schedule_color, 
 				                description: data[i].schedule_content,
-				                allDay: isAllDay
+				                allDay: isAllDay,
+				                extendedProps: {
+							        isShared: true, // 공유 일정
+							    },
 				            });
 				        }
 				    }

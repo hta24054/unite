@@ -19,8 +19,8 @@ public class SharedScheduleListAction implements Action {
 		
         String empId = request.getParameter("emp_id"); // 로그인된 사용자 ID
 
-        ScheduleDAO sdao = new ScheduleDAO();
-        JsonArray arr = sdao.getListSharedSchedule(empId);
+        ScheduleDAO scheduleDao = new ScheduleDAO();
+        JsonArray arr = scheduleDao.getListSharedSchedule(empId);
 
         response.setContentType("application/json;charset=utf-8");
         response.getWriter().write(arr.toString());

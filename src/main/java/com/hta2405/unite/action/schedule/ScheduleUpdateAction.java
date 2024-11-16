@@ -27,23 +27,23 @@ public class ScheduleUpdateAction implements Action {
 			String bgColor = req.getParameter("bgColor");
 			int allDay = req.getParameter("allDay") == null ? 0 : Integer.parseInt(req.getParameter("allDay"));
 			
-			Schedule s = new Schedule();
+			Schedule schedule = new Schedule();
 			
-			s.setScheduleId(scheduleId);
-			s.setEmpId(empId);
-			s.setScheduleName(scheduleName);
-			s.setScheduleContent(description);
+			schedule.setScheduleId(scheduleId);
+			schedule.setEmpId(empId);
+			schedule.setScheduleName(scheduleName);
+			schedule.setScheduleContent(description);
 			LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(startAt);
 			LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(endAt);
 			
-			s.setScheduleStart(startDateTime);
-			s.setScheduleEnd(endDateTime);
-			s.setScheduleColor(bgColor);
-			s.setScheduleAllDay(allDay);
+			schedule.setScheduleStart(startDateTime);
+			schedule.setScheduleEnd(endDateTime);
+			schedule.setScheduleColor(bgColor);
+			schedule.setScheduleAllDay(allDay);
 			
 			ScheduleDAO sdao = new ScheduleDAO();
 			
-			int ok = sdao.updateSchedule(s);
+			int ok = sdao.updateSchedule(schedule);
 			resp.getWriter().print(ok);
 			return null;
 	}

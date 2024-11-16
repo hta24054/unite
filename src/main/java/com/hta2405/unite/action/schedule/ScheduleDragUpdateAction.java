@@ -24,19 +24,18 @@ public class ScheduleDragUpdateAction implements Action {
 		String endAt = req.getParameter("endAt");
 		int allDay = req.getParameter("allDay") == null ? 0 : Integer.parseInt(req.getParameter("allDay"));
 		
-		Schedule s = new Schedule();
-		
-		s.setScheduleId(scheduleId);
-		s.setEmpId(empId);
+		Schedule schedule = new Schedule();
+		schedule.setScheduleId(scheduleId);
+		schedule.setEmpId(empId);
 		LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(startAt);
 		LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(endAt);
-		s.setScheduleStart(startDateTime);
-		s.setScheduleEnd(endDateTime);
-		s.setScheduleAllDay(allDay);
+		schedule.setScheduleStart(startDateTime);
+		schedule.setScheduleEnd(endDateTime);
+		schedule.setScheduleAllDay(allDay);
 		
-		ScheduleDAO sdao = new ScheduleDAO();
+		ScheduleDAO scheduleDao = new ScheduleDAO();
 		
-		int ok = sdao.dragUpdateSchedule(s);
+		int ok = scheduleDao.dragUpdateSchedule(schedule);
 		resp.getWriter().print(ok);
 		return null;
 	}

@@ -28,26 +28,23 @@ public class ScheduleShareAddAction implements Action {
 		int allDay = request.getParameter("allDay") == null ? 0 : Integer.parseInt(request.getParameter("allDay"));
 		String shareEmp = request.getParameter("share_emp"); // 공유자 ID(선택된 직원)
 		
-		//request.getSession().setAttribute("share_emp", shareEmp);
-		
-		Schedule s = new Schedule();
-	
-		s.setEmpId(empId);
-		s.setScheduleName(scheduleName);
-		s.setScheduleContent(description);
+		Schedule schedule = new Schedule();
+		schedule.setEmpId(empId);
+		schedule.setScheduleName(scheduleName);
+		schedule.setScheduleContent(description);
 		LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(startAt);
 		LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(endAt);
-		s.setScheduleStart(startDateTime);
-		s.setScheduleEnd(endDateTime);
-		s.setScheduleColor(bgColor);
-		s.setScheduleAllDay(allDay);
+		schedule.setScheduleStart(startDateTime);
+		schedule.setScheduleEnd(endDateTime);
+		schedule.setScheduleColor(bgColor);
+		schedule.setScheduleAllDay(allDay);
 		
 		ScheduleShare share = new ScheduleShare();
 		share.setShareEmp(shareEmp);
 
-		ScheduleDAO sdao = new ScheduleDAO();
+		ScheduleDAO scheduleDao = new ScheduleDAO();
 		
-		int ok = sdao.insertScheduleShare(s, share);
+		int ok = scheduleDao.insertScheduleShare(schedule, share);
 		response.getWriter().print(ok);
 		return null;
 	}

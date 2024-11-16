@@ -8,14 +8,64 @@ DROP TABLE emp_info CASCADE CONSTRAINTS;
 DROP TABLE emp CASCADE CONSTRAINTS;
 DROP TABLE dept CASCADE CONSTRAINTS;
 
-select * from post;
+-- 영훈
+
+
+SELECT
+    c.constraint_name,
+    c.constraint_type,
+    col.column_name,
+    col.position,
+    t.data_type,
+    t.nullable,            -- 컬럼이 NULL을 허용하는지 여부
+    t.data_default         -- 컬럼의 기본값
+FROM
+    all_constraints c
+JOIN
+    all_cons_columns col
+    ON c.constraint_name = col.constraint_name
+JOIN
+    all_tab_columns t
+    ON col.table_name = t.table_name
+    AND col.column_name = t.column_name
+    AND col.owner = t.owner
+WHERE
+    c.table_name = 'POST'
+AND
+    c.owner = 'UNITE'
+ORDER BY
+c.constraint_name, col.position;
+
+
+ALTER TABLE POST ADD (new_post_content CLOB);
+UPDATE POST SET new_post_content = post_content;
+ALTER TABLE POST DROP COLUMN post_content;
+ALTER TABLE POST RENAME COLUMN new_post_content TO post_content;
+
+-- 외래키 지정 --emp_id 추가
+ALTER TABLE post
+  DROP CONSTRAINT FK_emp_TO_post;
+ALTER TABLE POST ADD (emp_id VARCHAR2(10) not null);
+ALTER TABLE post
+  ADD CONSTRAINT FK_emp_TO_post
+    FOREIGN KEY (emp_id)
+    REFERENCES emp (emp_id);
+    
+--게시판 제약조건 수정
+ALTER TABLE POST MODIFY POST_CONTENT NOT NULL;
+ALTER TABLE board MODIFY dept_id null;
+ALTER TABLE board MODIFY dept_id default NULL;
+
+--컬럼 사이즈 및 타입 수정
+ALTER TABLE POST MODIFY post_content CLOB;
+ALTER TABLE POST MODIFY POST_WRITER VARCHAR2(15);
 
 --게시판 데이터 임시
 INSERT ALL
-INTO BOARD(board_name1, board_name2, dept_id) VALUES ('전사게시판', '공지사항',9999)
-INTO BOARD(board_name1, board_name2, dept_id) VALUES ('전사게시판', '주간식단표',9999)
-INTO BOARD(board_name1, board_name2, dept_id) VALUES ('전사게시판', 'FAQ',9999)
-INTO BOARD(board_name1, board_name2, dept_id) VALUES ('일반게시판', '일반게시판',9999)
+INTO BOARD(board_name1, board_name2) VALUES ('전사게시판', '공지사항')
+INTO BOARD(board_name1, board_name2) VALUES ('전사게시판', '주간식단표')
+INTO BOARD(board_name1, board_name2) VALUES ('전사게시판', 'FAQ')
+INTO BOARD(board_name1, board_name2) VALUES ('일반게시판', '일반게시판')
 INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '경영기획본부', 1100)
 INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '재무관리팀', 1110)
 INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '인사관리팀', 1120)
@@ -35,12 +85,22 @@ FROM DUAL;
 
 drop sequence SEQ_board;
 delete from board;
-insert into dept values(9999,'ALL','')
-ALTER TABLE board MODIFY dept_id not null;
+delete from post;
+delete from post_file;
+delete from dept where dept_id = 9999;
+--insert into dept values(9999,'ALL','')
 select * from board;
+select * from dept;
+select * from post;
+select * from post_FILE;
+
+--post와 post_file 출력
+select post.*, post_file.* 
+from post join post_file
+on post.post_id = post_file.post_id;
 
 -- 모든 list 출력
-select post.*,board.board_name1,board.board_name2,dept_id, nvl(cnt,0) as cnt
+select post.*,board.*, nvl(cnt,0) as cnt
 from post left outer join (select post_id , count(*) as cnt
 						from post_comment
 						group by post_id) pc
@@ -49,7 +109,7 @@ join board
 	on board.board_id = post.board_id
 order by post_re_ref desc, post_re_seq asc;
 
-
+--영훈 끝
 
 
 update project_member set member_progress_rate = 60 where member_id = 'e002';

@@ -84,7 +84,7 @@
             <a class="nav-link a1" href="${pageContext.request.contextPath}/empInfo/view">&nbsp;인사정보&nbsp;</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link a1" href="${pageContext.request.contextPath}/addressBook/view">&nbsp;주소록&nbsp;</a>
+            <a class="nav-link a1" href="${pageContext.request.contextPath}/contact/addressbook">&nbsp;주소록&nbsp;</a>
         </li>
         <li class="nav-item">
             <a class="nav-link a1" href="${pageContext.request.contextPath}/schedule/calender">&nbsp;캘린더&nbsp;</a>

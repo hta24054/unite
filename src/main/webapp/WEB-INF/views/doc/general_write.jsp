@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
 
     <meta charset="UTF-8">
-    <title>일반 문서</title>
+    <title>일반 문서 작성</title>
     <style>
         .header-cell {
             font-size: 36px;
@@ -29,7 +29,7 @@
     </style>
 </head>
 <body>
-<form id="doc_form" action="${pageContext.request.contextPath}/doc/general_process" method="POST">
+<form id="doc_form" action="${pageContext.request.contextPath}/doc/general_write" method="POST">
     <div class="container mt-4">
         <!-- 기안용지 제목 -->
         <div class="text-center mb-4">
@@ -54,6 +54,10 @@
                         <td>${emp.ename}</td>
                         <input type="hidden" name="writer" value="${emp.empId}">
                     </tr>
+                    <tr>
+                        <td class="table-secondary font-weight-bold text-center">작 성 일</td>
+                        <td>${today}</td>
+                    </tr>
                 </table>
             </div>
             <!-- 결재자 테이블 -->
@@ -66,7 +70,8 @@
         <table class="table table-bordered mt-4">
             <tr>
                 <td class="table-secondary font-weight-bold text-center">제&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;목</td>
-                <td><input type="text" class="form-control title-input" name="title" placeholder="제목을 입력하세요." required>
+                <td><input type="text" class="form-control title-input" name="title" placeholder="제목을 입력하세요."
+                           data-name="제목" required>
                 </td>
             </tr>
             <tr>
@@ -74,14 +79,15 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    <textarea class="summernote form-control" id="content" name="content" required></textarea>
+                    <textarea class="summernote form-control" id="content" name="content" data-name="상세내용"
+                              required></textarea>
                 </td>
             </tr>
         </table>
     </div>
     <!-- 버튼 영역 -->
     <div class="text-right mt-3">
-        <button type="submit" form="doc_form" class="btn btn-success">결재 상신</button>
+        <button type="button" form="doc_form" class="btn btn-success" id="submit-button">결재 상신</button>
         <button type="reset" form="doc_form" class="btn btn-secondary">초기화</button>
     </div>
 </form>
@@ -92,6 +98,66 @@
             minHeight: 500, // set minimum height of editor
             maxHeight: null, // set maximum height of editor
             focus: true // set focus to editable area after initializing summernote
+        });
+
+        //제출버튼 눌리는 경우
+        $('#submit-button').on('click', function (event) {
+            // 모든 required 필드가 채워졌는지 검사
+            let isValid = true;
+            $('#doc_form [required]').each(function () {
+                if ($(this).val() === '') {
+                    const errorMessage = $(this).data('name'); // data-error 속성 값 가져오기
+                    alert(errorMessage + '을(를) 입력해 주세요');
+                    $(this).focus();
+                    isValid = false;
+                    return false;
+                }
+            });
+
+            if (!isValid) return;
+
+            event.preventDefault();
+
+            const additionalSigners = $('input[name="sign[]"]').length - 1;
+            if (additionalSigners < 1) {
+                alert("본인 이외에 최소 1명의 결재자를 추가해야 합니다.");
+                return;
+            }
+
+            const confirmSubmission = confirm("문서를 작성하시겠습니까?");
+            if (!confirmSubmission) return;
+
+            // 폼 데이터 수집
+            const formData = {
+                title: $('input[name="title"]').val(),
+                content: $('textarea[name="content"]').val(),
+                writer: $('input[name="writer"]').val(),
+                signers: []
+            };
+
+            // 결재자 정보 추가
+            $('input[name="sign[]"]').each(function () {
+                formData.signers.push($(this).val());
+            });
+
+            $.ajax({
+                url: "${pageContext.request.contextPath}/doc/general_write",
+                type: "POST",
+                data: JSON.stringify(formData),
+                contentType: "application/json; charset=UTF-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.status === 'success') {
+                        alert("문서 작성이 완료되었습니다.");
+                        window.location.href = "${pageContext.request.contextPath}/doc/in-progress";
+                    } else {
+                        alert("문서 작성 중 오류가 발생했습니다.");
+                    }
+                },
+                error: function () {
+                    alert("문서 작성 중 오류가 발생했습니다.");
+                }
+            });
         });
     });
 </script>

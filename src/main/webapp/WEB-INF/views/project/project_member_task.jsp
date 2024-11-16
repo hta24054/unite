@@ -12,12 +12,50 @@
     <script src="${pageContext.request.contextPath }/js/project_task_list.js"></script> 
     <script>
     	const contextPath = "${pageContext.request.contextPath}";
+
+        function toggleOptions(index) {
+            // 각 행의 숨겨진 optionsRow의 표시 상태를 전환
+            const row = document.getElementById(`optionsRow-${index}`);
+		    if (row) { // 요소가 존재할 때만 스타일 변경
+		        if (row.style.display === "none") {
+		            row.style.display = "table-row";
+		        } else {
+		            row.style.display = "none";
+		        }
+		    } else {
+		        console.warn(`Element with ID optionsRow-${index} not found.`);
+		    }
+        }
+
+        function editPost(projectId) {
+            // 수정 기능
+            alert("수정 기능입니다. Project ID: " + projectId);
+            // 필요한 로직 추가
+        }
+
+        function deletePost(projectId) {
+            // 삭제 기능
+            alert("삭제 기능입니다. Project ID: " + projectId);
+            // 필요한 로직 추가
+        }
+
+        function goToList() {
+            // 목록 페이지로 이동
+            alert("목록으로 이동합니다.");
+            // 필요한 로직 추가
+        }
+
+        function replyPost(projectId) {
+            // 답변 기능
+            alert("답변 기능입니다. Project ID: " + projectId);
+            // 필요한 로직 추가
+        }
     </script>
     <jsp:include page="../common/header.jsp"/>
 	<jsp:include page="project_leftbar.jsp"/>
     <style>
         .table { width: 70%; margin: auto; }
-        table, td, th { border-collapse: collapse; }
+        table, td, th { border-collapse: collapse; text-align: center;}
         h2 { text-align: left; color: black; margin: 0; }
         caption { caption-side: top; margin-bottom: 30px; }
         select.form-control{
@@ -27,115 +65,89 @@
 		}
 		.rows{text-align: right; margin-right: 130px;}
 		.gray{color: gray;}
+		th:nth-child(1), td:nth-child(1) {width: 60px;}
+		th:nth-child(2), td:nth-child(2) {width: 180px;}
+		<%--th:nth-child(3), td:nth-child(3) {width: 360px;}--%>
+		th:nth-child(4), td:nth-child(4) {width: 160px;}
+		th:nth-child(5), td:nth-child(5) {width: 160px;}
+		th:nth-child(6), td:nth-child(6) {width: 100px;}
+		th:nth-child(7), td:nth-child(7) {width: 10px;}
     </style>
+    
 </head>
 <body>
+   <input type="hidden" id="listType" value="list">
    <c:if test="${listcount > 0}">  
-		<div class="rows">
-			<span>줄보기</span>
-			<select class="form-control" id="viewcount">
-				<option value="1">1</option>
-				<option value="3">3</option>
-				<option value="5">5</option>
-				<option value="7">7</option>
-				<option value="10" selected>10</option>
-			</select>
-		</div>
+		<jsp:include page="limit.jsp"/>
 	    <input type="hidden" class="memberId" value="${memberId}">
 	    <table class="table">
 	        <caption><h2><c:out value="${left}"/> - <c:out value="${user}"/></h2></caption>
-	        <thead>
-	       		<tr>
-					<th colspan="4">MVC 게시판 - list</th>
-					<th colspan="2">
-						<span>글 개수 : ${listcount }</span>
-					</th>
-				</tr>
-	            <tr>
-	                <th>번호</th>
-	                <th>제목</th>
-	                <th>내용</th>
-	                <th>작성일</th>
-	                <th>수정일</th>
-	                <th>첨부파일</th>
-	            </tr>
-	        </thead>
-	        <tbody id="boardContent">
-	       		<c:set var="num" value="${listcount-(page-1)*limit}"/>
-				<c:forEach var="t" items="${boardlist }" varStatus="status"> 
-					<tr>
-						<td>
-							<c:out value="${num }"/> <%--num출력--%>
-							<c:set var="num" value="${num-1}"/>
-						</td>
-						<td>
-							<div>
-								<c:if test="${t.board_re_lev > 0 }"> 
-									<c:forEach var="a" begin="0" end="${t.board_re_lev*2 }" step="1">
-										&nbsp;
-									</c:forEach>
-									<img src = '${pageContext.request.contextPath }/image/line.gif'>
-								</c:if>
-								<a href="detail?num=${t.projectId }">
-									<c:if test="${t.projectTitle.length()>=20 }">
-										<c:out value="${t.projectTitle.substring(0,20) }..."/>
-									</c:if>
-									<c:if test="${t.projectTitle.length()<20 }">
-										<c:out value="${t.projectTitle}"/>
-									</c:if>
-								</a>[${t.board_cnt }] 
-							</div>
-						</td>
-						<td><div>${t.projectContent}</div></td>
-						<td><div>${t.projectDate }</div></td>
-						<td><div>${t.projectUpdateDate }</div></td>
-						<td><div>${t.board_file }</div></td>
-					</tr>
+		    <thead>
+		        <tr>
+		            <th colspan="4" style="text-align:left"><c:out value="${user}"/> - 진행 과정 </th>
+		            <th colspan="2">
+		                <span>글 개수 : ${listcount }</span>
+		            </th>
+		        </tr>
+		        <tr>
+		            <th>번호</th>
+		            <th>제목</th>
+		            <th>내용</th>
+		            <th>작성일</th>
+		            <th>수정일</th>
+		            <th>첨부파일</th>
+		            <th></th>
+		        </tr>
+		    </thead>
+		    <tbody id="boardContent">
+		        <c:set var="num" value="${listcount-(page-1)*limit}"/>
+		        <c:forEach var="t" items="${boardlist}" varStatus="status"> 
+				    <tr>
+				        <td>
+				            <c:out value="${num}"/>
+				            <c:set var="num" value="${num - 1}"/>
+				        </td>
+				        <td>
+				            <div>
+				                <c:if test="${t.board_re_lev > 0}"> 
+				                    <c:forEach var="a" begin="0" end="${t.board_re_lev * 2}" step="1">
+				                        &nbsp;
+				                    </c:forEach>
+				                    <img src='${pageContext.request.contextPath}/image/line.gif'>
+				                </c:if>
+				                <a href="detail?num=${num}">
+				                    <c:if test="${t.projectTitle.length() >= 20}">
+				                        <c:out value="${t.projectTitle.substring(0, 20)}..."/>
+				                    </c:if>
+				                    <c:if test="${t.projectTitle.length() < 20}">
+				                        <c:out value="${t.projectTitle}"/>
+				                    </c:if>
+				                </a>[${t.board_cnt}]
+				            </div>
+				        </td>
+				        <td><div>${t.projectContent}</div></td>
+				        <td><div>${t.projectDate}</div></td>
+				        <td><div>${t.projectUpdateDate}</div></td>
+				        <td><div><a href="down?filename=${t.task_file_uuid }${t.task_file_type}&originalFilename=${t.task_file_original}">${t.task_file_original}</a></div></td>
+				        <td>
+			            	<img src="${pageContext.request.contextPath}/image/plus.png" width="20px" onclick="toggleOptions(${status.index})">
+				        </td>
+				    </tr>
+				    <!-- 숨겨진 버튼 행 -->
+				    <tr id="optionsRow-${status.index}" style="display: none;">
+				        <td colspan="7" style="text-align: center;">
+				            <c:if test="${memberId == user}">
+				                <button onclick="editPost(${t.projectId})">수정</button>
+				                <button onclick="deletePost(${t.projectId})">삭제</button>
+				            </c:if>
+				            <button onclick="goToList()">목록</button>
+				            <button onclick="replyPost(${t.projectId})">답변</button>
+				        </td>
+				    </tr>
 				</c:forEach>
-	        </tbody>
-	    </table>
-	    
-	    <div class="center-block">
-		  <ul class="pagination justify-content-center">
-		    <!-- 이전 버튼 -->
-		    <li class="page-item">
-		      <c:choose>
-		        <c:when test="${page > 1}">
-		          <a href="list?page=${page - 1}&memberId=${memberId}" class="page-link">이전&nbsp;</a>
-		        </c:when>
-		        <c:otherwise>
-		          <a class="page-link gray">이전&nbsp;</a>
-		        </c:otherwise>
-		      </c:choose>
-		    </li>
-		
-		    <!-- 페이지 번호 -->
-		    <c:forEach var="a" begin="${startpage}" end="${endpage}">
-		      <li class="page-item ${a == page ? 'active' : ''}">
-		        <c:choose>
-		          <c:when test="${a != page}">
-		            <a href="list?page=${a}&memberId=${memberId}" class="page-link">${a}</a>
-		          </c:when>
-		          <c:otherwise>
-		            <a class="page-link">${a}</a>
-		          </c:otherwise>
-		        </c:choose>
-		      </li>
-		    </c:forEach>
-		
-		    <!-- 다음 버튼 -->
-		    <li class="page-item">
-		      <c:choose>
-		        <c:when test="${page < maxpage}">
-		          <a href="list?page=${page + 1}&memberId=${memberId}" class="page-link">다음&nbsp;</a>
-		        </c:when>
-		        <c:otherwise>
-		          <a class="page-link gray">다음&nbsp;</a>
-		        </c:otherwise>
-		      </c:choose>
-		    </li>
-		  </ul>
-		</div>
+		    </tbody>
+		</table>
+    <jsp:include page="page.jsp"/>
 	</c:if> <%--<c:if test="${listcount > 0 }"> end --%>
 	<c:if test="${listcount == 0  && empty search_word}">
 		<h1>등록된 글이 없습니다</h1>

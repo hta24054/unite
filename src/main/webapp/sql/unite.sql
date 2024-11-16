@@ -1,3 +1,79 @@
+select * from board;
+select * from task where emp_id = '241103'
+SELECT t.*, e.ename FROM task t join emp e on t.emp_id = e.emp_id WHERE t.project_id = 7 AND t.emp_id = '241103' and t.task_id = 130
+
+ SELECT *
+	                FROM task t
+	                WHERE t.project_id = 7 AND t.emp_id = '241103'
+	                ORDER BY t.task_date DESC
+
+SELECT * FROM (
+	            SELECT rownum rnum, t.* FROM (
+	                SELECT *
+	                FROM task t
+	                WHERE t.project_id = 7 AND t.emp_id = '241103'
+	                ORDER BY t.task_date DESC
+	            ) t
+	            WHERE rownum <= 7
+	        ) 
+	        WHERE rnum >= 1 AND rnum <= 10
+
+SELECT * FROM (
+				    SELECT rownum rnum, t.*
+				    FROM (
+				        SELECT
+				            p.project_id,
+				            p.project_name,
+				            p.project_start_date,
+				            p.project_end_date,
+				            p.project_file_original,
+				            p.project_file_uuid,
+				            p.project_file_type,
+				            COUNT(pm.project_member_id) AS member_count,
+				            SUM(pm.MEMBER_PROGRESS_RATE) / COUNT(pm.project_member_id) AS avg_progress,
+				            (SELECT e.ename
+				             FROM emp e
+				             WHERE e.emp_id = (
+				                 SELECT m.member_id
+				                 FROM project_member m
+				                 WHERE m.project_id = p.project_id
+				                 AND m.member_role = 'MANAGER'
+				                 AND ROWNUM = 1
+				             )) AS emp_name,
+				             (SELECT m.member_id
+				             FROM project_member m
+				             WHERE m.project_id = p.project_id
+				             AND m.member_role = 'MANAGER') AS manager_id,
+				            LISTAGG(CASE WHEN pm.member_role = 'PARTICIPANT' THEN e.ename END, ', ')
+				            WITHIN GROUP (ORDER BY e.ename) AS participants,
+				            LISTAGG(CASE WHEN pm.member_role = 'VIEWER' THEN e.ename END, ', ')
+				            WITHIN GROUP (ORDER BY e.ename) AS viewers
+				        FROM
+				            project p
+				        JOIN
+				            project_member pm ON p.project_id = pm.project_id
+				        LEFT JOIN
+				            emp e ON pm.member_id = e.emp_id
+				        WHERE
+				            p.project_id IN (
+				                SELECT project_id
+				                FROM project_member
+				                WHERE member_id = '241103'
+				            )
+				            AND p.project_canceled = 1  
+				        GROUP BY
+				            p.project_id, p.project_name, p.project_start_date, p.project_end_date, p.project_file_original, p.project_file_uuid, p.project_file_type
+				        ORDER BY 
+				            p.project_id
+				    ) t
+				    WHERE rownum <= 100
+				)
+				WHERE rnum >= 1 AND rnum <= 100
+select * from project_member where project_id = 60;
+select * from project_member where project_id = 63;
+select * from project where manager_id = '241103';      
+                    
+                    
 CREATE TABLE attend
 (
   attend_id   NUMBER       NOT NULL,
@@ -773,7 +849,6 @@ CREATE SEQUENCE SEQ_sign
 START WITH 1
 INCREMENT BY 1;
 
-
 COMMENT ON TABLE sign IS '결재';
 
 COMMENT ON COLUMN sign.sign_id IS '결재id';
@@ -1044,7 +1119,7 @@ CREATE OR REPLACE TRIGGER SEQ_TRG_buy_list
 BEFORE INSERT ON buy_list
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
-  SELECT SEQ_buy_list.NEXTVAL
+  SELECT SEQ_BUY_ITEM.NEXTVAL
   INTO :NEW.buy_list_id
   FROM DUAL;
 END;

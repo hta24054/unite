@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 public class DocGeneralWriteAction implements com.hta2405.unite.action.Action {
     @Override
@@ -17,6 +18,7 @@ public class DocGeneralWriteAction implements com.hta2405.unite.action.Action {
         Emp emp = new EmpDao().getEmpById(empId);
         req.setAttribute("emp", emp);
         req.setAttribute("dept", new DeptDao().getDeptByEmpId(empId));
-        return new ActionForward(false, "/WEB-INF/views/doc/doc_general_write.jsp");
+        req.setAttribute("today", LocalDate.now());
+        return new ActionForward(false, "/WEB-INF/views/doc/general_write.jsp");
     }
 }

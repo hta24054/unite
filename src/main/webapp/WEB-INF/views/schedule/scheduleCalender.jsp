@@ -4,7 +4,7 @@
 <html>
 <head>
 	<jsp:include page="../common/header.jsp" />
-	<title>캘린더 일정관리</title> 
+	<title>캘린더 - 일정관리</title> 
 	<script src='https://cdn.jsdelivr.net/npm/moment@2.27.0/min/moment.min.js'></script>
 	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
 	<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/moment@6.1.15/index.global.min.js'></script>
@@ -12,6 +12,13 @@
 	<style>
 		.container {
 			max-width: 1900px;
+		}
+		
+		h3 {
+			margin-bottom: 20px;
+			color: rgb(51, 68, 102);
+			font-size: 30px;
+			font-weight: 600;
 		}
 		
 		#calendar a {
@@ -72,7 +79,7 @@
 					<h3>캘린더</h3>
 					<button class="btn btn-info" data-toggle="modal" data-target="#scheduleModal">일정 등록</button>
 					<div>
-						<a href="#">&middot; 공유 일정 등록</a>
+						<a href="${pageContext.request.contextPath}/schedule/scheduleShare">&middot; 공유 일정 등록</a>
 					</div>
 				</aside>
 			</div>
@@ -82,18 +89,21 @@
 		</div>
 	</div>
 	
-	<%-- modal 시작 --%>
+	<%-- 일정 등록 모달 --%>
 	<div class="modal" id="scheduleModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<div class="modal-header" style="align-items: center;">
-					<p>일정 등록</p>
-					<button type="button" class="btn btn-danger" data-dismiss="modal">X</button>
+				<div class="modal-header">
+					<h5 class="modal-title">일정 등록</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
 				</div>
 				<div class="modal-body">
 					<form name="scheduleEvent" method="post">
 						<input type="hidden" id="schedule_id" name="schedule_id" value="${schedule_id}">
 						<input type="hidden" id="emp_id" name="emp_id" value="${id}">
+						<input type="hidden" id="share_emp" name="share_emp" value="${share_emp.join(',')}">
 						
 						<div class="form-group">
 							<label for="schedule_name">일정명</label>
@@ -142,6 +152,5 @@
 			</div>
 		</div>
 	</div>
-	<%-- modal end --%>
 </body>
 </html>

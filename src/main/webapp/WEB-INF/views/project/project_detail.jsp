@@ -76,7 +76,24 @@
 				    <caption>
 				        <div class="d-flex justify-content-between align-items-center">
 				            <h5>진행 과정</h5>
-				            <button type="button" class="btn btn-primary btn-sm float-right" data-toggle="modal" data-target="#writeModal">글 작성</button>
+				           <c:if test="${role != 'VIEWER'}">
+							    <button type="button" 
+							            class="btn btn-primary btn-sm float-right" 
+							            data-toggle="modal" 
+							            data-target="#writeModal">
+							        글 작성
+							    </button>
+							</c:if>
+							<c:if test="${role == 'VIEWER'}">
+							    <button type="button" 
+							            class="btn btn-primary btn-sm float-right" 
+							            data-toggle="modal" 
+							            data-target="#writeModal" 
+							            style="display:none;"
+							            disabled>
+							        글 작성
+							    </button>
+							</c:if>
 				        </div>
 				    </caption>
 				    <thead>

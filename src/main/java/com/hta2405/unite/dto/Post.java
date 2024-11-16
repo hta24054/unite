@@ -25,5 +25,6 @@ public class Post {
 	private Long postReLev;
 	private Long postReSeq;
 	private Long postView;
+	private String empId;
 	private Long postCommentCnt;
 }

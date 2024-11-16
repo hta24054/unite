@@ -4,13 +4,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import com.hta2405.unite.dto.ProjectDetail;
 import com.hta2405.unite.dto.ProjectTask;
 
 public class ProjectbDao {
@@ -61,31 +62,55 @@ public class ProjectbDao {
 		}
 		return false;
 	}
-	
-	public static boolean insertOrUpdatePost(String title, String content, String filePath, String originalFileName, String fileUuid, String fileType, String empId, int projectId) {
-	    String checkSql = "SELECT task_subject FROM task WHERE emp_id = ? AND project_id = ?";
-	    String insertSql = "INSERT INTO task (emp_id, project_id, task_subject, task_content, task_date, task_update_date, task_file_path, task_file_original, task_file_uuid, task_file_type) VALUES (?, ?, ?, ?, sysdate, sysdate, ?, ?, ?, ?)";
+	public boolean insertOrUpdatePost(String title, String content, List<ProjectDetail> taskFile, String empId, int projectId) {
+	    String checkSql = "SELECT task_subject, task_id FROM task WHERE emp_id = ? AND project_id = ?";
+	    String insertSql = """
+	            INSERT INTO task(emp_id, project_id, task_subject, task_content, task_date, 
+	                task_file_path, task_file_original, task_file_uuid, task_file_type) VALUES
+	                (?, ?, ?, ?, sysdate, ?, ?, ?, ?)
+	    """;
 	    String updateSql = "UPDATE task SET task_subject = ?, task_content = ?, task_update_date = sysdate, task_file_path = ?, task_file_original = ?, task_file_uuid = ?, task_file_type = ? WHERE emp_id = ? AND project_id = ?";
 
 	    try (Connection conn = ds.getConnection()) {
+	        conn.setAutoCommit(false);  // 트랜잭션 시작
+
+	        // 기존 데이터 체크
 	        try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
 	            checkStmt.setString(1, empId);
 	            checkStmt.setInt(2, projectId);
 	            ResultSet rs = checkStmt.executeQuery();
-
 	            if (rs.next() && rs.getString("task_subject") == null) {
 	                // task_subject가 null이면 업데이트
 	                try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
 	                    updateStmt.setString(1, title);
 	                    updateStmt.setString(2, content);
-	                    updateStmt.setString(3, filePath);
-	                    updateStmt.setString(4, originalFileName);
-	                    updateStmt.setString(5, fileUuid);
-	                    updateStmt.setString(6, fileType);
+
+	                    // 파일 처리: taskFile이 비어 있는 경우 null 값 처리
+	                    if (taskFile != null && !taskFile.isEmpty()) {
+	                        ProjectDetail file = taskFile.get(0);  // 첫 번째 파일 처리
+	                        updateStmt.setString(3, file.getTask_file_path());
+	                        updateStmt.setString(4, file.getTask_file_original());
+	                        updateStmt.setString(5, file.getTask_file_uuid());
+	                        updateStmt.setString(6, file.getTask_file_type());
+	                    } else {
+	                        // 파일이 없을 경우 null 값 처리
+	                        updateStmt.setNull(3, java.sql.Types.VARCHAR);
+	                        updateStmt.setNull(4, java.sql.Types.VARCHAR);
+	                        updateStmt.setNull(5, java.sql.Types.VARCHAR);
+	                        updateStmt.setNull(6, java.sql.Types.VARCHAR);
+	                    }
+
 	                    updateStmt.setString(7, empId);
 	                    updateStmt.setInt(8, projectId);
 	                    int result = updateStmt.executeUpdate();
-	                    return result > 0;
+	                    
+	                    if (result > 0) {
+	                        conn.commit();  // 트랜잭션 커밋
+	                        return true;
+	                    } else {
+	                        conn.rollback();  // 실패 시 롤백
+	                        return false;
+	                    }
 	                }
 	            } else {
 	                // task_subject가 null이 아니거나 레코드가 없는 경우 삽입
@@ -94,20 +119,44 @@ public class ProjectbDao {
 	                    insertStmt.setInt(2, projectId);
 	                    insertStmt.setString(3, title);
 	                    insertStmt.setString(4, content);
-	                    insertStmt.setString(5, filePath);
-	                    insertStmt.setString(6, originalFileName);
-	                    insertStmt.setString(7, fileUuid);
-	                    insertStmt.setString(8, fileType);
+
+	                    // 파일 처리: taskFile이 비어 있는 경우 null 값 처리
+	                    if (taskFile != null && !taskFile.isEmpty()) {
+	                        ProjectDetail file = taskFile.get(0);  // 첫 번째 파일 처리
+	                        insertStmt.setString(5, file.getTask_file_path());
+	                        insertStmt.setString(6, file.getTask_file_original());
+	                        insertStmt.setString(7, file.getTask_file_uuid());
+	                        insertStmt.setString(8, file.getTask_file_type());
+	                    } else {
+	                        // 파일이 없을 경우 null 값 처리
+	                        insertStmt.setNull(5, java.sql.Types.VARCHAR);
+	                        insertStmt.setNull(6, java.sql.Types.VARCHAR);
+	                        insertStmt.setNull(7, java.sql.Types.VARCHAR);
+	                        insertStmt.setNull(8, java.sql.Types.VARCHAR);
+	                    }
+
 	                    int result = insertStmt.executeUpdate();
-	                    return result > 0;
+	                    
+	                    if (result > 0) {
+	                        conn.commit();  // 트랜잭션 커밋
+	                        return true;
+	                    } else {
+	                        conn.rollback();  // 실패 시 롤백
+	                        return false;
+	                    }
 	                }
 	            }
+	        } catch (SQLException e) {
+	            conn.rollback();  // 예외 발생 시 롤백
+	            e.printStackTrace();
+	            return false;
 	        }
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	        return false;
 	    }
 	}
+
 
 
 	public List<ProjectTask> getRecentPosts(String empId, int projectId) {
@@ -127,7 +176,7 @@ public class ProjectbDao {
 				LEFT JOIN (
 				    SELECT 
 				        task_subject, 
-				        task_content,  -- 추가된 부분
+				        task_content,  
 				        project_id, 
 				        emp_id, 
 				        task_date, 
@@ -164,7 +213,7 @@ public class ProjectbDao {
 	            task.setMemberId(rs.getString("member_id"));
 	            task.setProjectTitle(rs.getString("task_subject"));
 	            task.setProjectContent(rs.getString("task_content"));
-	            task.setProjectUpdateDate(rs.getString("task_date"));
+	            if(rs.getString("task_date") != null) task.setProjectUpdateDate(rs.getString("task_date").substring(0,10));//날짜만
 	            recentPosts.add(task);
 	            System.out.println(task);
 	        }
@@ -289,8 +338,12 @@ public class ProjectbDao {
                     task.setProjectContent(rs.getString("task_content"));
                     task.setProjectDate(rs.getString("task_date") != null ? rs.getString("task_date").substring(0,16) : "");
                     task.setProjectUpdateDate(rs.getString("task_update_date") != null ? rs.getString("task_update_date").substring(0,16) : "");
-                    task.setBoard_file(rs.getString("task_file_path"));
+                    task.setTask_file_original(rs.getString("task_file_original"));
+                    task.setTask_file_uuid(rs.getString("task_file_uuid"));
+                    task.setTask_file_type(rs.getString("task_file_type"));
 	                
+                    task.setTaskNum(rs.getInt("task_id")); //글번호
+                    task.setMemberId(userid);
 	                tasklist.add(task);
 	            }
 	        }
@@ -302,11 +355,138 @@ public class ProjectbDao {
 	    return tasklist;
 	}
 
+	public ProjectDetail getFileByUUID(String fileUUID, String userid, int projectid) {
+		String sql = "select task_file_uuid from task where fileUUID = ? and userid = ? and projectid = ?";
+		try (Connection con = ds.getConnection();
+		         PreparedStatement pstmt = con.prepareStatement(sql)) {
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public List<ProjectTask> getUserTaskDetail(String userid, int projectid, int task_num) {
+		List<ProjectTask> taskList = new ArrayList<>();
+	    String sql = "SELECT t.*, e.ename FROM task t join emp e on t.emp_id = e.emp_id WHERE t.emp_id = ? AND t.project_id = ? and t.task_id = ?";
+
+	    try (Connection conn = ds.getConnection();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        
+	    	pstmt.setString(1, userid);
+	        pstmt.setInt(2, projectid);
+	        pstmt.setInt(3, task_num);
+
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            while (rs.next()) {
+	                ProjectTask task = new ProjectTask();
+	                task.setMemberName(rs.getString("ename"));
+	                task.setProjectTitle(rs.getString("task_subject"));
+	                task.setProjectContent(rs.getString("task_content"));
+	                task.setMemberId(rs.getString("emp_id"));
+	                
+	                taskList.add(task);
+	            }
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return taskList;
+	}
+
+	
+}
+
+	
+
 
 
    
 
-    
 
 
-} 
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+	/*public static boolean insertOrUpdatePost(String title, String content, String filePath, String originalFileName, String fileUuid, String fileType, String empId, int projectId) {
+	    String checkSql = "SELECT task_subject FROM task WHERE emp_id = ? AND project_id = ?";
+	    String insertSql = "INSERT INTO task (emp_id, project_id, task_subject, task_content, task_date, task_update_date, task_file_path, task_file_original, task_file_uuid, task_file_type) VALUES (?, ?, ?, ?, sysdate, sysdate, ?, ?, ?, ?)";
+	    String updateSql = "UPDATE task SET task_subject = ?, task_content = ?, task_update_date = sysdate, task_file_path = ?, task_file_original = ?, task_file_uuid = ?, task_file_type = ? WHERE emp_id = ? AND project_id = ?";
+
+	    try (Connection conn = ds.getConnection()) {
+	        try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+	            checkStmt.setString(1, empId);
+	            checkStmt.setInt(2, projectId);
+	            ResultSet rs = checkStmt.executeQuery();
+
+	            if (rs.next() && rs.getString("task_subject") == null) {
+	                // task_subject가 null이면 업데이트
+	                try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+	                    updateStmt.setString(1, title);
+	                    updateStmt.setString(2, content);
+	                    updateStmt.setString(3, filePath);
+	                    updateStmt.setString(4, originalFileName);
+	                    updateStmt.setString(5, fileUuid);
+	                    updateStmt.setString(6, fileType);
+	                    updateStmt.setString(7, empId);
+	                    updateStmt.setInt(8, projectId);
+	                    int result = updateStmt.executeUpdate();
+	                    return result > 0;
+	                }
+	            } else {
+	                // task_subject가 null이 아니거나 레코드가 없는 경우 삽입
+	                try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+	                    insertStmt.setString(1, empId);
+	                    insertStmt.setInt(2, projectId);
+	                    insertStmt.setString(3, title);
+	                    insertStmt.setString(4, content);
+	                    insertStmt.setString(5, filePath);
+	                    insertStmt.setString(6, originalFileName);
+	                    insertStmt.setString(7, fileUuid);
+	                    insertStmt.setString(8, fileType);
+	                    int result = insertStmt.executeUpdate();
+	                    return result > 0;
+	                }
+	            }
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}*/
+
+
+

@@ -1,0 +1,17 @@
+.table { width: 70%; margin: auto; }
+
+table, td, th { border-collapse: collapse; text-align: center;  vertical-align: bottom; }
+
+h2 { text-align: left; color: black; margin: 0; }
+
+caption { caption-side: top; margin-bottom: 30px; }
+
+select.form-control{
+	width: auto;
+	margin-bottom: 2em;
+	display: inline-block;
+}
+
+.rows{text-align: right; margin-right: 130px;}
+
+.gray{color: gray;}

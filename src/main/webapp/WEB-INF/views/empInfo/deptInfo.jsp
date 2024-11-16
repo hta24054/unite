@@ -21,6 +21,8 @@
 <jsp:include page="../common/header.jsp" />
 <jsp:include page="empInfo_leftbar.jsp" />
 <style>
+
+
 .table {
 	width: 20%;
 }
@@ -40,16 +42,20 @@ h2 {
 }
 
 table {
-	width: 100%;
+  width: 90%;
 	border-collapse: collapse;
 	margin-top: 20px;
 }
 
 th, td {
-	border: 1px solid black;
+	border: 2px solid black;
 	padding: 8px;
 	text-align: center;
 	color: black;
+}
+
+#tr {
+	border-top: 2px solid black;
 }
 
 th {
@@ -62,26 +68,15 @@ tr.clickable-row {
 }
 </style>
 
-<script>
-$(document).ready(function() {
-    $(".clickable-row").click(function() {
-        var empId = $(this).data("id");
-        console.log("Clicked empId: " + empId); // 디버그 로그 추가
-        window.location.href = "${pageContext.request.contextPath}/empInfo/view?id=" + empId;
-    });
-});
-
-</script>
-
 </head>
 <body>
 	<div class="main-container">
 		<div class="content">
 			<table class="table">
 				<h2>부서 인사정보</h2>
-				<tr>
-					<th width="50%">해당부서</th>
-					<td>${deptName}</td>
+				<tr id="tr">
+					<th>해당부서</th>
+					<td>${details.dept.deptName}</td>
 				</tr>
 			</table>
 			<table class="table2">
@@ -93,11 +88,14 @@ $(document).ready(function() {
 					<th>내선 번호</th>
 				</tr>
 				<tbody>
-					<c:forEach var="emp" items="${empList}">
+					<c:forEach var="emp" items="${details.empList}">
 						<tr class="clickable-row" data-id="${emp.empId}">
-							<td>${emp.deptName}</td>
-							<td>${emp.ename}</td>
-							<td>${emp.jobName}</td>
+							<td>${details.dept.deptName}</td>
+							<td><a
+								href="${pageContext.request.contextPath}/empInfo/view?id=${emp.empId}">
+									${emp.ename} </a></td>
+							<td>${details.job.jobName}</td>
+							<!-- 필요 시 emp.job.jobName으로 변경 -->
 							<td>${emp.email}</td>
 							<td>${emp.tel}</td>
 						</tr>
@@ -108,4 +106,3 @@ $(document).ready(function() {
 	</div>
 </body>
 </html>
-

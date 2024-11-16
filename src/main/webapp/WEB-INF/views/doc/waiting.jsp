@@ -6,9 +6,6 @@
     <meta charset="UTF-8">
     <title>결재대기함</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="doc_leftbar.jsp"/>
 
@@ -56,7 +53,7 @@
                     <td>${waitingDoc.doc.docId}</td>
                     <td class="create-date" data-date="${waitingDoc.doc.docCreateDate}"></td>
                     <td>${waitingDoc.doc.docType.getType()}</td>
-                    <td><a href="${pageContext.request.contextPath}/doc/detail?docId=${waitingDoc.doc.docId}">${waitingDoc.doc.docTitle}</a></td>
+                    <td><a href="${pageContext.request.contextPath}/doc/read?docId=${waitingDoc.doc.docId}">${waitingDoc.doc.docTitle}</a></td>
                     <td>${waitingDoc.signerName}</td>
                 </tr>
             </c:forEach>

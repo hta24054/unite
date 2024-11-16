@@ -1,4 +1,5 @@
 $(function(){
+	go(1);
 	$("#viewcount").change(function(){
 		go(1); //보여줄 페이지를 1페이지로 설정
 	});
@@ -44,15 +45,16 @@ function updateBoardList(data){
 		const img = item.board_re_lev > 0 ? `<img src='${contextPath}/image/line.gif'>` : ""; // contextPath 사용
 		const subject = item.projectTitle.length >= 20 ? item.projectTitle.substr(0, 20) + "..." : item.projectTitle;
 		const changeSubject = subject.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		const taskFileOriginal = item.task_file_original ? item.task_file_original : "";
+		
 		output += `
 			<tr>
 				<td>${num--}</td>
-				<td><div>${changeSubject}[${item.board_cnt}]</div></td>
-				<td><div>${item.projectTitle}</div></td>
+				<td><a href="comm?num=${item.taskNum}&userid=${item.memberId}">${changeSubject}</a> [${item.board_cnt}]</td>
 				<td><div>${item.projectContent}</div></td>
 				<td><div>${item.projectDate}</div></td>
 				<td><div>${item.projectUpdateDate}</div></td>
-				<td><div>${item.board_file}</div></td>
+				<td>${taskFileOriginal ? `<a href="down?filename=${item.task_file_uuid}${item.task_file_type}&originalFilename=${item.task_file_original}">${item.task_file_original}</a>` : ''}</td>
 			</tr>
 			`;
 	});
@@ -87,5 +89,4 @@ function generatePagination(data){
 	
 	$('.pagination').empty().append(output);
 }
-
 

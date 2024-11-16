@@ -13,6 +13,7 @@ import lombok.ToString;
 @ToString
 public class ProjectTask {
 	private int projectId; //글번호
+	private int taskNum; //글번호
 	private String memberName; //글 작성자
 	private String memberId;
 	private String memberPass; //글 비밀번호
@@ -26,5 +27,10 @@ public class ProjectTask {
 	private String projectDate; //글 등록일자
 	private String projectUpdateDate; //업데이트일자
 	private int board_cnt;
+	
+	private String task_file_path;
+    private String task_file_original;
+    private String task_file_uuid;
+    private String task_file_type;
 }
 

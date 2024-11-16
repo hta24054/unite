@@ -2,6 +2,8 @@ package com.hta2405.unite.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -9,8 +11,8 @@ import lombok.*;
 @ToString
 public class Sign {
     private Long signId;
-    private String EmpId;
+    private String empId;
     private Long docId;
     private int signOrder;
-    private boolean signed;
+    private LocalDateTime signTime;
 }

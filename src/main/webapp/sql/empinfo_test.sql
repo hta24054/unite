@@ -204,9 +204,12 @@ SELECT * FROM emp_info WHERE emp_id = 'E001';
 select * from lang where emp_id='admin';
 select * from cert where emp_id='admin';
 select * from emp 
+where job_id='1';
 where emp_id='admin';
 select * from job;
 select * from dept;
+select * from emp
+where dept_id = 1000;
 
 INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (1, 'Java Certification', 'admin');
 INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (2, 'AWS Certified Developer', 'admin');

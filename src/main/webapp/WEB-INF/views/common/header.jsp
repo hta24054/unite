@@ -3,7 +3,7 @@
 <meta charset="UTF-8">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 <%--<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script> --%>
-<script src="${pageContext.request.contextPath }/js/jquery-3.7.1.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-3.7.1.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <style>
@@ -118,7 +118,7 @@
             <a class="nav-link a1" href="${pageContext.request.contextPath}/project/main">&nbsp;프로젝트&nbsp;</a>
         </li>
         <li class="nav-item">
-	        <a class="nav-link a1" href="${pageContext.request.contextPath}/reservation/calender">&nbsp;자원예약&nbsp;</a>
+	        <a class="nav-link a1" href="${pageContext.request.contextPath}/reservation/week">&nbsp;자원예약&nbsp;</a>
 	    </li>
         <li class="nav-item">
             <a class="nav-link a1" href="${pageContext.request.contextPath}/mypage/password">&nbsp;마이페이지&nbsp;</a>

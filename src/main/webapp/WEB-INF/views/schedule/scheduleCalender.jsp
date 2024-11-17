@@ -63,10 +63,6 @@
 		.btn_wrap button {
 			margin: 0 5px;
 		}
-		
-		.modal-header p {
-			margin: 0;
-		}
 	</style>
 </head>
 <body>

@@ -4,15 +4,19 @@ $(document).ready(function(){
 	let isAllDayChk, startDate, endDate;
 	const $resourceType = $("#resourceType");
 	const $resourceName = $("#resourceName");
+	let selectedResourceId = '';  // resource_id 저장 변수
 	
-	GetResourceList();
+	getResourceList();
 	
 	// 자원 목록 불러오기
-	function GetResourceList() {
+	function getResourceList() {
 		$.ajax({
             url: "getResourceList",  
             type: "get",
 	        dataType: "json",
+	        data: {
+				resource_id: $("#resource_id").val(),
+			},
             success: function (data) {
 	            $resourceType.empty();
 	            $resourceType.append('<option value="">분류명</option>');
@@ -26,6 +30,9 @@ $(document).ready(function(){
 	                    $resourceType.append('<option value="' + resource.resourceType + '">' + resource.resourceType + '</option>');
 	                }
 	            });
+	            
+	            // resource_id 값을 선택된 값을 저장
+            	selectedResourceId = $("#resource_id").val();
 	        },
             error: function () {
                 alert("자원 목록 불러오기 실패");
@@ -60,6 +67,83 @@ $(document).ready(function(){
             }
 		});
 	});
+	
+	
+	// 자원 예약 하기
+	function resourceBooking(eventData) {
+		$.ajax({
+			url: "resourceBooking",
+			type: "post",
+	        dataType: "json",
+	        data: {
+                emp_id: $("#emp_id").val(),
+                allDay: eventData.allDay ? 1 : 0,
+                startAt: moment(eventData.startAt).format('YYYY-MM-DD HH:mm'),
+                endAt: moment(eventData.endAt).format('YYYY-MM-DD HH:mm'), 
+                resourceName: $("#resourceName").val(),
+                usage: $("#usage").val(),
+                resource_id: selectedResourceId,  // resource_id 값을 넘겨줌
+            },
+	        success: function (data) {
+				console.log("자원 예약 성공", data); 
+				alert("자원 예약 성공");
+				
+				events = []; 
+				if (data != null && data.length > 0) {
+			        for (let i = 0; i < data.length; i++) {
+						const isAllDay = data[i].reservation_allDay === 1;
+						events.push({
+							id: data[i].reservation_id, 
+							allDay: isAllDay,
+			                start: data[i].reservation_start, 
+			                end: data[i].reservation_end,
+		                 	extendedProps: {
+						        resourceName: $("#resourceName").val(),
+						        usage: $("#usage").val(),
+						    },
+			            });
+			        }
+			    }
+				
+				$("#reservationModal").modal("hide"); 
+			},
+			error: function () {
+                alert("자원 예약 오류");
+            }
+		});
+	}
+	
+	// 자원 예약 모달 등록 버튼 클릭 시 초기화
+	$(".btn.btn-info[data-target='#reservationModal']").on("click", function() {
+	    $(".modal-header").find("h5").text("예약 하기"); 
+	    $(".modal-body").find(".btn_wrap").html(`
+	        <button type="reset" class="btn btn-secondary">취소</button>
+	        <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
+	    `);
+	
+	 	$("#allDay").prop("checked", false);
+	    $("#startAt").val("");
+	    $("#endAt").val("");
+		$resourceType.val("");
+		$resourceName.hide();
+		$("#usage").val("");
+	   
+	    // 등록 버튼에 이벤트 바인딩
+	    $("#btnRegister").off("click").on("click", function(e) {
+	        e.preventDefault();
+	        const eventData = {
+	            allDay: $("#allDay").prop("checked"),
+	            startAt: $("#startAt").val(),
+	            endAt: $("#endAt").val(),
+	            resourceName: $resourceName.val(),
+	            usage: $("#usage").val(), 
+	        };
+	        
+	        resourceBooking(eventData);
+	    });
+	});
+	
+	
 	
 	// 종일 체크박스 상태 변경 시 
     $("#allDay").on("change", function() {
@@ -133,10 +217,14 @@ $(document).ready(function(){
 	        locale: 'ko', // 한국어 설정
 			events: events, // 전역 이벤트 배열 사용
 		    dateClick: function(info) {
-			    
+			    console.log("dateClick:", info);
+			    if (!info.event) { // 클릭한 날짜에 자원예약 없는 경우
+					
+				}
 			},
             eventClick: function(info) {
                 console.log("eventClick info", info.event);
+                resourceBooking(info.event);
                
             },
 	        eventChange: function(info) { // 이벤트가 수정되면 발생하는 이벤트

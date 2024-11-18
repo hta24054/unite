@@ -63,6 +63,7 @@
 					<form name="reservationEvent" method="post">
 						<input type="hidden" id="reservation_id" name="reservation_id" value="${reservation_id}"> 
 						<input type="hidden" id="resource_id" name="resource_id" value="${resource_id}"> 
+						<input type="hidden" id="emp_id" name="emp_id" value="${id}">
 				        
 				        <div class="form-group custom-control custom-checkbox">
 				             <input type="checkbox" name="allDay" id="allDay" class="custom-control-input" value="">

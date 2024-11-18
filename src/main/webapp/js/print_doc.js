@@ -1,0 +1,113 @@
+const contextPath = "${pageContext.request.contextPath}";
+
+$('#printButton').on('click', function () {
+    // 인쇄할 요소의 HTML 가져오기
+    const printContent = $('.document-wrapper').prop('outerHTML');
+
+    // 새 창 열기
+    const printWindow = window.open('', '_blank');
+
+    // 새 창에 HTML 작성
+    printWindow.document.open();
+    printWindow.document.write(`
+        <html>
+        <head>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+            <link href="${contextPath}/css/doc.css" rel="stylesheet">
+            <style>
+                .header-cell {
+                    font-size: 36px;
+                    font-weight: bold;
+                    padding: 20px 0;
+                }
+            
+                /* 테두리 색상을 검정색으로 설정 */
+                .table-bordered, .table-bordered td, .table-bordered th {
+                    align-content: center;
+                    border-color: black !important;
+                }
+            
+                /* 전체 테이블을 묶는 컨테이너 스타일 */
+                #document-wrapper {
+                    border: 1px solid black; /* 외곽선 */
+                    border-radius: 10px; /* 둥근 모서리 */
+                    padding: 20px; /* 안쪽 여백 */
+                    background-color: #f9f9f9; /* 배경색 */
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+                    margin-bottom: 20px; /* 아래 여백 */
+                    width: 100%;
+                }
+            
+                /* 버튼 컨테이너 스타일 */
+                .button-container {
+                    display: flex; /* 버튼들을 한 줄로 정렬 */
+                    gap: 10px; /* 버튼 사이 간격 */
+                    justify-content: flex-end;
+                }
+            
+                /* 아이템 폼 스타일 */
+                .item_form {
+                    width: 20%;
+                    text-align: right; /* 품명, 규격을 제외한 수량, 단가, 금액 우측 정렬 */
+                }
+            
+                /* 우측 정렬을 적용하는 클래스 */
+                .text-right-align {
+                    text-align: right;
+                }
+            
+                /* 인풋 필드와 폼 컨트롤의 글꼴 크기 */
+                .title-input, .form-control {
+                    font-size: 16px;
+                }
+            
+                /* 테이블 스타일 */
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+            
+                th, td {
+                    border: 1px solid black;
+                    padding: 8px;
+                }
+            
+                /* 레이아웃: 컨테이너 및 열 */
+                .container {
+                    width: 100%;
+                }
+            
+                .row {
+                    display: flex;
+                    flex-wrap: wrap;
+                    margin: 0;
+                }
+            
+                .col-md-6 {
+                    flex: 0 0 50%;
+                    max-width: 50%;
+                }
+            
+                /* 기타 스타일 */
+                #modify {
+                    width: 10%;
+                }
+            
+                #info {
+                    text-align: left;
+                }
+            </style>
+        </head>
+        <body>
+            ${printContent}
+            <script>
+                window.onload = function () {
+                    window.print();
+                    window.close();
+                };
+            </script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+});

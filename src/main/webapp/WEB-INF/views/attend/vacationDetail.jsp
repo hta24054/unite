@@ -64,11 +64,11 @@
 <body>
 <h2 id="main_title">나의 연차</h2>
 <div class="container">
-    <!-- 연도와 월 변경 -->
+    <!-- 연도변경 -->
     <div class="text-center my-4">
-        <button id="prevMonth" class="btn btn-outline-primary">&lt;</button>
+        <button id="prevYear" class="btn btn-outline-primary">&lt;</button>
         <span id="currentYearMonth">${param.year}년</span>
-        <button id="nextMonth" class="btn btn-outline-primary">&gt;</button>
+        <button id="nextYear" class="btn btn-outline-primary">&gt;</button>
     </div>
     <%--    요약 테이블--%>
     <table class="table table-striped table-bordered" id="report">
@@ -82,8 +82,8 @@
         <tbody>
         <tr>
             <td>${givenVacCount}</td>
-            <td>${privateVacCount}</td>
-            <td style="color: blue">${givenVacCount-privateVacCount}</td>
+            <td>${usedAnnualVacation}</td>
+            <td style="color: blue">${givenVacCount-usedAnnualVacation}</td>
         </tr>
         </tbody>
     </table>
@@ -102,39 +102,22 @@
         </tr>
         </thead>
         <tbody>
-        <c:forEach var="attend" items="${attendList}">
-            <tr>
-                <td class="attend-date">${attend.attendDate}</td>
-                <td>
-                    <c:choose>
-                        <c:when test="${not empty attend.attendIn}">
-                            ${fn:substring(attend.attendIn, 11, 16)}
-                        </c:when>
-                        <c:otherwise>-</c:otherwise>
-                    </c:choose>
-                </td>
-                <td>
-                    <c:choose>
-                        <c:when test="${not empty attend.attendOut}">
-                            ${fn:substring(attend.attendOut, 11, 16)}
-                        </c:when>
-                        <c:otherwise>-</c:otherwise>
-                    </c:choose>
-                </td>
-                <td class="work-time">
-                    <c:choose>
-                        <c:when test="${not empty attend.workTime.seconds}">${attend.workTime.seconds}</c:when>
-                        <c:otherwise>-</c:otherwise>
-                    </c:choose>
-                </td>
-                <td class="attend-type">
-                    <c:choose>
-                        <c:when test="${not empty attend.attendType}">${attend.attendType}</c:when>
-                        <c:otherwise>-</c:otherwise>
-                    </c:choose>
-                </td>
-            </tr>
-        </c:forEach>
+        <c:if test="${empty vacList}">
+            <th colspan="6">휴가기록이 없습니다.</th>
+        </c:if>
+        <c:if test="${!empty vacList}">
+            <c:forEach var="vac" items="${vacList}" varStatus="status">
+                <tr>
+                    <td>${status.count}</td>
+                    <td>${vac.vacationCount}</td>
+                    <td>${vac.vacationType.typeName}</td>
+                    <td>${vac.vacationApply}</td>
+                    <td>${vac.vacationStart}</td>
+                    <td>${vac.vacationEnd}</td>
+                </tr>
+            </c:forEach>
+        </c:if>
+
         </tbody>
     </table>
 </div>
@@ -142,56 +125,25 @@
 
 <script>
     $(document).ready(function () {
-        let currentMonth = ${param.month};
-        let currentYear = ${param.year};
+        let currentYear = parseInt('${param.year}'); // 서버에서 가져온 연도
+        const todayYear = new Date().getFullYear(); // 현재 연도
 
-        $(".table tbody tr").each(function () {
-            const $row = $(this);
-            const $dateCell = $row.find(".attend-date");
-            const $typeCell = $row.find(".attend-type");
-            const $workTimeCell = $row.find(".work-time");
-
-            // 근무 시간을 시:분:초 형식으로 변환
-            const totalSeconds = parseInt($workTimeCell.text(), 10);
-            if (!isNaN(totalSeconds)) {
-                const hours = String(Math.floor(totalSeconds / 3600));
-                const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-                const seconds = String(totalSeconds % 60).padStart(2, '0');
-                // const formattedTime = hours + "시간 " + minutes + "분 " + seconds + "초";
-                const formattedTime = hours + "시간 " + minutes + "분 "; //초는 빼고 출력
-                $workTimeCell.text(formattedTime);
-            }
-
-            // 날짜 셀 색상 지정 (토요일, 일요일, 휴일 확인)
-            const dateText = $dateCell.text();
-            const date = new Date(dateText);
-            const dayOfWeek = date.getDay();
-
-            if (dayOfWeek === 6) { // 토요일
-                $dateCell.css("color", "blue");
-            } else if (dayOfWeek === 0 || ($typeCell.length && $typeCell.text().trim() === "휴일")) { // 일요일 또는 휴일
-                $dateCell.css("color", "red");
-            }
-        });
-
-        // 이전 달 버튼 클릭
-        $('#prevMonth').click(function () {
-            if (currentMonth === 1) {
-                currentMonth = 12;
-                currentYear -= 1;
-            } else {
-                currentMonth -= 1;
+        // 이전 연도 버튼 클릭
+        $('#prevYear').click(function () {
+            currentYear--;
+            if (currentYear < 1) {
+                return false;
             }
             sendRequest();
         });
 
-        // 다음 달 버튼 클릭
-        $('#nextMonth').click(function () {
-            if (currentMonth === 12) {
-                currentMonth = 1;
-                currentYear += 1;
-            } else {
-                currentMonth += 1;
+        // 다음 연도 버튼 클릭
+        $('#nextYear').click(function () {
+            currentYear++;
+            if (currentYear > todayYear) {
+                alert('아직 확인할 수 없습니다.');
+                currentYear = todayYear;
+                return false;
             }
             sendRequest();
         });
@@ -203,20 +155,12 @@
 
             // year와 month 파라미터 업데이트
             urlParams.set('year', currentYear);
-            urlParams.set('month', currentMonth);
 
             // emp 파라미터가 있는 경우 그대로 유지, 없는 경우 추가하지 않음
             const params = urlParams.toString();
 
             // 새 URL로 이동
             window.location.href = "?" + params;
-        }
-
-        // title 수정(직원근태관리 일 경우 param에 있는 값)
-        const params = new URLSearchParams(window.location.search);
-        const emp = params.get('emp'); // 'emp' 파라미터 값 가져오기
-        if (emp) { // 'emp' 파라미터가 존재할 경우
-            $('#main_title').text('직원 근태 관리-' + emp);
         }
     });
 </script>

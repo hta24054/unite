@@ -131,12 +131,12 @@
                 </td>
                 <td class="attend-type">
                     <c:choose>
-                        <c:when test="${not empty attend.attendType}">
-                            <c:if test="${attend.attendType == '결근'}">
-                                <span style="color: red;">${attend.attendType}</span>
+                        <c:when test="${not empty attend.attendType.typeName}">
+                            <c:if test="${attend.attendType.typeName == '결근'}">
+                                <span style="color: red;">${attend.attendType.typeName}</span>
                             </c:if>
-                            <c:if test="${attend.attendType != '결근'}">
-                                ${attend.attendType}
+                            <c:if test="${attend.attendType.typeName != '결근'}">
+                                ${attend.attendType.typeName}
                             </c:if>
                         </c:when>
                         <c:otherwise>-</c:otherwise>

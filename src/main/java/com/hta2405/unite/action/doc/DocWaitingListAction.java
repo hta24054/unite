@@ -13,10 +13,6 @@ import java.util.List;
 public class DocWaitingListAction implements com.hta2405.unite.action.Action {
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String empId = (String) req.getSession().getAttribute("id");
-
-        List<DocWithSigner> list = new DocDao().getWaitingListByEmpId(empId);
-        req.setAttribute("list", list);
         return new ActionForward(false, "/WEB-INF/views/doc/waiting.jsp");
     }
 }

@@ -15,7 +15,7 @@ public class AttendFrontController extends AbstractFrontController {
         actionMap.put("/my", new AttendMyDetailAction());
         actionMap.put("/empList", new AttendEmpListAction());
         actionMap.put("/emp", new AttendEmpDetailAction());
-        actionMap.put("/vacation/my", new AttendVacationDetailAction());
+        actionMap.put("/vacation/my", new AttendMyVacationDetailAction());
         actionMap.put("/vacation/empList", new AttendVacationEmpListAction());
         actionMap.put("/vacation/emp", new AttendVacationEmpDetailAction());
     }

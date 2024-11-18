@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 public class DocVacationFileDownloadAction implements Action {
     private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("vacation.upload.directory");
@@ -19,6 +21,7 @@ public class DocVacationFileDownloadAction implements Action {
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String fileName = req.getParameter("fileName");
+        fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
         String fileUUID = req.getParameter("fileUUID");
 
         String filePath = UPLOAD_DIRECTORY + File.separator + fileUUID + "_" + fileName;
@@ -28,8 +31,10 @@ public class DocVacationFileDownloadAction implements Action {
             return CommonUtil.alertAndGoBack(resp, "파일을 찾을 수 없습니다.");
         }
 
+        String sEncoding = new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
+
         resp.setContentType("application/octet-stream");
-        resp.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+        resp.setHeader("Content-Disposition", "attachment; filename=\"" + sEncoding + "\"");
 
         try (FileInputStream inStream = new FileInputStream(downloadFile);
              OutputStream outStream = resp.getOutputStream()) {

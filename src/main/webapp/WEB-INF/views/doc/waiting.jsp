@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>결재대기함</title>
+    <title>결재 대기 문서</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="doc_leftbar.jsp"/>
@@ -31,7 +31,7 @@
         }
     </style>
 <body>
-<h2 id="main_title">결재 대기함</h2>
+<h2 id="main_title">결재 대기 문서</h2>
 <div class="container text-center">
     <table class="table table-striped table-bordered" id="waiting_table">
         <thead>
@@ -43,26 +43,53 @@
             <th style="width: 20%">결재 대기</th>
         </tr>
         </thead>
-        <tbody>
-        <c:if test="${empty list}">
-            <td colspan="5">대기중인 결재문서가 없습니다.</td>
-        </c:if>
-        <c:if test="${!empty list}">
-            <c:forEach var="waitingDoc" items="${list}">
-                <tr>
-                    <td>${waitingDoc.doc.docId}</td>
-                    <td class="create-date" data-date="${waitingDoc.doc.docCreateDate}"></td>
-                    <td>${waitingDoc.doc.docType.getType()}</td>
-                    <td><a href="${pageContext.request.contextPath}/doc/read?docId=${waitingDoc.doc.docId}">${waitingDoc.doc.docTitle}</a></td>
-                    <td>${waitingDoc.signerName}</td>
-                </tr>
-            </c:forEach>
-        </c:if>
+        <tbody id="waitingTableBody">
+        <tr>
+            <td colspan="5">데이터를 불러오는 중입니다...</td>
+        </tr>
         </tbody>
     </table>
 </div>
 <script>
     $(document).ready(function () {
+        function loadWaitingDocs() {
+            $(document).ready(function () {
+                const contextPath = '${pageContext.request.contextPath}';
+
+                $.ajax({
+                    url: `\${contextPath}/doc/waiting-process`,
+                    method: 'GET',
+                    success: function (response) {
+                        const $tbody = $('#waiting_table tbody');
+                        $tbody.empty(); // 기존 데이터 제거
+
+                        // Ensure response.list exists and is an array
+                        if (response.list && Array.isArray(response.list)) {
+                            response.list.forEach((item, index) => {
+                                const doc = item.doc; // doc 객체 가져오기
+                                const formattedDate = formatDate(doc.docCreateDate); // 날짜 포맷 함수 호출
+                                const row = `
+                                            <tr>
+                                                <td>\${doc.docId}</td>
+                                                <td>\${formattedDate}</td>
+                                                <td>\${doc.docType}</td>
+                                                <td><a href="\${contextPath}/doc/read?docId=\${doc.docId}">\${doc.docTitle}</a></td>
+                                                <td>\${item.signerName}</td>
+                                            </tr>
+                                            `;
+                                $tbody.append(row);
+                            });
+                        } else {
+                            console.error('Invalid response structure:', response);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching waiting list:', error);
+                    }
+                });
+            });
+        }
+
         // 날짜 포맷 함수
         function formatDate(isoDate) {
             const date = new Date(isoDate);
@@ -72,11 +99,8 @@
             return year + '-' + month + '-' + day;
         }
 
-        // 각 셀의 날짜를 포맷팅
-        $(".create-date").each(function () {
-            const isoDate = $(this).data("date");
-            $(this).text(formatDate(isoDate));
-        });
+        // 데이터 로드
+        loadWaitingDocs();
     });
 </script>
 </body>

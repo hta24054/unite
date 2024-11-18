@@ -1,13 +1,18 @@
 package com.hta2405.unite.dao;
 
 import com.hta2405.unite.dto.Attend;
+import com.hta2405.unite.dto.DocTrip;
+import com.hta2405.unite.dto.DocVacation;
 import com.hta2405.unite.dto.Emp;
+import com.hta2405.unite.enums.AttendType;
+import com.hta2405.unite.enums.DocType;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,29 +72,6 @@ public class AttendDao {
         return null;
     }
 
-
-    public List<Attend> getYearlyVacationByEmpId(String empId, int year) {
-        List<Attend> list = new ArrayList<>();
-        String sql = """
-                SELECT * FROM ATTEND
-                WHERE EMP_ID = ? AND ATTEND_TYPE ='%휴가%'
-                AND EXTRACT(YEAR FROM ATTEND_DATE) = ?
-                """;
-        try (Connection conn = ds.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, empId);
-            ps.setInt(2, year);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                list.add(makeAttend(rs));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("휴가 목록 가져오기 오류");
-        }
-        return list;
-    }
-
     public int attendIn(String empId, String attendType) {
         String sql = """
                     INSERT INTO ATTEND(EMP_ID, ATTEND_DATE, ATTEND_IN, ATTEND_TYPE)
@@ -106,6 +88,68 @@ public class AttendDao {
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("출근처리 오류");
+        }
+        return 0;
+    }
+
+    public List<DocVacation> getUsedVacationList(String empId, int year) {
+        String sql = """
+                SELECT VACATION_COUNT, VACATION_TYPE, DOC_CREATE_DATE, DOC_CONTENT, VACATION_START, VACATION_END
+                 FROM DOC
+                 NATURAL JOIN DOC_VACATION
+                 WHERE DOC_WRITER = ?
+                 AND EXTRACT(YEAR FROM VACATION_START) = ?
+                """;
+        List<DocVacation> list = new ArrayList<>();
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, empId);
+            ps.setInt(2, year);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new DocVacation(null,
+                        empId,
+                        DocType.VACATION,
+                        null,
+                        rs.getString("doc_content"),
+                        rs.getTimestamp("doc_create_date").toLocalDateTime(),
+                        true,
+                        null,
+                        rs.getTimestamp("doc_create_date").toLocalDateTime().toLocalDate(),
+                        rs.getDate("vacation_start").toLocalDate(),
+                        rs.getDate("vacation_end").toLocalDate(),
+                        rs.getInt("vacation_count"),
+                        AttendType.fromString(rs.getString("vacation_type")),
+                        null,
+                        null,
+                        null,
+                        null
+                ));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return list;
+    }
+
+
+    public int getUsedAnnualVacationCount(String empId, int year) {
+        String sql = """
+                SELECT SUM(VACATION_COUNT) FROM DOC NATURAL JOIN DOC_VACATION
+                WHERE DOC_WRITER = ?
+                AND VACATION_TYPE = '연차'
+                AND EXTRACT(YEAR FROM VACATION_START) = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, empId);
+            ps.setInt(2, year);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return 0;
     }
@@ -129,6 +173,55 @@ public class AttendDao {
         return 0;
     }
 
+    public boolean insertVacation(DocVacation doc) {
+        String sql = """
+                    INSERT INTO ATTEND(EMP_ID, ATTEND_DATE, ATTEND_TYPE)
+                    VALUES(?, ?, ?)
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            LocalDate day = doc.getVacationStart();
+            while (!day.isAfter(doc.getVacationEnd())) {
+                ps.setString(1, doc.getDocWriter());
+                ps.setString(2, String.valueOf(day));
+                ps.setString(3, doc.getVacationType().getTypeName());
+                day = day.plusDays(1);
+                ps.addBatch();
+            }
+            int[] result = ps.executeBatch();
+            return result.length == doc.getVacationEnd().compareTo(doc.getVacationStart()) + 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("휴가 반영 오류");
+        }
+        return false;
+    }
+
+    public boolean insertTrip(DocTrip doc) {
+        String sql = """
+                    INSERT INTO ATTEND(EMP_ID, ATTEND_DATE, ATTEND_IN, ATTEND_OUT, ATTEND_TYPE)
+                    VALUES(?, ?, ?, ?, ?)
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            LocalDate day = doc.getTripStart();
+            while (!day.isAfter(doc.getTripEnd())) {
+                ps.setString(1, doc.getDocWriter());
+                ps.setString(2, String.valueOf(day));
+                ps.setTimestamp(3, Timestamp.valueOf(LocalDateTime.of(day, LocalTime.of(9, 0))));
+                ps.setTimestamp(4, Timestamp.valueOf(LocalDateTime.of(day, LocalTime.of(18, 0))));
+                ps.setString(5, AttendType.TRIP.getTypeName());
+                day = day.plusDays(1);
+                ps.addBatch();
+            }
+            int[] result = ps.executeBatch();
+            return result.length == doc.getTripEnd().compareTo(doc.getTripStart()) + 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("휴가 반영 오류");
+        }
+        return false;
+    }
 
     private static Attend makeAttend(ResultSet rs) throws SQLException {
         return new Attend(
@@ -140,7 +233,9 @@ public class AttendDao {
                 rs.getTimestamp("attend_out") == null ?
                         null : rs.getTimestamp("attend_out").toLocalDateTime(),
                 null,
-                rs.getString("attend_type")
-        );
+                AttendType.fromString(rs.getString("attend_type")
+                ));
     }
+
+
 }

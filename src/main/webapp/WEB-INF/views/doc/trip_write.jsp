@@ -6,112 +6,98 @@
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="doc_leftbar.jsp"/>
     <script src="${pageContext.request.contextPath }/js/doc_trip.js"></script>
-
+    <link href="${pageContext.request.contextPath}/css/doc.css" rel="stylesheet">
     <meta charset="UTF-8">
     <title>출장명령부 작성</title>
-    <style>
-        .header-cell {
-            font-size: 36px;
-            font-weight: bold;
-            padding: 20px 0;
-        }
-
-        .title-input, .form-control {
-            font-size: 16px;
-        }
-
-        .table-bordered, .table-bordered td, .table-bordered th {
-            align-content: center;
-            border-color: black !important;
-        }
-    </style>
 </head>
 <body>
 <form id="doc_form" action="${pageContext.request.contextPath}/doc/trip_write" method="POST">
     <div class="container mt-4">
-        <div class="text-center mb-4">
-            <h1 class="header-cell">출장명령부</h1>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <table class="table table-bordered">
-                    <tr>
-                        <td class="table-secondary font-weight-bold text-center">문서번호</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td class="table-secondary font-weight-bold text-center">부&nbsp;&nbsp;&nbsp;서</td>
-                        <td>${dept.deptName}</td>
-                    </tr>
-                    <tr>
-                        <td class="table-secondary font-weight-bold text-center">신 청 자</td>
-                        <td>${emp.ename}</td>
-                        <input type="hidden" name="writer" value="${emp.empId}">
-                    </tr>
-                    <tr>
-                        <td class="table-secondary font-weight-bold text-center">작 성 일</td>
-                        <td>${today}</td>
-                    </tr>
-                </table>
+        <div class="document-wrapper">
+            <div class="text-center mb-4">
+                <h1 class="header-cell">출장명령부</h1>
             </div>
-            <!-- 결재자 -->
-            <div class="col-md-6">
-                <jsp:include page="sign_write.jsp"/>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <table class="table table-bordered">
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">문서번호</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">부&nbsp;&nbsp;&nbsp;서</td>
+                            <td>${dept.deptName}</td>
+                        </tr>
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">신 청 자</td>
+                            <td>${emp.ename}</td>
+                            <input type="hidden" name="writer" value="${emp.empId}">
+                        </tr>
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">작 성 일</td>
+                            <td>${today}</td>
+                        </tr>
+                    </table>
+                </div>
+                <!-- 결재자 -->
+                <div class="col-md-6">
+                    <jsp:include page="sign_write.jsp"/>
+                </div>
             </div>
+
+            <!-- 기타 정보 테이블 -->
+            <table class="table table-bordered mt-4">
+                <tr>
+                    <td class="table-secondary font-weight-bold text-center">출장 시작일</td>
+                    <td><input type="date" class="form-control title-input" name="trip_start" data-name="출장 시작일"
+                               required>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="table-secondary font-weight-bold text-center">출장 종료일</td>
+                    <td><input type="date" class="form-control title-input" name="trip_end" data-name="출장 종료일" required>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="table-secondary font-weight-bold text-center">출장지</td>
+                    <td><input type="text" class="form-control title-input" name="trip_loc" placeholder="출장지를 입력하세요"
+                               data-name="출장지" maxlength="120" required></td>
+                </tr>
+                <tr>
+                    <td class="table-secondary font-weight-bold text-center">출장지 연락처</td>
+                    <td><input type="text" class="form-control title-input" name="trip_phone" placeholder="출장지를 입력하세요"
+                               data-name="출장지 연락처" maxlength="13" required></td>
+                </tr>
+                <tr>
+                    <td class="table-secondary font-weight-bold text-center">목적 및 내용</td>
+                    <td><input type="text" class="form-control title-input" name="trip_info" placeholder="내용을 입력하세요"
+                               data-name="내용" maxlength="255" required></td>
+                </tr>
+            </table>
+            <table class="table table-bordered mt-4">
+                <tr>
+                    <td colspan="4" class="table-secondary font-weight-bold text-center">※법인카드 사용 신청(승인 후 재무팀에서 수령)</td>
+                </tr>
+                <tr>
+                    <td class="table-secondary font-weight-bold text-center">사용 시작일</td>
+                    <td><input type="date" class="form-control title-input" name="card_start"></td>
+
+                    <td class="table-secondary font-weight-bold text-center">사용 종료일</td>
+                    <td><input type="date" class="form-control title-input" name="card_end"></td>
+                </tr>
+                <tr>
+                    <td class="table-secondary font-weight-bold text-center">사용 예정자</td>
+                    <td>${emp.ename}</td>
+                    <td class="table-secondary font-weight-bold text-center">반납 예정일</td>
+                    <td><input type="date" class="form-control title-input" name="card_return"></td>
+                </tr>
+            </table>
         </div>
-
-        <!-- 기타 정보 테이블 -->
-        <table class="table table-bordered mt-4">
-            <tr>
-                <td class="table-secondary font-weight-bold text-center">출장 시작일</td>
-                <td><input type="date" class="form-control title-input" name="trip_start" data-name="출장 시작일" required>
-                </td>
-            </tr>
-            <tr>
-                <td class="table-secondary font-weight-bold text-center">출장 종료일</td>
-                <td><input type="date" class="form-control title-input" name="trip_end" data-name="출장 종료일" required>
-                </td>
-            </tr>
-            <tr>
-                <td class="table-secondary font-weight-bold text-center">출장지</td>
-                <td><input type="text" class="form-control title-input" name="trip_loc" placeholder="출장지를 입력하세요"
-                           data-name="출장지" maxlength="120" required></td>
-            </tr>
-            <tr>
-                <td class="table-secondary font-weight-bold text-center">출장지 연락처</td>
-                <td><input type="text" class="form-control title-input" name="trip_phone" placeholder="출장지를 입력하세요"
-                           data-name="출장지 연락처" maxlength="13" required></td>
-            </tr>
-            <tr>
-                <td class="table-secondary font-weight-bold text-center">목적 및 내용</td>
-                <td><input type="text" class="form-control title-input" name="trip_info" placeholder="내용을 입력하세요"
-                           data-name="내용" maxlength="255" required></td>
-            </tr>
-        </table>
-        <table class="table table-bordered mt-4">
-            <tr>
-                <td colspan="4" class="table-secondary font-weight-bold text-center">※법인카드 사용 신청(승인 후 재무팀에서 수령)</td>
-            </tr>
-            <tr>
-                <td class="table-secondary font-weight-bold text-center">사용 시작일</td>
-                <td><input type="date" class="form-control title-input" name="card_start"></td>
-
-                <td class="table-secondary font-weight-bold text-center">사용 종료일</td>
-                <td><input type="date" class="form-control title-input" name="card_end"></td>
-            </tr>
-            <tr>
-                <td class="table-secondary font-weight-bold text-center">사용 예정자</td>
-                <td>${emp.ename}</td>
-                <td class="table-secondary font-weight-bold text-center">반납 예정일</td>
-                <td><input type="date" class="form-control title-input" name="card_return"></td>
-            </tr>
-        </table>
-    </div>
-    <!-- 버튼 영역 -->
-    <div class="text-right mt-3">
-        <button type="button" form="doc_form" class="btn btn-success" id="submit-button">결재 상신</button>
-        <button type="reset" form="doc_form" class="btn btn-secondary">초기화</button>
+        <!-- 버튼 영역 -->
+        <div class="button-container">
+            <button type="button" form="doc_form" class="btn btn-success" id="submit-button">작성완료</button>
+            <button type="reset" form="doc_form" class="btn btn-secondary">초기화</button>
+        </div>
     </div>
 </form>
 <script>

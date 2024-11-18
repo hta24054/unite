@@ -38,7 +38,7 @@
     </style>
 </head>
 <body>
-<h2 id="main_title">부서원 근태 관리(${deptName}) - 직원 목록</h2>
+<h2 id="main_title">전 직원 휴가 관리(인사부서) - 직원 목록</h2>
 <div class="container">
     <table class="table table-striped table-bordered">
         <thead>
@@ -53,7 +53,7 @@
         <c:forEach var="emp" items="${empList}">
             <tr>
                 <td>
-                    <a href="${pageContext.request.contextPath}/attend/emp?empId=${emp.empId}&year=<%=LocalDate.now().getYear()%>&month=<%=LocalDate.now().getMonthValue()%>">${emp.ename}</a>
+                    <a href="${pageContext.request.contextPath}/attend/vacation/emp?empId=${emp.empId}&year=<%=LocalDate.now().getYear()%>">${emp.ename}</a>
                 </td>
                 <td>${deptMap[emp.deptId]}</td>
                 <td>${jobMap[emp.jobId]}</td>

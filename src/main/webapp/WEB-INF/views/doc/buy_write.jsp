@@ -5,52 +5,14 @@
 <head>
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="doc_leftbar.jsp"/>
-
+    <link href="${pageContext.request.contextPath}/css/doc.css" rel="stylesheet">
     <meta charset="UTF-8">
     <title>구매신청서 작성</title>
-    <style>
-        .header-cell {
-            font-size: 36px;
-            font-weight: bold;
-            padding: 20px 0;
-        }
-
-        .title-input, .form-control {
-            font-size: 16px;
-        }
-
-        /* 테두리 색상을 검정색으로 설정 */
-        .table-bordered, .table-bordered td, .table-bordered th {
-            align-content: center;
-            border-color: black !important;
-        }
-
-        .item_form {
-            width: 18%;
-        }
-
-        #modify {
-            width: 10%;
-        }
-
-        .item_form {
-            width: 18%;
-            text-align: right; /* 품명, 규격을 제외한 수량, 단가, 금액 우측 정렬 */
-        }
-
-        #modify {
-            width: 10%;
-        }
-
-        /* 우측 정렬을 적용하는 클래스 */
-        .text-right-align {
-            text-align: right;
-        }
-    </style>
 </head>
 <body>
 <form id="doc_form" action="${pageContext.request.contextPath}/doc/buy_write" method="POST">
     <div class="container mt-4">
+        <div class="document-wrapper">
         <!-- 기안용지 제목 -->
         <div class="text-center mb-4">
             <h1 class="header-cell">구매신청서</h1>
@@ -131,12 +93,12 @@
                 </td>
             </tr>
         </table>
-
-    </div>
-    <!-- 버튼 영역 -->
-    <div class="text-right mt-3">
-        <button type="button" form="doc_form" class="btn btn-success" id="submit-button">결재 상신</button>
-        <button type="reset" form="doc_form" class="btn btn-secondary">초기화</button>
+            <!-- 버튼 영역 -->
+        </div>
+        <div class="button-container">
+            <button type="button" form="doc_form" class="btn btn-success" id="submit-button">작성완료</button>
+            <button type="reset" form="doc_form" class="btn btn-secondary">초기화</button>
+        </div>
     </div>
 </form>
 <script>

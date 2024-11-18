@@ -1,6 +1,7 @@
 package com.hta2405.unite.dao;
 
 import com.hta2405.unite.dto.*;
+import com.hta2405.unite.enums.AttendType;
 import com.hta2405.unite.enums.DocType;
 
 import javax.naming.InitialContext;
@@ -120,7 +121,7 @@ public class DocDao {
                     ps.setLong(1, docId);
                     ps.setDate(2, Date.valueOf(docVacation.getVacationStart()));
                     ps.setDate(3, Date.valueOf(docVacation.getVacationEnd()));
-                    ps.setString(4, docVacation.getVacationType());
+                    ps.setString(4, docVacation.getVacationType().getTypeName());
                     ps.setInt(5, docVacation.getVacationCount());
                     ps.setString(6, docVacation.getVacationFilePath());
                     ps.setString(7, docVacation.getVacationFileOriginal());
@@ -460,6 +461,53 @@ public class DocDao {
         }
     }
 
+    public int updateVacationDoc(DocVacation docVacation, List<String> signList) {
+        String sql = """
+                    UPDATE DOC_VACATION
+                    SET VACATION_START = ?,
+                        VACATION_END= ?,
+                        VACATION_TYPE = ?,
+                        VACATION_COUNT = ?,
+                        VACATION_FILE_PATH = ?,
+                        VACATION_FILE_ORIGINAL= ?,
+                        VACATION_FILE_UUID = ?,
+                        VACATION_FILE_TYPE = ?
+                    WHERE DOC_VACATION_ID = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            conn.setAutoCommit(false);
+            if (updateDoc(docVacation, signList, conn) != 1) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 0;
+            }
+
+            ps.setDate(1, Date.valueOf(docVacation.getVacationStart()));
+            ps.setDate(2, Date.valueOf(docVacation.getVacationEnd()));
+            ps.setString(3, docVacation.getVacationType().getTypeName());
+            ps.setInt(4, docVacation.getVacationCount());
+            ps.setString(5, docVacation.getVacationFilePath());
+            ps.setString(6, docVacation.getVacationFileOriginal());
+            ps.setString(7, docVacation.getVacationFileUUID());
+            ps.setString(8, docVacation.getVacationFileType());
+            ps.setLong(9, docVacation.getDocVacationId());
+
+            if (ps.executeUpdate() != 1) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 1;
+            }
+            conn.commit();
+            conn.setAutoCommit(true);
+            return 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("휴가신청서 수정 오류");
+            return 0;
+        }
+    }
+
     private int updateDoc(Doc doc, List<String> signList, Connection conn) {
         String sql = """
                 UPDATE DOC
@@ -700,11 +748,12 @@ public class DocDao {
                         rs.getString("doc_content"),
                         rs.getTimestamp("doc_create_date").toLocalDateTime(),
                         rs.getInt("sign_finish") == 1,
+                        rs.getLong("doc_vacation_id"),
                         rs.getDate("doc_create_date").toLocalDate(),
                         rs.getDate("vacation_start").toLocalDate(),
                         rs.getDate("vacation_end").toLocalDate(),
                         rs.getInt("vacation_count"),
-                        rs.getString("vacation_type"),
+                        AttendType.fromString(rs.getString("vacation_type")),
                         rs.getString("vacation_file_Path"),
                         rs.getString("vacation_file_original"),
                         rs.getString("vacation_file_uuid"),
@@ -730,7 +779,10 @@ public class DocDao {
                         WHERE SIGN_TIME IS NULL
                         GROUP BY DOC_ID
                     ) min_sign ON SIGN.DOC_ID = min_sign.DOC_ID AND SIGN.SIGN_ORDER = min_sign.min_sign_order
-                    WHERE doc.SIGN_FINISH = 0 AND SIGN.SIGN_TIME IS NULL AND DOC_WRITER = ?
+                    WHERE doc.SIGN_FINISH = 0
+                        AND SIGN.SIGN_TIME IS NULL
+                        AND DOC_WRITER = ?
+                        AND SIGN.EMP_ID != DOC_WRITER
                     ORDER BY DOC_CREATE_DATE
                 """;
         try (Connection conn = ds.getConnection();

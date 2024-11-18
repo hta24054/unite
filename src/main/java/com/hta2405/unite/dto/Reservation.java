@@ -14,4 +14,5 @@ public class Reservation {
 	private LocalDateTime reservationStart; //예약시작일시
 	private LocalDateTime reservationEnd; //예약종료일시
 	private String reservationInfo; //예약내용
+	private int reservationAllDay; //종일
 }

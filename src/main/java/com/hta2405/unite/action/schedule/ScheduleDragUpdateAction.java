@@ -7,6 +7,7 @@ import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ScheduleDAO;
 import com.hta2405.unite.dto.Schedule;
+import com.hta2405.unite.util.CalendarDateTimeUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,8 +28,12 @@ public class ScheduleDragUpdateAction implements Action {
 		Schedule schedule = new Schedule();
 		schedule.setScheduleId(scheduleId);
 		schedule.setEmpId(empId);
-		LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(startAt);
-		LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(endAt);
+		
+		//LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(startAt);
+		//LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(endAt);
+		LocalDateTime startDateTime = CalendarDateTimeUtil.parseDateTimeWithoutT(startAt);
+		LocalDateTime endDateTime = CalendarDateTimeUtil.parseDateTimeWithoutT(endAt);
+		
 		schedule.setScheduleStart(startDateTime);
 		schedule.setScheduleEnd(endDateTime);
 		schedule.setScheduleAllDay(allDay);

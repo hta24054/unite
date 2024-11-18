@@ -8,6 +8,7 @@ import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ScheduleDAO;
 import com.hta2405.unite.dto.Schedule;
 import com.hta2405.unite.dto.ScheduleShare;
+import com.hta2405.unite.util.CalendarDateTimeUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,8 +33,12 @@ public class ScheduleShareAddAction implements Action {
 		schedule.setEmpId(empId);
 		schedule.setScheduleName(scheduleName);
 		schedule.setScheduleContent(description);
-		LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(startAt);
-		LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(endAt);
+		
+		//LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(startAt);
+		//LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(endAt);
+		LocalDateTime startDateTime = CalendarDateTimeUtil.parseDateTimeWithoutT(startAt);
+		LocalDateTime endDateTime = CalendarDateTimeUtil.parseDateTimeWithoutT(endAt);
+		
 		schedule.setScheduleStart(startDateTime);
 		schedule.setScheduleEnd(endDateTime);
 		schedule.setScheduleColor(bgColor);

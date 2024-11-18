@@ -1,72 +1,147 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 <!DOCTYPE html>
 <html>
 <head>
 <title>MVC 게시판 - view</title>
-<script src="${pageContext.request.contextPath}/js/boardView.js"></script>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/boardView.css" type="text/css">
+<style>
+.boardViewcontainer{
+	width:100%;
+	margin: 0;
+	padding: 0px 10px;
+}
+.board_view_subeject{
+	font-size: 2rem;
+}
+.board_view_btns{
+	display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-right: 15px;
+}
+.board_view_btn{
+	border: 1px solid #afafaf;
+    padding: 5px 20px;
+}
+
+.table td{
+	border: none;
+	padding: 12px 12px 0px 12px;
+}
+
+.icon , .username, .date{
+	display: inline;
+}
+
+.username{
+	font-weight: 600;
+    padding-right: 15px;
+}
+
+.icon{
+	margin: 0px;
+}
+
+.board_view_content{
+	min-height: 200px;
+	padding: 20px 0px;
+}
+
+.preview-btn,.download-btn{
+	font-size: 11px;
+	padding: 0 4px;
+	border: 1px solid #ccc;
+	margin-left:5px; 
+}
+
+sup {
+    font-size: 16px;
+    top: 0px;
+}
+
+.comment-head{
+	display: none;
+}
+
+.boardViewCommentscontainer{
+	padding: 0px 40px;
+	border-top: 1px solid #ccc;
+}
+</style>
 </head>
 <body>
 	<input type="hidden" id="loginid" value="${id}" name="loginid"><%--view.js에서 사용하기위해 추가합니다. --%>
-	<div class="container">
+	<div class="boardViewcontainer">
 	    <table class="table">
     		<tr>
-    			<th colspan="2"></th>
-    		</tr>
-    		<tr>
-    			<td><div>글쓴이</div></td>
-    			<td><div>${boarddata.board_name}</div></td>
-    		</tr>
-    		<tr>
-    			<td><div>제목</div></td>
-    			<td><c:out value="${boarddata.board_subject}"/></td>
-    		</tr>
-    		<tr>
-    			<td><div>내용</div></td>
-    			<td style="padding-right: 0px">
-    				<textarea class="form-control"
-    							rows="5" readOnly>${boarddata.board_content}</textarea></td>
-    		</tr>
-    		
-    		<c:if test="${boarddata.board_re_lev==0}">
-	    		<%--원문글인 경우에만 첨부파일을 추가 할 수 있습니다. --%>
-	    		
-	    		<tr>
-	    			<td><div>첨부파일</div></td>
-	    			
-	    			<%-- 파일을 첨부한 경우 --%>
-	    			<c:if test="${!empty boarddata.board_file}">
-		    			<td><img src="${pageContext.request.contextPath}/image/down.png" width="10px">
-		    				<a href="down?filename=${boarddata.board_file}">${boarddata.board_file}</a></td>
-	    			</c:if>
-	    			
-	    			<%-- 파일을 첨부하지 않은 경우 --%>
-	    			<c:if test="${empty boarddata.board_file}">
-		    			<td></td>
-	    			</c:if>
-    			</tr>
-    		</c:if>
-    		
-    		<tr>
-    			<td colspan="2" class="center">
-    				<c:if test ="${boarddata.board_name == id||id == 'admin'}">
+    			<td colspan="2" class="board_view_subeject">
+    				<c:out value="${postDataAndFile[0].postSubject}"/>
+    				<c:out value="[${postDataAndFile[0].postCommentCnt}]"/>
+    			</td>
+    			<td class="board_view_btns center">
+    				<c:if test ="${postDataAndFile[0].empId == id||id == 'admin'}">
     					<a href="modify?num=${boarddata.board_num}">
-    						<button class="btn btn-info">수정</button>
+    						<button class="btn board_view_btn">수정</button>
     					</a>
     					<%-- href의 주소를 #으로 설정합니다. --%>
     					<a href="#">
-    						<button class="btn btn-danger" data-toggle="modal"
+    						<button class="btn board_view_btn" data-toggle="modal"
     							data-target="#myModal">삭제</button>
     					</a>
     				</c:if>
-    				<a href="list">
-   						<button class="btn btn-warning">목록</button>
-   					</a>
    					<a href="reply?num=${boarddata.board_num}">
-   						<button class="btn btn-success">답변</button>
+   						<button class="btn board_view_btn">답글</button>
    					</a>
+    				<a href="list">
+   						<button class="btn board_view_btn">목록</button>
+   					</a>
+    			</td>
+    		</tr>
+    		<tr>
+    			<td colspan="3" style="padding-top: 5px;">
+    				
+    				<img src=${'/unite/image/profile_black.png'} alt="프로필 이미지" class="icon">
+				    <div class="username">${postDataAndFile[0].postWriter}</div>
+				    <div class="date"> ${postDataAndFile[0].getFormattedPostDate()} </div>
+    			</td>
+    		</tr>
+    		<tr>
+    			<td colspan="3">
+    				<div class="board_view_content">${postDataAndFile[0].postContent}</div>
+    			</td>
+    		</tr>
+    		
+    		<c:if test="${postDataAndFile[0].postReLev==0}">
+	    		<%--원문글인 경우에만 첨부파일을 추가 할 수 있습니다. --%>
+	    		
+	    		<tr>
+	    			<%-- 파일을 첨부한 경우 --%>
+	    			<c:if test="${postDataAndFile[2] != null}">
+		    			<c:forEach var="postFile" items="${postDataAndFile[2]}">
+			    			<td colspan="3"><img src="${pageContext.request.contextPath}/image/attach.png" style="width:13px; margin: 0px 5px 0px 20px;">
+			    				<a href="down?postFileId=${postFile.postFileId}">${postFile.postFileOriginal}</a>
+			    				<button class="preview-btn" onclick="previewFile('${postFile.postFileId}')">미리보기</button>
+      							<button class="download-btn" onclick="location.href='down?postFileId=${postFile.postFileId}'">다운로드</button>
+			    			</td>
+			    		</c:forEach>
+	    			</c:if>
+    			</tr>
+    		</c:if>
+    		<tr>
+    			<td colspan="3" style="padding-bottom:12px;">
+					<div class="file-meta">
+						<img src='/unite/image/comments.png' alt="프로필 이미지" class="icon" style="margin-left: 15px;margin-bottom: 1px;"/>
+						<span class="comments">
+							댓글&nbsp;
+							<sup id="count" style="font-family: arial, sans-serif;"></sup>
+							개</span>
+						<span style="color:#ccc;">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+						<span class="views">조회 ${postDataAndFile[0].postView}</span>
+					</div>
     			</td>
     		</tr>
     	</table>
@@ -97,16 +172,12 @@
     			</div>
     		</div>
     	</div>
-	</div> <%-- <div class="container"> end --%>
-	
-	
-	<%--댓글창 시작 --%>
-	<div class="container">
+    </div><%-- <div class="container"> end --%>
+    
+    <div class="boardViewCommentscontainer">
+		<%--댓글창 시작 --%>
 		<div class="comment-area">
 			<div class="comment-head">
-				<h3 class="comment-count">
-					댓글 <sup id="count" style="font-family: arial, sans-serif;"></sup>
-				</h3>
 				<div class="comment-order">
 					<ul class="comment-order-list">
 					</ul>
@@ -116,7 +187,7 @@
 			</ul>
 		 	<div class="comment-write">
 				<div class="comment-write-area">
-					<b class="comment-write-area-name">${id}</b> 
+					<b class="comment-write-area-name">${postDataAndFile[0].postWriter}</b> 
 					<span class="comment-write-area-count">0/200</span>
 					<textarea placeholder="댓글을 남겨보세요" rows="1" class="comment-write-area-text" maxlength="200"></textarea>
 						
@@ -127,6 +198,6 @@
 				</div>
 		 	</div><%-- comment-write end --%>
 		</div><%-- comment-area end --%>
-	</div><%-- class="container" end --%>
+	</div>
 </body>
 </html>

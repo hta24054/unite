@@ -779,7 +779,10 @@ public class DocDao {
                         WHERE SIGN_TIME IS NULL
                         GROUP BY DOC_ID
                     ) min_sign ON SIGN.DOC_ID = min_sign.DOC_ID AND SIGN.SIGN_ORDER = min_sign.min_sign_order
-                    WHERE doc.SIGN_FINISH = 0 AND SIGN.SIGN_TIME IS NULL AND DOC_WRITER = ?
+                    WHERE doc.SIGN_FINISH = 0
+                        AND SIGN.SIGN_TIME IS NULL
+                        AND DOC_WRITER = ?
+                        AND SIGN.EMP_ID != DOC_WRITER
                     ORDER BY DOC_CREATE_DATE
                 """;
         try (Connection conn = ds.getConnection();

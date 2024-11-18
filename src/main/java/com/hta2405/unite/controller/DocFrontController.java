@@ -13,6 +13,7 @@ public class DocFrontController extends AbstractFrontController {
     @Override
     public void init() throws ServletException {
         actionMap.put("/waiting", new DocWaitingListAction());
+        actionMap.put("/waiting-process", new DocWaitingListProcessAction());
         actionMap.put("/general", new DocGeneralWriteAction());
         actionMap.put("/general_write", new DocGeneralWriteAndEditProcessAction());
         actionMap.put("/general_edit", new DocGeneralWriteAndEditProcessAction());

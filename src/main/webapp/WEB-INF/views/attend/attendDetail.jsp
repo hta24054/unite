@@ -65,12 +65,12 @@
 <div class="container">
     <!-- 연도와 월 변경 -->
     <div class="text-center my-4">
-        <button id="prevMonth" class="btn btn-outline-primary">&lt;</button>
-        <span id="currentYearMonth" style="font-weight: bold">${param.year}년 ${param.month}월</span>
-        <button id="nextMonth" class="btn btn-outline-primary">&gt;</button>
+        <button id="prevMonth" class="btn btn-outline-dark">&lt;</button>
+        <span id="currentYearMonth" style="font-weight: bold; font-size: 25px">&nbsp;&nbsp;${param.year}년 ${param.month}월&nbsp;&nbsp;</span>
+        <button id="nextMonth" class="btn btn-outline-dark">&gt;</button>
     </div>
     <%--    요약 테이블--%>
-    <table class="table table-striped table-bordered" id="report">
+    <table class="table table-striped table-bordered shadow-sm p-3 mb-5 bg-body rounded" id="report">
         <thead>
         <tr>
             <th>당월 근무일</th>
@@ -93,7 +93,7 @@
     <br>
     <br>
     <!-- 근태 관리 테이블 -->
-    <table class="table table-striped table-bordered" id="specify">
+    <table class="table table-striped table-bordered shadow-sm p-3 mb-5 bg-body rounded" id="specify">
         <thead>
         <tr>
             <th>날짜</th>

@@ -62,7 +62,6 @@
 				<div class="modal-body">
 					<form name="reservationEvent" method="post">
 						<input type="hidden" id="reservation_id" name="reservation_id" value="${reservation_id}"> 
-						<input type="hidden" id="resource_id" name="resource_id" value="${resource_id}"> 
 						<input type="hidden" id="emp_id" name="emp_id" value="${id}">
 				        
 				        <div class="form-group custom-control custom-checkbox">
@@ -91,7 +90,7 @@
 									<option value="">자원명</option>
 									<!-- <option value="">자원명 을 선택하세요</option> -->
 							        <c:forEach var="resource" items="${resourceList}">
-            							<option value="${resource.resourceName}">${resource.resourceName}</option>
+            							<option value="${resource.resourceId}">${resource.resourceName}</option>
 									</c:forEach>
 							    </select>			            
 				            </div>

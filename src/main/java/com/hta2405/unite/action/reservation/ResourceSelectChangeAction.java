@@ -18,7 +18,7 @@ public class ResourceSelectChangeAction implements Action {
 	@Override
 	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		
+
 		String resourceType = req.getParameter("resourceType"); 
 		
         ReservationDAO reservationDao = new ReservationDAO();

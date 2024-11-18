@@ -58,12 +58,21 @@ public class ReservationDAO {
 	// 자원 선택 시 해당 자원명 불러오기
 	public List<Resource> resourceSelectChange(String resourceType) {
 		List<Resource> list = new ArrayList<>();
+		/*
 		String sql = """
 				SELECT resc_name, resc_type
                 FROM resc
 				WHERE resc_type = ? AND resc_usable = '1'
 				GROUP BY resc_name, resc_type
             	""";
+        */
+		
+		String sql = """
+	            SELECT MIN(resc_id) AS resc_id, resc_type, resc_name, resc_usable
+	            FROM resc
+	            WHERE resc_type = ? AND resc_usable = '1'
+	            GROUP BY resc_type, resc_name, resc_usable
+	        """;
 		
 		try (Connection conn = ds.getConnection();
 	         PreparedStatement pstmt = conn.prepareStatement(sql);) {
@@ -73,9 +82,10 @@ public class ReservationDAO {
 			 try (ResultSet rs = pstmt.executeQuery()) {
 				 while (rs.next()) {
 					 Resource resource = new Resource();
+					 resource.setResourceId(rs.getLong("resc_id"));
 					 resource.setResourceType(rs.getString("resc_type"));
 					 resource.setResourceName(rs.getString("resc_name"));
-					 resource.setResourceUsable(true);
+					 resource.setResourceUsable(rs.getBoolean("resc_usable"));
 	                 list.add(resource);
 	            }
 			 }
@@ -86,6 +96,36 @@ public class ReservationDAO {
 		
 		return list;
 	} //resourceSelectChange end
+	
+	// 자원명으로 resc_id 가져오기
+	public List<Resource> getRescIdByName(String resourceName) {
+		List<Resource> list = new ArrayList<>();
+        String sql = """
+            SELECT MIN(resc_id) AS resc_id, resc_name
+            FROM resc
+            WHERE resc_name = ? AND resc_usable = '1'
+            GROUP BY resc_name
+        """;
+	
+        try (Connection conn = ds.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, resourceName);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Resource resource = new Resource();
+                    resource.setResourceId(rs.getLong("resc_id"));
+                    resource.setResourceName(rs.getString("resc_name"));
+                    list.add(resource);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("getRescIdByName() 에러: " + e);
+        }
+        return list;
+	} // getRescIdByName end
 
 	// 자원 예약 
 	public int insertResourceBooking(Reservation reservation, Resource resource) {
@@ -123,6 +163,11 @@ public class ReservationDAO {
 	    System.out.println("자원 예약 result" + result);
         return result;
 	} //insertResourceBooking end
+
+	
+	
+
+	
 
 
 	

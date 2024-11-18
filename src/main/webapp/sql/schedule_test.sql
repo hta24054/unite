@@ -125,9 +125,11 @@ FROM resc
 WHERE resc_type = '차량' AND resc_usable = '1'
 GROUP BY resc_type, resc_name, resc_usable;
 
-
-
-
+/* resc_name에 해당하는 resc_id 값을 가져오기  */
+SELECT MIN(resc_id) AS resc_id, resc_name
+FROM resc
+WHERE resc_type = '차량' AND resc_usable = '1'
+GROUP BY resc_name;
 
 
 SELECT resc_name 

@@ -20,31 +20,33 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 
-public class SearchAction implements Action {
+public class DeptEmployeesByJobAction implements Action {
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         try {
-            String query = req.getParameter("query");
+            long deptId = Long.parseLong(req.getParameter("deptId"));
 
             JsonObject jsonObject = new JsonObject();
+
             Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
 
-            ContactDao contactDao = new ContactDao();
-            List<Emp> empList = contactDao.getContactsByName(query);
+           
+            List<Emp> empList = new ContactDao().getContactsByDeptOrderByJob(deptId);
             JsonElement listToJson = gson.toJsonTree(empList);
             jsonObject.add("empList", listToJson);
 
             HashMap<Long, String> jobNameMap = new JobDao().getIdToJobNameMap();
-            JsonElement jobNameToJson = gson.toJsonTree(jobNameMap);
-            jsonObject.add("jobName", jobNameToJson);
+            JsonElement mapToJson = gson.toJsonTree(jobNameMap);
+            jsonObject.add("jobName", mapToJson);
 
             HashMap<Long, String> deptNameMap = new DeptDao().getIdToDeptNameMap();
-            JsonElement deptNameToJson = gson.toJsonTree(deptNameMap);
-            jsonObject.add("deptName", deptNameToJson);
+            JsonElement mapToJsonDeptName = gson.toJsonTree(deptNameMap);
+            jsonObject.add("deptName", mapToJsonDeptName);
 
             resp.setContentType("application/json;charset=utf-8");
             resp.getWriter().print(jsonObject);
+
         } catch (Exception e) {
             e.printStackTrace();
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

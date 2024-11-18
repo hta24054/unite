@@ -129,39 +129,37 @@ public class ReservationDAO {
 
 	// 자원 예약 
 	public int insertResourceBooking(Reservation reservation, Resource resource) {
+		
 		int result = 0;
 	    String sql = """
-	        INSERT INTO reservation
+	        INSERT INTO reservation 
 	        (reservation_id, resource_id, emp_id, reservation_start, reservation_end, reservation_info, reservation_allDay, resc_id)
-	        VALUES (SEQ_reservation.NEXTVAL, ?, ?, ?, ?, ?, ?, 
-		            (SELECT resc_name 
-		             FROM resc 
-		             WHERE resc_id = ?)
-		    )
-	     """;
-	    
-	    System.out.println("resource: " + resource);
+	        SELECT SEQ_reservation.NEXTVAL, ?, ?, ?, ?, ?, ?, resc.resc_id
+	        FROM resc
+	        WHERE resc.resc_id = ?
+	    """;
 	    
 	    try (Connection conn = ds.getConnection();
-	         PreparedStatement pstmt = conn.prepareStatement(sql);) {
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-	           pstmt.setInt(1, reservation.getReservationId()); 
-	           pstmt.setString(2, reservation.getEmpId());   
-	           pstmt.setTimestamp(3, Timestamp.valueOf(reservation.getReservationStart()));  
-	           pstmt.setTimestamp(4, Timestamp.valueOf(reservation.getReservationEnd()));    
-	           pstmt.setString(5, reservation.getReservationInfo());  
-	           pstmt.setInt(6, reservation.getReservationAllDay());   
-	           pstmt.setLong(7, resource.getResourceId());  
+	        pstmt.setInt(1, reservation.getResourceId());   
+	        pstmt.setString(2, reservation.getEmpId());     
+	        pstmt.setTimestamp(3, Timestamp.valueOf(reservation.getReservationStart())); 
+	        pstmt.setTimestamp(4, Timestamp.valueOf(reservation.getReservationEnd()));    
+	        pstmt.setString(5, reservation.getReservationInfo());  
+	        pstmt.setInt(6, reservation.getReservationAllDay());   
+	        pstmt.setInt(7, reservation.getResourceId());  // resc_id (resource_id와 일치하는 resc_id)
 
-	           result = pstmt.executeUpdate();
+	        // 실행
+	        result = pstmt.executeUpdate();
 
-       } catch (Exception e) {
-           e.printStackTrace();
-           System.out.println("insertResourceBooking() 에러: " + e);
-       }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        System.out.println("insertResourceBooking() 에러: " + e);
+	    }
 
-	    System.out.println("자원 예약 result" + result);
-        return result;
+	    return result;
+		
 	} //insertResourceBooking end
 
 	

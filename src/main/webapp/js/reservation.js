@@ -79,6 +79,9 @@ $(document).ready(function(){
             },
 	        success: function (data) {
 				console.log("자원 예약 성공", data); 
+				
+				alert(JSON.stringify(data, null, 2));
+				
 				alert("자원 예약 성공");
 				
 				events = []; 

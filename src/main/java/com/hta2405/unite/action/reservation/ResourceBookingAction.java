@@ -40,7 +40,7 @@ public class ResourceBookingAction implements Action {
 		
 		resource.setResourceName(resourceName); //자원명
 		resource.setResourceId(Long.parseLong(resourceId));  
-		
+
 
 		ReservationDAO reservationDao = new ReservationDAO();
 		

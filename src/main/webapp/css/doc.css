@@ -11,7 +11,7 @@
 }
 
 /* 전체 테이블을 묶는 컨테이너 스타일 */
-#document-wrapper {
+.document-wrapper {
     border: 1px solid black; /* 외곽선 */
     border-radius: 10px; /* 둥근 모서리 */
     padding: 20px; /* 안쪽 여백 */
@@ -95,7 +95,7 @@ th, td {
     }
 
     /* 전체 테이블을 묶는 컨테이너 스타일 */
-    #document-wrapper {
+    .document-wrapper {
         border: 1px solid black; /* 외곽선 */
         border-radius: 10px; /* 둥근 모서리 */
         padding: 20px; /* 안쪽 여백 */

@@ -3,31 +3,27 @@ $(document).ready(function(){
 	let events = []; 
 	let isAllDayChk, startDate, endDate;
 	const $resourceType = $("#resourceType");
+	const $resourceName = $("#resourceName");
 	
-	$("#resourceName").hide();
-
-	$resourceType.on("change", function() {
-		console.log($(this).val());
-		
-        $.ajax({
+	GetResourceList();
+	
+	// 자원 목록 불러오기
+	function GetResourceList() {
+		$.ajax({
             url: "getResourceList",  
             type: "get",
 	        dataType: "json",
             success: function (data) {
-	            console.log(data);
-
 	            $resourceType.empty();
-	            $resourceType.append('<option value="resourceType">분류명을 선택하세요</option>');
+	            $resourceType.append('<option value="">분류명</option>');
+				$resourceName.hide();
 	
-	            // 중복 제거
-	            const uniqueType = new Set();
-	            
-	            data.forEach(resource => {
-	                if (!uniqueType.has(resource.resourceType)) {
-	                    uniqueType.add(resource.resourceType);
-	                    $resourceType.append(
-	                        `<option value="${resource.resourceType}">${resource.resourceType}</option>`
-	                    );
+	            // 중복 제거 Set
+	            const uniqueResourceType = new Set();
+	            data.forEach(function(resource) {
+	                if (!uniqueResourceType.has(resource.resourceType)) {
+	                    uniqueResourceType.add(resource.resourceType);
+	                    $resourceType.append('<option value="' + resource.resourceType + '">' + resource.resourceType + '</option>');
 	                }
 	            });
 	        },
@@ -35,8 +31,36 @@ $(document).ready(function(){
                 alert("자원 목록 불러오기 실패");
             }
         });
-    });
-
+	}
+	
+	// 자원 선택 시 해당 자원명 불러오기
+	$resourceType.on("change", function() {
+		const $selectedVal = $(this).val();
+		
+		$.ajax({
+			url: "resourceSelectChange",
+			type: "get",
+			dataType: "json",
+			data : {
+				resourceType : $selectedVal,
+				resourceName: $("resourceName").val()
+			},
+			success: function(data) {
+	            $resourceName.empty();
+	            $resourceName.append('<option value="">자원명</option>');
+	
+	            data.forEach(function(resource) {
+	                $resourceName.append('<option value="' + resource.resourceName + '">' + resource.resourceName + '</option>');
+	            });
+	
+	            $resourceName.show();
+	        },
+            error: function () {
+                alert("자원명 불러오기 실패");
+            }
+		});
+	});
+	
 	// 종일 체크박스 상태 변경 시 
     $("#allDay").on("change", function() {
         isAllDayChk = $(this).prop("checked");
@@ -138,12 +162,4 @@ $(document).ready(function(){
 	}
 
 	initCalendar();
-	
-	
-	
-	
-	
-	
-	
-	
 });

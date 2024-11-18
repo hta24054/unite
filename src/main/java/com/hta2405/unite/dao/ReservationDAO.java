@@ -23,49 +23,13 @@ public class ReservationDAO {
 			System.out.println("DB 연결 실패 : " + ex);
 		}
 	}
-	
-	public List<String> getResourceTypes() {
-		List<String> list = new ArrayList<>();
-        
-        String sql = """
-	        		SELECT DISTINCT resc_type 
-	        		FROM resc
-	        		""";  
-        /*
-         *  SELECT * FROM RESC;
-         
-            SELECT resc_type
-			FROM resc;
-			
-			SELECT resc_name
-			FROM resc 
-			WHERE resc_type = '회의실' AND resc_usable = '1';
-			
-			SELECT resc_name
-			FROM resc 
-			WHERE resc_type = '차량' AND resc_usable = '1';
-         * 
-         * */
-        
-        try (Connection conn = ds.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);) {
-        	
-        	 ResultSet rs = ps.executeQuery();
-        	 while (rs.next()) {
-        		 list.add(rs.getString("resc_type"));
-             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("getResourceTypes()에러 :" + e);
-        }
-        
-        return list;
-	}
 
+    // 자원 목록 불러오기
 	public List<Resource> getResourceList() {
 		List<Resource> list = new ArrayList<>();
         String sql = """
-                    SELECT * FROM RESC
+                    SELECT * 
+                    FROM RESC
                 	""";
         try (Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);) {
@@ -86,6 +50,41 @@ public class ReservationDAO {
             System.out.println("getResourceList()에러 :" + e);
         }
         return list;
-	}
+	}// getResourceList end
+
+
+	// 자원 선택 시 해당 자원명 불러오기
+	public List<Resource> resourceSelectChange(String resourceType) {
+		List<Resource> list = new ArrayList<>();
+		String sql = """
+				SELECT resc_name, resc_type
+                FROM resc
+				WHERE resc_type = ? AND resc_usable = '1'
+				GROUP BY resc_name, resc_type
+            	""";
+		
+		try (Connection conn = ds.getConnection();
+	         PreparedStatement pstmt = conn.prepareStatement(sql);) {
+			
+			 pstmt.setString(1, resourceType);
+
+			 try (ResultSet rs = pstmt.executeQuery()) {
+				 while (rs.next()) {
+					 Resource resource = new Resource();
+					 resource.setResourceType(rs.getString("resc_type"));
+					 resource.setResourceName(rs.getString("resc_name")); 
+	                 list.add(resource);
+	            }
+			 }
+	    } catch (Exception e) {
+	         e.printStackTrace();
+	         System.out.println("resourceSelectChange()에러 :" + e);
+	    }
+		
+		return list;
+	} //resourceSelectChange end
+
+
+	
 
 }

@@ -1,10 +1,10 @@
-package com.hta2405.unite.action.schedule;
+package com.hta2405.unite.util;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class ScheduleDateTimeUtil {
-    public static LocalDateTime parseDateTimeWithoutT(String dateTime) {
+public class CalendarDateTimeUtil {
+	public static LocalDateTime parseDateTimeWithoutT(String dateTime) {
         // T 공백으로 변경
         if (dateTime != null && !dateTime.isEmpty()) {
         	

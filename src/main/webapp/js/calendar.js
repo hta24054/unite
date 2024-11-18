@@ -35,7 +35,10 @@ $(document).ready(function(){
 	                            backgroundColor: data[i].schedule_color,
 	                            description: data[i].schedule_content,
 	                            allDay: data[i].schedule_allDay,
-	                            id: data[i].schedule_id
+	                            id: data[i].schedule_id,
+	                            extendedProps: {
+							        isShared: false, // 공유 일정
+							    },
 	                        });
 	                    }
 			        }
@@ -79,7 +82,10 @@ $(document).ready(function(){
 	                            description: data[i].schedule_content,
 	                            allDay: data[i].schedule_allDay,
 	                            id: data[i].schedule_id,
-	                            isShared: true
+	                            //isShared: true
+	                            extendedProps: {
+							        isShared: true, // 공유 일정
+							    },
 	                        });
 	                    }
 	                }
@@ -252,21 +258,22 @@ $(document).ready(function(){
 	        $("#startAt, #endAt").prop("type", "datetime-local");
 	    }
 	    
-	    $(".modal-header").find("h5").text("상세 일정");
-	    $(".modal-body").find(".btn_wrap").html(`
-	        <button type="reset" class="btn btn-secondary">취소</button>
-	        <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
-	        <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
-	    `);
+	    if (event.extendedProps.isShared === true) {//공유 일정
+		    $(".modal-header").find("h5").text("공유 일정");
+		    
+		    $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", true);
+		    
+		    $(".modal-body").find(".btn_wrap").html(`
+		        <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
+		    `);
+		} else {
+		    $(".modal-body").find(".btn_wrap").html(`
+		        <button type="reset" class="btn btn-secondary">취소</button>
+		        <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
+		        <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
+		    `);
+		}
 	    
-	    console.log("event.isShared", event.extendedProps.isShared)
-	    
-	    
-    
-	    if (event.isShared) {
-	        // Hide the update and delete buttons for shared events
-	        $(".modal-body").find(".btn_wrap").remove();
-	    }
 	    
 	    // 일정 수정
 	    $("#btnUpdate").off("click").on("click", function() {
@@ -477,12 +484,8 @@ $(document).ready(function(){
 			},
             eventClick: function(info) {
                 console.log("eventClick info", info.event);
-
                 openDetailModal(info.event);
             },
-			eventAdd: function(info) { // 이벤트가 추가되면 발생하는 이벤트
-	         	 console.log("eventAdd", info);
-	        },
 	        eventChange: function(info) { // 이벤트가 수정되면 발생하는 이벤트
 	         	updateDragEvent(info);
 	        },
@@ -497,9 +500,28 @@ $(document).ready(function(){
                 return event; // 수정된 이벤트 반환
             },
             eventDidMount: function(info) {
-				 console.log(info.event.extendedProps.isShared)
-				 console.log(info.event.extendedProps)
-			}
+				 //.log("info.event.extendedProps.isShared", info.event.extendedProps.isShared);
+				 //console.log("info.event.extendedProps", info.event.extendedProps);
+				 
+				 /*	
+	             if (info.event.extendedProps.isShared) {
+	                info.el.setAttribute('data-editable', 'false');
+	             } else {
+	                info.el.setAttribute('data-editable', 'true');
+	             }*/
+			},
+			eventDrop: function(info) {
+	            updateDragEvent(info); // 드래그 후, 일정 이동했을 때 서버로 변경사항 전달
+	        },
+			/*
+			eventRender: function(info) {
+	            if (info.event.extendedProps.isShared) {
+	                info.el.style.pointerEvents = 'none'; // 클릭 및 드래그 불가능
+	            } else {
+	                info.el.style.pointerEvents = 'auto';
+	            }
+	        }
+	        */
 		});
 		
 		//선택 상태 해제

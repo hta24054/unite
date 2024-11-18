@@ -18,8 +18,9 @@ public class ScheduleDeleteAction implements Action {
 			throws ServletException, IOException {
 		
 		int scheduleId = Integer.parseInt(req.getParameter("schedule_id"));
-		ScheduleDAO sdao = new ScheduleDAO();
-		int result = sdao.deleteSchedule(scheduleId);
+		
+		ScheduleDAO scheduleDao = new ScheduleDAO();
+		int result = scheduleDao.deleteSchedule(scheduleId);
 		
 		resp.setContentType("text/html;charset=utf-8");
         PrintWriter out = resp.getWriter();

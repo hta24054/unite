@@ -3,7 +3,7 @@
 <meta charset="UTF-8">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 <%--<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script> --%>
-<script src="${pageContext.request.contextPath }/js/jquery-3.7.1.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-3.7.1.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <style>
@@ -57,6 +57,25 @@
         right: 10px;
         top: 0px;
     }
+    
+    .user_info {
+    	display: flex;
+    	align-items: center;
+    	top: 12px;
+    }
+    
+    .user_info *{
+    	color: #fff;
+    }
+    
+    .user_info span {
+     	margin-right: 10px;
+     }
+    
+    .user_info a:hover{
+     	text-decoration: none;
+     	color: #fff;
+     }
 </style>
 <%--필터가 없는 경우 필요  --%>
 <%--<c:if test="${empty id }">
@@ -99,21 +118,18 @@
             <a class="nav-link a1" href="${pageContext.request.contextPath}/project/main">&nbsp;프로젝트&nbsp;</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link a1" href="#">&nbsp;자원예약&nbsp;</a>
-        </li>
+	        <a class="nav-link a1" href="${pageContext.request.contextPath}/reservation/weekCalendar">&nbsp;자원예약&nbsp;</a>
+	    </li>
         <li class="nav-item">
             <a class="nav-link a1" href="${pageContext.request.contextPath}/mypage/password">&nbsp;마이페이지&nbsp;</a>
         </li>
         <li class="nav-item">
             <a class="nav-link a1" href="${pageContext.request.contextPath}/admin/emp-manage">&nbsp;관리자&nbsp;</a>
         </li>
-        <li class="nav-item2">
-            <a class="nav-link" href="#"><img src="${pageContext.request.contextPath}/image/profile_white.png"
-                                              style="width:30px;"></a>
-        </li>
-        <li class="nav-item3" style="line-height: 10px;">
-            <%--${.name} --%><span class="nav-link">${ename}님</span><a class="nav-link"
-                                                                    href="${pageContext.request.contextPath}/emp/logout">로그아웃</a>
+        <li class="nav-item3 user_info">
+            <img src="${pageContext.request.contextPath}/image/profile_white.png" style="width:30px;">
+            <%--${.name} --%> <span>${ename}님</span>
+            <a href="${pageContext.request.contextPath}/emp/logout">로그아웃</a>
         </li>
         <%--<c:if test="${id=='admin' }">
         Drop down

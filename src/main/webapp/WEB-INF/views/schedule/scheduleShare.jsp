@@ -5,9 +5,7 @@
 <head>
 	<jsp:include page="../common/header.jsp" />
 	<title>캘린더 - 공유 일정 등록</title> 
-	<script src='https://cdn.jsdelivr.net/npm/moment@2.27.0/min/moment.min.js'></script>
-	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
-	<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/moment@6.1.15/index.global.min.js'></script>
+	<jsp:include page="../common/fullcalendar.jsp" />
 	<script src="${pageContext.request.contextPath}/js/calendar.js"></script>
 	<style>
 		.container {
@@ -236,7 +234,10 @@
 				                end: data[i].schedule_end,
 				                backgroundColor: data[i].schedule_color, 
 				                description: data[i].schedule_content,
-				                allDay: isAllDay
+				                allDay: isAllDay,
+				                extendedProps: {
+							        isShared: true, // 공유 일정
+							    },
 				            });
 				        }
 				    }

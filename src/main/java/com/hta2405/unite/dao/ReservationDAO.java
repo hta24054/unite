@@ -72,7 +72,8 @@ public class ReservationDAO {
 				 while (rs.next()) {
 					 Resource resource = new Resource();
 					 resource.setResourceType(rs.getString("resc_type"));
-					 resource.setResourceName(rs.getString("resc_name")); 
+					 resource.setResourceName(rs.getString("resc_name"));
+					 resource.setResourceUsable(true);
 	                 list.add(resource);
 	            }
 			 }

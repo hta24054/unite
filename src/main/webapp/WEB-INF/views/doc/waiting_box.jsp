@@ -31,23 +31,29 @@
                         $tbody.empty(); // 기존 데이터 제거
 
                         // Ensure response.list exists and is an array
-                        if (response.list && Array.isArray(response.list)) {
+                        if (response.list && Array.isArray(response.list) && response.list.length > 0) {
                             response.list.forEach((item, index) => {
                                 const doc = item.doc; // doc 객체 가져오기
                                 const formattedDate = formatDate(doc.docCreateDate); // 날짜 포맷 함수 호출
-                                const row = `
-                                            <tr>
-                                                <td>\${doc.docId}</td>
-                                                <td>\${formattedDate}</td>
-                                                <td>\${doc.docType}</td>
-                                                <td><a href="\${contextPath}/doc/read?docId=\${doc.docId}">\${doc.docTitle}</a></td>
-                                                <td>\${item.signerName}</td>
-                                            </tr>
-                                            `;
+                                let row = `
+                                    <tr>
+                                        <td>\${doc.docId}</td>
+                                        <td>\${formattedDate}</td>
+                                        <td>\${doc.docType}</td>
+                                        <td><a href="\${contextPath}/doc/read?docId=\${doc.docId}">\${doc.docTitle}</a></td>
+                                        <td>\${item.signerName}</td>
+                                    </tr>
+                                `;
                                 $tbody.append(row);
                             });
                         } else {
-                            console.error('Invalid response structure:', response);
+                            // 대기 중인 문서가 없는 경우
+                            const noDataRow = `
+                                                <tr>
+                                                    <td colspan="5">결재 대기중인 문서가 없습니다.</td>
+                                                </tr>
+                                            `;
+                            $tbody.append(noDataRow);
                         }
                     },
                     error: function (xhr, status, error) {

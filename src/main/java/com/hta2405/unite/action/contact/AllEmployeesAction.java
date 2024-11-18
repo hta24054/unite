@@ -30,9 +30,9 @@ public class AllEmployeesAction implements Action {
 		JsonObject jsonObject = new JsonObject();
 		Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
 
-		List<Emp> empList = new ContactDao().getAllContacts(orderBy);
-		JsonElement listToJson = gson.toJsonTree(empList);
-		jsonObject.add("empList", listToJson);
+//		List<Emp> empList = new ContactDao().getAllContacts(orderBy);
+//		JsonElement listToJson = gson.toJsonTree(empList);
+//		jsonObject.add("empList", listToJson);
 
 		HashMap<Long, String> jobNameMap = new JobDao().getIdToJobNameMap();
 		JsonElement mapToJson = gson.toJsonTree(jobNameMap);

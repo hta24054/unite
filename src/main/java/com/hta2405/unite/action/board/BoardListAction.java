@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.BoardDao;
+import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dto.Post;
 import com.hta2405.unite.util.LocalDateTimeAdapter;
 
@@ -102,6 +103,7 @@ public class BoardListAction implements Action {
 		
 		System.out.println("현재 페이지에 보여줄 마지막 페이지 수 : "+endPage);
 		String state = req.getParameter("state");
+
 		
 		if(state == null) {
 			System.out.println("state==null");
@@ -120,6 +122,9 @@ public class BoardListAction implements Action {
 			req.setAttribute("postList", postList);
 			
 			req.setAttribute("limit", limit);
+
+			//emp의 ename을 구하기 위한 hashMap
+			req.setAttribute("empMap",new EmpDao().getIdToENameMap());
 			
 			ActionForward forward = new ActionForward();
 			forward.setRedirect(false);
@@ -147,6 +152,12 @@ public class BoardListAction implements Action {
 			JsonElement je = gson.toJsonTree(postList);
 			System.out.println("postList="+je.toString());
 			object.add("postList", je);
+
+			//emp의 ename을 구하기 위한 hashMap
+			JsonElement jeEmpMap = gson.toJsonTree(new EmpDao().getIdToENameMap());
+			System.out.println("empMap="+jeEmpMap.toString());
+			object.add("empMap", jeEmpMap);
+			
 			
 			resp.setContentType("application/json;charset=utf-8");
 			resp.getWriter().print(object);

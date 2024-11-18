@@ -16,7 +16,7 @@ import com.hta2405.unite.dto.PostFile;
 
 public class BoardDao {
 	private DataSource ds;
-
+	
 	public BoardDao() {
 		try {
 			InitialContext init = new InitialContext();
@@ -129,8 +129,8 @@ public class BoardDao {
 		String getPostId_sql = "(SELECT NVL(MAX(POST_ID),0)+1 FROM POST)";
 		String sql = """
 				INSERT INTO POST(BOARD_ID,POST_WRITER,POST_SUBJECT,POST_CONTENT,
-				POST_DATE,POST_UPDATE_DATE,POST_RE_REF,POST_RE_LEV,POST_RE_SEQ,EMP_ID)
-				VALUES( ?, ?, ?, ?, SYSDATE, SYSDATE, %1$s, 0, 0, ?)
+				POST_DATE,POST_UPDATE_DATE,POST_RE_REF,POST_RE_LEV,POST_RE_SEQ)
+				VALUES( ?, ?, ?, ?, SYSDATE, SYSDATE, %1$s, 0, 0)
 				""".formatted(getPostId_sql);
 		
 		try (	PreparedStatement pstmt = con.prepareStatement(sql);){
@@ -138,7 +138,6 @@ public class BoardDao {
 			pstmt.setString(2, postData.getPostWriter());
 			pstmt.setString(3, postData.getPostSubject());
 			pstmt.setString(4, postData.getPostContent());
-			pstmt.setString(5, postData.getEmpId());
 			return pstmt.executeUpdate();
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -247,7 +246,6 @@ public class BoardDao {
 					post.setPostReSeq(rs.getLong("post_re_seq"));
 					post.setPostView(rs.getLong("post_view"));
 					post.setPostCommentCnt(rs.getLong("cnt"));
-					post.setEmpId(rs.getString("emp_id"));
 					list.add(post);//값을 담은 객체를 리스트에 저장합니다.
 				}
 			}
@@ -285,7 +283,7 @@ public class BoardDao {
 											group by post_id) pc
 					on post.post_id = pc.post_id
 				join emp
-					on emp.emp_id = post.emp_id
+					on emp.emp_id = post.post_writer
 				where  post.post_id = ?
 				""";
 		Emp emp  = null;
@@ -312,7 +310,6 @@ public class BoardDao {
 					post.setPostReLev(rs.getLong("post_re_lev"));
 					post.setPostReSeq(rs.getLong("post_re_seq"));
 					post.setPostView(rs.getLong("post_view"));
-					post.setEmpId(rs.getString("emp_id"));
 					post.setPostCommentCnt(rs.getLong("cnt"));
 					
 					emp.setImgPath(rs.getString("img_path"));

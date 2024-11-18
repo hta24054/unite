@@ -83,7 +83,7 @@ sup {
     				<c:out value="[${postDataAndFile[0].postCommentCnt}]"/>
     			</td>
     			<td class="board_view_btns center">
-    				<c:if test ="${postDataAndFile[0].empId == id||id == 'admin'}">
+    				<c:if test ="${postDataAndFile[0].postWriter == id||id == 'admin'}">
     					<a href="modify?num=${boarddata.board_num}">
     						<button class="btn board_view_btn">수정</button>
     					</a>
@@ -105,7 +105,7 @@ sup {
     			<td colspan="3" style="padding-top: 5px;">
     				
     				<img src=${'/unite/image/profile_black.png'} alt="프로필 이미지" class="icon">
-				    <div class="username">${postDataAndFile[0].postWriter}</div>
+				    <div class="username">${empMap[postDataAndFile[0].postWriter]}</div>
 				    <div class="date"> ${postDataAndFile[0].getFormattedPostDate()} </div>
     			</td>
     		</tr>
@@ -187,7 +187,7 @@ sup {
 			</ul>
 		 	<div class="comment-write">
 				<div class="comment-write-area">
-					<b class="comment-write-area-name">${postDataAndFile[0].postWriter}</b> 
+					<b class="comment-write-area-name">${empMap[postDataAndFile[0].postWriter]}</b> 
 					<span class="comment-write-area-count">0/200</span>
 					<textarea placeholder="댓글을 남겨보세요" rows="1" class="comment-write-area-text" maxlength="200"></textarea>
 						

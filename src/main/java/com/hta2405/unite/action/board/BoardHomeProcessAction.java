@@ -11,8 +11,7 @@ import com.google.gson.JsonObject;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.BoardDao;
-import com.hta2405.unite.dto.Board;
-import com.hta2405.unite.dto.Post;
+import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.util.LocalDateTimeAdapter;
 
 import jakarta.servlet.ServletException;
@@ -30,6 +29,7 @@ public class BoardHomeProcessAction implements Action {
 		        .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
 		        .create();
 
+		
 		//dao를 사용해 이름과 이메일이 같은지 비교
 		BoardDao dao = new BoardDao();
 		
@@ -58,8 +58,16 @@ public class BoardHomeProcessAction implements Action {
 			JsonElement je2 = gson.toJsonTree(posts);
 			System.out.println("posts="+je2.toString());
 			
+			JsonElement jeEmpMap = gson.toJsonTree(new EmpDao().getIdToENameMap());
+			System.out.println("empMap="+jeEmpMap.toString());
+			
+			
 			object.add("boards", je1);
 			object.add("posts", je2);
+			
+			//emp의 ename을 구하기 위한 hashMap
+			object.add("empMap", jeEmpMap);
+			
 			resp.setContentType("application/json;charset=utf-8");
 			resp.getWriter().print(object);
 			System.out.println(object.toString());

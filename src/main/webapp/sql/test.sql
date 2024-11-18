@@ -33,6 +33,11 @@ select *
 from post_file
 where post_id = 56;
 
+ALTER TABLE POST ADD (new_post_content CLOB NOT NULL);
+UPDATE POST SET new_post_content = post_content;
+ALTER TABLE POST DROP COLUMN post_content;
+ALTER TABLE POST RENAME COLUMN new_post_content TO post_content;
+
 
 SELECT
     c.constraint_name,
@@ -58,6 +63,15 @@ AND
     c.owner = 'UNITE'
 ORDER BY
 c.constraint_name, col.position;
+
+
+--POST_WRITER 컬럼 변경
+UPDATE POST SET POST_WRITER = EMP_ID;
+ALTER TABLE POST DROP COLUMN EMP_ID;
+ALTER TABLE post
+  ADD CONSTRAINT FK_emp_TO_post
+    FOREIGN KEY (post_writer)
+    REFERENCES emp (emp_id);
 
 
 --POST_CONTENT 타입 변경

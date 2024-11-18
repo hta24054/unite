@@ -17,6 +17,7 @@ public class DocVacation extends Doc{
                        String docContent,
                        LocalDateTime docCreateDate,
                        boolean signFinish,
+                       Long docVacationId,
                        LocalDate vacationApply,
                        LocalDate vacationStart,
                        LocalDate vacationEnd,
@@ -27,6 +28,7 @@ public class DocVacation extends Doc{
                        String vacationFileUUID,
                        String vacationFileType) {
         super(docId, docWriter, docType, docTitle, docContent, docCreateDate, signFinish);
+        this.docVacationId = docVacationId;
         this.vacationApply = vacationApply;
         this.vacationStart = vacationStart;
         this.vacationEnd = vacationEnd;
@@ -37,7 +39,7 @@ public class DocVacation extends Doc{
         this.vacationFileUUID = vacationFileUUID;
         this.vacationFileType = vacationFileType;
     }
-
+    private Long docVacationId;
     private LocalDate vacationApply;
     private LocalDate vacationStart;
     private LocalDate vacationEnd;

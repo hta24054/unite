@@ -6,9 +6,7 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 
 @MultipartConfig(
-        fileSizeThreshold = 1024 * 1024 * 2,  // 2MB
-        maxFileSize = 1024 * 1024 * 10,       // 10MB
-        maxRequestSize = 1024 * 1024 * 50     // 50MB
+        maxFileSize = 1024 * 1024 * 5      // 5MB
 )
 @WebServlet("/doc/*")
 public class DocFrontController extends AbstractFrontController {
@@ -19,7 +17,8 @@ public class DocFrontController extends AbstractFrontController {
         actionMap.put("/general_write", new DocGeneralWriteAndEditProcessAction());
         actionMap.put("/general_edit", new DocGeneralWriteAndEditProcessAction());
         actionMap.put("/vacation", new DocVacationWriteAction());
-        actionMap.put("/vacation_write", new DocVacationWriteProcessAction());
+        actionMap.put("/vacation_write", new DocVacationWriteAndEditProcessAction());
+        actionMap.put("/vacation_edit", new DocVacationWriteAndEditProcessAction());
         actionMap.put("/trip", new DocTripWriteAction());
         actionMap.put("/trip_write", new DocTripWriteAndEditProcessAction());
         actionMap.put("/trip_edit", new DocTripWriteAndEditProcessAction());

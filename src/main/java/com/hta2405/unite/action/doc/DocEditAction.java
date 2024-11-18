@@ -85,7 +85,7 @@ public class DocEditAction implements com.hta2405.unite.action.Action {
 
         if (doc instanceof DocVacation docVacation) {
             req.setAttribute("doc", docVacation);
-            return new ActionForward(false, "/WEB-INF/views/doc/doc_vacation_edit.jsp");
+            return new ActionForward(false, "/WEB-INF/views/doc/vacation_edit.jsp");
         }
         //일반 문서 페이지로 포워딩
         req.setAttribute("doc", doc);

@@ -20,14 +20,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public class DocVacationWriteProcessAction implements Action {
+public class DocVacationWriteAndEditProcessAction implements Action {
     private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("vacation.upload.directory");
     private final DocDao docDao = new DocDao();
     private final EmpDao empDao = new EmpDao();
 
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // 파라미터 수집
+
+        Long docId = req.getParameter("docId") != null ?
+                Long.parseLong(req.getParameter("docId")) : null;
+        Long docVacationId = req.getParameter("docVacationId") != null ?
+                Long.parseLong(req.getParameter("docVacationId")) : null;
         String writer = req.getParameter("writer");
         String title = "휴가신청서(" + empDao.getEmpById(writer).getEname() + ")";
         String type = req.getParameter("type");
@@ -36,10 +40,10 @@ public class DocVacationWriteProcessAction implements Action {
         int vacationCount = Integer.parseInt(req.getParameter("vacation_count"));
         String content = req.getParameter("content");
 
+
         LocalDate vacationStartDate = LocalDate.parse(vacationStart);
         LocalDate vacationEndDate = LocalDate.parse(vacationEnd);
 
-        String[] signers = req.getParameterValues("signers[]");
 
         // 파일 처리
         Part filePart = req.getPart("file");
@@ -48,10 +52,19 @@ public class DocVacationWriteProcessAction implements Action {
         String fileUUID = null;
         String fileType = null;
 
-        if (filePart != null && filePart.getSize() > 0) {
+        //beforeFileName 파라미터가 넘어온 것은 파일 수정 안한 것
+        String beforeFileName = req.getParameter("beforeFileName");
+        if (beforeFileName != null) {
+            DocVacation beforeDoc = docDao.getVacationDoc(docId);
+            filePath = beforeDoc.getVacationFilePath();
+            fileOriginalName = beforeDoc.getVacationFileOriginal();
+            fileUUID = beforeDoc.getVacationFileUUID();
+            fileType = beforeDoc.getVacationFileType();
+        } else if (filePart != null && filePart.getSize() > 0) {
             // 파일 이름과 타입
             fileOriginalName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
             fileType = filePart.getContentType();
+            System.out.println(fileType);
 
             // UUID 생성하여 파일명에 적용
             fileUUID = UUID.randomUUID().toString();
@@ -71,13 +84,14 @@ public class DocVacationWriteProcessAction implements Action {
 
         // DocVacation 객체 생성
         DocVacation docVacation = new DocVacation(
-                null,
+                docId,
                 writer,
                 DocType.VACATION,
                 title,
                 content,
                 LocalDateTime.now(),
                 false,
+                docVacationId,
                 LocalDate.now(),
                 vacationStartDate,
                 vacationEndDate,
@@ -88,13 +102,33 @@ public class DocVacationWriteProcessAction implements Action {
                 fileUUID,
                 fileType
         );
+        System.out.println(docVacationId);
 
-        int result = docDao.insertVacationDoc(docVacation, List.of(signers));
+        List<String> signList = List.of(req.getParameterValues("signers[]"));
+
+        //처음 생성한 문서는 docId null이기 때문에
+        if (docVacation.getDocId() == null) {
+            insertVacationDoc(docVacation, signList, resp);
+        } else {
+            updateVacationDoc(docVacation, signList, resp);
+        }
+        return null;
+    }
+
+    private void insertVacationDoc(DocVacation docVacation, List<String> signList, HttpServletResponse resp) throws IOException {
+        int result = docDao.insertVacationDoc(docVacation, signList);
 
         String status = result == 1 ? "success" : "fail";
         resp.setContentType("application/json");
         resp.getWriter().print("{\"status\":\"" + status + "\"}");
+    }
 
-        return null;
+    private void updateVacationDoc(DocVacation docVacation, List<String> signList, HttpServletResponse resp) throws IOException {
+        //파일이 변경되었는지, 아닌지에 따라 수정 여부 달라짐
+        int result = docDao.updateVacationDoc(docVacation, signList);
+
+        String status = result == 1 ? "success" : "fail";
+        resp.setContentType("application/json");
+        resp.getWriter().print("{\"status\":\"" + status + "\"}");
     }
 }

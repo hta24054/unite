@@ -4,7 +4,6 @@ $(document).ready(function(){
 	let isAllDayChk, startDate, endDate;
 	const $resourceType = $("#resourceType");
 	const $resourceName = $("#resourceName");
-	let selectedResourceId = '';  // resource_id 저장 변수
 	
 	getResourceList();
 	
@@ -14,9 +13,6 @@ $(document).ready(function(){
             url: "getResourceList",  
             type: "get",
 	        dataType: "json",
-	        data: {
-				resource_id: $("#resource_id").val(),
-			},
             success: function (data) {
 	            $resourceType.empty();
 	            $resourceType.append('<option value="">분류명</option>');
@@ -30,9 +26,6 @@ $(document).ready(function(){
 	                    $resourceType.append('<option value="' + resource.resourceType + '">' + resource.resourceType + '</option>');
 	                }
 	            });
-	            
-	            // resource_id 값을 선택된 값을 저장
-            	selectedResourceId = resource_id;
 	        },
             error: function () {
                 alert("자원 목록 불러오기 실패");
@@ -50,29 +43,17 @@ $(document).ready(function(){
 			dataType: "json",
 			data : {
 				resourceType : $selectedVal,
-				resourceName: $("#resourceName").val(),
-				resource_id: $("#resource_id").val()
 			},
 			success: function(data) {
 	            $resourceName.empty();
 	            $resourceName.append('<option value="">자원명</option>');
-	
-				/*
-	            data.forEach(function(resource) {
-	                $resourceName.append('<option value="' + resource.resourceName + '">' + resource.resourceName + '</option>');
-	            });
-	            */
 			   
 			    // resource_id를 value로 설정
 	            data.forEach(function(resource) {
 	                $resourceName.append('<option value="' + resource.resourceId + '">' + resource.resourceName + '</option>');
-	                console.log("resource.resourceId", resource.resourceId)
-	            });
-	            
+	            }); 
+	
 	            $resourceName.show();
-	            $resourceName.on("change", function() {
-					console.log("$resourceName this", $(this))
-				});
 	        },
             error: function () {
                 alert("자원명 불러오기 실패");
@@ -92,9 +73,9 @@ $(document).ready(function(){
                 allDay: eventData.allDay ? 1 : 0,
                 startAt: moment(eventData.startAt).format('YYYY-MM-DD HH:mm'),
                 endAt: moment(eventData.endAt).format('YYYY-MM-DD HH:mm'), 
-                resourceName: $("#resourceName").val(),
-                usage: $("#usage").val(),
-                resource_id: selectedResourceId,  // resource_id 값을 넘겨줌
+                resourceId: $("#resourceName").val(), // 선택된 자원의 ID,
+                resourceName: $("#resourceName option:selected").text(), // 자원 이름
+                usage: $("#usage").val()
             },
 	        success: function (data) {
 				console.log("자원 예약 성공", data); 
@@ -110,7 +91,7 @@ $(document).ready(function(){
 			                start: data[i].reservation_start, 
 			                end: data[i].reservation_end,
 		                 	extendedProps: {
-						        resourceName: $("#resourceName").val(),
+						        resourceName: $("#resourceName option:selected").text(),
 						        usage: $("#usage").val(),
 						    },
 			            });

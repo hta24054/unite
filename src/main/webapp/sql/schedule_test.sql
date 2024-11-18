@@ -90,6 +90,10 @@ select * from emp;
 
 
 /* 자원  */
+
+SELECT * 
+FROM reservation;
+
 SELECT * 
 FROM resc;
          
@@ -148,9 +152,22 @@ TO_DATE('2024-11-18 17:00:00', 'YYYY-MM-DD HH24:MI:SS'), '회의실 예약', 0,
  WHERE resc_id = 1));
 
 
+ 
+ -- 테스트용 데이터
+INSERT INTO reservation
+(reservation_id, resource_id, emp_id, reservation_start, reservation_end, reservation_info, reservation_allDay, resc_id)
+VALUES (
+    SEQ_reservation.NEXTVAL, 
+    1,                   
+    '241001',
+    TO_DATE('2024-11-18 10:00', 'YYYY-MM-DD HH24:MI'),  
+    TO_DATE('2024-11-18 12:00', 'YYYY-MM-DD HH24:MI'),  
+    '회의실 예약 테스트',       
+    0,                        
+    SEQ_resc.NEXTVAL         
+);
 
-SELECT * 
-FROM reservation;
+ 
 
 TRUNCATE TABLE reservation;
 

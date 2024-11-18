@@ -28,7 +28,7 @@ public class ResourceBookingAction implements Action {
 		String endAt = request.getParameter("endAt");
 		String usage = request.getParameter("usage");
 		String resourceName = request.getParameter("resourceName"); //자원명
-		String resourceId = request.getParameter("resource_id");
+		String resourceId = request.getParameter("resourceId");
 
 		reservation.setEmpId(empId);
 		reservation.setReservationAllDay(allDay);
@@ -40,6 +40,7 @@ public class ResourceBookingAction implements Action {
 		
 		resource.setResourceName(resourceName); //자원명
 		resource.setResourceId(Long.parseLong(resourceId));  
+		
 
 		ReservationDAO reservationDao = new ReservationDAO();
 		

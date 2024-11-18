@@ -6,6 +6,7 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class EmpDao {
@@ -205,6 +206,23 @@ public class EmpDao {
             return 0;
         }
     }
+    
+    public HashMap<String, String> getIdToENameMap() {
+		HashMap<String, String> map = new HashMap<>();
+		String sql = """
+				    SELECT emp_id, ename from EMP
+				""";
+		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				map.put(rs.getString("emp_id"), rs.getString("ename"));
+			}
+		} catch (SQLException e) {
+			System.out.println("empMap 불러오기 에러");
+			e.printStackTrace();
+		}
+		return map;
+	}
 
     private static Emp makeEmp(ResultSet rs) throws SQLException {
         return new Emp(rs.getString("emp_id"),

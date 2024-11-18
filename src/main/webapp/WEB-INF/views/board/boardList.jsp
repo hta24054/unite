@@ -98,7 +98,7 @@
 		    					[${p.postCommentCnt}]
 		    				</div>
 		    			</td>
-		    			<td><div>${p.postWriter}</div></td>
+		    			<td><div>${empMap[p.postWriter]}</div></td>
 		    			<td><div>${p.getFormattedPostDate()}</div></td>
 		    			<td><div>${p.postView}</div></td>
 		    		</tr>

@@ -6,6 +6,7 @@ import java.util.List;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.BoardDao;
+import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dto.Post;
 
 import jakarta.servlet.ServletException;
@@ -41,6 +42,9 @@ public class PostDetailAction implements Action {
 			forward.setPath("/WEB-INF/views/error/forbidden.jsp");
 		}else {
 			System.out.println("상세보기 성공");
+			
+			//emp의 ename을 가져오기 위함
+			req.setAttribute("empMap", new EmpDao().getIdToENameMap());
 			
 			// boarddata 객체를 request 객체에 저장합니다.
 			req.setAttribute("postDataAndFile", list); // post, emp, postFileList

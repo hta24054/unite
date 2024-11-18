@@ -5,128 +5,110 @@
 <head>
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="doc_leftbar.jsp"/>
+    <link href="${pageContext.request.contextPath}/css/doc.css" rel="stylesheet">
     <meta charset="UTF-8">
     <title>휴가신청서 작성</title>
-    <style>
-        .header-cell {
-            font-size: 36px;
-            font-weight: bold;
-            padding: 20px 0;
-        }
-
-        .title-input, .form-control {
-            font-size: 16px;
-        }
-
-        .table-bordered, .table-bordered td, .table-bordered th {
-            align-content: center;
-            border-color: black !important;
-        }
-
-        #info {
-            text-align: left;
-        }
-    </style>
 </head>
 <body>
 <form id="doc_form" enctype="multipart/form-data">
     <div class="container mt-4">
-        <div class="text-center mb-4">
-            <h1 class="header-cell">휴가신청서</h1>
-        </div>
-
-        <div class="row">
-            <!-- 문서 정보 테이블 -->
-            <div class="col-md-6 mb-3">
-                <table class="table table-bordered">
-                    <tr>
-                        <td class="table-secondary font-weight-bold text-center">문서번호</td>
-                        <td><input type="text" name="docId" value="${doc.docId}" readonly></td>
-                        <input type="hidden" name="docVacationId" value="${doc.docVacationId}">
-                    </tr>
-                    <tr>
-                        <td class="table-secondary font-weight-bold text-center">부&nbsp;&nbsp;&nbsp;서</td>
-                        <td>${dept.deptName}</td>
-                    </tr>
-                    <tr>
-                        <td class="table-secondary font-weight-bold text-center">기 안 자</td>
-                        <td>${writer.ename}</td>
-                        <input type="hidden" name="writer" value="${writer.empId}">
-                    </tr>
-                    <tr>
-                        <td class="table-secondary font-weight-bold text-center">작 성 일</td>
-                        <td>${doc.docCreateDate}</td>
-                    </tr>
-                </table>
+        <div class="document-wrapper">
+            <div class="text-center mb-4">
+                <h1 class="header-cell">휴가신청서</h1>
             </div>
-            <!-- 결재자 테이블 -->
-            <div class="col-md-6">
-                <jsp:include page="sign_edit.jsp"/>
-            </div>
-        </div>
 
-        <table class="table table-bordered mt-4 item_table" id="itemTable">
-            <tr>
-                <th class="table-secondary font-weight-bold text-center">제목</th>
-                <td>휴가신청서(${writer.ename})</td>
-            </tr>
-            <tr>
-                <th class="table-secondary font-weight-bold text-center">휴가 종류</th>
-                <td>
-                    <select name="type" class="form-control" id="typeSelect" data-selected="${doc.vacationType}">
-                        <option value="연차">연차</option>
-                        <option value="병가">병가</option>
-                        <option value="공가">공가</option>
-                        <option value="경조">경조</option>
-                        <option value="기타">기타</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th class="table-secondary font-weight-bold text-center">시작일</th>
-                <td><input type="date" class="form-control title-input" data-name="시작일" name="vacation_start"
-                           value="${doc.vacationStart}" required></td>
-            </tr>
-            <tr>
-                <th class="table-secondary font-weight-bold text-center">종료일</th>
-                <td><input type="date" class="form-control title-input" data-name="종료일" name="vacation_end"
-                           value="${doc.vacationEnd}" required></td>
-            </tr>
-            <tr>
-                <th class="table-secondary font-weight-bold text-center">휴가 일수</th>
-                <td><input type="text" name="vacation_count" value="${doc.vacationCount}" required readonly></td>
-            </tr>
-            <tr>
-                <th class="table-secondary font-weight-bold text-center">휴가 사유</th>
-                <td><input type="text" name="content" class="form-control title-input" data-name="휴가사유"
-                           placeholder="휴가 사유를 입력하세요" value="${doc.docContent}" required></td>
-            </tr>
-            <tr>
-                <th class="table-secondary font-weight-bold text-center">첨부 파일</th>
-                <td>현재 파일 : <c:if test="${!empty doc.vacationFileOriginal}">
-                    <span style="font-weight: bold; color: blue" id="fileName">${doc.vacationFileOriginal}</span>
-                    <img src="${pageContext.request.contextPath}/image/cancel.png" alt="파일삭제"
-                         width="20px" class="remove"/>
-                </c:if>
-                    <c:if test="${empty doc.vacationFileOriginal}">
-                        첨부파일 없음
+            <div class="row">
+                <!-- 문서 정보 테이블 -->
+                <div class="col-md-6 mb-3">
+                    <table class="table table-bordered">
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">문서번호</td>
+                            <td><input type="text" name="docId" value="${doc.docId}" readonly></td>
+                            <input type="hidden" name="docVacationId" value="${doc.docVacationId}">
+                        </tr>
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">부&nbsp;&nbsp;&nbsp;서</td>
+                            <td>${dept.deptName}</td>
+                        </tr>
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">기 안 자</td>
+                            <td>${writer.ename}</td>
+                            <input type="hidden" name="writer" value="${writer.empId}">
+                        </tr>
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">작 성 일</td>
+                            <td>${doc.docCreateDate}</td>
+                        </tr>
+                    </table>
+                </div>
+                <!-- 결재자 테이블 -->
+                <div class="col-md-6">
+                    <jsp:include page="sign_edit.jsp"/>
+                </div>
+            </div>
+
+            <table class="table table-bordered mt-4 item_table" id="itemTable">
+                <tr>
+                    <th class="table-secondary font-weight-bold text-center">제목</th>
+                    <td>휴가신청서(${writer.ename})</td>
+                </tr>
+                <tr>
+                    <th class="table-secondary font-weight-bold text-center">휴가 종류</th>
+                    <td>
+                        <select name="type" class="form-control" id="typeSelect" data-selected="${doc.vacationType}">
+                            <option value="연차">연차</option>
+                            <option value="병가">병가</option>
+                            <option value="공가">공가</option>
+                            <option value="경조">경조</option>
+                            <option value="기타">기타</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="table-secondary font-weight-bold text-center">시작일</th>
+                    <td><input type="date" class="form-control title-input" data-name="시작일" name="vacation_start"
+                               value="${doc.vacationStart}" required></td>
+                </tr>
+                <tr>
+                    <th class="table-secondary font-weight-bold text-center">종료일</th>
+                    <td><input type="date" class="form-control title-input" data-name="종료일" name="vacation_end"
+                               value="${doc.vacationEnd}" required></td>
+                </tr>
+                <tr>
+                    <th class="table-secondary font-weight-bold text-center">휴가 일수</th>
+                    <td><input type="text" name="vacation_count" value="${doc.vacationCount}" required readonly></td>
+                </tr>
+                <tr>
+                    <th class="table-secondary font-weight-bold text-center">휴가 사유</th>
+                    <td><input type="text" name="content" class="form-control title-input" data-name="휴가사유"
+                               placeholder="휴가 사유를 입력하세요" value="${doc.docContent}" required></td>
+                </tr>
+                <tr>
+                    <th class="table-secondary font-weight-bold text-center">첨부 파일</th>
+                    <td>현재 파일 : <c:if test="${!empty doc.vacationFileOriginal}">
+                        <span style="font-weight: bold; color: blue" id="fileName">${doc.vacationFileOriginal}</span>
+                        <img src="${pageContext.request.contextPath}/image/cancel.png" alt="파일삭제"
+                             width="20px" class="remove"/>
                     </c:if>
-                    <br>파일 변경 : <input type="file" name="file" id="file"></td>
-            </tr>
-            <tr>
-                <th colspan="2" class="table-secondary font-weight-bold" id="info">
-                    1. 연차의 사용은 근로기준법에 따라 전년도에 발생한 개인별 잔여 연차에 한하여 사용함을 원칙으로 한다.<br>
-                    단, 최초 입사시에는 근로기준법에 따라 발생 예정된 연차를 사용하여 월 1회 사용할 수 있다.<br>
-                    2. 경조사 휴가는 증빙서류를 제출할 수 있는 가족관계증명서 또는 청첩장 등 제출<br>
-                    3. 공가(예비군/민방위)는 사전에 통지서를, 사후에 참석증을 반드시 제출
-                </th>
-            </tr>
-        </table>
-
-    </div>
-    <div class="text-right mt-3">
-        <button type="button" form="doc_form" class="btn btn-success" id="submit-button">결재 상신</button>
-        <button type="reset" class="btn btn-secondary">초기화</button>
+                        <c:if test="${empty doc.vacationFileOriginal}">
+                            첨부파일 없음
+                        </c:if>
+                        <br>파일 변경 : <input type="file" name="file" id="file"></td>
+                </tr>
+                <tr>
+                    <th colspan="2" class="table-secondary font-weight-bold" id="info">
+                        1. 연차의 사용은 근로기준법에 따라 전년도에 발생한 개인별 잔여 연차에 한하여 사용함을 원칙으로 한다.<br>
+                        단, 최초 입사시에는 근로기준법에 따라 발생 예정된 연차를 사용하여 월 1회 사용할 수 있다.<br>
+                        2. 경조사 휴가는 증빙서류를 제출할 수 있는 가족관계증명서 또는 청첩장 등 제출<br>
+                        3. 공가(예비군/민방위)는 사전에 통지서를, 사후에 참석증을 반드시 제출
+                    </th>
+                </tr>
+            </table>
+        </div>
+        <div class="button-container">
+            <button type="button" form="doc_form" class="btn btn-success" id="submit-button">수정완료</button>
+            <button type="reset" class="btn btn-secondary">초기화</button>
+        </div>
     </div>
 </form>
 <script>

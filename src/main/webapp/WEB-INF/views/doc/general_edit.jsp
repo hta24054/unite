@@ -7,88 +7,73 @@
     <jsp:include page="doc_leftbar.jsp"/>
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
-
+    <link href="${pageContext.request.contextPath}/css/doc.css" rel="stylesheet">
     <meta charset="UTF-8">
     <title>일반 문서 작성</title>
-    <style>
-        .header-cell {
-            font-size: 36px;
-            font-weight: bold;
-            padding: 20px 0;
-        }
-
-        .title-input, .form-control {
-            font-size: 16px;
-        }
-
-        /* 테두리 색상을 검정색으로 설정 */
-        .table-bordered, .table-bordered td, .table-bordered th {
-            align-content: center;
-            border-color: black !important;
-        }
-    </style>
 </head>
 <body>
 <form id="doc_form" action="${pageContext.request.contextPath}/doc/general_write" method="POST">
     <div class="container mt-4">
-        <!-- 기안용지 제목 -->
-        <div class="text-center mb-4">
-            <h1 class="header-cell">기안용지</h1>
-        </div>
-
-        <!-- 문서 정보 및 결재자 테이블을 좌우로 배치 -->
-        <div class="row">
-            <!-- 문서 정보 테이블 -->
-            <div class="col-md-6 mb-3">
-                <table class="table table-bordered">
-                    <tr>
-                        <td class="table-secondary font-weight-bold text-center">문서번호</td>
-                        <td><input type="text" name="docId" value = "${doc.docId}" readonly></td>
-                    </tr>
-                    <tr>
-                        <td class="table-secondary font-weight-bold text-center">부&nbsp;&nbsp;&nbsp;서</td>
-                        <td>${dept.deptName}</td>
-                    </tr>
-                    <tr>
-                        <td class="table-secondary font-weight-bold text-center">기 안 자</td>
-                        <td>${writer.ename}</td>
-                        <input type="hidden" name="writer" value="${writer.empId}">
-                    </tr>
-                    <tr>
-                        <td class="table-secondary font-weight-bold text-center">작 성 일</td>
-                        <td>${doc.docCreateDate}</td>
-                    </tr>
-                </table>
+        <div class="document-wrapper">
+            <!-- 기안용지 제목 -->
+            <div class="text-center mb-4">
+                <h1 class="header-cell">기안용지</h1>
             </div>
-            <!-- 결재자 테이블 -->
-            <div class="col-md-6">
-                <jsp:include page="sign_edit.jsp"/>
-            </div>
-        </div>
 
-        <!-- 기타 정보 테이블 -->
-        <table class="table table-bordered mt-4">
-            <tr>
-                <td class="table-secondary font-weight-bold text-center">제&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;목</td>
-                <td><input type="text" class="form-control title-input" name="title" placeholder="제목을 입력하세요."
-                           data-name="제목" value="${doc.docTitle}" required>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" class="table-secondary font-weight-bold text-center">상&nbsp;&nbsp;세&nbsp;&nbsp;내&nbsp;&nbsp;용</td>
-            </tr>
-            <tr>
-                <td colspan="2">
+            <!-- 문서 정보 및 결재자 테이블을 좌우로 배치 -->
+            <div class="row">
+                <!-- 문서 정보 테이블 -->
+                <div class="col-md-6 mb-3">
+                    <table class="table table-bordered">
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">문서번호</td>
+                            <td><input type="text" name="docId" value="${doc.docId}" readonly></td>
+                        </tr>
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">부&nbsp;&nbsp;&nbsp;서</td>
+                            <td>${dept.deptName}</td>
+                        </tr>
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">기 안 자</td>
+                            <td>${writer.ename}</td>
+                            <input type="hidden" name="writer" value="${writer.empId}">
+                        </tr>
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">작 성 일</td>
+                            <td>${doc.docCreateDate}</td>
+                        </tr>
+                    </table>
+                </div>
+                <!-- 결재자 테이블 -->
+                <div class="col-md-6">
+                    <jsp:include page="sign_edit.jsp"/>
+                </div>
+            </div>
+
+            <!-- 기타 정보 테이블 -->
+            <table class="table table-bordered mt-4">
+                <tr>
+                    <td class="table-secondary font-weight-bold text-center">제&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;목</td>
+                    <td><input type="text" class="form-control title-input" name="title" placeholder="제목을 입력하세요."
+                               data-name="제목" value="${doc.docTitle}" required>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="table-secondary font-weight-bold text-center">상&nbsp;&nbsp;세&nbsp;&nbsp;내&nbsp;&nbsp;용</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
                     <textarea class="summernote form-control" id="content" name="content" data-name="상세내용"
                               required>${doc.docContent}</textarea>
-                </td>
-            </tr>
-        </table>
-    </div>
-    <!-- 버튼 영역 -->
-    <div class="text-right mt-3">
-        <button type="button" form="doc_form" class="btn btn-success" id="submit-button">수정 완료</button>
-        <button type="reset" form="doc_form" class="btn btn-secondary">초기화</button>
+                    </td>
+                </tr>
+            </table>
+            <!-- 버튼 영역 -->
+        </div>
+        <div class="button-container">
+            <button type="button" form="doc_form" class="btn btn-success" id="submit-button">수정완료</button>
+            <button type="reset" form="doc_form" class="btn btn-secondary">초기화</button>
+        </div>
     </div>
 </form>
 <script>

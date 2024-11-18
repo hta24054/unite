@@ -99,7 +99,7 @@
 		    				</div>
 		    			</td>
 		    			<td><div>${p.postWriter}</div></td>
-		    			<td><div>${p.postDate}</div></td>
+		    			<td><div>${p.getFormattedPostDate()}</div></td>
 		    			<td><div>${p.postView}</div></td>
 		    		</tr>
 		    	</c:forEach>

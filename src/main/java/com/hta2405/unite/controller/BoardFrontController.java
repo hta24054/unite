@@ -4,6 +4,7 @@ import com.hta2405.unite.action.board.BoardHomeAction;
 import com.hta2405.unite.action.board.BoardHomeProcessAction;
 import com.hta2405.unite.action.board.BoardListAction;
 import com.hta2405.unite.action.post.PostAddAction;
+import com.hta2405.unite.action.post.PostCommentsListAction;
 import com.hta2405.unite.action.post.PostDetailAction;
 import com.hta2405.unite.action.post.PostWriteAction;
 
@@ -28,5 +29,6 @@ public class BoardFrontController extends AbstractFrontController {
         actionMap.put("/post/detail", new PostDetailAction());
         actionMap.put("/post/postWrite", new PostWriteAction());//게시글 쓰기
         actionMap.put("/post/add", new PostAddAction());//게시글 추가 액션
+        actionMap.put("/post/comments/list", new PostCommentsListAction());//게시글의 댓글 리스트
     }
 }

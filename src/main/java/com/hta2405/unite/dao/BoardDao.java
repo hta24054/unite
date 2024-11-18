@@ -10,6 +10,7 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import com.hta2405.unite.dto.Board;
+import com.hta2405.unite.dto.Emp;
 import com.hta2405.unite.dto.Post;
 import com.hta2405.unite.dto.PostFile;
 
@@ -276,28 +277,30 @@ public class BoardDao {
 		}
 	}
 
-	public List<Object> getDetail(int num) {
+	public List<Object> getDetail(int postId) {
 		String sql = """
-				select post.*, nvl(cnt,0) as cnt, post_file.* 
+				select post.*, nvl(cnt,0) as cnt, img_path, img_original, img_uuid, img_type
 				from post left outer join (select post_id, count(*) as cnt
 											from post_comment
 											group by post_id) pc
 					on post.post_id = pc.post_id
-				join post_file
-					on post.post_id = post_file.post_id
+				join emp
+					on emp.emp_id = post.emp_id
 				where  post.post_id = ?
 				""";
-		boolean isFirstRecord = true; // 첫 번째 레코드만 처리하도록 설정
+		Emp emp  = null;
 		Post post = null;
-		PostFile postFile = null;
 		List<Object> list = new ArrayList<>();
 		try (	Connection con = ds.getConnection();
 				PreparedStatement pstmt = con.prepareStatement(sql);){
-			pstmt.setInt(1, num);
+			pstmt.setInt(1, postId);
+			
+			List<PostFile> postFileList = getDetailPostFile(con, postId);
+			
 			try (ResultSet rs = pstmt.executeQuery()){
-				while(rs.next()) {
+				if(rs.next()) {
+					emp = new Emp();
 					post = new Post();
-					postFile = new PostFile();
 					post.setBoardId(rs.getLong("board_id"));
 					post.setPostId(rs.getLong("post_id"));
 					post.setPostWriter(rs.getString("post_writer"));
@@ -309,7 +312,39 @@ public class BoardDao {
 					post.setPostReLev(rs.getLong("post_re_lev"));
 					post.setPostReSeq(rs.getLong("post_re_seq"));
 					post.setPostView(rs.getLong("post_view"));
+					post.setEmpId(rs.getString("emp_id"));
 					post.setPostCommentCnt(rs.getLong("cnt"));
+					
+					emp.setImgPath(rs.getString("img_path"));
+					emp.setImgOriginal(rs.getString("img_original"));
+					emp.setImgUUID(rs.getString("img_uuid"));
+					emp.setImgType(rs.getString("img_type"));
+					
+					list.add(post);
+					list.add(emp);
+					list.add(postFileList);
+				}
+				return list;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getDetail() 에러: "+e);
+		}
+		return null;
+	}
+
+	private List<PostFile> getDetailPostFile(Connection con, int postId) {
+		ArrayList<PostFile> list = new ArrayList<>();
+		String sql = """
+				select *
+				from post_file
+				where post_id = ?
+				""";
+		try (	PreparedStatement pstmt = con.prepareStatement(sql);){
+			pstmt.setInt(1, postId);
+			try (ResultSet rs = pstmt.executeQuery()){
+				while(rs.next()) {
+					PostFile postFile = new PostFile();
 					postFile.setPostFileId(rs.getLong("post_file_id"));
 					postFile.setPostId(rs.getLong("post_id"));
 					postFile.setPostFilePath(rs.getString("post_file_path"));
@@ -317,18 +352,13 @@ public class BoardDao {
 					postFile.setPostFileUUID(rs.getString("post_file_uuid"));
 					postFile.setPostFileType(rs.getString("post_file_type"));
 					
-					if(isFirstRecord) {// post는 add 한번만 실행
-						list.add(post);
-						isFirstRecord = false;
-					}
-					
 					list.add(postFile);
 				}
 				return list;
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("getDetail() 에러: "+e);
+			System.out.println("getDetailPostFile() 에러: "+e);
 		}
 		return null;
 	}

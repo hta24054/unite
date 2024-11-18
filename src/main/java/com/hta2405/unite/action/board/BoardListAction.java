@@ -39,11 +39,7 @@ public class BoardListAction implements Action {
 		Long boardId = boardDao.getBoardListByName2(boardName2).getBoardId();
 		System.out.println("boardId="+boardId);
 		
-		
 		List<Post> postList = new ArrayList<>();
-		
-		// 올바른 접속 시도하는 경우에만 카운트 되도록하기 위해 세션에 저장합니다.
-		req.getSession().setAttribute("referer", "list");
 		
 		//로그인 성공시 파라미터 page가 없으므로 초기값 필요
 		int page = 1;	//보여줄 page

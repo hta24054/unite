@@ -5,14 +5,14 @@ function getList(state){
 	option = state;
 	$.ajax({
 		type:"get",
-		url:"../comments/list",
+		url:"/post/comments/list",
 		data: {
-			"comment_board_num":$("#comment_board_num").val(),
+			"postId":$("#postId").val(),
 			state:state
 		},
 		dataType:"json",
 		success:function(rdata){
-			$('#count').text(rdata.listcount).css('font-family','arial,sans-serif');
+			$('#count').text(rdata.listCount).css('font-family','arial,sans-serif');
 			let red1 = (state == 1) ? 'red' : 'gray';
 			let red2 = (state == 2) ? 'red' : 'gray';
 			
@@ -26,48 +26,50 @@ function getList(state){
 			$('.comment-order-list').html(output);
 			
 			output = ''//초기화 합니다.
-			if(rdata.commentlist.length){
+			if(rdata.postCommentList.length){
+				$('.comment-head').css('display','block');
+				
 				rdata.commentlist.forEach(comment =>{
-					let lev = comment.comment_re_lev;
+					let lev = comment.postCommentReLev;
 					let replayClass = (lev == 1) ? 'comment-list-item--reply lev1': (lev == 2) ? 'comment-list-item--reply lev2': '';
 					
-					let src = comment.memberfile ? `../memberupload/${comment.memberfile}`:'../image/profile.png';
+					let src = comment.imgUUID ? `comment.imgPath + '/' + comment.imgUUID + '.' + comment.imgType`:'/unite/image/profile_black.png';
 					
-					let replyButton = (lev < 2) ? `<a href='javascript:replyform(${comment.num}, ${lev}, ${comment.comment_re_seq},${comment.comment_re_ref})' class='comment-info-button'>답글쓰기</a>`:'';
+					let replyButton = (lev < 2) ? `<a href='javascript:replyform(${comment.commentId}, ${lev}, ${comment.postCommentReSeq},${comment.postCommentReRef})' class='comment-info-button'>답글쓰기</a>`:'';
 					
 					//로그인한 사람이 댓글 작성자인 경우
-					let toolButtons = $("#loginid").val() == comment.id ? `
+					let toolButtons = $("#loginid").val() == comment.empId ? `
 						<div class='comment-tool'>
 							<div title='더보기' class='comment-tool-button'>
 								<div>&#46;&#46;&#46;</div>
 							</div>
-							<div id='comment-list-item-layer${comment.num}' class='LayerMore'>
+							<div id='comment-list-item-layer${comment.commentId}' class='LayerMore'>
 								<ul class='layer-item'>
 									<li class='layer-list'>
-										<a href='javascript:updateForm(${comment.num})' class='layer-button'>수정</a>
-										<a href='javascript:del(${comment.num})' class='layer-button'>삭제</a>
+										<a href='javascript:updateForm(${comment.commentId})' class='layer-button'>수정</a>
+										<a href='javascript:del(${comment.commentId})' class='layer-button'>삭제</a>
 									</li>
 								</ul>
 							</div>
 						</div>` : '';
 					
 					output += `
-						<li id='${comment.num}' class='comment-list-item ${replayClass}'>
+						<li id='${comment.commentId}' class='comment-list-item ${replayClass}'>
 							<div class='comment-nick-area'>
 								<img src='${src}' alt='프로필 사진' width='36' height='36'>
 								<div class='comment-box'>
 									<div class='comment-nick-box'>
 										<div class='comment-nick-info'>
-											<div class='comment-nickname'>${comment.id}</div>
+											<div class='comment-nickname'>${comment.commentId}</div>
 										</div>
 									</div>
 									<div class='comment-text-box'>
 										<p class='comment-text-view'>
-											<span class='text-comment'>${comment.content}</span>
+											<span class='text-comment'>${comment.postCommentContent}</span>
 										</p>
 									</div>
 									<div class='comment-info-box'>
-										<span class='comment-info-date'>${comment.reg_date}</span>
+										<span class='comment-info-date'>${comment.postCommentDate}</span>
 										${replyButton}
 									</div>
 									${toolButtons}
@@ -79,8 +81,9 @@ function getList(state){
 				$('.comment-list').html(output);
 			}
 			
-			if(!rdata.commentlist.length){
+			if(!rdata.postCommentList.length){
 				$('.comment-list, .comment-order-list').empty();
+				$('.comment-head').css('display','none');
 			}
 		},//success: function(rdata){
 		error:function(){

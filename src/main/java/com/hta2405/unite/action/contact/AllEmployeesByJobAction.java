@@ -20,18 +20,16 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 
-public class SearchAction implements Action {
+public class AllEmployeesByJobAction implements Action {
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         try {
-            String query = req.getParameter("query");
-
             JsonObject jsonObject = new JsonObject();
             Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
 
             ContactDao contactDao = new ContactDao();
-            List<Emp> empList = contactDao.getContactsByName(query);
+            List<Emp> empList = contactDao.getAllContactsOrderByJob();
             JsonElement listToJson = gson.toJsonTree(empList);
             jsonObject.add("empList", listToJson);
 

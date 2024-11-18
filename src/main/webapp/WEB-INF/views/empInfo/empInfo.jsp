@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>empinfo</title>
+<title>나의 인사정보</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css"
@@ -21,7 +21,7 @@
 <jsp:include page="../common/header.jsp" />
 <jsp:include page="empInfo_leftbar.jsp" />
 <meta charset="UTF-8">
-<title>인사 정보</title>
+
 
 <style>
 table, .table {
@@ -35,18 +35,16 @@ th {
 	font-weight: bold;
 }
 
-
 table {
 	margin-top: 10px;
 }
 
 td, th {
 	border: 2px solid black;
-	padding: 25px;
+	padding: 15px;
 	color: black;
 	vertical-align: middle;
 	text-align: center;
-	
 	width: 14%;
 }
 
@@ -87,8 +85,9 @@ button#cancelButton {
 	background-color: red;
 	color: white;
 }
+
 button#saveButton {
-	margin-right : 5%;
+	margin-right: 5%;
 }
 </style>
 <script>
@@ -135,21 +134,46 @@ button#saveButton {
 			});
 </script>
 
+
 </head>
 <body>
 	<div class="main-container">
 		<div class="content">
+
+			<%-- URL 파라미터로 전달된 empId 값과 현재 로그인한 사용자의 정보를 비교 --%>
+			<%-- URL 파라미터로 전달된 empId 값과 현재 로그인한 사용자의 정보를 비교 --%>
+			<c:set var="paramEmpId" value="${details.emp.empId}" />
+			<c:set var="currentEmpId" value="${sessionScope.id}" />
+			<c:set var="paramDeptId" value="${details.emp.deptId}" />
+			<c:set var="currentDeptId" value="${sessionScope.deptId}" />
+
+
+			<%-- 상단 텍스트 설정 --%>
+			<c:choose>
+				<c:when test="${paramEmpId.toString() == currentEmpId.toString()}">
+					<c:set var="pageTitle" value="나의 인사정보" />
+				</c:when>
+				<c:when test="${paramDeptId.toString() == currentDeptId.toString()}">
+					<c:set var="pageTitle" value="부서원 인사정보" />
+				</c:when>
+				<c:otherwise>
+					<c:set var="pageTitle" value="타 부서원 인사정보" />
+				</c:otherwise>
+			</c:choose>
+
+
+
 			<form action="${pageContext.request.contextPath}/empInfo/update"
 				method="post">
 				<input type="hidden" name="id" value="${details.emp.empId}">
 				<table class="table">
 					<caption>
-						<h2>나의 인사정보</h2>
+						<h2>${pageTitle}</h2>
 					</caption>
 					<tr id="tr">
-						<th rowspan="4" width="200"><img
+						<th rowspan="4" id="photo"><img
 							src="${pageContext.request.contextPath}/${details.emp.imgPath}"
-							alt="${details.emp.ename}의 사진" width="200" height="200"></th>
+							alt="${details.emp.ename}의 사진" width="200"></th>
 						<th>이름</th>
 						<th>성별</th>
 						<th>이메일</th>
@@ -226,9 +250,8 @@ button#saveButton {
 						<th>주소</th>
 						<td><input type="text" name="address" class="editable"
 							value="${details.emp.address}" readonly></td>
-						<th rowspan="2">자격증</th>
-						<td rowspan="2"><c:forEach var="cert"
-								items="${details.certList}">
+						<th>자격증</th>
+						<td><c:forEach var="cert" items="${details.certList}">
 								<span>${cert.certName}</span>
 								<br />
 							</c:forEach></td>
@@ -246,6 +269,12 @@ button#saveButton {
 								<option value="0"
 									${details.emp.married == '0' ? 'selected' : ''}>N</option>
 						</select></td>
+						<th rowspan="2">외국어능력</th>
+						<td rowspan="2"><c:forEach var="lang"
+								items="${details.langList}">
+								<span>${lang.langName}</span>
+								<br />
+							</c:forEach></td>
 					</tr>
 					<tr>
 						<th>전공</th>
@@ -255,11 +284,7 @@ button#saveButton {
 								<option value="1" ${details.emp.child == '1' ? 'selected' : ''}>Y</option>
 								<option value="0" ${details.emp.child == '0' ? 'selected' : ''}>N</option>
 						</select></td>
-						<th>외국어능력</th>
-						<td><c:forEach var="lang" items="${details.langList}">
-								<span>${lang.langName}</span>
-								<br />
-							</c:forEach></td>
+
 					</tr>
 				</table>
 

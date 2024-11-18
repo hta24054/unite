@@ -5,6 +5,7 @@ import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
@@ -16,8 +17,12 @@ public class EmpViewAction implements Action {
 	@Override
 	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		String empId = (String) req.getSession().getAttribute("id");
-		// 세션에서 empId를 가져옵니다.
+		HttpSession session = req.getSession();
+
+		String empId = (String) session.getAttribute("id");
+		String deptId = (String) session.getAttribute("deptId");
+		// 세션에서 empId와 deptId 가져옵니다.
+
 		if (req.getParameter("id") != null) {
 			empId = req.getParameter("id");
 		}
@@ -42,6 +47,10 @@ public class EmpViewAction implements Action {
 
 		if (emp == null) {
 			throw new ServletException("No employee found with ID: " + empId);
+		}
+		if (deptId == null && dept != null) {
+			deptId = dept.getDeptId().toString(); // deptId를 문자열로 변환
+			session.setAttribute("deptId", deptId);
 		}
 
 		EmpDetails details = new EmpDetails();

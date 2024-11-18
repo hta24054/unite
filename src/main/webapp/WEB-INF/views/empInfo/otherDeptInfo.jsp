@@ -4,16 +4,14 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>부서 인사정보</title>
- <jsp:include page="../common/header.jsp" />
+<title>타 부서 인사정보</title>
+<jsp:include page="../common/header.jsp" />
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/jquery.fancytree/2.38.0/jquery.fancytree-all-deps.min.js"></script>
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/jquery.fancytree/2.38.0/skin-win8/ui.fancytree.min.css">
 
-
 <jsp:include page="empInfo_leftbar.jsp" />
-
 
 <script>
 	$(document)
@@ -111,7 +109,8 @@
 											departmentName : department
 										}, // 동적으로 선택된 부서명을 사용
 										success : function(data) {
-											updateEmployeeTable(data);
+											updateEmployeeTable(data,
+													department);
 										},
 										error : function() {
 											console.log("AJAX 요청 실패");
@@ -119,9 +118,14 @@
 									});
 						}
 
-						function updateEmployeeTable(data) {
+						function updateEmployeeTable(data, department) {
 							const tableBody = $('#employeeTableBody');
 							tableBody.empty();
+							if (department) {
+								$('#deptName').text(department);
+							} else {
+								$('#deptName').text('부서 선택');
+							}
 							$.each(data, function(key, value) {
 								var html = "<tr>";
 								html += "<td>" + value.mobile + "</td>";
@@ -146,9 +150,8 @@
 }
 
 .content {
-	margin-left : 0;
+	margin-left: 0;
 	width: 30%; /* 조직도의 너비 조정 */
-	
 }
 
 #tree {
@@ -163,7 +166,7 @@
 
 #employeeTableContainer {
 	width: 70%; /* 정보 테이블의 너비 조정 */
-	margin-top: 150px;
+	margin-top: 100px;
 	margin-left: auto; /* 오른쪽 여백 제거 */
 }
 
@@ -181,8 +184,30 @@ table {
 	margin-top: 20px;
 }
 
+#deptNameTable {
+	width: 30%; /* deptName 테이블의 너비 조정 */
+	margin-top: 10px;
+}
+
+#deptName {
+	width: 50%;
+	border: 2px solid black; /* 추가된 스타일 */
+}
+
+#employeeTableHead th {
+	border: 2px solid black; /* 추가된 스타일 */
+}
+
+#employeeTableBody td {
+	border: 2px solid black; /* 추가된 스타일 */
+}
+
+#employeeTableBody tr {
+	border: 2px solid black; /* 추가된 스타일 */
+}
+
 th, td {
-	border: 1px solid black;
+	border: 2px solid black; /* 추가된 스타일 */
 	padding: 8px;
 	text-align: center;
 	color: black;
@@ -213,8 +238,14 @@ th {
 			</div>
 			<div id="employeeTableContainer">
 				<h5 class="mt-4"></h5>
+				<table id="deptNameTable">
+					<tr>
+						<th>해당부서</th>
+						<td id="deptName">부서 선택</td>
+					</tr>
+				</table>
 				<table class="table table-bordered mt-4" id="tree_table">
-					<thead>
+					<thead id="employeeTableHead">
 						<tr>
 							<th>소속</th>
 							<th>이름</th>

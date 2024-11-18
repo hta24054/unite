@@ -66,12 +66,12 @@
 <div class="container">
     <!-- 연도변경 -->
     <div class="text-center my-4">
-        <button id="prevYear" class="btn btn-outline-primary">&lt;</button>
-        <span id="currentYearMonth">${param.year}년</span>
-        <button id="nextYear" class="btn btn-outline-primary">&gt;</button>
+        <button id="prevYear" class="btn btn-outline-dark">&lt;</button>
+        <span id="currentYearMonth" style="font-weight: bold; font-size: 25px">&nbsp;&nbsp;${param.year}년&nbsp;&nbsp;</span>
+        <button id="nextYear" class="btn btn-outline-dark">&gt;</button>
     </div>
     <%--    요약 테이블--%>
-    <table class="table table-striped table-bordered" id="report">
+    <table class="table table-striped table-bordered shadow-sm p-3 mb-5 bg-body rounded" id="report">
         <thead>
         <tr>
             <th>총 연차일</th>
@@ -90,7 +90,7 @@
     <br>
     <br>
     <!-- 근태 관리 테이블 -->
-    <table class="table table-striped table-bordered" id="specify">
+    <table class="table table-striped table-bordered shadow-sm p-3 mb-5 bg-body rounded" id="specify">
         <thead>
         <tr>
             <th>No</th>

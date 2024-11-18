@@ -40,7 +40,7 @@
 <body>
 <h2 id="main_title">부서원 근태 관리(${deptName}) - 직원 목록</h2>
 <div class="container">
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped table-bordered shadow-sm p-3 mb-5 bg-body rounded">
         <thead>
         <tr>
             <th>성명</th>

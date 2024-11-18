@@ -5,6 +5,7 @@ import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.DocDao;
 import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dto.DocVacation;
+import com.hta2405.unite.enums.AttendType;
 import com.hta2405.unite.enums.DocType;
 import com.hta2405.unite.util.ConfigUtil;
 import jakarta.servlet.ServletException;
@@ -34,7 +35,7 @@ public class DocVacationWriteAndEditProcessAction implements Action {
                 Long.parseLong(req.getParameter("docVacationId")) : null;
         String writer = req.getParameter("writer");
         String title = "휴가신청서(" + empDao.getEmpById(writer).getEname() + ")";
-        String type = req.getParameter("type");
+        AttendType type = AttendType.fromString(req.getParameter("type"));
         String vacationStart = req.getParameter("vacation_start");
         String vacationEnd = req.getParameter("vacation_end");
         int vacationCount = Integer.parseInt(req.getParameter("vacation_count"));

@@ -54,13 +54,13 @@ public class AttendInfoAction implements Action {
             // 출근 기록만 있고 퇴근 기록이 없는 경우
             jsonObject.addProperty("status", "checkIn");
             jsonObject.addProperty("inTime", String.valueOf(attend.getAttendIn()));
-            jsonObject.addProperty("type", attend.getAttendType());
+            jsonObject.addProperty("type", attend.getAttendType().getTypeName());
         } else {
             // 출근과 퇴근 기록이 모두 있는 경우
             jsonObject.addProperty("status", "checkOut");
             jsonObject.addProperty("inTime", String.valueOf(attend.getAttendIn()));
             jsonObject.addProperty("outTime", String.valueOf(attend.getAttendOut()));
-            jsonObject.addProperty("type", attend.getAttendType());
+            jsonObject.addProperty("type", attend.getAttendType().getTypeName());
         }
 
         return jsonObject;

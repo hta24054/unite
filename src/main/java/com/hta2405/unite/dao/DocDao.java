@@ -1,6 +1,7 @@
 package com.hta2405.unite.dao;
 
 import com.hta2405.unite.dto.*;
+import com.hta2405.unite.enums.AttendType;
 import com.hta2405.unite.enums.DocType;
 
 import javax.naming.InitialContext;
@@ -120,7 +121,7 @@ public class DocDao {
                     ps.setLong(1, docId);
                     ps.setDate(2, Date.valueOf(docVacation.getVacationStart()));
                     ps.setDate(3, Date.valueOf(docVacation.getVacationEnd()));
-                    ps.setString(4, docVacation.getVacationType());
+                    ps.setString(4, docVacation.getVacationType().getTypeName());
                     ps.setInt(5, docVacation.getVacationCount());
                     ps.setString(6, docVacation.getVacationFilePath());
                     ps.setString(7, docVacation.getVacationFileOriginal());
@@ -484,7 +485,7 @@ public class DocDao {
 
             ps.setDate(1, Date.valueOf(docVacation.getVacationStart()));
             ps.setDate(2, Date.valueOf(docVacation.getVacationEnd()));
-            ps.setString(3, docVacation.getVacationType());
+            ps.setString(3, docVacation.getVacationType().getTypeName());
             ps.setInt(4, docVacation.getVacationCount());
             ps.setString(5, docVacation.getVacationFilePath());
             ps.setString(6, docVacation.getVacationFileOriginal());
@@ -752,7 +753,7 @@ public class DocDao {
                         rs.getDate("vacation_start").toLocalDate(),
                         rs.getDate("vacation_end").toLocalDate(),
                         rs.getInt("vacation_count"),
-                        rs.getString("vacation_type"),
+                        AttendType.fromString(rs.getString("vacation_type")),
                         rs.getString("vacation_file_Path"),
                         rs.getString("vacation_file_original"),
                         rs.getString("vacation_file_uuid"),

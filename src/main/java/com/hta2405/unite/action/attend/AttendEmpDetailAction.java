@@ -19,7 +19,7 @@ public class AttendEmpDetailAction implements Action {
         EmpDao empDao = new EmpDao();
 
         Emp loginEmp = empDao.getEmpById((String) req.getSession().getAttribute("id"));
-        Emp targetEmp = empDao.getEmpById(req.getParameter("emp"));
+        Emp targetEmp = empDao.getEmpById(req.getParameter("empId"));
 
         //본인이 부서장인지 확인
         if (!EmpUtil.isManager(loginEmp)) {

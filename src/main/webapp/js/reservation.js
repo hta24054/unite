@@ -2,35 +2,11 @@ $(document).ready(function(){
 	let calendar;
 	let events = []; 
 	let isAllDayChk, startDate, endDate;
+	const $resourceType = $("#resourceType");
 	
 	$("#resourceName").hide();
-	
-	console.log("console");
-	
-	/*
-	$("#resourceType").on("change", function() {
-	    const selectedType = $(this).val(); 
-	
-	    if (selectedType) {
-	        $.ajax({
-	            url: "getResourceType",  
-	            type: "GET",
-	            dataType: "json",
-	            success: function (data) {
-	                console.log("data", data);  
-	            },
-	            error: function () {
-	                alert("자원 목록 불러오기 실패");
-	            }
-	        });
-	    } else {
-	        $("#resourceName").hide();
-	    }
-	});
-	*/
 
-
-	$("#resourceType").on("change", function() {
+	$resourceType.on("change", function() {
 		console.log($(this).val());
 		
         $.ajax({
@@ -38,8 +14,23 @@ $(document).ready(function(){
             type: "get",
 	        dataType: "json",
             success: function (data) {
-                console.log(data)
-            },
+	            console.log(data);
+
+	            $resourceType.empty();
+	            $resourceType.append('<option value="resourceType">분류명을 선택하세요</option>');
+	
+	            // 중복 제거
+	            const uniqueType = new Set();
+	            
+	            data.forEach(resource => {
+	                if (!uniqueType.has(resource.resourceType)) {
+	                    uniqueType.add(resource.resourceType);
+	                    $resourceType.append(
+	                        `<option value="${resource.resourceType}">${resource.resourceType}</option>`
+	                    );
+	                }
+	            });
+	        },
             error: function () {
                 alert("자원 목록 불러오기 실패");
             }

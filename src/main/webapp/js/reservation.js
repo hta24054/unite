@@ -30,7 +30,7 @@ $(document).ready(function(){
 	*/
 
 
-	$("#resourceType").on("change", "#resourceType", function() {
+	$("#resourceType").on("change", function() {
 		console.log($(this).val());
 		
         $.ajax({

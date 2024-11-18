@@ -49,8 +49,8 @@
     
     #box{border: none !important;}
     #horizon {width: 180px !important;}
-	tr td:nth-child(1) {width: 61%; text-align: left;}
-	tr td:nth-child(2) {width: 39%; text-align: right;}
+	tr td:nth-child(1) {width: 70%; text-align: left;}
+	tr td:nth-child(2) {width: 30%; text-align: right;}
 		
 		
 		/* 테이블 전체 스타일 */

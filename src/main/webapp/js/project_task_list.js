@@ -37,30 +37,40 @@ function ajax(sdata){
 }
 
 function updateBoardList(data){
-	let num = data.listcount - (data.page - 1) * data.limit;
-	let output = "<tbody>";
-	
-	$(data.boardlist).each(function(index, item){
-		const blank = '&nbsp;&nbsp;'.repeat(item.board_re_lev * 2);
-		const img = item.board_re_lev > 0 ? `<img src='${contextPath}/image/line.gif'>` : ""; // contextPath 사용
-		const subject = item.projectTitle.length >= 20 ? item.projectTitle.substr(0, 20) + "..." : item.projectTitle;
-		const changeSubject = subject.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-		const taskFileOriginal = item.task_file_original ? item.task_file_original : "";
-		
-		output += `
-			<tr>
-				<td>${num--}</td>
-				<td><a href="comm?num=${item.taskNum}&userid=${item.memberId}">${changeSubject}</a> [${item.board_cnt}]</td>
-				<td><div>${item.projectContent}</div></td>
-				<td><div>${item.projectDate}</div></td>
-				<td><div>${item.projectUpdateDate}</div></td>
-				<td>${taskFileOriginal ? `<a href="down?filename=${item.task_file_uuid}${item.task_file_type}&originalFilename=${item.task_file_original}">${item.task_file_original}</a>` : ''}</td>
-			</tr>
-			`;
-	});
-	output += "</tbody>";
-	$('table').append(output);
+    let num = data.listcount - (data.page - 1) * data.limit;
+    let output = "<tbody>";
+    
+    $(data.boardlist).each(function(index, item){
+        const blank = '&nbsp;&nbsp;'.repeat(item.board_re_lev * 2);
+        const img = item.board_re_lev > 0 ? `<img src='${contextPath}/image/line.gif'>` : ""; // contextPath 사용
+        const subject = item.projectTitle.length >= 20 ? item.projectTitle.substr(0, 20) + "..." : item.projectTitle;
+        const changeSubject = subject.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const taskFileOriginal = item.task_file_original ? item.task_file_original : "";
+        let file_name = ''; // file_name 기본값 설정
+
+        // task_file_original이 null 또는 undefined일 경우 체크
+        if (item.task_file_original && item.task_file_original !== '') 
+            file_name = item.task_file_original.length > 10 ? "***" + item.task_file_type : item.task_file_original;
+        
+        output += `
+            <tr>
+                <td>${num--}</td>
+                <td><a href="comm?num=${item.taskNum}&userid=${item.memberId}">${changeSubject}</a> [${item.board_cnt}]</td>
+                <td><div>${item.projectContent}</div></td>
+                <td><div>${item.projectDate}</div></td>
+                <td><div>${item.projectUpdateDate}</div></td>
+                <td>
+                    ${taskFileOriginal ? 
+                        `<a href="down?filename=${item.task_file_uuid}${item.task_file_type}&originalFilename=${item.task_file_original}" 
+                           title="${item.task_file_original}">${file_name}</a>` : ''}
+                </td>
+            </tr>
+        `;
+    });
+    output += "</tbody>";
+    $('table').append(output);
 }
+
 
 function setPaging(href, digit, isActive = false){
 	const gray = (href === "" && isNaN(digit)) ? "gray" : "";

@@ -5,41 +5,13 @@
     <meta charset="UTF-8">
     <title>Insert title here</title>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/home.css">
-    <jsp:include page="common/header.jsp"/>
+	<jsp:include page="common/header.jsp"/>
+	<script>
+		const contextPath = "${pageContext.request.contextPath}";
+	</script>
+	<script src="${pageContext.request.contextPath }/js/home.js"></script> 	
+	<script src="${pageContext.request.contextPath}/js/boardHome.js"></script>	
 </head>
-<script>
-	//게시판 데이터를 갱신하는 함수
-	function loadBoardData() {
-	    $.ajax({
-	        url: "home",  // 서블릿 URL
-	        type: "GET",
-	        dataType: "json",
-	        success: function(data) {
-	            let tableBody = $(".styled-table tbody");
-	            tableBody.empty();  // 테이블 내용 초기화
-	
-	            // 데이터 갱신
-	            data.forEach(function(item) {
-	                let row = `<tr>
-	                             <td>${item.boardName1}</td>
-	                             <td>${item.postSubject} ${(item.postUpdateDate)}</td>
-	                          </tr>`;
-	                tableBody.append(row);
-	            });
-	        },
-	        error: function(xhr, status, error) {
-	            console.error("게시판 데이터를 불러오는 데 실패했습니다: " + error);
-	        }
-	    });
-	}
-	
-	// 페이지 로드 후 3초마다 게시판 갱신
-	$(document).ready(function() {
-	    loadBoardData();  // 초기 데이터 로드
-	    setInterval(loadBoardData, 3000);  // 3초마다 게시판 갱신
-	});
-
-</script>
 <body>
     <div class="container" style=" max-width: 1500px;">
         <div class="left">
@@ -59,10 +31,13 @@
         <!-- 가운데 위 -->
         <div class="center">
         	<div class="c_table">
-			    <h3>게시판</h3>
+			    <h3><a href="${contextPath }"></a>게시판</h3>
 			    <table class="styled-table">
 			        <tbody>
-			            
+			            <tr><td>게시글이 없습니다</td><td></td></tr>
+			            <tr><td>게시글이 없습니다</td><td></td></tr>
+			            <tr><td>게시글이 없습니다</td><td></td></tr>
+			            <tr><td>게시글이 없습니다</td><td></td></tr>
 			        </tbody>
 			    </table>
 			</div>	
@@ -78,3 +53,4 @@
     </div>
 </body>
 </html>
+

@@ -213,6 +213,7 @@ SELECT
     resc.resc_name, 
     resc.resc_info, 
     resc.resc_usable,
+    
     res.reservation_id,
     res.emp_id,
     res.reservation_start,
@@ -220,8 +221,8 @@ SELECT
     res.reservation_info,
     res.reservation_allDay
 FROM reservation
-LEFT JOIN reservation res
-ON  resc.resc_id = res.resource_id
+LEFT JOIN resc resc
+ON  res.resource_id = resc.resc_id
 WHERE res.reservation_id = 31;
 
 

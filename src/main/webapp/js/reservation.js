@@ -69,21 +69,18 @@ $(document).ready(function(){
 	    
 	    if (resourceId) {
 	        localStorage.setItem("selectedResourceId", resourceId);
-	        openBookingDetailModal(event);  // 예약 상세 정보를 불러오는 함수 호출
+	        openInfoModal(event);  // 예약 상세 정보를 불러오는 함수 호출
 	    } else {
 	        console.log("resourceId is required"); // resourceId가 없으면 오류 메시지 출력
 	    }
 	});
 
 	// 자원 예약 목록 불러오기
-	function getResourceBookingList(){		
+	function getReservationList(){		
 		$.ajax({
-			url: "getResourceBookingList",  
+			url: "getReservationList",  
 			type: "get",
 			dataType: "json",
-			data: { 
-	            resourceId: resourceId
-	        },
 	        success: function (data) {
 				events = []; 
 				if (data != null && data.length > 0) {
@@ -96,11 +93,9 @@ $(document).ready(function(){
 			                end: data[i].reservation_end,
 		                 	extendedProps: {
 	                             reservationInfo: data[i].reservationInfo,
-	                             resourceId: data[i].resource_id, // 이벤트에 리소스 아이디를 넣어줘야함!!!
+	                             resourceId: data[i].resource_id,
 	                        }
 			            });
-			            
-			            //console.log("자원 예약 목록 불러오기 events", events);
 			        }
 			    } 
 			    
@@ -113,9 +108,9 @@ $(document).ready(function(){
 	}
 		
 	// 자원 예약 하기
-	function resourceBooking(eventData) {
+	function resourceReservation(eventData) {
 		$.ajax({
-			url: "resourceBooking",
+			url: "resourceReservation",
 			type: "post",
 	        dataType: "json",
 	        data: {
@@ -150,7 +145,7 @@ $(document).ready(function(){
 					alert('이미 예약된 자원입니다.');
 				}
 				
-				getResourceBookingList();
+				getReservationList();
 				$("#reservationModal").modal("hide"); 
 			},
 			error: function () {
@@ -160,9 +155,9 @@ $(document).ready(function(){
 	}
 	
 	// 자원 예약 정보 팝업
-	function openBookingDetailModal(event){
+	function openInfoModal(event){
 		$.ajax({
-			url: "getResourceBookingDetail",
+			url: "getReservationInfo",
 			type: "get",
 	        dataType: "json",
 	        data: { 
@@ -263,7 +258,7 @@ $(document).ready(function(){
 	            reservationInfo: $("#reservationInfo").val(), 
 	        };
 	        
-	        resourceBooking(eventData);
+	        resourceReservation(eventData);
 	    });
 	});
 	
@@ -355,7 +350,7 @@ $(document).ready(function(){
 				 * 리소스 테이블에서 필요한 값 - 분류명, 자원명, 자원정보  
 				 * 시작시간, 종료시간, 등록자, 사용용도
 				 */
-				openBookingDetailModal(info.event);
+				openInfoModal(info.event);
             },
 	        eventChange: function(info) { // 이벤트가 수정되면 발생하는 이벤트
 	         	
@@ -380,5 +375,5 @@ $(document).ready(function(){
 	}
 
 	initCalendar();
-	getResourceBookingList();
+	getReservationList();
 });

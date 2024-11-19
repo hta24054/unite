@@ -128,55 +128,6 @@ public class ReservationDAO {
         }
         return list;
 	} // getRescIdByName end
-
-	/*
-	// 자원 예약
-	public int insertResourceBooking(Reservation reservation, Resource resource) {
-	    int result = 0;
-
-	    // 중복 확인 
-	    String check_sql = """
-	        SELECT COUNT(*) FROM reservation WHERE resource_id = ?
-	    """;
-	    
-	    String insert_sql = """
-	        INSERT INTO reservation 
-	        (resource_id, emp_id, reservation_start, reservation_end, reservation_info, reservation_allDay)
-	        VALUES (?, ?, ?, ?, ?, ?)
-	    """;
-
-	    try (Connection conn = ds.getConnection();
-	         PreparedStatement checkStmt = conn.prepareStatement(check_sql);
-	         PreparedStatement insertStmt = conn.prepareStatement(insert_sql);) {
-
-	        // 중복 확인
-	        checkStmt.setLong(1, resource.getResourceId());
-	        
-	        try (ResultSet rs = checkStmt.executeQuery()) {
-	            if (rs.next() && rs.getInt(1) > 0) {
-	                System.out.println("이미 예약된 자원입니다.");
-	                return 0;
-	            }
-	        }
-
-	        // 중복이 없을 경우 데이터 삽입
-	        insertStmt.setLong(1, resource.getResourceId());
-	        insertStmt.setString(2, reservation.getEmpId());
-	        insertStmt.setTimestamp(3, Timestamp.valueOf(reservation.getReservationStart()));
-	        insertStmt.setTimestamp(4, Timestamp.valueOf(reservation.getReservationEnd()));
-	        insertStmt.setString(5, reservation.getReservationInfo());
-	        insertStmt.setInt(6, reservation.getReservationAllDay());
-
-	        result = insertStmt.executeUpdate();
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        System.out.println("insertResourceBooking() 에러: " + e);
-	    }
-	    return result;
-	}// insertResourceBooking end
-	*/
-	
 	
 	// 자원 예약
 	public int insertResourceBooking(Reservation reservation) {
@@ -226,7 +177,7 @@ public class ReservationDAO {
 
 
 	// 자원 예약 목록 불러오기
-	public JsonArray getResourceBookingList() {
+	public JsonArray getResourceBookingList(String resourceId) {
 	    String sql = """
 	        SELECT * 
 	        FROM reservation
@@ -256,6 +207,7 @@ public class ReservationDAO {
 	    System.out.println("자원 예약 목록" + array);
         return array;
 	}// getResourceBookingList() end
+
 
 
 

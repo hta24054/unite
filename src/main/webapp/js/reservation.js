@@ -5,6 +5,8 @@ $(document).ready(function(){
 	const $resourceType = $("#resourceType");
 	const $resourceName = $("#resourceName");
 	
+	
+	
 	getResourceList();
 	
 	// 자원 목록 불러오기
@@ -38,6 +40,9 @@ $(document).ready(function(){
 		$.ajax({
 			url: "getResourceBookingList",
 			type: "get",
+			data: { 
+				resourceId: $("#resourceName").val()
+			},  
 	        dataType: "json",
 	        success: function (data) {
 				events = []; 
@@ -50,11 +55,7 @@ $(document).ready(function(){
 							allDay: data[i].reservation_allDay,
 			                start: data[i].reservation_start, 
 			                end: data[i].reservation_end,
-			                //allDay: data[i].reservation_allDay === 1, // 종일 여부
-					        //start: moment(data[i].reservation_start).toDate(), // moment로 변환하여 Date 객체로
-					        //end: moment(data[i].reservation_end).toDate(), 
 		                 	extendedProps: {
-								 //resourceName: data[i].resourceName,
 	                             usage: data[i].usage
 	                        }
 			            });

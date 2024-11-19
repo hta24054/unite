@@ -167,6 +167,7 @@ SELECT *
 FROM resc;
 
 
+
 TRUNCATE TABLE reservation;
 
 ALTER TABLE reservation

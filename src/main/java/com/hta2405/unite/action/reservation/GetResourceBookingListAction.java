@@ -20,8 +20,10 @@ public class GetResourceBookingListAction implements Action {
 	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
+		String resourceId = req.getParameter("resourceId"); // resc_id
+		
 		ReservationDAO reservationDao = new ReservationDAO();
-		JsonArray bookingArray = reservationDao.getResourceBookingList();
+		JsonArray bookingArray = reservationDao.getResourceBookingList(resourceId);
 		
 		Gson gson = new Gson();
         String json = gson.toJson(bookingArray);

@@ -19,6 +19,5 @@ public class EmpInfoFrontController extends AbstractFrontController {
         actionMap.put("/viewdept", EmpViewDeptAction::new);
         actionMap.put("/viewotherdeptinfo", EmpViewOtherDeptInfoAction::new);
         actionMap.put("/viewotherdept", EmpViewOtherDeptAction::new);
-        actionMap.put("/detail", EmpDetailViewAction::new); // 추가된 부분
 	}
 }

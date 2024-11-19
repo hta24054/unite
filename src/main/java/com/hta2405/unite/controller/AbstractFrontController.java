@@ -11,10 +11,11 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.function.Supplier;
 
 public abstract class AbstractFrontController extends HttpServlet {
 
-    protected HashMap<String, Action> actionMap = new HashMap<>();
+    protected HashMap<String, Supplier<Action>> actionMap = new HashMap<>();
 
     protected void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String command = req.getPathInfo();
@@ -40,7 +41,7 @@ public abstract class AbstractFrontController extends HttpServlet {
         }
 
         // command에 해당하는 Action 처리
-        Action action = actionMap.get(command);
+        Action action = actionMap.get(command).get();
         ActionForward forward = action.execute(req, resp);
 
         if (forward != null) {

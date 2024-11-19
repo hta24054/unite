@@ -9,7 +9,7 @@ import jakarta.servlet.annotation.WebServlet;
 public class MyPageFrontController extends AbstractFrontController {
     @Override
     public void init() throws ServletException {
-        actionMap.put("/password", new MyPagePasswordChangeAction());
-        actionMap.put("/password/process", new MyPagePasswordChangeProcessAction());
+        actionMap.put("/password", MyPagePasswordChangeAction::new);
+        actionMap.put("/password/process", MyPagePasswordChangeProcessAction::new);
     }
 }

@@ -209,8 +209,6 @@
 	            description: $('#description').val(),
 	            isShared : true,
 	        }
-	        
-	        alert('shareData' + JSON.stringify(shareData, null, 2));
 	
 	        $.ajax({
 	            url: '${pageContext.request.contextPath}/schedule/scheduleShareAdd',
@@ -246,11 +244,6 @@
 	                    $('#calendar').fullCalendar('addEvent', event); 
 	                });
 	                
-	                /*
-	                events.forEach(function(event) {
-	                    $('#calendar').fullCalendar('renderEvent', event, true);
-	                });
-	                */
 	                window.location.href = '${pageContext.request.contextPath}/schedule/calender';
 	            },
 	            error: function() {

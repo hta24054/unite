@@ -29,6 +29,12 @@
 		.btn_wrap button {
 			margin: 0 5px;
 		}
+		
+		ul, li {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
 	</style>
 </head>
 <body>
@@ -62,43 +68,47 @@
 				<div class="modal-body">
 					<form name="reservationEvent" method="post">
 						<input type="hidden" id="reservation_id" name="reservation_id" value="${reservation_id}"> 
-						<input type="hidden" id="emp_id" name="emp_id" value="${id}">
+						<input type="hidden" id="emp_id" name="emp_id" value="${id}">						
 				        
 				        <div class="form-group custom-control custom-checkbox">
 				             <input type="checkbox" name="allDay" id="allDay" class="custom-control-input" value="">
 				             <label for="allDay" class="custom-control-label">종일</label>
 				        </div>
-				        <div class="form-group">
-							<label for="startAt">시작날짜/시간</label>
-							<input type="datetime-local" name="startAt" id="startAt" class="form-control">
-						</div>
-						<div class="form-group">
-				            <label for="endAt">종료날짜/시간</label>
-				            <input type="datetime-local" name="endAt" id="endAt" class="form-control">
+				        
+				        <div class="modify_area">
+				        	<div class="form-group">
+								<label for="startAt">시작날짜/시간</label>
+								<input type="datetime-local" name="startAt" id="startAt" class="form-control">
+							</div>
+							<div class="form-group">
+					            <label for="endAt">종료날짜/시간</label>
+					            <input type="datetime-local" name="endAt" id="endAt" class="form-control">
+					        </div>
+					        <div class="form-group">
+	          					<p>자원선택</p>
+					            <div>
+					            	<select name="resourceType" id="resourceType">
+					            		<!-- <option value="">분류명을 선택하세요</option> -->
+										<option value="">분류명</option>
+										<c:forEach var="resource" items="${resourceList}">
+	            							<option value="${resource.resourceType}">${resource.resourceType}</option>
+										</c:forEach>
+									</select>
+									<select name="resourceName" id="resourceName">
+										<option value="">자원명</option>
+										<!-- <option value="">자원명 을 선택하세요</option> -->
+								        <c:forEach var="resource" items="${resourceList}">
+	            							<option value="${resource.resourceId}">${resource.resourceName}</option>
+										</c:forEach>
+								    </select>			            
+					            </div>
+					        </div>
+					        <div class="form-group">
+					            <label for="reservationInfo">사용용도</label>
+					            <input type="text" name="reservationInfo" id="reservationInfo" class="form-control">
+					        </div>
 				        </div>
-				        <div class="form-group">
-          					<p>자원선택</p>
-				            <div>
-				            	<select name="resourceType" id="resourceType">
-				            		<!-- <option value="">분류명을 선택하세요</option> -->
-									<option value="">분류명</option>
-									<c:forEach var="resource" items="${resourceList}">
-            							<option value="${resource.resourceType}">${resource.resourceType}</option>
-									</c:forEach>
-								</select>
-								<select name="resourceName" id="resourceName">
-									<option value="">자원명</option>
-									<!-- <option value="">자원명 을 선택하세요</option> -->
-							        <c:forEach var="resource" items="${resourceList}">
-            							<option value="${resource.resourceId}">${resource.resourceName}</option>
-									</c:forEach>
-							    </select>			            
-				            </div>
-				        </div>
-				        <div class="form-group">
-				            <label for="usage">사용용도</label>
-				            <input type="text" name="usage" id="usage" class="form-control">
-				        </div>
+				        
           				<div class="btn_wrap">
           					<button type="reset" class="btn btn-secondary">취소</button>
 							<button type="submit" class="btn btn-info" id="btnRegister">등록</button>
@@ -108,5 +118,6 @@
 			</div>
 		</div>
 	</div>
+	<%-- 자원 예약 모달 --%>
 </body>
 </html>

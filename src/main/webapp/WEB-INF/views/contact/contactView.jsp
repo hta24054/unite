@@ -21,15 +21,17 @@
 <style>
 .content-container {
 	display: flex;
+	margin-right: 0px;
 	gap: 100px;
 }
 
 #treeContainer {
-	width: 40%;
+	width: 45%;
 }
 
 #employeeTableContainer {
-	width: 60%;
+	width: 55%;
+	margin-right: 0%;
 }
 
 .table {
@@ -72,8 +74,6 @@ th, td {
 #searchInput {
 	border: 1px solid black;
 }
-
-
 </style>
 </head>
 <body>
@@ -88,7 +88,7 @@ th, td {
 				<h5 class="title">직원 목록</h5>
 
 				<input type="text" id="searchInput" class="form-control mb-3"
-					placeholder="검색어를 입력하세요">
+					placeholder="이름을 검색하세요">
 				<div class="btn-group mb-3">
 					<button class="btn btn-primary" id="nameSortBtn">이름순</button>
 					<button class="btn btn-secondary" id="jobSortBtn">직급순</button>

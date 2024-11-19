@@ -78,12 +78,6 @@ $(document).ready(function(){
                 usage: $("#usage").val()
             },
 	        success: function (data) {
-				console.log("자원 예약 성공", data); 
-				
-				alert(JSON.stringify(data, null, 2));
-				
-				alert("자원 예약 성공");
-				
 				events = []; 
 				if (data != null && data.length > 0) {
 			        for (let i = 0; i < data.length; i++) {
@@ -100,6 +94,10 @@ $(document).ready(function(){
 			            });
 			        }
 			    }
+			    
+			    if (data === 0) {
+					alert('이미 예약된 자원입니다.');
+				}
 				
 				$("#reservationModal").modal("hide"); 
 			},

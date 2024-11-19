@@ -166,7 +166,7 @@ public class ReservationDAO {
 	    String checkSql = """
 	        SELECT COUNT(*) FROM reservation WHERE resource_id = ?
 	    """;
-
+	    
 	    String insertSql = """
 	        INSERT INTO reservation 
 	        (resource_id, emp_id, reservation_start, reservation_end, reservation_info, reservation_allDay)

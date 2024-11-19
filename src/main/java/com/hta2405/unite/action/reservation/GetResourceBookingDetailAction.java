@@ -24,7 +24,7 @@ public class GetResourceBookingDetailAction implements Action {
 	public ActionForward execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		String resourceId = request.getParameter("resourceId");
+		String resourceId = request.getParameter("resourceId"); //자원테이블 예약 ID
 		
 		ReservationDAO reservationDAO = new ReservationDAO();
 		Map<String, Object> resourceData = reservationDAO.getResourceBookingDetail(resourceId);

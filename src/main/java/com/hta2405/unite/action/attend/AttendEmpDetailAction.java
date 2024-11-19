@@ -13,6 +13,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import static com.hta2405.unite.util.AttendUtil.checkAttendRole;
+
 public class AttendEmpDetailAction implements Action {
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -25,11 +27,11 @@ public class AttendEmpDetailAction implements Action {
         if (!EmpUtil.isManager(loginEmp)) {
             return CommonUtil.alertAndGoBack(resp, "부서장이 아닙니다.");
         }
-
         //해당 타겟 직원의 부서장인지 확인
         if (!EmpUtil.isValidToAccessEmp(loginEmp, targetEmp)) {
             return CommonUtil.alertAndGoBack(resp, "해당 직원을 확인할 권한이 없습니다.");
         }
+        checkAttendRole(loginEmp, req);
         return new AttendUtil().getAttendDetail(req, targetEmp);
     }
 }

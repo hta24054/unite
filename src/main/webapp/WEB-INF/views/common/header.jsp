@@ -57,25 +57,25 @@
         right: 10px;
         top: 0px;
     }
-    
+
     .user_info {
-    	display: flex;
-    	align-items: center;
-    	top: 12px;
+        display: flex;
+        align-items: center;
+        top: 12px;
     }
-    
-    .user_info *{
-    	color: #fff;
+
+    .user_info * {
+        color: #fff;
     }
-    
+
     .user_info span {
-     	margin-right: 10px;
-     }
-    
-    .user_info a:hover{
-     	text-decoration: none;
-     	color: #fff;
-     }
+        margin-right: 10px;
+    }
+
+    .user_info a:hover {
+        text-decoration: none;
+        color: #fff;
+    }
 </style>
 <%--필터가 없는 경우 필요  --%>
 <%--<c:if test="${empty id }">
@@ -118,13 +118,16 @@
             <a class="nav-link a1" href="${pageContext.request.contextPath}/project/main">&nbsp;프로젝트&nbsp;</a>
         </li>
         <li class="nav-item">
-	        <a class="nav-link a1" href="${pageContext.request.contextPath}/reservation/weekCalendar">&nbsp;자원예약&nbsp;</a>
-	    </li>
+            <a class="nav-link a1"
+               href="${pageContext.request.contextPath}/reservation/weekCalendar">&nbsp;자원예약&nbsp;</a>
+        </li>
         <li class="nav-item">
             <a class="nav-link a1" href="${pageContext.request.contextPath}/mypage/password">&nbsp;마이페이지&nbsp;</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link a1" href="${pageContext.request.contextPath}/admin/emp-manage">&nbsp;관리자&nbsp;</a>
+            <c:if test="${sessionScope.id=='admin'}">
+                <a class="nav-link a1" href="${pageContext.request.contextPath}/admin/emp-manage">&nbsp;관리자&nbsp;</a>
+            </c:if>
         </li>
         <li class="nav-item3 user_info">
             <img src="${pageContext.request.contextPath}/image/profile_white.png" style="width:30px;">

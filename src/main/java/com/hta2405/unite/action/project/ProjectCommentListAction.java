@@ -2,6 +2,7 @@ package com.hta2405.unite.action.project;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -10,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ProjectbDao;
+import com.hta2405.unite.dto.ProjectTask;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ProjectCommentListAction implements Action {
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String userid = req.getParameter("userid");
+    	String userid = (String) req.getSession().getAttribute("id");
         int projectid = (Integer) req.getSession().getAttribute("projectId");
         int task_num = Integer.parseInt(req.getParameter("comment_board_num"));
         System.out.println(userid);
@@ -41,6 +43,8 @@ public class ProjectCommentListAction implements Action {
 		JsonArray jarray = dao.getCommentList(comment_board_num, state);
 		JsonElement je = new Gson().toJsonTree(jarray);
 		object.add("commentlist", je);
+		
+		object.addProperty("id", userid); 
 		
 		resp.setContentType("application/json; charset=utf-8");
 		PrintWriter out = resp.getWriter();

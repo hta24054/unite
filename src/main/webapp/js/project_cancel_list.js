@@ -50,6 +50,12 @@ function updateBoardList(data){
 	        ? "<span title='" + viewerNames.slice(1).join(', ') + "'>" + viewerNames[0] + " 외 " + (viewerNames.length - 1) + "명</span>"
 	        : (viewerNames[0] || '없음');
 		const ProjectFileOriginal = item.project_file_original ? item.project_file_original : "";
+		let file_name = ''; // file_name 기본값 설정
+        // task_file_original이 null 또는 undefined일 경우 체크
+        if (item.project_file_original && item.project_file_original !== '') 
+            file_name = item.project_file_original.length > 10 ? item.project_file_type + "파일" : item.project_file_original;
+		
+		
 		output += `
 			<tr>
 				<td>${item.projectId}</td>
@@ -62,8 +68,8 @@ function updateBoardList(data){
 				<td>
 					<div>
 						${ProjectFileOriginal ? 
-							`<a href="${contextPath}/projectb/down?filename=${item.project_file_uuid}${item.project_file_type}&originalFilename=${item.project_file_original}">
-									${item.project_file_original}
+							`<a href="${contextPath}/projectb/down?filename=${item.project_file_uuid}${item.project_file_type}&originalFilename=${item.project_file_original}"title="${item.project_file_original}">
+									${file_name}
 							</a>` : ''}
 					</div>
 				</td>

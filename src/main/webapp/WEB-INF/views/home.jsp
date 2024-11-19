@@ -24,7 +24,7 @@
 	         </div>
              
              <br>
-             <jsp:include page="attend/attendButton.jsp"/> 
+             <jsp:include page="attend/attendButton.jsp"/>  
 		</div>
             
             
@@ -42,10 +42,10 @@
 			    </table>
 			</div>	
 			<div class="c_table">
-	            <h2>결재 대기 문서</h2>
-	            include
-			</div>
-        </div>
+	            <h3>결재 대기 문서</h3><br>
+	            <jsp:include page="doc/waiting_box.jsp"/>     
+			</div> 
+       	</div>
 
         <div class="right">
             <h2>최근 알림</h2>

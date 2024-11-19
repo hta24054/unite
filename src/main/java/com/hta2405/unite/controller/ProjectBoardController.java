@@ -1,22 +1,12 @@
 package com.hta2405.unite.controller;
 
-import com.hta2405.unite.action.project.ProjectCommentAction;
-import com.hta2405.unite.action.project.ProjectCommentAddAction;
-import com.hta2405.unite.action.project.ProjectCommentListAction;
-import com.hta2405.unite.action.project.ProjectDeleteAction;
-import com.hta2405.unite.action.project.ProjectDownAction;
-import com.hta2405.unite.action.project.ProjectMemberTaskAction;
-import com.hta2405.unite.action.project.ProjectModifyAction;
-import com.hta2405.unite.action.project.ProjectModifyProcessAction;
-import com.hta2405.unite.action.project.ProjectTaskListAction;
-import com.hta2405.unite.action.project.ProjectWriteAction;
-
+import com.hta2405.unite.action.project.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
 
 @WebServlet("/projectb/*")
-public class ProjectBoardController extends AbstractFrontController{
+public class ProjectBoardController extends AbstractFrontController {
 
     @Override
     public void init() throws ServletException {
@@ -30,5 +20,8 @@ public class ProjectBoardController extends AbstractFrontController{
         actionMap.put("/delete", ProjectDeleteAction::new);
         actionMap.put("/commentadd", ProjectCommentAddAction::new);
         actionMap.put("/commentlist", ProjectCommentListAction::new);
+        actionMap.put("/reply", ProjectCommentReplyAction::new);
+        actionMap.put("/commentdelete", ProjectCommentDeleteAction::new);
+        actionMap.put("/update", ProjectCommentUpdateAction::new);
     }
 }

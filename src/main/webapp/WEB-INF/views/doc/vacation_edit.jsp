@@ -12,6 +12,9 @@
 <body>
 <form id="doc_form" enctype="multipart/form-data">
     <div class="container mt-4">
+        <h4 id="rest_vac_count" data-num="${writer.vacationCount - usedCount}">
+            내 잔여 연차일 : ${writer.vacationCount - usedCount}</h4>
+    <div class="container mt-4">
         <div class="document-wrapper">
             <div class="text-center mb-4">
                 <h1 class="header-cell">휴가신청서</h1>
@@ -37,7 +40,7 @@
                         </tr>
                         <tr>
                             <td class="table-secondary font-weight-bold text-center">작 성 일</td>
-                            <td>${doc.docCreateDate}</td>
+                            <td>${doc.docCreateDate.toLocalDate()}</td>
                         </tr>
                     </table>
                 </div>
@@ -55,7 +58,7 @@
                 <tr>
                     <th class="table-secondary font-weight-bold text-center">휴가 종류</th>
                     <td>
-                        <select name="type" class="form-control" id="typeSelect" data-selected="${doc.vacationType}">
+                        <select name="type" class="form-control" id="typeSelect" data-selected="${doc.vacationType.typeName}">
                             <option value="연차">연차</option>
                             <option value="병가">병가</option>
                             <option value="공가">공가</option>
@@ -184,6 +187,16 @@
                 }
             });
             if (!isValid) return;
+
+            const restVacCount = $('#rest_vac_count').data('num');
+            if (restVacCount < $('input[name="vacation_count"]').val()
+                && $('select[name=type]').val()==='연차') {
+                alert("잔여 연차일수가 부족합니다.");
+                $('input[name="vacation_start"]').val('');
+                $('input[name="vacation_end"]').val('');
+                $('input[name="vacation_count"]').val('');
+                return false;
+            }
 
             // 결재자 수 확인
             const additionalSigners = $('input[name="sign[]"]').length - 1;

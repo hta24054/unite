@@ -1,6 +1,7 @@
 package com.hta2405.unite.action.admin;
 
 import com.google.gson.JsonObject;
+import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.EmpDao;
 import jakarta.servlet.ServletException;
@@ -9,7 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-public class AdminEmpFireAction implements com.hta2405.unite.action.Action {
+public class AdminEmpFireAction implements Action {
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String empId = req.getParameter("empId");

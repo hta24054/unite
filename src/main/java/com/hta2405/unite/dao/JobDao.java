@@ -3,13 +3,16 @@ package com.hta2405.unite.dao;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import com.hta2405.unite.dto.Dept;
 import com.hta2405.unite.dto.Job;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class JobDao {
 	private DataSource ds;
@@ -21,6 +24,28 @@ public class JobDao {
 		} catch (Exception e) {
 			System.out.println("DB연결 실패 " + e.getMessage());
 		}
+	}
+
+
+	public List<Job> getAllJob() {
+		String sql = """
+                    SELECT * FROM JOB
+                    WHERE JOB_NAME!='관리자' OR JOB_RANK!=99
+                    ORDER BY JOB_RANK
+                """;
+		List<Job> list = new ArrayList<>();
+		try (Connection conn = ds.getConnection();
+			 PreparedStatement ps = conn.prepareStatement(sql)) {
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				list.add(new Job(rs.getInt("job_id"),
+						rs.getString("job_name"),
+						rs.getInt("job_rank")));
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return list;
 	}
 
 	public HashMap<Long, String> getIdToJobNameMap() {
@@ -58,4 +83,5 @@ public class JobDao {
 		}
 		return job;
 	}
+
 }

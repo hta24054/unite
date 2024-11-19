@@ -12,7 +12,7 @@ public class EmpUtil {
     public static boolean changePassword(Emp emp, String newPassword) {
         emp.setPassword(EmpUtil.hashingPassword(newPassword));
         EmpDao empDao = new EmpDao();
-        return empDao.updateEmp(emp) == 1;
+        return empDao.changePassword(emp) == 1;
     }
 
     public static boolean isManager(Emp emp) {

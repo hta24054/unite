@@ -23,6 +23,7 @@
 <style>
 .table {
 	width: 20%;
+	margin-left: 5%;
 }
 
 body {
@@ -39,9 +40,7 @@ h2 {
 	margin: 0;
 }
 
-.table {
-	margin-left: 5%;
-}
+
 
 table {
 	width: 90%;

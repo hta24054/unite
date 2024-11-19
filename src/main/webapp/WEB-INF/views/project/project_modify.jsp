@@ -27,16 +27,14 @@
 				<textarea name="board_content" id="board_content" class="form-control" rows="10"  >${task.projectContent}</textarea>
 			</div>
 			
-			<c:if test="${boarddata.board_re_lev == 0}">
 				<div class="form-group">
 					<label>파일 첨부
-						<img src="${pageContext.request.contextPath }/img/attach.png" alt="파일첨부" width="10px">
+						<img src="${pageContext.request.contextPath }/image/attach.png" alt="파일첨부" width="10px">
 						<input type="file" id="upfile" name="board_file">
 					</label>
-					<span id="filevalue">${boarddata.board_file}</span>
-					<img src="${pageContext.request.contextPath }/img/remove.png" alt="파일삭제" width="10px" class="remove">
+					<span id="filevalue">${task.task_file_original}</span>
+					<img src="${pageContext.request.contextPath }/image/remove.png" alt="파일삭제" width="10px" class="remove">
 				</div>
-			</c:if>
 			
 			<div class="form-group">
 				<button type=submit class="btn btn-primary">수정</button>

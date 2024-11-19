@@ -15,43 +15,49 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ProjectCommentAddAction implements Action {
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // 세션에서 사용자 및 프로젝트 정보 가져오기
         String userid = (String) req.getSession().getAttribute("id");
         int projectid = (Integer) req.getSession().getAttribute("projectId");
-        int task_num = Integer.parseInt(req.getParameter("comment_board_num"));
+        int taskNum = Integer.parseInt(req.getParameter("comment_board_num")); // 댓글이 달릴 글 번호
         String content = req.getParameter("content");
-        int parentCommentId = task_num;  // 부모 댓글 ID
-        
-        // 부모 댓글의 lev와 seq를 가져옴
+
+        // 부모 댓글 ID 파라미터 가져오기 (없으면 0으로 설정)
+        int parentCommentId = req.getParameter("parent_comment_id") != null
+                ? Integer.parseInt(req.getParameter("parent_comment_id"))
+                : 0;
+
+        // DAO 객체 생성
         ProjectbDao dao = new ProjectbDao();
-        int comment_re_lev = 0;
-        int comment_re_seq = 0;
-        
-        if (parentCommentId > 0) {
-            // 부모 댓글이 있는 경우, 부모 댓글의 lev와 seq 값을 가져옴
-            comment_re_lev = dao.getParentLev(task_num, parentCommentId) + 1;
-            comment_re_seq = dao.getNextReSeq(task_num, parentCommentId);
-        } else {
-            // 본문 댓글인 경우, lev와 seq는 0으로 설정
-            comment_re_lev = 0;
-            comment_re_seq = 0;
-        }
-        
+
         // 새로운 댓글 객체 생성
-        ProjectTask task_comment = new ProjectTask();
-        task_comment.setMemberId(userid);
-        task_comment.setProjectId(projectid);
-        task_comment.setTaskNum(task_num);
-        task_comment.setTaskContent(content);
-        task_comment.setBoard_re_lev(comment_re_lev);
-        task_comment.setBoard_re_seq(comment_re_seq);
-        
+        ProjectTask taskComment = new ProjectTask();
+        taskComment.setMemberId(userid);
+        taskComment.setProjectId(projectid);
+        taskComment.setTaskNum(taskNum);
+        taskComment.setTaskContent(content);
+
+        if (parentCommentId == 0) {
+            // 원문 댓글인 경우
+            int taskCommentId = dao.getTaskCommentId(taskNum); // task_comment_id를 가져오는 메서드 호출
+            taskComment.setBoard_re_ref(taskCommentId); // task_comment_id를 task_comment_re_seq로 설정
+            taskComment.setBoard_re_lev(0); // lev = 0
+            taskComment.setBoard_re_seq(0); // seq는 트리거에서 자동으로 처리됨
+        } else {
+            // 대댓글인 경우, 부모 댓글의 task_comment_id를 가져오기 위해 select 쿼리로 조회
+            int parentSeq = dao.getParentSeq(taskNum, parentCommentId); // 부모 댓글의 task_comment_id 가져오기
+            taskComment.setBoard_re_ref(parentSeq); // 부모 댓글의 task_comment_id를 ref로 설정
+            taskComment.setBoard_re_lev(1); // 대댓글이므로 lev = 1
+            taskComment.setBoard_re_seq(dao.getMaxSeq(taskNum, parentSeq) + 1); // 부모 댓글의 seq 값을 기준으로 seq 설정
+        }
+
         // 댓글 추가 DAO 호출
-        int ok = dao.commentsInsert(task_comment);
-        
+        int ok = dao.commentsInsert(taskComment);
+
         // 결과 출력
         resp.getWriter().print(ok);
-        
+
         return null;
     }
+
 
 }

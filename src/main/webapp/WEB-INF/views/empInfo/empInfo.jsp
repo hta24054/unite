@@ -1,33 +1,26 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-
-<html>
-<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>나의 인사정보</title>
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css"
 	href="${pageContext.request.contextPath}/css/empInfo.css">
-
 <script
 	src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-<script
-	src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<script
-	src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <jsp:include page="../common/header.jsp" />
 <jsp:include page="empInfo_leftbar.jsp" />
-<meta charset="UTF-8">
-
-
+<html>
+<head>
 <style>
 table, .table {
 	width: 90%;
 	border-collapse: collapse;
-	margin: auto;
+	margin: 0 5%;
+}
+
+#photo {
+	width: 5%;
 }
 
 th {
@@ -41,7 +34,7 @@ table {
 
 td, th {
 	border: 2px solid black;
-	padding: 15px;
+	padding: 10px;
 	color: black;
 	vertical-align: middle;
 	text-align: center;
@@ -52,6 +45,15 @@ td, th {
 	border-top: 2px solid black;
 }
 
+.table th {
+	padding: 10px;
+}
+
+.table td {
+	vertical-align: middle;
+	padding: 5px;
+}
+
 h2 {
 	text-align: left;
 	color: rgb(51, 68, 102);
@@ -59,7 +61,7 @@ h2 {
 } /* h2의 기본 여백 제거 */
 caption {
 	caption-side: top;
-	margin-bottom: 30px;
+	margin-bottom: 15px;
 } /* 캡션과 테이블 간격 설정 */
 input[readonly] {
 	border: none;
@@ -90,6 +92,7 @@ button#saveButton {
 	margin-right: 5%;
 }
 </style>
+
 <script>
 	$(document).ready(
 			function() {

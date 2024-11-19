@@ -1,10 +1,5 @@
 package com.hta2405.unite.action;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -15,12 +10,14 @@ import com.hta2405.unite.dao.JobDao;
 import com.hta2405.unite.dao.NoticeDao;
 import com.hta2405.unite.dto.Emp;
 import com.hta2405.unite.dto.Job;
-import com.hta2405.unite.dto.Notice;
 import com.hta2405.unite.util.LocalDateTimeAdapter;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class HomeAction implements Action {
 	private final NoticeDao noticeDao = new NoticeDao();
@@ -40,18 +37,20 @@ public class HomeAction implements Action {
 		req.setAttribute("job", job.getJobName());
 
 
+		// 게시판 가운데 테이블 데이터 생성
 		if ("XMLHttpRequest".equals(req.getHeader("X-Requested-With"))) {
-	        // 게시판 가운데 테이블 데이터 생성
 	        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter()).create();
 	        BoardDao board = new BoardDao();
 	        ArrayList<Object> list = board.getBoardListAll();
 
 	        JsonObject object = new JsonObject();
+	        JsonElement jeEmpMap = gson.toJsonTree(new EmpDao().getIdToENameMap());
 	        JsonElement je1 = gson.toJsonTree(list.get(0));
 	        JsonElement je2 = gson.toJsonTree(list.get(1));
 
 	        object.add("boards", je1);
 	        object.add("posts", je2);
+	        object.add("name", jeEmpMap);
 
 	        resp.setContentType("application/json;charset=utf-8");
 	        resp.getWriter().print(object);

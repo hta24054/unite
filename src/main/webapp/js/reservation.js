@@ -191,7 +191,6 @@ $(document).ready(function(){
 			        }
 			    }
 				
-				/*
 				$(".modal-header").find("h5").text("예약 정보");
 				$(".modify_area").find(".form-group").remove();
 				
@@ -229,7 +228,7 @@ $(document).ready(function(){
 			    }
 			    
 			    $("#reservationModal").modal("show");
-			    */
+			   
 			},
 			error: function () {
                 alert("예약 정보 팝업 불러오기 실패");

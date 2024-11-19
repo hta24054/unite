@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -211,6 +212,7 @@ public class ReservationDAO {
 	}// getResourceBookingList() end
 
 	
+	/*
 	// 자원 예약 정보 팝업
 	public HashMap<String, String> getResourceBookingDetail(Reservation reservation, Resource resource) {
 		HashMap<String, String> resourceMap = new HashMap<>();  // rescType을 key로, rescName을 value로 저장할 Map
@@ -257,6 +259,57 @@ public class ReservationDAO {
 	    System.out.println("자원 예약 정보 팝업 resourceMap" + resourceMap);
 	    return resourceMap;  
 	} //getResourceBookingDetail end
+	*/
+
+	public Map<String, Object> getResourceBookingDetail(String resourceId) {
+	    Map<String, Object> resourceData = new HashMap<>();
+	    
+	    String sql = """
+	        SELECT 
+	            resc.resc_id, 
+	            resc.resc_type, 
+	            resc.resc_name, 
+	            resc.resc_info, 
+	            resc.resc_usable,
+	            res.reservation_id,
+	            res.emp_id,
+	            res.reservation_start,
+	            res.reservation_end,
+	            res.reservation_info,
+	            res.reservation_allDay
+	        FROM resc
+	        LEFT JOIN reservation res
+	        ON resc.resc_id = res.resource_id
+	        WHERE resc.resc_id = ?
+	    """;
+	    
+	    try (Connection conn = ds.getConnection();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        
+	        pstmt.setString(1, resourceId);
+	        
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            if (rs.next()) {
+	                resourceData.put("resc_id", rs.getString("resc_id"));
+	                resourceData.put("resc_type", rs.getString("resc_type"));
+	                resourceData.put("resc_name", rs.getString("resc_name"));
+	                resourceData.put("resc_info", rs.getString("resc_info"));
+	                resourceData.put("resc_usable", rs.getBoolean("resc_usable"));
+	                resourceData.put("reservation_id", rs.getInt("reservation_id"));
+	                resourceData.put("emp_id", rs.getString("emp_id"));
+	                resourceData.put("reservation_start", rs.getTimestamp("reservation_start"));
+	                resourceData.put("reservation_end", rs.getTimestamp("reservation_end"));
+	                resourceData.put("reservation_info", rs.getString("reservation_info"));
+	                resourceData.put("reservation_allDay", rs.getBoolean("reservation_allDay"));
+	            }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    
+	    return resourceData;
+	}
+
 
 
 }

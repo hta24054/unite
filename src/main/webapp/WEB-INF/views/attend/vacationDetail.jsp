@@ -94,8 +94,8 @@
         <thead>
         <tr>
             <th>No</th>
-            <th>일수</th>
             <th>휴가구분</th>
+            <th>휴가일수</th>
             <th>신청일</th>
             <th>시작일</th>
             <th>종료일</th>
@@ -109,8 +109,8 @@
             <c:forEach var="vac" items="${vacList}" varStatus="status">
                 <tr>
                     <td>${status.count}</td>
-                    <td>${vac.vacationCount}</td>
                     <td>${vac.vacationType.typeName}</td>
+                    <td>${vac.vacationCount}</td>
                     <td>${vac.vacationApply}</td>
                     <td>${vac.vacationStart}</td>
                     <td>${vac.vacationEnd}</td>

@@ -1,5 +1,58 @@
 $(document).ready(function () {
-	function loadBoardData() {
+    let index = 0;
+
+    // 쿠키 확인 함수
+    function getCookie(name) {
+        const cookies = document.cookie.split('; ');
+        for (let i = 0; i < cookies.length; i++) {
+            const [key, value] = cookies[i].split('=');
+            if (key === name) return value;
+        }
+        return null;
+    }
+    // 쿠키 설정 함수
+    function setCookie(name, value, days) {
+        const date = new Date();
+        date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000); // 하루 후 만료
+        document.cookie = `${name}=${value}; expires=${date.toUTCString()}; path=/`;
+    }
+
+    // 오늘 하루 보지 않기 버튼 클릭 이벤트
+    $('#popup-dont-show').on('click', function () {
+        setCookie('dontShowPopup', 'true', 1); // 하루 동안 유지
+        $('#popup-container').fadeOut();
+    });
+
+    function showPopup() {
+        if (getCookie('dontShowPopup') === 'true') {
+            console.log('오늘 하루 보지 않기 활성화됨');
+            return; // 팝업 표시 안 함
+        }
+
+        if (index < notices.length) {
+            const notice = notices[index];
+            $('#popup-content').html(notice.content); // 공지사항 내용을 렌더링
+            $('#popup-container').fadeIn(200);
+            index++;
+        } else {
+            $('#popup-container').fadeOut(200); // 모든 공지사항이 끝나면 팝업 숨기기
+        }
+    }
+
+
+    $('#popup-close').on('click', function () {
+        $('#popup-container').fadeOut(200, function () {
+            showPopup(); // 다음 공지사항 표시
+        });
+    });
+
+    // 첫 팝업 표시
+    showPopup();
+
+    //include css 제거
+    const targetElement = document.querySelector("body > div > div.center > div:nth-child(2) > div");
+    targetElement.classList.remove("container");
+    function loadBoardData() {
 	    $.ajax({
 	        url: contextPath + "/home/", // 서블릿 URL
 	        type: "GET",
@@ -29,7 +82,7 @@ $(document).ready(function () {
 	                    let row = `
 	                        <tr>
 	                            <td><a href="javascript:void(0);" onclick="loadBoardList('${board.boardName2}', 1)">[${board.boardName2}]</a>&nbsp;${post.postSubject}</td> 
-	                            <td><img src="${contextPath}/image/profile_navy.png" class="user_img" alt="프로필" style="width:20px; height: 20px;">&nbsp;${post.postWriter}<br>${formattedDate}</td>
+	                            <td><img src="${contextPath}/image/profile_navy.png" class="user_img" alt="프로필" style="width:20px; height: 20px;">&nbsp;${data.name[post.postWriter]}<br>${formattedDate}</td>
 	                        </tr>`;
 	                    tableBody.append(row);  // 생성된 row를 테이블에 추가
 	                } else {
@@ -44,7 +97,7 @@ $(document).ready(function () {
 	}
 	
 	loadBoardData();  // 페이지 로드 시 데이터 로드
-	setInterval(loadBoardData, 3000);  // 3초마다 데이터 갱신
+    //setInterval(loadBoardData, 3000);  // 3초마다 데이터 갱신
 });
 
 	

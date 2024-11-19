@@ -12,6 +12,9 @@ import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.*;
 import com.hta2405.unite.dto.*;
 
+/**
+ * 직원 정보 조회를 위한 액션 클래스입니다. 요청된 직원 ID에 따라 직원의 상세 정보를 조회합니다.
+ */
 public class EmpViewAction implements Action {
 
 	@Override
@@ -19,49 +22,59 @@ public class EmpViewAction implements Action {
 			throws ServletException, IOException {
 		HttpSession session = req.getSession();
 
+		// 세션에서 empId와 deptId를 가져옵니다.
 		String empId = (String) session.getAttribute("id");
 		String deptId = (String) session.getAttribute("deptId");
-		// 세션에서 empId와 deptId 가져옵니다.
 
+		// 요청 파라미터에 id가 있으면 해당 값을 사용합니다.
 		if (req.getParameter("id") != null) {
 			empId = req.getParameter("id");
 		}
 
 		System.out.println("Received empId from session: " + empId);
 
+		// empId가 없으면 에러를 발생시킵니다.
 		if (empId == null || empId.isEmpty()) {
 			throw new ServletException("Employee ID is missing.");
 		}
 
+		// DAO 객체를 생성합니다.
 		EmpDao empDao = new EmpDao();
 		DeptDao deptDao = new DeptDao();
 		JobDao jobDao = new JobDao();
 		LangDao langDao = new LangDao();
 		CertDao certDao = new CertDao();
 
+		// 직원, 부서, 직책, 언어, 자격증 정보를 조회합니다.
 		Emp emp = empDao.getEmpById(empId);
 		Dept dept = deptDao.getDeptByEmpId(empId);
 		Job job = jobDao.getJobByEmpId(empId);
-		List<Lang> langList = langDao.getLangByEmpId(empId); // Lang 리스트
-		List<Cert> certList = certDao.getCertByEmpId(empId); // Cert 리스트
+		List<Lang> langList = langDao.getLangByEmpId(empId);
+		List<Cert> certList = certDao.getCertByEmpId(empId);
 
+		// 직원 정보가 없으면 에러를 발생시킵니다.
 		if (emp == null) {
 			throw new ServletException("No employee found with ID: " + empId);
 		}
+
+		// 세션에 부서 ID를 설정합니다.
 		if (deptId == null && dept != null) {
-			deptId = dept.getDeptId().toString(); // deptId를 문자열로 변환
+			deptId = dept.getDeptId().toString();
 			session.setAttribute("deptId", deptId);
 		}
 
+		// EmpDetails 객체를 생성하고 필요한 정보를 설정합니다.
 		EmpDetails details = new EmpDetails();
 		details.setEmp(emp);
 		details.setDept(dept);
 		details.setJob(job);
-		details.setLangList(langList); // Lang 리스트 설정
-		details.setCertList(certList); // Cert 리스트 설정
+		details.setLangList(langList);
+		details.setCertList(certList);
 
+		// 요청 속성에 EmpDetails 객체를 설정합니다.
 		req.setAttribute("details", details);
 
+		// 포워드 설정을 생성하고 경로를 설정합니다.
 		ActionForward forward = new ActionForward();
 		forward.setRedirect(false);
 		forward.setPath("/WEB-INF/views/empInfo/empInfo.jsp");

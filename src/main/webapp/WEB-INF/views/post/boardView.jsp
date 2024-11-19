@@ -1,12 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <!DOCTYPE html>
 <html>
 <head>
-<title>MVC 게시판 - view</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/boardView.css" type="text/css">
 <style>
 .boardViewcontainer{
@@ -14,18 +12,23 @@
 	margin: 0;
 	padding: 0px 10px;
 }
-.board_view_subeject{
-	font-size: 2rem;
-}
-.board_view_btns{
+.board_view_header{
 	display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+}
+.left_subeject{
+	font-size: 2rem;
+	text-align: left;
+}
+.right_btns{
     padding-right: 15px;
+    text-align: right;
 }
 .board_view_btn{
 	border: 1px solid #afafaf;
     padding: 5px 20px;
+    margin-left: 5px;
 }
 
 .table td{
@@ -47,8 +50,8 @@
 }
 
 .board_view_content{
-	min-height: 200px;
-	padding: 20px 0px;
+	min-height: 250px;
+	padding: 20px 0px 30px;
 }
 
 .preview-btn,.download-btn{
@@ -78,31 +81,36 @@ sup {
 	<div class="boardViewcontainer">
 	    <table class="table">
     		<tr>
-    			<td colspan="2" class="board_view_subeject">
-    				<c:out value="${postDataAndFile[0].postSubject}"/>
-    				<c:out value="[${postDataAndFile[0].postCommentCnt}]"/>
-    			</td>
-    			<td class="board_view_btns center">
-    				<c:if test ="${postDataAndFile[0].postWriter == id||id == 'admin'}">
-    					<a href="modify?num=${boarddata.board_num}">
-    						<button class="btn board_view_btn">수정</button>
-    					</a>
-    					<%-- href의 주소를 #으로 설정합니다. --%>
-    					<a href="#">
-    						<button class="btn board_view_btn" data-toggle="modal"
-    							data-target="#myModal">삭제</button>
-    					</a>
-    				</c:if>
-   					<a href="reply?num=${boarddata.board_num}">
-   						<button class="btn board_view_btn">답글</button>
-   					</a>
-    				<a href="list">
-   						<button class="btn board_view_btn">목록</button>
-   					</a>
+    			<td colspan="3" class="board_view_header">
+    				<span class="left_subeject">
+	    				<c:out value="${postDataAndFile[0].postSubject}"/>
+	    				<c:out value="[${postDataAndFile[0].postCommentCnt}]"/>
+    				</span>
+    				
+    				<span class="right_btns">
+    					<c:if test ="${postDataAndFile[0].postWriter == id||id == 'admin'}">
+	    					<button class="btn board_view_btn postModify-link" 
+	    							data-page="post/modify?id=${postDataAndFile[0].postId}">
+	    							수정
+	    					</button>
+	    					
+	    					<%-- href의 주소를 #으로 설정합니다. --%>
+	    					<a href="#">
+	    						<button class="btn board_view_btn" data-toggle="modal"
+	    							data-target="#myModal">삭제</button>
+	    					</a>
+	    				</c:if>
+	   					<a href="reply?num=${boarddata.board_num}">
+	   						<button class="btn board_view_btn">답글</button>
+	   					</a>
+	    				<a href="list">
+	   						<button class="btn board_view_btn">목록</button>
+	   					</a>
+    				</span>
     			</td>
     		</tr>
     		<tr>
-    			<td colspan="3" style="padding-top: 5px;">
+    			<td colspan="3" style="padding-top: 10px;">
     				
     				<img src=${'/unite/image/profile_black.png'} alt="프로필 이미지" class="icon">
 				    <div class="username">${empMap[postDataAndFile[0].postWriter]}</div>
@@ -115,21 +123,20 @@ sup {
     			</td>
     		</tr>
     		
+	    	<%--원문글인 경우에만 첨부파일을 추가 할 수 있습니다. --%>
     		<c:if test="${postDataAndFile[0].postReLev==0}">
-	    		<%--원문글인 경우에만 첨부파일을 추가 할 수 있습니다. --%>
-	    		
-	    		<tr>
-	    			<%-- 파일을 첨부한 경우 --%>
-	    			<c:if test="${postDataAndFile[2] != null}">
-		    			<c:forEach var="postFile" items="${postDataAndFile[2]}">
-			    			<td colspan="3"><img src="${pageContext.request.contextPath}/image/attach.png" style="width:13px; margin: 0px 5px 0px 20px;">
+	    		<%-- 파일을 첨부한 경우 --%>
+    			<c:if test="${postDataAndFile[2] != null}">
+	    			<c:forEach var="postFile" items="${postDataAndFile[2]}">
+	    				<tr>
+			    			<td colspan="3" style="padding: 0px 12px 0px 12px;"><img src="${pageContext.request.contextPath}/image/attach.png" style="width:13px; margin: 0px 5px 0px 20px;">
 			    				<a href="down?postFileId=${postFile.postFileId}">${postFile.postFileOriginal}</a>
 			    				<button class="preview-btn" onclick="previewFile('${postFile.postFileId}')">미리보기</button>
       							<button class="download-btn" onclick="location.href='down?postFileId=${postFile.postFileId}'">다운로드</button>
 			    			</td>
-			    		</c:forEach>
-	    			</c:if>
-    			</tr>
+    					</tr>
+		    		</c:forEach>
+    			</c:if>
     		</c:if>
     		<tr>
     			<td colspan="3" style="padding-bottom:12px;">

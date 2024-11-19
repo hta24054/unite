@@ -8,11 +8,6 @@ body>div>table>tbody td:nth-child(1) {
 	font-size: 1.2em
 }
 
-td:nth-child(1) {
-	width: 20%
-}
-
-
 body>div>table>tbody>tr:nth-child(5)>td:nth-child(2)>a {
 	color: black
 }

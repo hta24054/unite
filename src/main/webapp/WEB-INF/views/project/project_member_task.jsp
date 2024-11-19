@@ -12,44 +12,6 @@
     <script src="${pageContext.request.contextPath }/js/project_task_list.js"></script> 
     <script>
     	const contextPath = "${pageContext.request.contextPath}";
-
-        function toggleOptions(index) {
-            // 각 행의 숨겨진 optionsRow의 표시 상태를 전환
-            const row = document.getElementById(`optionsRow-${index}`);
-		    if (row) { // 요소가 존재할 때만 스타일 변경
-		        if (row.style.display === "none") {
-		            row.style.display = "table-row";
-		        } else {
-		            row.style.display = "none";
-		        }
-		    } else {
-		        console.warn(`Element with ID optionsRow-${index} not found.`);
-		    }
-        }
-
-        function editPost(projectId) {
-            // 수정 기능
-            alert("수정 기능입니다. Project ID: " + projectId);
-            // 필요한 로직 추가
-        }
-
-        function deletePost(projectId) {
-            // 삭제 기능
-            alert("삭제 기능입니다. Project ID: " + projectId);
-            // 필요한 로직 추가
-        }
-
-        function goToList() {
-            // 목록 페이지로 이동
-            alert("목록으로 이동합니다.");
-            // 필요한 로직 추가
-        }
-
-        function replyPost(projectId) {
-            // 답변 기능
-            alert("답변 기능입니다. Project ID: " + projectId);
-            // 필요한 로직 추가
-        }
     </script>
     <jsp:include page="../common/header.jsp"/>
 	<jsp:include page="project_leftbar.jsp"/>

@@ -78,7 +78,7 @@
     $("#tree").fancytree({
         source: [
             {
-                title: "대표이사", key: "1000", folder: true, children: [
+                title: "대표이사", key: "1000", expanded: true, folder: true, children: [
                     {title: "부사장", key: "1001", folder: true},
                     {
                         title: "경영기획본부", key: "1100", folder: true, children: [

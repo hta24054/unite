@@ -20,7 +20,7 @@ public class ResourceBookingAction implements Action {
 			throws ServletException, IOException{
 		
 		Reservation reservation = new Reservation();
-		Resource resource = new Resource();
+		//Resource resource = new Resource();
 		
 		String empId = request.getParameter("emp_id"); // 예약자
 		int allDay = request.getParameter("allDay") == null ? 0 : Integer.parseInt(request.getParameter("allDay"));
@@ -36,11 +36,13 @@ public class ResourceBookingAction implements Action {
 		reservation.setReservationStart(startDateTime);
 		reservation.setReservationEnd(endDateTime);
 		reservation.setReservationInfo(usage);
-		resource.setResourceId(Long.parseLong(resourceId)); // resc_id
-
+		//resource.setResourceId(Long.parseLong(resourceId)); // resc_id
+		reservation.setResourceId(Integer.parseInt(resourceId));
+		
 		ReservationDAO reservationDao = new ReservationDAO();
 		
-		int ok = reservationDao.insertResourceBooking(reservation, resource);
+		//int ok = reservationDao.insertResourceBooking(reservation, resource);
+		int ok = reservationDao.insertResourceBooking(reservation);
 		response.getWriter().print(ok);
 		return null;
 	}

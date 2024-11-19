@@ -163,6 +163,9 @@ VALUES (
 SELECT * 
 FROM reservation;
 
+SELECT * 
+FROM resc;
+
 
 TRUNCATE TABLE reservation;
 

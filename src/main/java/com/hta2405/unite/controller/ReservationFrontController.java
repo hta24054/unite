@@ -1,5 +1,6 @@
 package com.hta2405.unite.controller;
 
+import com.hta2405.unite.action.reservation.GetResourceBookingListAction;
 import com.hta2405.unite.action.reservation.GetResourceIdAction;
 import com.hta2405.unite.action.reservation.GetResourceListAction;
 import com.hta2405.unite.action.reservation.ReservationWeekCalenderAction;
@@ -19,7 +20,7 @@ public class ReservationFrontController extends AbstractFrontController {
 		actionMap.put("/resourceSelectChange", new ResourceSelectChangeAction());
 		actionMap.put("/getResourceId", new GetResourceIdAction());
 		actionMap.put("/resourceBooking", new ResourceBookingAction());
-		
+		actionMap.put("/getResourceBookingList", new GetResourceBookingListAction());
 		
 		
 		

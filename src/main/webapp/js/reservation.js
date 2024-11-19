@@ -33,6 +33,46 @@ $(document).ready(function(){
         });
 	}
 	
+	// 자원 예약 목록 불러오기
+	function getResourceBookingList(){
+		$.ajax({
+			url: "getResourceBookingList",
+			type: "get",
+	        dataType: "json",
+	        success: function (data) {
+				events = []; 
+				if (data != null && data.length > 0) {
+					console.log(data);  
+					
+			        for (let i = 0; i < data.length; i++) {
+						events.push({
+							id: data[i].reservation_id, 
+							allDay: data[i].reservation_allDay,
+			                start: data[i].reservation_start, 
+			                end: data[i].reservation_end,
+			                //allDay: data[i].reservation_allDay === 1, // 종일 여부
+					        //start: moment(data[i].reservation_start).toDate(), // moment로 변환하여 Date 객체로
+					        //end: moment(data[i].reservation_end).toDate(), 
+		                 	extendedProps: {
+								 //resourceName: data[i].resourceName,
+	                             usage: data[i].usage
+	                        }
+			            });
+			        }
+			        // 캘린더의 events 배열 갱신
+	                calendar.addEventSource(events); // 기존 이벤트 소스에 새로 추가
+	                calendar.refetchEvents(); // 이벤트 새로고침
+			    } else {
+	                console.log("예약 목록이 없습니다.");
+	            }
+			},
+			error: function () {
+                alert("자원 예약 목록 불러오기 실패");
+            }
+		});
+	}
+	
+	
 	// 자원 선택 시 해당 자원명 불러오기
 	$resourceType.on("change", function() {
 		const $selectedVal = $(this).val();
@@ -244,4 +284,5 @@ $(document).ready(function(){
 	}
 
 	initCalendar();
+	getResourceBookingList();
 });

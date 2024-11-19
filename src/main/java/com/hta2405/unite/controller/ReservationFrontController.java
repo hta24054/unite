@@ -20,7 +20,7 @@ public class ReservationFrontController extends AbstractFrontController {
 		actionMap.put("/getResourceList", GetResourceListAction::new);
 		actionMap.put("/resourceSelectChange", ResourceSelectChangeAction::new);
 		actionMap.put("/getResourceId", GetResourceIdAction::new);
-		actionMap.put("/resourceBooking", ResourceBookingAction::new));
+		actionMap.put("/resourceBooking", ResourceBookingAction::new);
 		actionMap.put("/getResourceBookingList", GetResourceBookingListAction::new);
 		actionMap.put("/getResourceBookingDetail", GetResourceBookingDetailAction::new);	
 	}

@@ -2,10 +2,7 @@ package com.hta2405.unite.controller;
 
 import com.hta2405.unite.action.project.ProjectCommentAction;
 import com.hta2405.unite.action.project.ProjectCommentAddAction;
-import com.hta2405.unite.action.project.ProjectCommentDeleteAction;
 import com.hta2405.unite.action.project.ProjectCommentListAction;
-import com.hta2405.unite.action.project.ProjectCommentReplyAction;
-import com.hta2405.unite.action.project.ProjectCommentUpdateAction;
 import com.hta2405.unite.action.project.ProjectDeleteAction;
 import com.hta2405.unite.action.project.ProjectDownAction;
 import com.hta2405.unite.action.project.ProjectMemberTaskAction;
@@ -33,8 +30,5 @@ public class ProjectBoardController extends AbstractFrontController{
         actionMap.put("/delete", ProjectDeleteAction::new);
         actionMap.put("/commentadd", ProjectCommentAddAction::new);
         actionMap.put("/commentlist", ProjectCommentListAction::new);
-        actionMap.put("/reply", ProjectCommentReplyAction()::new);
-        actionMap.put("/commentdelete", ProjectCommentDeleteAction()::new);
-        actionMap.put("/update", ProjectCommentUpdateAction()::new);
     }
 }

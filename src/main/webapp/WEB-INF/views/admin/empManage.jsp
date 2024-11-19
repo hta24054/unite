@@ -91,11 +91,10 @@
     }
 
     function editEmp() {
-        alert("수정 버튼 클릭됨");
         const empId = $('input[name="selectedEmp"]:checked').val();
 
         if (empId) {
-            window.location.href = contextPath + '/admin/emp/edit?empId=' + empId;
+            window.location.href = contextPath + '/admin/emp-manage/edit?empId=' + empId;
         } else {
             alert("수정할 직원을 선택해 주세요.");
         }

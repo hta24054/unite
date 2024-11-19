@@ -22,20 +22,20 @@ public class ProjectFrontController extends AbstractFrontController {
     //아래에 URL, Action 추가
     @Override
     public void init() throws ServletException {
-        actionMap.put("/main", new ProjectMainAction()); //메인
-        actionMap.put("/create", new ProjectCreateAction());
-        actionMap.put("/cancel", new ProjectCancelAction());
-        actionMap.put("/detail", new ProjectDetailAction());
-        actionMap.put("/progress", new ProjectProgressAction());
-        actionMap.put("/orgchart", new ProjectChartAction());
-        actionMap.put("/complete", new ProjectCompleteAction());
-        // actionMap.put("/write", new ProjectWriteAction());
-        // actionMap.put("/add", new ProjectAddAction());
-        actionMap.put("/employ", new ProjectEmployAction());
-        actionMap.put("/doCreate", new ProjectDoCreateAction());
-        actionMap.put("/getOngoingProjects", new ProjectGetOngoingAction());
-        actionMap.put("/updateprogress", new ProjectUpdateProgressAction());
-        actionMap.put("/updatetaskdesign", new ProjectUpdateTaskDesignAction());
+        actionMap.put("/main", ProjectMainAction::new); //메인
+        actionMap.put("/create", ProjectCreateAction::new);
+        actionMap.put("/cancel", ProjectCancelAction::new);
+        actionMap.put("/detail", ProjectDetailAction::new);
+        actionMap.put("/progress", ProjectProgressAction::new);
+        actionMap.put("/orgchart", ProjectChartAction::new);
+        actionMap.put("/complete", ProjectCompleteAction::new);
+        // actionMap.put("/write", ProjectWriteAction::new);
+        // actionMap.put("/add", ProjectAddAction::new);
+        actionMap.put("/employ", ProjectEmployAction::new);
+        actionMap.put("/doCreate", ProjectDoCreateAction::new);
+        actionMap.put("/getOngoingProjects", ProjectGetOngoingAction::new);
+        actionMap.put("/updateprogress", ProjectUpdateProgressAction::new);
+        actionMap.put("/updatetaskdesign", ProjectUpdateTaskDesignAction::new);
         
     }
 }

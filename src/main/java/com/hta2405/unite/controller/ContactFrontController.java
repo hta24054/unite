@@ -12,10 +12,10 @@ import jakarta.servlet.annotation.WebServlet;
 public class ContactFrontController extends AbstractFrontController {
 	@Override
 	public void init() throws ServletException {
-		actionMap.put("/addressbook", new AddressBookAction());
-		actionMap.put("/deptbyjob", new DeptEmployeesByJobAction());
-		actionMap.put("/allemployeesbyname", new AllEmployeesByNameAction());
-		actionMap.put("/allemployeesbyjob", new AllEmployeesByJobAction());
-		actionMap.put("/search", new SearchAction());
+		actionMap.put("/addressbook", AddressBookAction::new);
+		actionMap.put("/deptbyjob", DeptEmployeesByJobAction::new);
+		actionMap.put("/allemployeesbyname", AllEmployeesByNameAction::new);
+		actionMap.put("/allemployeesbyjob", AllEmployeesByJobAction::new);
+		actionMap.put("/search", SearchAction::new);
 	}
 }

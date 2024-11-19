@@ -23,10 +23,10 @@ public class ProjectDeleteAction implements Action {
         int task_num = Integer.parseInt(req.getParameter("num"));
         String pass = req.getParameter("board_pass");
         
-        System.out.println(userid);
-        System.out.println(projectid);
-        System.out.println(task_num);
-        System.out.println(pass);
+        System.out.println("userid : " + userid);
+        System.out.println("projectid : " + projectid);
+        System.out.println("task_num : " + task_num);
+        System.out.println("pass : " + pass);
         // 직원 정보 조회
         EmpDao dao = new EmpDao();
         Emp emp = dao.getEmpById(userid);
@@ -35,7 +35,7 @@ public class ProjectDeleteAction implements Action {
         ProjectbDao del = new ProjectbDao();
         boolean deleteSuccess = false;
         ActionForward forward = new ActionForward();
-
+        
         if (EmpUtil.verifyPassword(emp, pass)) {
             deleteSuccess = del.boardDelete(task_num);
             if (deleteSuccess) {
@@ -54,7 +54,7 @@ public class ProjectDeleteAction implements Action {
             req.setAttribute("error", "비밀번호가 일치하지 않습니다.");
             forward.setPath("comm?userid="+ userid +"&num=" + task_num);
         }
-
+        
         return forward;
     }
 }

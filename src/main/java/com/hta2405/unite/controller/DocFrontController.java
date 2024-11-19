@@ -12,30 +12,30 @@ import jakarta.servlet.annotation.WebServlet;
 public class DocFrontController extends AbstractFrontController {
     @Override
     public void init() throws ServletException {
-        actionMap.put("/waiting", new DocWaitingListAction());
-        actionMap.put("/waiting-process", new DocWaitingListProcessAction());
-        actionMap.put("/general", new DocGeneralWriteAction());
-        actionMap.put("/general_write", new DocGeneralWriteAndEditProcessAction());
-        actionMap.put("/general_edit", new DocGeneralWriteAndEditProcessAction());
-        actionMap.put("/vacation", new DocVacationWriteAction());
-        actionMap.put("/vacation_write", new DocVacationWriteAndEditProcessAction());
-        actionMap.put("/vacation_edit", new DocVacationWriteAndEditProcessAction());
-        actionMap.put("/trip", new DocTripWriteAction());
-        actionMap.put("/trip_write", new DocTripWriteAndEditProcessAction());
-        actionMap.put("/trip_edit", new DocTripWriteAndEditProcessAction());
-        actionMap.put("/buy", new DocBuyWriteAction());
-        actionMap.put("/buy_write", new DocBuyWriteAndEditProcessAction());
-        actionMap.put("/buy_edit", new DocBuyWriteAndEditProcessAction());
-        actionMap.put("/my-approved", new DocMyApprovedListAction());
-        actionMap.put("/read", new DocReadAction());
-        actionMap.put("/in-progress", new DocInProgressAction());
-        actionMap.put("/countVacation", new DocCountVacationAction());
-        actionMap.put("/list/dept", new DocDeptListAction());
-        actionMap.put("/list/sign", new DocSignListAction());
-        actionMap.put("/download", new DocVacationFileDownloadAction());
-        actionMap.put("/sign", new DocSignAction());
-        actionMap.put("/revoke", new DocRevokeAction());
-        actionMap.put("/delete", new DocDeleteAction());
-        actionMap.put("/edit", new DocEditAction());
+        actionMap.put("/waiting", DocWaitingListAction::new);
+        actionMap.put("/waiting-process", DocWaitingListProcessAction::new);
+        actionMap.put("/general", DocGeneralWriteAction::new);
+        actionMap.put("/general_write", DocGeneralWriteAndEditProcessAction::new);
+        actionMap.put("/general_edit", DocGeneralWriteAndEditProcessAction::new);
+        actionMap.put("/vacation", DocVacationWriteAction::new);
+        actionMap.put("/vacation_write", DocVacationWriteAndEditProcessAction::new);
+        actionMap.put("/vacation_edit", DocVacationWriteAndEditProcessAction::new);
+        actionMap.put("/trip", DocTripWriteAction::new);
+        actionMap.put("/trip_write", DocTripWriteAndEditProcessAction::new);
+        actionMap.put("/trip_edit", DocTripWriteAndEditProcessAction::new);
+        actionMap.put("/buy", DocBuyWriteAction::new);
+        actionMap.put("/buy_write", DocBuyWriteAndEditProcessAction::new);
+        actionMap.put("/buy_edit", DocBuyWriteAndEditProcessAction::new);
+        actionMap.put("/my-approved", DocMyApprovedListAction::new);
+        actionMap.put("/read", DocReadAction::new);
+        actionMap.put("/in-progress", DocInProgressAction::new);
+        actionMap.put("/countVacation", DocCountVacationAction::new);
+        actionMap.put("/list/dept", DocDeptListAction::new);
+        actionMap.put("/list/sign", DocSignListAction::new);
+        actionMap.put("/download", DocVacationFileDownloadAction::new);
+        actionMap.put("/sign", DocSignAction::new);
+        actionMap.put("/revoke", DocRevokeAction::new);
+        actionMap.put("/delete", DocDeleteAction::new);
+        actionMap.put("/edit", DocEditAction::new);
     }
 }

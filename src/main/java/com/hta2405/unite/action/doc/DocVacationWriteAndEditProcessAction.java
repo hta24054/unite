@@ -5,6 +5,7 @@ import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.DocDao;
 import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dto.DocVacation;
+import com.hta2405.unite.dto.Emp;
 import com.hta2405.unite.enums.AttendType;
 import com.hta2405.unite.enums.DocType;
 import com.hta2405.unite.util.ConfigUtil;
@@ -72,15 +73,16 @@ public class DocVacationWriteAndEditProcessAction implements Action {
             String fileName = fileUUID + "_" + fileOriginalName;
 
             // 저장 경로 설정 및 파일 저장
-            filePath = UPLOAD_DIRECTORY + File.separator + fileName;
-            File uploadDir = new File(UPLOAD_DIRECTORY);
-            if (!uploadDir.exists()) {
-                boolean dirsCreated = uploadDir.mkdirs();
-                if (!dirsCreated) {
-                    throw new IOException("업로드 폴더를 생성할 수 없습니다: " + UPLOAD_DIRECTORY);
-                }
+            String uploadPath = req.getServletContext().getRealPath(UPLOAD_DIRECTORY);
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists() && !uploadDir.mkdirs()) {
+                throw new IOException("업로드 폴더를 생성할 수 없습니다: " + uploadPath);
             }
-            filePart.write(filePath);
+
+            // 파일 저장
+            File file = new File(uploadPath, fileName);
+            filePart.write(file.getAbsolutePath());// 웹 경로 설정
+            filePath = UPLOAD_DIRECTORY;
         }
 
         // DocVacation 객체 생성

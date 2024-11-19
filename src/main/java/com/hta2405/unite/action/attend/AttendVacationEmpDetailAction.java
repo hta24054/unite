@@ -13,6 +13,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import static com.hta2405.unite.util.AttendUtil.checkAttendRole;
+
 public class AttendVacationEmpDetailAction implements Action {
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -23,7 +25,7 @@ public class AttendVacationEmpDetailAction implements Action {
         if (!EmpUtil.isHrDept(loginEmp)) {
             CommonUtil.alertAndGoBack(resp, "인사부서가 아닙니다.");
         }
-
+        checkAttendRole(loginEmp, req);
         return new AttendUtil().getVacationDetail(req, empId);
     }
 }

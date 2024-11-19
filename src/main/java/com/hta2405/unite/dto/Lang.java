@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class Lang {
-    private int langId;
+    private Long langId;
     private String langName;
     private String empId;
    

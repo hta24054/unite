@@ -14,11 +14,10 @@ public class EmpInfoFrontController extends AbstractFrontController {
 
 	@Override
 	public void init() throws ServletException {
-		actionMap.put("/view", new EmpViewAction());
-		actionMap.put("/update", new EmpInfoUpdateAction());
-		actionMap.put("/viewdept", new EmpViewDeptAction());
-		actionMap.put("/viewotherdeptinfo", new EmpViewOtherDeptInfoAction());
-		actionMap.put("/viewotherdept", new EmpViewOtherDeptAction());
-		actionMap.put("/detail", new EmpDetailViewAction()); // 추가된 부분
+        actionMap.put("/view", EmpViewAction::new);
+        actionMap.put("/update", EmpInfoUpdateAction::new);
+        actionMap.put("/viewdept", EmpViewDeptAction::new);
+        actionMap.put("/viewotherdeptinfo", EmpViewOtherDeptInfoAction::new);
+        actionMap.put("/viewotherdept", EmpViewOtherDeptAction::new);
 	}
 }

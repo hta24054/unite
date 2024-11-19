@@ -32,6 +32,8 @@ public class ProjectModifyAction implements Action {
         ProjectbDao user_task = new ProjectbDao();
         List<ProjectTask> task = user_task.getUserTaskDetail(userid, projectid, task_num);
         
+        System.out.println(task);
+        
         ActionForward forward = new ActionForward();
         req.setAttribute("task", task.get(0));
         

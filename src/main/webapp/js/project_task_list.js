@@ -50,12 +50,12 @@ function updateBoardList(data){
 
         // task_file_original이 null 또는 undefined일 경우 체크
         if (item.task_file_original && item.task_file_original !== '') 
-            file_name = item.task_file_original.length > 10 ? "***" + item.task_file_type : item.task_file_original;
+            file_name = item.task_file_original.length > 10 ? item.task_file_type + "파일" : item.task_file_original;
         
         output += `
             <tr>
                 <td>${num--}</td>
-                <td><a href="comm?num=${item.taskNum}&userid=${item.memberId}">${changeSubject}</a> [${item.board_cnt}]</td>
+                <td><a href="comm?num=${item.taskNum}&userid=${item.memberId}">${changeSubject}</a>${item.board_cnt > 0 ? `[${item.board_cnt}]` : ''}</td>
                 <td><div>${item.projectContent}</div></td>
                 <td><div>${item.projectDate}</div></td>
                 <td><div>${item.projectUpdateDate}</div></td>

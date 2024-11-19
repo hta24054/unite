@@ -1,4 +1,8 @@
 $(document).ready(function () {
+	//include css 제거
+	const targetElement = document.querySelector("body > div > div.center > div:nth-child(2) > div");
+    targetElement.classList.remove("container");
+	
 	function loadBoardData() {
 	    $.ajax({
 	        url: contextPath + "/home/", // 서블릿 URL
@@ -29,7 +33,7 @@ $(document).ready(function () {
 	                    let row = `
 	                        <tr>
 	                            <td><a href="javascript:void(0);" onclick="loadBoardList('${board.boardName2}', 1)">[${board.boardName2}]</a>&nbsp;${post.postSubject}</td> 
-	                            <td><img src="${contextPath}/image/profile_navy.png" class="user_img" alt="프로필" style="width:20px; height: 20px;">&nbsp;${post.postWriter}<br>${formattedDate}</td>
+	                            <td><img src="${contextPath}/image/profile_navy.png" class="user_img" alt="프로필" style="width:20px; height: 20px;">&nbsp;${data.name[post.postWriter]}<br>${formattedDate}</td>
 	                        </tr>`;
 	                    tableBody.append(row);  // 생성된 row를 테이블에 추가
 	                } else {
@@ -44,7 +48,7 @@ $(document).ready(function () {
 	}
 	
 	loadBoardData();  // 페이지 로드 시 데이터 로드
-	setInterval(loadBoardData, 3000);  // 3초마다 데이터 갱신
+	//setInterval(loadBoardData, 3000);  // 3초마다 데이터 갱신
 });
 
 	

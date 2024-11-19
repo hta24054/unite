@@ -51,13 +51,27 @@
     #horizon {width: 180px !important;}
 	tr td:nth-child(1) {width: 70%; text-align: left;}
 	tr td:nth-child(2) {width: 30%; text-align: right;}
-		
-		
+	
+	
 		/* 테이블 전체 스타일 */
-	table.styled-table {
+	table.styled-table{
 	    width: 100%;                /* 테이블 너비 전체 사용 */
 	    border-collapse: collapse;  /* 테두리 겹침 방지 */
 	    background-color: transparent;  /* 배경색 제거 */
+	    height: 200px;
+	}
+	.c_table{
+		width: 100%;                /* 테이블 너비 전체 사용 */
+	    border-collapse: collapse;  /* 테두리 겹침 방지 */
+	    background-color: transparent;  /* 배경색 제거 */
+	    height: 350px;
+	}
+	
+	#waiting_table{
+		width: 100%;                /* 테이블 너비 전체 사용 */
+	    border-collapse: collapse;  /* 테두리 겹침 방지 */
+	    background-color: transparent;  /* 배경색 제거 */
+	    height: 200px;
 	}
 	
 	/* 테이블 셀 스타일 */

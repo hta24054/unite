@@ -75,7 +75,12 @@ function getList(state){
 					console.log(comment.projectContent);
 					console.log(rdata.commentlist);	
 					//로그인한 사람이 댓글 작성자인 경우
-					let toolButtons = $("#loginid").val() == comment.task_comment_writer ? `
+					console.log("작성자" + $("#loginid").val());
+					console.log(comment.task_comment_writer);
+					console.log(rdata.id);
+					console.log(comment.id);
+					console.log($(this).id);
+					let toolButtons = rdata.id == comment.task_comment_writer ? `
 						<div class='comment-tool'>
 							<div title='더보기' class='comment-tool-button'>
 								<div>&#46;&#46;&#46;</div>
@@ -184,7 +189,7 @@ $(function(){
 		}
 		const num = $(this).attr('data-id');
 		$.ajax({
-			url:'../comments/update',
+			url: contextPath + '/projectb/update',
 			data:{num:num, content:content},
 			success:function(rdata){
 				if(rdata==1){
@@ -219,7 +224,7 @@ $(function(){
 		}
 		$.ajax({
 			type: 'post',
-			url: '../comments/reply',
+			url:  contextPath + "/projectb/reply",
 			data:{
 				id : $("#loginid").val(),
 				content : content,
@@ -229,6 +234,7 @@ $(function(){
 				comment_re_seq : $(this).attr('data-seq')
 			},
 			success : function(rdata){
+				console.log('ㄴㄴㄴㄴ');
 				if(rdata == 1){
 					getList(option);
 				}
@@ -290,9 +296,10 @@ function del(num){
 		return;
 	}
 	$.ajax({
-		url: '../comments/delete',
+		url: contextPath + '/projectb/commentdelete',
 		data:{num:num},
 		success: function(rdata){
+			console.log('aaaa');
 			if(rdata == 1){
 				getList(option);
 			}

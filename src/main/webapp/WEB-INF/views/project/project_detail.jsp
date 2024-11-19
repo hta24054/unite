@@ -113,7 +113,6 @@
 						</c:forEach> 
 				    </tbody>
 				</table>
-				<a href="${pageContext.request.contextPath}/project/progress" class="btn btn-info btn-sm float-right">상세보기</a> <!-- 제일 우측 하단에 링크 -->
 			</div>
 			<div class="col-md-4 notification">
 				<h5>알림</h5>

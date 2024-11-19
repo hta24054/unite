@@ -110,6 +110,16 @@ $(document).ready(function(){
                 resourceName: $("#resourceName option:selected").text(), // 자원 이름
                 reservationInfo: $("#reservationInfo").val()
             },
+            success: function (data) {
+	            if (data === 0) {
+	                alert('이미 예약된 자원입니다.');
+	                return;  // 이미 예약된 자원이라면 예약을 진행하지 않음
+	            }
+
+	            getReservationList();
+	            $("#reservationModal").modal("hide");
+	        },
+            /*
 	        success: function (data) {
 				events = []; 
 				if (data != null && data.length > 0) {
@@ -136,6 +146,7 @@ $(document).ready(function(){
 				getReservationList();
 				$("#reservationModal").modal("hide"); 
 			},
+			*/
 			error: function () {
                 alert("자원 예약 오류");
             }
@@ -351,11 +362,38 @@ $(document).ready(function(){
 			events: events, // 전역 이벤트 배열 사용
 		    dateClick: function(info) {
 			    console.log("dateClick:", info);
-			    if (!info.event) { // 클릭한 날짜에 자원예약 없는 경우
-                    $("#reservationModal").modal("show");
-                    $(".modal-header").find("h5").text("예약 하기");
-                    $("#startAt").val(moment(info.dateStr).format("YYYY-MM-DD HH:mm"));
-                    $("#endAt").val(moment(info.dateStr).format("YYYY-MM-DD HH:mm"));
+			    if (!info.event) { // 빈 셀 클릭 시
+				    $(".modal-header").find("h5").text("예약 하기"); 
+				    $(".modal-body").find(".btn_wrap").html(`
+				        <button type="reset" class="btn btn-secondary">취소</button>
+				        <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
+				    `);
+				    
+				    $("#allDay").prop("checked", false);
+				    //$("#startAt").val(moment(info.dateStr).format("YYYY-MM-DD HH:mm"));
+                    //$("#endAt").val(moment(info.dateStr).format("YYYY-MM-DD HH:mm"));
+                    $("#endAt").val("");
+			        $("#description").val("");
+				    $resourceType.val("");
+				    $resourceName.hide().empty().append('<option value="">자원명</option>'); 
+				    $("#reservationInfo").val(""); 
+				    
+				    $("#reservationModal").modal("show");
+			
+				    // 등록 버튼에 이벤트 바인딩
+				    $("#btnRegister").off("click").on("click", function(e) {
+				        e.preventDefault();
+				        const eventData = {
+				            allDay: $("#allDay").prop("checked"),
+				            startAt: $("#startAt").val(),
+				            endAt: $("#endAt").val(),
+				            resourceName: $resourceName.val(),
+				            reservationInfo: $("#reservationInfo").val(), 
+				            empId: $("#emp_id").val()
+				        };
+				        
+				        resourceReservation(eventData);
+				    });
                 }
 			},
             eventClick: function(info) {

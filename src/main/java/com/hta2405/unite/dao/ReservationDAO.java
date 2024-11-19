@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.naming.Context;
@@ -208,6 +209,64 @@ public class ReservationDAO {
 	    System.out.println("자원 예약 목록" + array);
         return array;
 	}// getResourceBookingList() end
+
+	
+	// 자원 예약 정보 팝업
+	public HashMap<String, String> getResourceBookingDetail(Reservation reservation, Resource resource) {
+		
+		
+		HashMap<String, String> resourceMap = new HashMap<>();  // rescType을 key로, rescName을 value로 저장할 Map
+		/*
+	    String sql = """
+	    			SELECT resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable
+	    			FROM resc
+	    			WHERE resc.resc_id = ?
+	    		""";
+	    */
+		
+		String sql = """
+				SELECT 
+				    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable,
+				    res.reservation_id,
+				    res.emp_id,
+				    res.reservation_start,
+				    res.reservation_end,
+				    res.reservation_info,
+				    res.reservation_allDay
+				FROM resc
+				LEFT JOIN reservation res
+				ON  resc.resc_id = res.resource_id
+				WHERE resc.resc_id = ?
+				""";
+	    
+	    try (Connection conn = ds.getConnection();
+	         PreparedStatement pstmt = conn.prepareStatement(sql);) {
+	    	
+	    	 pstmt.setInt(1, reservation.getResourceId());  // 예약에서 받은 resourceId 사용
+	    	 
+	    	 try (ResultSet rs = pstmt.executeQuery()) {
+
+	    	        if (rs.next()) {
+	    	            // 조회한 리소스 정보를 Resource 객체에 설정
+	    	        	resource.setResourceId(rs.getLong("resc_id"));
+						resource.setResourceType(rs.getString("resc_type"));
+						resource.setResourceName(rs.getString("resc_name"));
+	    	            resource.setResourceInfo(rs.getString("resc_info"));
+	    	            resource.setResourceUsable(rs.getBoolean("resc_usable"));
+
+	    	            // rescType을 key로, rescName을 value로 HashMap에 저장
+	    	            resourceMap.put(rs.getString("resc_type"), rs.getString("resc_name"));
+	    	        }
+	    	 }
+	    	
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        System.out.println("getResourceBookingDetail()에러 :" + e);
+	    } 
+
+	    System.out.println("자원 예약 정보 팝업 resourceMap" + resourceMap);
+	    return resourceMap;  
+	}
 
 
 

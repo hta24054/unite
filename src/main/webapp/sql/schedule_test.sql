@@ -166,6 +166,47 @@ FROM reservation;
 SELECT * 
 FROM resc;
 
+SELECT resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable
+FROM resc
+WHERE resc.resc_id = 7;
+
+
+SELECT 
+    resc.resc_id, 
+    resc.resc_type, 
+    resc.resc_name, 
+    resc.resc_info, 
+    resc.resc_usable,
+    res.reservation_id,
+    res.emp_id,
+    res.reservation_start,
+    res.reservation_end,
+    res.reservation_info,
+    res.reservation_allDay
+FROM resc
+LEFT JOIN reservation res
+ON  resc.resc_id = res.resource_id
+WHERE resc.resc_id = ?;
+
+
+
+SELECT 
+    resc.resc_id, 
+    resc.resc_type, 
+    resc.resc_name, 
+    resc.resc_info, 
+    resc.resc_usable,
+    res.reservation_id,
+    res.emp_id,
+    res.reservation_start,
+    res.reservation_end,
+    res.reservation_info,
+    res.reservation_allDay
+FROM resc
+LEFT JOIN reservation res
+ON  resc.resc_id = res.resource_id
+WHERE resc.resc_id = 7;
+
 
 
 TRUNCATE TABLE reservation;

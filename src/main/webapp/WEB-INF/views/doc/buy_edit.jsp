@@ -37,7 +37,7 @@
                         </tr>
                         <tr>
                             <td class="table-secondary font-weight-bold text-center">작 성 일</td>
-                            <td>${doc.docCreateDate}</td>
+                            <td>${doc.docCreateDate.toLocalDate()}</td>
                         </tr>
                     </table>
                 </div>

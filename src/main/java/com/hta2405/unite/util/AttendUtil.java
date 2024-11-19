@@ -177,4 +177,11 @@ public class AttendUtil {
         req.setAttribute("usedAnnualVacation", usedAnnualVacation);
         return new ActionForward(false, "/WEB-INF/views/attend/vacationDetail.jsp");
     }
+
+    public static void checkAttendRole(Emp emp, HttpServletRequest req) {
+        boolean hrDept = EmpUtil.isHrDept(emp);
+        boolean manager = EmpUtil.isManager(emp);
+        req.setAttribute("hrDept", hrDept);
+        req.setAttribute("manager", manager);
+    }
 }

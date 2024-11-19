@@ -34,7 +34,7 @@ public class CertDao {
 
             while (rs.next()) {
                 Cert cert = new Cert();
-                cert.setCertId(rs.getInt("cert_id"));
+                cert.setCertId(rs.getLong("cert_id"));
                 cert.setCertName(rs.getString("cert_name"));
                 cert.setEmpId(rs.getString("emp_id"));
                 certs.add(cert);

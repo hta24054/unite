@@ -2,10 +2,7 @@ package com.hta2405.unite.controller;
 
 import com.hta2405.unite.action.project.ProjectCommentAction;
 import com.hta2405.unite.action.project.ProjectCommentAddAction;
-import com.hta2405.unite.action.project.ProjectCommentDeleteAction;
 import com.hta2405.unite.action.project.ProjectCommentListAction;
-import com.hta2405.unite.action.project.ProjectCommentReplyAction;
-import com.hta2405.unite.action.project.ProjectCommentUpdateAction;
 import com.hta2405.unite.action.project.ProjectDeleteAction;
 import com.hta2405.unite.action.project.ProjectDownAction;
 import com.hta2405.unite.action.project.ProjectMemberTaskAction;
@@ -23,19 +20,15 @@ public class ProjectBoardController extends AbstractFrontController{
 
     @Override
     public void init() throws ServletException {
-        actionMap.put("/write", new ProjectWriteAction());
-        actionMap.put("/membertask", new ProjectMemberTaskAction());
-        actionMap.put("/list", new ProjectTaskListAction());
-        actionMap.put("/down", new ProjectDownAction());
-        actionMap.put("/comm", new ProjectCommentAction());
-        actionMap.put("/modify", new ProjectModifyAction());
-        actionMap.put("/modifyProcess", new ProjectModifyProcessAction());
-        actionMap.put("/delete", new ProjectDeleteAction());
-        
-        actionMap.put("/commentadd", new ProjectCommentAddAction());
-        actionMap.put("/commentlist", new ProjectCommentListAction());
-        actionMap.put("/reply", new ProjectCommentReplyAction());
-        actionMap.put("/commentdelete", new ProjectCommentDeleteAction());
-        actionMap.put("/update", new ProjectCommentUpdateAction());
+        actionMap.put("/write", ProjectWriteAction::new);
+        actionMap.put("/membertask", ProjectMemberTaskAction::new);
+        actionMap.put("/list", ProjectTaskListAction::new);
+        actionMap.put("/down", ProjectDownAction::new);
+        actionMap.put("/comm", ProjectCommentAction::new);
+        actionMap.put("/modify", ProjectModifyAction::new);
+        actionMap.put("/modifyProcess", ProjectModifyProcessAction::new);
+        actionMap.put("/delete", ProjectDeleteAction::new);
+        actionMap.put("/commentadd", ProjectCommentAddAction::new);
+        actionMap.put("/commentlist", ProjectCommentListAction::new);
     }
 }

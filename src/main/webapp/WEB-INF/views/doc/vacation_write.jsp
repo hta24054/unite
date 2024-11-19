@@ -8,10 +8,18 @@
     <link href="${pageContext.request.contextPath}/css/doc.css" rel="stylesheet">
     <meta charset="UTF-8">
     <title>휴가신청서 작성</title>
+    <style>
+        #rest_vac_count {
+            color: #334466;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 <form id="doc_form" enctype="multipart/form-data">
     <div class="container mt-4">
+        <h4 id="rest_vac_count" data-num="${emp.vacationCount - usedCount}">
+            내 잔여 연차일 : ${emp.vacationCount - usedCount}</h4>
         <div class="document-wrapper">
             <div class="text-center mb-4">
                 <h1 class="header-cell">휴가신청서</h1>
@@ -156,6 +164,16 @@
                 }
             });
             if (!isValid) return;
+
+            const restVacCount = $('#rest_vac_count').data('num');
+            if (restVacCount < $('input[name="vacation_count"]').val()
+                && $('select[name=type]').val()==='연차') {
+                alert("잔여 연차일수가 부족합니다.");
+                $('input[name="vacation_start"]').val('');
+                $('input[name="vacation_end"]').val('');
+                $('input[name="vacation_count"]').val('');
+                return false;
+            }
 
             // 결재자 수 확인
             const additionalSigners = $('input[name="sign[]"]').length - 1;

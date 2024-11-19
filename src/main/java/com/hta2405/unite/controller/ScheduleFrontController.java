@@ -18,17 +18,17 @@ public class ScheduleFrontController extends AbstractFrontController {
 
     @Override
     public void init() throws ServletException {
-        actionMap.put("/calender", new ScheduleCalenderAction());
-        actionMap.put("/scheduleList", new ScheduleListAction());
-        actionMap.put("/scheduleAdd", new ScheduleAddProcessAction());
-        actionMap.put("/scheduleUpdate", new ScheduleUpdateAction());
-        actionMap.put("/scheduleDragUpdate", new ScheduleDragUpdateAction());
-        actionMap.put("/scheduleDelete", new ScheduleDeleteAction());
+        actionMap.put("/calender", ScheduleCalenderAction::new);
+        actionMap.put("/scheduleList", ScheduleListAction::new);
+        actionMap.put("/scheduleAdd", ScheduleAddProcessAction::new);
+        actionMap.put("/scheduleUpdate", ScheduleUpdateAction::new);
+        actionMap.put("/scheduleDragUpdate", ScheduleDragUpdateAction::new);
+        actionMap.put("/scheduleDelete", ScheduleDeleteAction::new);
         
         // 공유 일정 등록
-        actionMap.put("/scheduleShare", new ScheduleShareAction());
-        actionMap.put("/sharedScheduleList", new SharedScheduleListAction()); 
-        actionMap.put("/scheduleShareAdd", new ScheduleShareAddAction()); 
+        actionMap.put("/scheduleShare", ScheduleShareAction::new);
+        actionMap.put("/sharedScheduleList", SharedScheduleListAction::new);
+        actionMap.put("/scheduleShareAdd", ScheduleShareAddAction::new);
     }
 }
 

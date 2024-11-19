@@ -35,7 +35,7 @@ public class LangDao {
 
             while (rs.next()) {
                 Lang lang = new Lang();
-                lang.setLangId(rs.getInt("lang_id"));
+                lang.setLangId(rs.getLong("lang_id"));
                 lang.setLangName(rs.getString("lang_name"));
                 lang.setEmpId(rs.getString("emp_id"));
                 langs.add(lang);

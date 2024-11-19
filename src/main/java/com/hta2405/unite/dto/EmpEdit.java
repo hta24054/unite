@@ -1,32 +1,23 @@
 package com.hta2405.unite.dto;
 
-import lombok.*;
+import lombok.Getter;
 
 import java.time.LocalDate;
-
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
-public class Emp {
+public class EmpEdit {
     private String empId;
-    private String password;
     private String ename;
     private Long deptId;
     private Long jobId;
-    private String gender; //"남", "여"
+    private String gender;
     private String email;
     private String tel;
     private String mobile;
     private String mobile2;
-    private String imgPath;
     private String imgOriginal;
-    private String imgUUID;
-    private String imgType;
-    private LocalDate hireDate;
+    private String hireDate;
     private String hireType;
-    private LocalDate birthday;
+    private String birthday;
     private String birthdayType;
     private String school;
     private String major;
@@ -36,6 +27,8 @@ public class Emp {
     private boolean married;
     private boolean child;
     private String etype;
-    private Long vacationCount;
-    private boolean hired;
+    
+    private String[] cert;
+    private String[] lang;
+    //비밀번호, 연차갯수, hired 빼고 다 들어옴
 }

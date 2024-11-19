@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import static com.hta2405.unite.util.AttendUtil.checkAttendRole;
 import static com.hta2405.unite.util.EmpUtil.isHrDept;
 
 public class AttendVacationEmpListAction implements Action {
@@ -27,7 +28,7 @@ public class AttendVacationEmpListAction implements Action {
         if (!isHrDept(emp)) {
             return CommonUtil.alertAndGoBack(resp, "인사부서가 아닙니다.");
         }
-
+        checkAttendRole(emp, req);
         req.setAttribute("empList", empDao.getSubEmpListByEmp(emp));
         req.setAttribute("jobMap", new JobDao().getIdToJobNameMap());
         req.setAttribute("deptMap", deptDao.getIdToDeptNameMap());

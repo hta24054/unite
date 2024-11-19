@@ -1,6 +1,7 @@
 package com.hta2405.unite.action.doc;
 
 import com.hta2405.unite.action.ActionForward;
+import com.hta2405.unite.dao.AttendDao;
 import com.hta2405.unite.dao.DeptDao;
 import com.hta2405.unite.dao.DocDao;
 import com.hta2405.unite.dao.EmpDao;
@@ -12,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 
@@ -19,6 +21,7 @@ public class DocEditAction implements com.hta2405.unite.action.Action {
     private final DocDao docDao = new DocDao();
     private final EmpDao empDao = new EmpDao();
     private final DeptDao deptDao = new DeptDao();
+    private final AttendDao attendDao = new AttendDao();
 
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -85,6 +88,8 @@ public class DocEditAction implements com.hta2405.unite.action.Action {
 
         if (doc instanceof DocVacation docVacation) {
             req.setAttribute("doc", docVacation);
+            int usedCount = attendDao.getUsedAnnualVacationCount(doc.getDocWriter(), LocalDate.now().getYear());
+            req.setAttribute("usedCount", usedCount);
             return new ActionForward(false, "/WEB-INF/views/doc/vacation_edit.jsp");
         }
         //일반 문서 페이지로 포워딩

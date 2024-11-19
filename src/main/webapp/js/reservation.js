@@ -343,8 +343,8 @@ $(document).ready(function(){
 		        today: '오늘' 
 		    },
 	        initialView: 'timeGridWeek', // 초기 로드 될때 보이는 캘린더 화면
-	        editable: true, // 수정 가능
-	        selectable: true, // 달력 일자 드래그 설정
+	        editable: false, // 수정 불가능
+        	selectable: false, // 선택 불가능
 	        nowIndicator: true, // 현재 시간 마크
 	        dayMaxEvents: true, // 이벤트가 오버되면 높이 제한 (+ 몇 개식으로 표현)
 	        locale: 'ko', // 한국어 설정
@@ -361,29 +361,8 @@ $(document).ready(function(){
             eventClick: function(info) {
                 console.log("eventClick info", info.event);
                 console.log("eventClick info", info.event.extendedProps);
-                
-                /**
-				 * 예약된 이벤트 클릭 시 예약 정보 모달 
-				 * 리소스 테이블에서 필요한 값 - 분류명, 자원명, 자원정보  
-				 * 시작시간, 종료시간, 등록자, 사용용도
-				 */
 				openInfoModal(info.event);
             },
-	        eventChange: function(info) { // 이벤트가 수정되면 발생하는 이벤트
-	         	
-	        },
-	        select: function(info) {
-			    console.log("select:", info);
-			},
-            eventDataTransform: function(event) { // 이벤트 데이터 변환 함수
-               
-            },
-            eventDidMount: function(info) {
-				 
-			},
-			eventDrop: function(info) {
-	            
-	        },
 		});
 		
 		//선택 상태 해제

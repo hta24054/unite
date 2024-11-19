@@ -149,20 +149,26 @@ JOIN
 
 
 INSERT INTO reservation 
-(reservation_id, resource_id, emp_id, reservation_start, reservation_end, reservation_info, reservation_allDay, resc_id)
-SELECT SEQ_reservation.NEXTVAL, 1, 'E12345', TO_DATE('2024-11-17 09:00:00', 'YYYY-MM-DD HH24:MI:SS'), 
-       TO_DATE('2024-11-18 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), '회의실 예약', 0, resc.resc_id
-FROM resc
-WHERE resc.resc_id = 1; 
-
-
-
+(resource_id, emp_id, reservation_start, reservation_end, reservation_info, reservation_allDay)
+VALUES (
+    1, 
+    '241001', 
+    TO_DATE('2024-11-17 09:00:00', 'YYYY-MM-DD HH24:MI:SS'), 
+    TO_DATE('2024-11-18 09:00:00', 'YYYY-MM-DD HH24:MI:SS'), 
+    '회의실 예약', 
+    0
+);
 
 
 SELECT * 
 FROM reservation;
 
+
 TRUNCATE TABLE reservation;
+
+ALTER TABLE reservation
+DROP COLUMN resc_name;
+
 
 /*
 ALTER TABLE reservation

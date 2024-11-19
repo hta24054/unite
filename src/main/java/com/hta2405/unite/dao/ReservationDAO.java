@@ -133,22 +133,19 @@ public class ReservationDAO {
 		int result = 0;
 	    String sql = """
 	        INSERT INTO reservation 
-	        (reservation_id, resource_id, emp_id, reservation_start, reservation_end, reservation_info, reservation_allDay, resc_id)
-	        SELECT SEQ_reservation.NEXTVAL, ?, ?, ?, ?, ?, ?, resc.resc_id
-	        FROM resc
-	        WHERE resc.resc_id = ?
+	        (resource_id, emp_id, reservation_start, reservation_end, reservation_info, reservation_allDay)
+	        VALUES (?, ?, ?, ?, ?, ?)
 	    """;
 	    
 	    try (Connection conn = ds.getConnection();
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-	        pstmt.setInt(1, reservation.getResourceId());   
+	        pstmt.setLong(1, resource.getResourceId()); // resc_id
 	        pstmt.setString(2, reservation.getEmpId());     
 	        pstmt.setTimestamp(3, Timestamp.valueOf(reservation.getReservationStart())); 
 	        pstmt.setTimestamp(4, Timestamp.valueOf(reservation.getReservationEnd()));    
 	        pstmt.setString(5, reservation.getReservationInfo());  
 	        pstmt.setInt(6, reservation.getReservationAllDay());   
-	        pstmt.setInt(7, reservation.getResourceId());  // resc_id (resource_id와 일치하는 resc_id)
 
 	        // 실행
 	        result = pstmt.executeUpdate();
@@ -157,7 +154,6 @@ public class ReservationDAO {
 	        e.printStackTrace();
 	        System.out.println("insertResourceBooking() 에러: " + e);
 	    }
-
 	    return result;
 		
 	} //insertResourceBooking end

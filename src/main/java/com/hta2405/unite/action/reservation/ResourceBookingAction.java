@@ -26,7 +26,7 @@ public class ResourceBookingAction implements Action {
 		int allDay = request.getParameter("allDay") == null ? 0 : Integer.parseInt(request.getParameter("allDay"));
 		String startAt = request.getParameter("startAt");
 		String endAt = request.getParameter("endAt");
-		String usage = request.getParameter("usage");
+		String reservationInfo = request.getParameter("reservationInfo");
 		String resourceId = request.getParameter("resourceId"); // resc_id
 
 		reservation.setEmpId(empId);
@@ -35,7 +35,7 @@ public class ResourceBookingAction implements Action {
 		LocalDateTime endDateTime = CalendarDateTimeUtil.parseDateTimeWithoutT(endAt);
 		reservation.setReservationStart(startDateTime);
 		reservation.setReservationEnd(endDateTime);
-		reservation.setReservationInfo(usage);
+		reservation.setReservationInfo(reservationInfo);
 		//resource.setResourceId(Long.parseLong(resourceId)); // resc_id
 		reservation.setResourceId(Integer.parseInt(resourceId));
 		

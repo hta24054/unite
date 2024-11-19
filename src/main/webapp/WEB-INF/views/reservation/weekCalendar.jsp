@@ -97,7 +97,7 @@
 				        </div>
 				        <div class="form-group">
 				            <label for="usage">사용용도</label>
-				            <input type="text" name="usage" id="usage" class="form-control">
+				            <input type="text" name="reservationInfo" id="reservationInfo" class="form-control">
 				        </div>
           				<div class="btn_wrap">
           					<button type="reset" class="btn btn-secondary">취소</button>

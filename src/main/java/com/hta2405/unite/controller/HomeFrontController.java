@@ -9,6 +9,6 @@ import jakarta.servlet.annotation.WebServlet;
 public class HomeFrontController extends AbstractFrontController {
     @Override
     public void init(ServletConfig config) throws ServletException {
-        actionMap.put("/", new HomeAction());
+        actionMap.put("/", HomeAction::new);
     }
 }

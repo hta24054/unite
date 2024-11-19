@@ -9,21 +9,21 @@ public class AdminFrontController extends AbstractFrontController {
 
     @Override
     public void init() throws ServletException {
-        actionMap.put("/holiday", new AdminHolidayAction());
-        actionMap.put("/holiday/get", new AdminHolidayGetAction());
-        actionMap.put("/holiday/insert", new AdminHolidayInsertAction());
-        actionMap.put("/holiday/delete", new AdminHolidayDeleteAction());
-        actionMap.put("/holiday/api", new AdminHolidayApiAction());
-        actionMap.put("/holiday/weekend", new AdminHolidayWeekendAction());
-        actionMap.put("/resource", new AdminResourceAction());
-        actionMap.put("/resource/add", new AdminResourceAddAction());
-        actionMap.put("/resource/edit", new AdminResourceEditAction());
-        actionMap.put("/resource/delete", new AdminResourceDeleteAction());
-        actionMap.put("/notice", new AdminNoticeAction());
-        actionMap.put("/notice/insert", new AdminNoticeAddAction());
-        actionMap.put("/notice/update", new AdminNoticeEditAction());
-        actionMap.put("/notice/delete", new AdminNoticeDeleteAction());
-        actionMap.put("/emp-manage", new AdminEmpManageAction());
-        actionMap.put("/emp-manage/fire", new AdminEmpFireAction());
+        actionMap.put("/holiday", AdminHolidayAction::new);
+        actionMap.put("/holiday/get", AdminHolidayGetAction::new);
+        actionMap.put("/holiday/insert", AdminHolidayInsertAction::new);
+        actionMap.put("/holiday/delete", AdminHolidayDeleteAction::new);
+        actionMap.put("/holiday/api", AdminHolidayApiAction::new);
+        actionMap.put("/holiday/weekend", AdminHolidayWeekendAction::new);
+        actionMap.put("/resource", AdminResourceAction::new);
+        actionMap.put("/resource/add", AdminResourceAddAction::new);
+        actionMap.put("/resource/edit", AdminResourceEditAction::new);
+        actionMap.put("/resource/delete", AdminResourceDeleteAction::new);
+        actionMap.put("/notice", AdminNoticeAction::new);
+        actionMap.put("/notice/insert", AdminNoticeAddAction::new);
+        actionMap.put("/notice/update", AdminNoticeEditAction::new);
+        actionMap.put("/notice/delete", AdminNoticeDeleteAction::new);
+        actionMap.put("/emp-manage", AdminEmpManageAction::new);
+        actionMap.put("/emp-manage/fire", AdminEmpFireAction::new);
     }
 }

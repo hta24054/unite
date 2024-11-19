@@ -2,6 +2,7 @@ package com.hta2405.unite.action.reservation;
 
 import java.io.IOException;
 
+import com.google.gson.Gson;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ReservationDAO;
@@ -20,13 +21,17 @@ public class GetReservationInfoAction implements Action {
 		String reservationId = request.getParameter("reservation_id"); //자원테이블 예약 ID
 		
 		ReservationDAO reservationDAO = new ReservationDAO();
-		Resource rescorce = new Resource();
+		Resource resource = new Resource();
 
-        
-//        response.setContentType("application/json");
-//        response.setCharacterEncoding("UTF-8");
-//        response.getWriter().write(json);
-        
+		resource = reservationDAO.getResourceByReservationId(reservationId);
+
+		Gson gson = new Gson();
+        String json = gson.toJson(resource);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(json);
+
         return null;
 	}
 }

@@ -211,6 +211,51 @@ public class ReservationDAO {
         return array;
 	}
 
+	// 자원예약 상세정보
+	public Resource getResourceByReservationId(String reservationId) {
+		Resource resource = null;
+		
+		String sql = """
+				SELECT 
+				    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable, 
+				    reservation.reservation_id,
+				    reservation.emp_id,
+				    reservation.reservation_start,
+				    reservation.reservation_end,
+				    reservation.reservation_info,
+				    reservation.reservation_allDay
+				FROM reservation
+				LEFT JOIN resc resc
+				ON reservation.resource_id = resc.resc_id
+				WHERE reservation.reservation_id = ?
+		""";
+		
+		try (Connection conn = ds.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);)  {
+
+				System.out.println("Input reservationId: " + reservationId);
+
+	            pstmt.setString(1, reservationId);
+
+	            try (ResultSet rs = pstmt.executeQuery()) {
+	                if (rs.next()) {
+	                    resource = new Resource();
+	                    resource.setResourceId(rs.getLong("resc_id"));
+	                    resource.setResourceType(rs.getString("resc_type"));
+	                    resource.setResourceName(rs.getString("resc_name"));
+	                    resource.setResourceInfo(rs.getString("resc_info"));
+	                    resource.setResourceUsable(rs.getInt("resc_usable") == 1);
+	                }
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            System.out.println("getResourceByReservationId()에러 :" + e);
+	        }
+
+	        System.out.println("자원예약 상세정보 resource " + resource);
+	        return resource;
+	}
+
 
 
 

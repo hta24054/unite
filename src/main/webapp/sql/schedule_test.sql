@@ -132,32 +132,7 @@ WHERE resc_type = '차량' AND resc_usable = '1'
 GROUP BY resc_name;
 
 
-SELECT 
-    r.reservation_id,
-    r.resource_id,
-    r.emp_id,
-    r.reservation_start,
-    r.reservation_end,
-    r.reservation_info,
-    r.reservation_allDay,
-    resc.resc_id,
-    resc.resc_name
-FROM 
-    reservation r
-JOIN 
-    resc ON r.resource_id = resc.resc_id;
 
-
-INSERT INTO reservation 
-(resource_id, emp_id, reservation_start, reservation_end, reservation_info, reservation_allDay)
-VALUES (
-    1, 
-    '241001', 
-    TO_DATE('2024-11-17 09:00:00', 'YYYY-MM-DD HH24:MI:SS'), 
-    TO_DATE('2024-11-18 09:00:00', 'YYYY-MM-DD HH24:MI:SS'), 
-    '회의실 예약', 
-    0
-);
 
 
 SELECT * 
@@ -166,10 +141,6 @@ FROM reservation;
 SELECT * 
 FROM resc;
 
-SELECT resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable
-FROM resc
-WHERE resc.resc_id = 7;
-
 
 SELECT 
     resc.resc_id, 
@@ -177,79 +148,21 @@ SELECT
     resc.resc_name, 
     resc.resc_info, 
     resc.resc_usable,
-    res.reservation_id,
-    res.emp_id,
-    res.reservation_start,
-    res.reservation_end,
-    res.reservation_info,
-    res.reservation_allDay
-FROM resc
-LEFT JOIN reservation res
-ON  resc.resc_id = res.resource_id
-WHERE resc.resc_id = ?;
-
-
-
-SELECT 
-    resc.resc_id, 
-    resc.resc_type, 
-    resc.resc_name, 
-    resc.resc_info, 
-    resc.resc_usable,
-    res.reservation_id,
-    res.emp_id,
-    res.reservation_start,
-    res.reservation_end,
-    res.reservation_info,
-    res.reservation_allDay
-FROM res
-LEFT JOIN reservation res
-ON  resc.resc_id = res.resource_id
-WHERE res.reservation_id = ?;
-
-SELECT 
-    resc.resc_id, 
-    resc.resc_type, 
-    resc.resc_name, 
-    resc.resc_info, 
-    resc.resc_usable,
-    
-    res.reservation_id,
-    res.emp_id,
-    res.reservation_start,
-    res.reservation_end,
-    res.reservation_info,
-    res.reservation_allDay
+    reservation.reservation_id,
+    reservation.emp_id,
+    reservation.reservation_start,
+    reservation.reservation_end,
+    reservation.reservation_info,
+    reservation.reservation_allDay
 FROM reservation
 LEFT JOIN resc resc
-ON  res.resource_id = resc.resc_id
-WHERE res.reservation_id = 31;
+ON reservation.resource_id = resc.resc_id
+WHERE reservation.reservation_id = 1;
 
 
 
 TRUNCATE TABLE reservation;
 
-ALTER TABLE reservation
-DROP COLUMN resc_name;
-
-
-/*
-ALTER TABLE reservation
-ADD resc_name VARCHAR2(50);
-
-INSERT INTO reservation
-(reservation_id, resource_id, emp_id, reservation_start, reservation_end, reservation_info, reservation_allDay, resc_name)
-VALUES (SEQ_reservation.NEXTVAL, ?, ?, ?, ?, ?, ?, 
-(SELECT resc_name FROM resc WHERE resc_id = ?));
-
-*/
-
-
-/*
-INSERT INTO reservation
-(reservation_id, emp_id, reservation_start, reservation_end, reservation_info, reservation_allDay)
-VALUES (SEQ_reservation.NEXTVAL, ?, ?, ?, ?, ?);
-*/
 
 
 /*
@@ -263,9 +176,6 @@ CREATE TABLE resc
   CONSTRAINT PK_resc PRIMARY KEY (resc_id)
 );
 
-CREATE SEQUENCE SEQ_resc
-START WITH 1
-INCREMENT BY 1;
 
 CREATE TABLE reservation
 (
@@ -278,10 +188,6 @@ CREATE TABLE reservation
   reservation_allDay NUMBER        DEFAULT 0 NOT NULL,
   CONSTRAINT PK_reservation PRIMARY KEY (reservation_id)
 );
-
-CREATE SEQUENCE SEQ_reservation
-START WITH 1
-INCREMENT BY 1;
 */
 
 

@@ -29,9 +29,10 @@ public class GetResourceBookingDetailAction implements Action {
 		int allDay = request.getParameter("allDay") == null ? 0 : Integer.parseInt(request.getParameter("allDay"));
 		String startAt = request.getParameter("startAt");
 		String endAt = request.getParameter("endAt");
-		String reservationInfo = request.getParameter("reservationInfo");
+		String reservationInfo = request.getParameter("reservationInfo");		
 		String resourceId = request.getParameter("resourceId"); // resc_id
 		
+		/*
 		reservation.setEmpId(empId);
 		reservation.setReservationAllDay(allDay);
 		LocalDateTime startDateTime = CalendarDateTimeUtil.parseDateTimeWithoutT(startAt);
@@ -40,12 +41,14 @@ public class GetResourceBookingDetailAction implements Action {
 		reservation.setReservationEnd(endDateTime);
 		reservation.setReservationInfo(reservationInfo);
 		reservation.setResourceId(Integer.parseInt(resourceId));
+		System.out.println("Received resourceId: " + resourceId);
+		*/
 		
 		ReservationDAO reservationDao = new ReservationDAO();
 
 		// 리소스 예약을 데이터베이스에 삽입
-        int insertResult = reservationDao.insertResourceBooking(reservation);
-        response.getWriter().print("Insert Result: " + insertResult);  // 삽입 결과 반환
+        //int insertResult = reservationDao.insertResourceBooking(reservation);
+        //response.getWriter().print("Insert Result: " + insertResult);  // 삽입 결과 반환
         
         // 리소스 예약 정보 가져오기
         HashMap<String, String> resourceMap = reservationDao.getResourceBookingDetail(reservation, resource);

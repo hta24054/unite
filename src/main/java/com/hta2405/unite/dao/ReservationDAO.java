@@ -213,17 +213,7 @@ public class ReservationDAO {
 	
 	// 자원 예약 정보 팝업
 	public HashMap<String, String> getResourceBookingDetail(Reservation reservation, Resource resource) {
-		
-		
 		HashMap<String, String> resourceMap = new HashMap<>();  // rescType을 key로, rescName을 value로 저장할 Map
-		/*
-	    String sql = """
-	    			SELECT resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable
-	    			FROM resc
-	    			WHERE resc.resc_id = ?
-	    		""";
-	    */
-		
 		String sql = """
 				SELECT 
 				    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable,
@@ -266,10 +256,7 @@ public class ReservationDAO {
 
 	    System.out.println("자원 예약 정보 팝업 resourceMap" + resourceMap);
 	    return resourceMap;  
-	}
-
-
-
+	} //getResourceBookingDetail end
 
 
 }

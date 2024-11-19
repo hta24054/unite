@@ -72,7 +72,7 @@
 		    	<c:set var="num" value="${listCount-(page-1)*limit}"/>
 		    	<c:forEach var="p" items="${postList}">
 		    		<tr class="tr-post"
-		    			data-page="${p.postId}">
+		    			data-page="${p.postId}" data-name="${boardName2}">
 		    			<td><%--번호 --%>
 		    				<c:out value="${num}"/><%-- num 출력 --%>
 		    				<c:set var="num" value="${num-1}"/><%-- num=num-1; 의미 --%>

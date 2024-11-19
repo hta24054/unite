@@ -137,6 +137,7 @@ public class BoardListAction implements Action {
 			
 			//위에서 request로 담았던 것을 JsonObject에 담습니다.
 			JsonObject object = new JsonObject();
+			object.addProperty("boardName2", boardName2);
 			object.addProperty("page", page);//{"page": 변수 page의 값} 형식으로 저장
 			object.addProperty("maxPage", maxPage);
 			object.addProperty("startPage", startPage);

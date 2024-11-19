@@ -191,6 +191,10 @@
   	  z-index:1;
   }
 	
+  .tr-post:hover{
+	 background-color: rgba(0, 0, 0, .05);
+	 cursor: pointer;
+  }
 </style>
 <script src="${pageContext.request.contextPath}/js/jquery-3.7.1.js"></script>
 <script src="${pageContext.request.contextPath}/js/boardHome.js"></script>

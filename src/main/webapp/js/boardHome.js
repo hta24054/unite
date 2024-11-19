@@ -13,6 +13,18 @@ $(function() {
     // 왼쪽 메뉴 클릭 이벤트 - 리스트형 레이아웃으로 게시글 표시
     $('.boardName2').click(function(e) {
 		
+		$('.boardName2').css({
+			'font-weight':'normal',
+			'color':'#333',
+			'font-size':'14px'
+		});
+		$(this).css({
+			'font-weight':'bold',
+			'color':'#334466',
+			'font-size':'16px'
+		});
+		
+		
 		//html 초기화
 		$('.boardContent').html('');
 		
@@ -22,19 +34,27 @@ $(function() {
         loadBoardList(boardName2, 1); // 클릭한 메뉴에 맞는 게시판 데이터를 로드
     });
 
- 	// 왼쪽 글쓰기 클릭 이벤트
-    $('.writeBtn').click(function(e) {
+ 	// 왼쪽 글쓰기 클릭 이벤트 or 게시글 수정 버튼 클릭 이벤트
+    $(document).on('click', '.writeBtn, .postModify-link', function (e) {
 		
 		//html 초기화
 		$('.boardContent').html('');
 		
         e.preventDefault();
+        var postPage = 'post/postWrite';//글쓰기 url
+        var title = '글쓰기';
+        var boardName2 = $('.boardTitle').text();
         
-        loardBoardWrite("boardWrite"); // 글쓰기 메서드 호출
+        if($(this).data('page') != null){//수정 버튼 누를시 data-page를 보냄 
+			postPage = $(this).data('page');
+			title = '글쓰기 수정';
+		}
+        loardBoardWrite(postPage,title,boardName2); // 글쓰기 메서드 호출
     });
     
     $(document).on('click', '.page-link', function(event) {
 		var nextPage = $(this).data('page');  // data-page에서 페이지 번호 가져오기
+		
 		if(nextPage != null ){
 		    event.preventDefault();  // 기본 동작 방지 (링크 이동 방지)
 		
@@ -48,9 +68,13 @@ $(function() {
 	    event.preventDefault();  // 기본 동작 방지 (링크 이동 방지)
 	
 	    var postPage = $(this).data('page');  // data-page에서 페이지 번호 가져오기
+		var boardName2 = $(this).data('name');
+		
+		console.log("HboardName2=",boardName2)
 		
 		loadBoardPost(boardName2, postPage);
 	});
+    
     
  	/* 
     window.addEventListener('popstate', function(event) {
@@ -75,17 +99,16 @@ $(function() {
 
 });
 
-function loardBoardWrite(boardId){
-		    
-	console.log(boardId)
+function loardBoardWrite(url, title, boardName2){
+	console.log('boardName2=',boardName2)
 	$.ajax({
-	    url: 'post/postWrite',
+		data:{"boardName2":boardName2},
+	    url: url,
 	    type: 'GET'
 	})
 	.done(function(response) {
-	    $(".boardTitle").text('글쓰기');
+	    $(".boardTitle").text(title);
 	    $('.boardContent').html(response).css('padding', '20px 60px');
-	    // Summernote 스크립트를 동적으로 로드하고 초기화
 	})
 	.fail(function() {
 	    alert('글쓰기 폼을 불러오는 데 실패했습니다.');
@@ -131,7 +154,7 @@ function loadBoardHome() {
 //board와 post를 가져와 boardHome html 출력
 function AddHtmlBoardAndPost(board, post, data) {
 	
-	let html = `<div class="board-container">
+	let html = `<div class="board-container tr-post" data-page=${post.postId} data-name='${board.boardName2}'>
 				    <div class="board-header">
 				    	${board.boardName1}`;
     

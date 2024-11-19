@@ -153,7 +153,6 @@ $(document).ready(function(){
 	        	emp_id: $("#emp_id").val(),
 	        },
 	        success: function (data) {
-
 				events = []; 
 				if (data != null && data.length > 0) {
 					
@@ -165,17 +164,38 @@ $(document).ready(function(){
 			                end: data[i].reservation_end,
 			                reservationInfo: data[i].reservation_info,
 		                 	extendedProps: {
-						        //resourceName: $("#resourceName option:selected").text(),
 						        reservationInfo: data[i].reservation_info,
 						        resourceId: data[i].resource_id,
 						        empId: data[i].emp_id
 						    },
 			            });
-			            
-			            console.log("예약 정보 팝업 events", events);
 			        }
 			    }
-				
+			    
+			    if (data) {
+	                let _html = `<ul>
+					        <li>분류명: ${data.resourceType}</li>
+                        	<li>자원명: ${data.resourceName}</li>`;
+					
+					if (data.resourceInfo) _html += `<li>자원정보: ${data.resourceInfo}</li>`;
+					_html += `
+					        <li>시작시간: ${moment(event.start).format("YYYY-MM-DD HH:mm")}</li>
+					        <li>종료시간: ${event.allDay ? moment(event.start).format("YYYY-MM-DD") + " 00:00" : moment(event.end).format("YYYY-MM-DD HH:mm")}</li>
+					        <li>예약자: ${event.extendedProps.empId}</li>
+					        <li>사용용도: ${event.extendedProps.reservationInfo || ""}</li>
+					    </ul>
+					    <div class="d-flex justify-content-center mt-3">
+						    <button type="button" id="btnDelete" class="btn btn-danger">예약취소</button>
+						</div>
+					`;
+	       
+	                $("#reservationDetailModal").find(".modal-body").html(_html);
+	                $("#reservationDetailModal").modal("show");
+	            } else {
+	                alert("예약 정보를 찾을 수 없습니다.");
+	            }
+
+				/*
 				if (data) {
 					$(".modal-header").find("h5").text("예약 정보");
 					  
@@ -195,14 +215,19 @@ $(document).ready(function(){
 					    </ul>
 					`;
 
-	                $(".modify_area").find(".form-group").remove();
+	                $(".modify_area").find(".form-group").hide();
 	                $(".modify_area").html(_html);
+	                
+	                $(".modal-body").find(".btn_wrap").html(`
+				        <button type="button" id="btnDelete" class="btn btn-danger" style="margin-top: 20px;">예약취소</button>
+				    `);
+	                
 	                $("#reservationModal").modal("show");
 	            } else {
 	                alert("예약 정보를 찾을 수 없습니다.");
 	            }
 			    
-			    // allDay 체크 여부
+
 			    if (event.allDay) {
 			        $("#allDay").prop("checked", true);
 			        $("#startAt, #endAt").prop("type", "date");
@@ -213,7 +238,7 @@ $(document).ready(function(){
 			        $("#startAt, #endAt").prop("type", "datetime-local");
 			        $("#startAt").val(moment(event.start).format("YYYY-MM-DD HH:mm"));
 			    	$("#endAt").val(moment(event.end).format("YYYY-MM-DD HH:mm"));
-			    }
+			    }*/
 			   
 			},
 			error: function () {
@@ -225,6 +250,10 @@ $(document).ready(function(){
 	// 자원 예약 모달 등록 버튼 클릭 시 초기화
 	$(".btn.btn-info[data-target='#reservationModal']").on("click", function() {
 	    $(".modal-header").find("h5").text("예약 하기"); 
+	    $(".modal-body").find(".btn_wrap").html(`
+	        <button type="reset" class="btn btn-secondary">취소</button>
+	        <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
+	    `);
 	    
 	    $("#allDay").prop("checked", false);
 	    $("#startAt").val("");
@@ -232,12 +261,7 @@ $(document).ready(function(){
 	    $resourceType.val("");
 	    $resourceName.hide().empty().append('<option value="">자원명</option>'); 
 	    $("#reservationInfo").val(""); 
-	    
-	    $(".modal-body").find(".btn_wrap").html(`
-	        <button type="reset" class="btn btn-secondary">취소</button>
-	        <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
-	    `);
-	   
+
 	    // 등록 버튼에 이벤트 바인딩
 	    $("#btnRegister").off("click").on("click", function(e) {
 	        e.preventDefault();

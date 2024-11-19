@@ -119,5 +119,23 @@
 		</div>
 	</div>
 	<%-- 자원 예약 모달 --%>
+	
+	<!-- 예약 상세정보 모달 -->
+	<div class="modal" id="reservationDetailModal">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title">예약 정보</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+	            <div class="modal-body">
+					<!-- data 영역 -->
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!-- 예약 상세정보 모달 -->
 </body>
 </html>

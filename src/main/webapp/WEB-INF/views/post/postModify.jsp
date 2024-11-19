@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -90,6 +91,7 @@
 <script>
 var fileNo = 0;
 var filesArr = [];
+var deletedFiles = [];
 
 var companyBulletinBoards = ['공지사항', '주간식단표', 'FAQ'];
 var DepartmentBoards = ['솔루션영업팀'];
@@ -149,8 +151,13 @@ function validation(obj){
 }
 
 /* 첨부파일 삭제 */
-function deleteFile(deleteNo) {
-
+function deleteFile(deleteNo, isExistingFile = false) {
+	if (isExistingFile) {
+        // 기존 파일인 경우 deletedFiles 배열에 추가
+        const deletedFile = filesArr.find(file => file.fileNo === deleteNo);
+        deletedFiles.push(deletedFile);
+    }
+	
     // filesArr 배열에서 삭제할 파일을 fileNo로 찾음
     filesArr = filesArr.filter(file => file.fileNo !== deleteNo);
 
@@ -163,8 +170,14 @@ function deleteFile(deleteNo) {
 
 /* 파일 목록이 비어있으면 숨김 처리 */
 function updateFileListVisibility() {
+	console.log('update')
+	console.log('filesArr=',filesArr)
+	console.log('deletedFiles=',deletedFiles)
+	
     if (filesArr.length === 0) {
         $('.file-list').css('display', 'none');
+    }else{
+    	$('.file-list').css('display', 'block');
     }
 }
 
@@ -176,7 +189,15 @@ function submitForm() {
 
     // 삭제되지 않은 파일만 폼데이터에 담기
     filesArr.forEach(file => {
-        formData.append("attach_file" + j++, file);
+    	if (!file.isExisting) {
+            // 새로 추가된 파일만 처리
+            formData.append("attach_file" + j++, file);
+        }
+    });
+    
+ 	// 삭제된 기존 파일 데이터 전달
+    deletedFiles.forEach(file => {
+        formData.append("deleted_files", JSON.stringify(file));
     });
 
     $.ajax({
@@ -218,15 +239,7 @@ function changeBoardName2(boardName1Value){
 }
 
 $(function(){
-	var BoardName2Value = $('.boardName2').filter(function() {
-	    return $(this).css('font-weight') === 'bold' || $(this).css('font-weight') === '700';
-	}).text();
-	
-	let boardName1Value;
-	
-	if(BoardName2Value == ''||BoardName2Value == null){//게시판 홈에서 글쓰기 버튼을 누를 경우 초기화
-		BoardName2Value='공지사항';
-	}
+	var BoardName2Value = $('#boardName2Hidden').val();
 	
 	// BoardName2Text의 따라 BoardName1 구하기
 	if (companyBulletinBoards.includes(BoardName2Value)) {
@@ -247,6 +260,33 @@ $(function(){
 		'font-size':'14px'
 	});
 	
+	
+	 // 게시글에 올려둔 첨부파일 배열에 추가 및 출력
+    $('.filesHidden').each(function() {
+		
+        const file = {
+        	'fileNo'	: fileNo,
+            postFilePath: $(this).data('post-file-path'),
+            postFileUUID: $(this).data('post-file-uuid'),
+            postFileType: $(this).data('post-file-type'),
+            postFileOriginal: $(this).data('post-file-original'),
+            isExisting: true // 기존 파일임을 표시
+        };
+        // filesArr 배열에 추가
+        filesArr.push(file);
+
+        // 목록 추가
+        let htmlData = '';
+        htmlData += '<div id="file' + ++fileNo + '" class="filebox">';
+        htmlData += '   <p class="name">' + file.postFileOriginal + '</p>';
+        htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ', true);"><img src="${pageContext.request.contextPath}/image/delete.png"/></a>';
+        htmlData += '</div>';
+        $('.file-list').append(htmlData);
+    });
+    updateFileListVisibility()
+	
+	
+	
 	//boardName1 select를 바꿀때마다 boardName2가 같이 바뀜
 	$('#boardName1').change(function() {
 		let boardName1Value = $(this).val();  // 첫 번째 select의 선택 값
@@ -254,18 +294,19 @@ $(function(){
 		changeBoardName2(boardName1Value);//boardName2를 boardName1에 맞게 바꿈
 	});
 	
-	
 	// dragover 이벤트: 드래그한 파일이 attachFlie 영역에 있을 때
     $('.attachFile').on('dragover', function(event) {
         event.preventDefault(); // 기본 동작을 취소
         $('.attachFile').css('opacity', '0.1')
         				.addClass('dragoverFile');
     });
+
     // dragleave 이벤트: 드래그한 파일이 영역을 벗어났을 때
     $('.attachFile').on('dragleave', function(event) {
     	$('.attachFile').css('opacity', '1')
     					.removeClass('dragoverFile');
     });
+	
     $('.attachFile').on('drop', function(event) {
         event.preventDefault();  // 기본 동작을 취소
         $('.attachFile').css('opacity', '1')
@@ -279,6 +320,8 @@ $(function(){
     function handleFiles(dragFiles) {
     	// 첨부파일을 넣을시 list를 보이게 함
 
+    	console.log('dragFiles=',dragFiles)
+    	
 	    var maxFileCnt = 5;   // 첨부파일 최대 개수
 	    var attFileCnt = document.querySelectorAll('.filebox').length;    // 기존 추가된 첨부파일 개수
 	    var remainFileCnt = maxFileCnt - attFileCnt;    // 추가로 첨부가능한 개수
@@ -327,27 +370,28 @@ document.addEventListener("drop", function (event) {
 </script>
 </head>
 <body>
- 	<form action="../board/post/add" method="post" enctype="multipart/form-data"
+ 	<form action="../board/post/modifyProcess" method="post" enctype="multipart/form-data"
       name="boardform" onsubmit="event.preventDefault(); submitForm();">
  		<div class="form-group2">
+ 			<input type="hidden" id="boardName2Hidden" value='${boardName2}'/>
  			<label for="target_board" class="labelName">
  				To.
  				<select id="boardName1" name="boardName1" class="boardName">
- 					<option value="전사게시판" ${param.boardName1 == '전사게시판' ? 'selected' : ''}>전사게시판</option>
- 					<option value="일반게시판" ${param.boardName1 == '일반게시판' ? 'selected' : ''}>일반게시판</option>
- 					<option value="부서게시판" ${param.boardName1 == '부서게시판' ? 'selected' : ''}>부서게시판</option>
+ 					<option value="전사게시판">전사게시판</option>
+ 					<option value="일반게시판">일반게시판</option>
+ 					<option value="부서게시판">부서게시판</option>
  				</select>
  				<select id="boardName2" name="boardName2" class="boardName">
- 					<option value="공지사항" ${param.boardName2 == '공지사항' ? 'selected' : ''}>공지사항</option>
- 					<option value="주간식단표" ${param.boardName2 == '주간식단표' ? 'selected' : ''}>주간식단표</option>
- 					<option value="FAQ" ${param.boardName2 == 'FAQ' ? 'selected' : ''}>FAQ</option>
+ 					<option value="공지사항">공지사항</option>
+ 					<option value="주간식단표">주간식단표</option>
+ 					<option value="FAQ">FAQ</option>
  				</select>
  			</label>
  		</div>
  		<div class="form-group2">
  			<label for="board_subject" class="labelName">제목</label>
  			<input name="board_subject" id="board_subject" type="text" maxlength="100"
- 					class="form-control2" placeholder="Enter board_subject" required>
+ 					class="form-control2" placeholder="Enter board_subject" value="${list[0].postSubject}" required>
  		</div>
  		<div class="form-group2-file">
  			<label for="board_attachFile" class="labelName">파일첨부</label>
@@ -356,13 +400,20 @@ document.addEventListener("drop", function (event) {
  				이 곳에 파일을 드래그 하세요. 또는 
 	 			<label class="fileLabel">
 	 				파일선택
- 					<input type="file" id="upfile" onchange="addFile(this);" multiple />
+	 				<c:if test="${list[2] != null and not empty list[2]}">
+	    				<c:forEach var="postFile" items="${list[2]}">
+			 				<input type="hidden" class="filesHidden"
+			 						data-post-file-path="${postFile.postFilePath}"  data-post-file-uuid="${postFile.postFileUUID}"
+			 						data-post-file-type="${postFile.postFileType}"  data-post-file-original= "${postFile.postFileOriginal}"/>
+		 				</c:forEach>
+	 				</c:if>
+	 				<input type="file" id="upfile" onchange="addFile(this);" multiple/>
 	 			</label>
 	 			<span id="filevalue"></span>
  			</div>
  		</div>
  		<div class="file-list"></div>
-		<textarea class="summernote form-control2" id="board_content" name="board_content" required></textarea>
+		<textarea class="summernote form-control2" id="board_content" name="board_content" required>${list[0].postContent}</textarea>
 		<div class="form-group-btn">
 	 		<button type="submit" class="btn registerBtn">등록</button>
  		</div>

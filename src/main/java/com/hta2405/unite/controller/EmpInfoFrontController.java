@@ -1,7 +1,6 @@
 package com.hta2405.unite.controller;
 
 import com.hta2405.unite.action.empInfo.EmpViewAction;
-import com.hta2405.unite.action.empInfo.EmpDetailViewAction;
 import com.hta2405.unite.action.empInfo.EmpInfoUpdateAction;
 import com.hta2405.unite.action.empInfo.EmpViewDeptAction;
 import com.hta2405.unite.action.empInfo.EmpViewOtherDeptInfoAction;
@@ -19,6 +18,6 @@ public class EmpInfoFrontController extends AbstractFrontController {
 		actionMap.put("/viewdept", new EmpViewDeptAction());
 		actionMap.put("/viewotherdeptinfo", new EmpViewOtherDeptInfoAction());
 		actionMap.put("/viewotherdept", new EmpViewOtherDeptAction());
-		actionMap.put("/detail", new EmpDetailViewAction()); // 추가된 부분
+		
 	}
 }

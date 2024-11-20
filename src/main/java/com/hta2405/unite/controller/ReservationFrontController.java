@@ -28,7 +28,5 @@ public class ReservationFrontController extends AbstractFrontController {
 		actionMap.put("/cancelReservation", CancelReservationAction::new);
 		
 		actionMap.put("/myReservationList", GetMyReservationListAction::new);
-		
-
 	}
 }

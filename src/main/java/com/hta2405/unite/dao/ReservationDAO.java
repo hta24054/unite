@@ -312,17 +312,16 @@ public class ReservationDAO {
 	}
 	
 	// 나의 자원 예약목록
-	public List<Map<String, Object>> getMyReservationList(String empId, String reservationId) {
+	public List<Map<String, Object>> getMyReservationList(String empId) {
 	    List<Map<String, Object>> list = new ArrayList<>();
 
 	    String sql  = """
 	            SELECT rs.resc_type, rs.resc_name,
-	    			   reservation.reservation_start, reservation.reservation_end
-	            FROM reservation reservation
-	            JOIN resc rs 
-	            ON reservation.resource_id = rs.resc_id
-	            WHERE reservation.emp_id = ? 
-	            AND reservation.reservation_id = ?
+					   reservation.reservation_start, reservation.reservation_end
+						FROM reservation reservation
+						JOIN resc rs 
+						ON reservation.resource_id = rs.resc_id
+						WHERE reservation.emp_id = ?
 	    """;
 
 	    try (Connection conn = ds.getConnection();
@@ -330,7 +329,6 @@ public class ReservationDAO {
 
 	        // empId와 reservationId 파라미터 설정
 	        pstmt.setString(1, empId);
-	        pstmt.setString(2, reservationId);
 
 	        try (ResultSet rs = pstmt.executeQuery()) {
 	            while (rs.next()) {

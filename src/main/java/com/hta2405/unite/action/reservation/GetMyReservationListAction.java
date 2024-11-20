@@ -17,17 +17,11 @@ public class GetMyReservationListAction implements Action {
 	@Override
 	public ActionForward execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
-		System.out.println("request.getParameter(\"emp_id\")" + request.getParameter("emp_id"));
-		System.out.println("request.getParameter(\"reservation_id\")" + request.getParameter("reservation_id"));
-		
+
 		String empId = request.getParameter("emp_id"); // 예약자
-		String reservationId = request.getParameter("reservation_id"); //자원테이블 예약 ID 
-		
+	
 		ReservationDAO reservationDAO = new ReservationDAO();
-		String getId = reservationDAO.getReservationId(reservationId);
-        
-        List<Map<String, Object>> reservationList = reservationDAO.getMyReservationList(empId, getId);
+        List<Map<String, Object>> reservationList = reservationDAO.getMyReservationList(empId);
         
         ActionForward forward = new ActionForward();
 		forward.setPath("/WEB-INF/views/reservation/myReservationList.jsp");

@@ -22,9 +22,6 @@
                 <!-- 예약 목록이 있을 때 -->
                 <c:if test="${not empty reservationList}">
                     <form action="${pageContext.request.contextPath}/reservation/myReservationList" method="get">
-                        <input type="hidden" id="emp_id" name="emp_id" value="${id}">
-                        <input type="hidden" name="reservation_id" value="${reservation_id}">-->
-                        
                         <table>
                             <thead>
                                 <tr>
@@ -34,23 +31,17 @@
                                     <th>예약 종료</th>
                                     <th>상세보기/취소</th>
                                 </tr>
-                            </thead>
-                            
+                            </thead> 
                             <tbody>
                                 <c:forEach var="item" items="${reservationList}">
                                     <tr>
-                                        <!-- 자원 정보 -->
                                         <td>${item.resource.resourceType}</td>
                                         <td>${item.resource.resourceName}</td>
-                                        
-                                        <!-- 예약 정보 -->
                                         <td>${item.reservation.reservationStart}</td>
                                         <td>${item.reservation.reservationEnd}</td>
-                                        <td>
-                                            <div>
-                                                <button type="submit" formaction="detailPageServletURL">상세보기</button>
-                                                <button type="submit" formaction="cancelReservationServletURL">취소</button>
-                                            </div>
+                                        <td class="d-flex">
+                                        	<button type="button" class="btn btn-info" data-toggle="modal" data-target="#reservationDetailModal">상세 보기</button>
+                                            <button type="button" class="btn btn-secondary">예약 취소</button>
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -68,5 +59,23 @@
 			</div>
 		</div>
 	</div>
+	
+	<!-- 예약 상세보기 모달 -->
+	<div class="modal" id="reservationDetailModal">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title">예약 정보</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+	            <div class="modal-body">
+					
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!-- 예약 상세보기 모달 -->
 </body>
 </html>

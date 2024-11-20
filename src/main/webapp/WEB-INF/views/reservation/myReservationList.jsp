@@ -23,7 +23,7 @@
                 <c:if test="${not empty reservationList}">
                     <form action="${pageContext.request.contextPath}/reservation/myReservationList" method="get">
                         <input type="hidden" id="emp_id" name="emp_id" value="${id}">
-                        <input type="hidden" name="reservation_id" value="${reservation_id}">
+                        <input type="hidden" name="reservation_id" value="${reservation_id}">-->
                         
                         <table>
                             <thead>

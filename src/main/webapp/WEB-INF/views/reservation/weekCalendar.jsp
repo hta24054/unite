@@ -43,9 +43,9 @@
 				<aside>
 					<h3>자원예약</h3>
 					<button class="btn btn-info" data-toggle="modal" data-target="#reservationModal">예약 하기</button>
-					<div>
-						<a href="${pageContext.request.contextPath}/reservation/myReservationList">&middot; 나의 예약 목록</a>
-					</div>
+					<a href="${pageContext.request.contextPath}/reservation/myReservationList?emp_id=${id}&reservation_id=${reservation_id}">
+						&middot; 나의 예약 목록
+					</a>
 				</aside>
 			</div>
 			<div class="col-sm-10 px-5">

@@ -25,7 +25,7 @@ public class HomeAction implements Action {
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     	String userid = (String) req.getSession().getAttribute("id");
 
-		req.setAttribute("noticeList", noticeDao.getAllNotice());
+		req.setAttribute("noticeList", noticeDao.getAliveNotice());
 		//유저 왼쪽 테이블
     	EmpDao empDao = new EmpDao();
     	JobDao jobDao = new JobDao();

@@ -51,12 +51,6 @@
         top: 2px;
     }
 
-    .nav-item2 {
-        position: absolute;
-        right: 80px;
-        top: 5px;
-    }
-
     .nav-item3 {
         position: absolute;
         right: 10px;
@@ -80,6 +74,13 @@
     .user_info a:hover {
         text-decoration: none;
         color: #fff;
+    }
+
+    .user_info img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%; /* 동그랗게 만들기 */
+        object-fit: cover; /* 이미지 비율 유지 */
     }
 </style>
 

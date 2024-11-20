@@ -105,7 +105,7 @@
                             </c:if>
                             <c:if test="${!empty emp.imgOriginal}">
                                 <c:set var="src"
-                                       value='${pageContext.request.contextPath}${emp.imgPath}/${emp.imgUUID}_${emp.imgOriginal}'/>
+                                       value='${pageContext.request.contextPath}/emp/profile-image?UUID=${emp.imgUUID}'/>
                                 <img src="${pageContext.request.contextPath}/image/cancel.png" alt="파일삭제"
                                      width="20px" class="remove_img"/>
                             </c:if>

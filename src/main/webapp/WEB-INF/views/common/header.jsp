@@ -130,7 +130,7 @@
             </c:if>
         </li>
         <li class="nav-item3 user_info">
-            <img src="${pageContext.request.contextPath}/image/profile_white.png" style="width:30px;">
+            <img src="${pageContext.request.contextPath}/emp/profile-image?UUID=${sessionScope.profileUUID}" style="width:30px;">&nbsp;&nbsp;
             <%--${.name} --%> <span>${ename}님</span>
             <a href="${pageContext.request.contextPath}/emp/logout">로그아웃</a>
         </li>

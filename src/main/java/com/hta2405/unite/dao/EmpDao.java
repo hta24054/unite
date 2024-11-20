@@ -274,38 +274,6 @@ public class EmpDao {
         return null;
     }
 
-    public int deleteLangByEmpId(String empId) {
-        String sql = """
-                DELETE LANG
-                WHERE EMP_ID = ?
-                """;
-
-        try (Connection conn = ds.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, empId);
-            return ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    public int deleteCertByEmpId(String empId) {
-        String sql = """
-                DELETE CERT
-                WHERE EMP_ID = ?
-                """;
-
-        try (Connection conn = ds.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, empId);
-            return ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
     public List<Emp> getSubEmpListByEmp(Emp emp) {
         List<Emp> list = new ArrayList<>();
         if (emp.getEmpId().contains("admin")) {
@@ -361,7 +329,6 @@ public class EmpDao {
         }
         return list;
     }
-
 
     public List<Emp> getHiredEmpByDeptId(Long deptId) {
         List<Emp> list = new ArrayList<>();
@@ -472,5 +439,23 @@ public class EmpDao {
                 rs.getString("etype"),
                 rs.getLong("vacation_count"),
                 rs.getBoolean("hired"));
+    }
+
+    public String getImgOriginal(String uuid) {
+        String sql = """
+                    SELECT IMG_ORIGINAL FROM EMP
+                    WHERE IMG_UUID = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, uuid);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                return rs.getString(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
     }
 }

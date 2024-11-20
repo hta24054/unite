@@ -19,5 +19,6 @@ public class EmpFrontController extends AbstractFrontController {
         actionMap.put("/changePw", EmpChangePwAction::new);
         actionMap.put("/changePwProcess", EmpChangePwProcessAction::new);
         actionMap.put("/empTree", EmpTreeAction::new);
+        actionMap.put("/profile-image", EmpProfileImageAction::new);
     }
 }

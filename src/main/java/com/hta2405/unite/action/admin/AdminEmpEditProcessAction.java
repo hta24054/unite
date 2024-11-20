@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class AdminEmpEditProcessAction implements Action {
-    private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("emp.upload.directory");
+    private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("profile.upload.directory");
     private final EmpDao empDao = new EmpDao();
 
     @Override
@@ -60,7 +60,7 @@ public class AdminEmpEditProcessAction implements Action {
             String fileName = fileUUID + "_" + fileOriginalName;
 
             // 저장 경로 설정
-            String uploadPath = req.getServletContext().getRealPath(UPLOAD_DIRECTORY);
+            String uploadPath = UPLOAD_DIRECTORY;
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists() && !uploadDir.mkdirs()) {
                 throw new IOException("업로드 폴더를 생성할 수 없습니다: " + uploadPath);

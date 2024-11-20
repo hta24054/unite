@@ -40,7 +40,7 @@ public class EmpLoginProcessAction implements Action {
                 HttpSession session = req.getSession();
                 session.setAttribute("id", id);
                 session.setAttribute("ename", emp.getEname());
-
+                session.setAttribute("profileUUID", emp.getImgUUID());
                 String IDStore = req.getParameter("remember");
                 Cookie cookie = new Cookie("id", id);
 

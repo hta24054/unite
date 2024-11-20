@@ -2,8 +2,12 @@ package com.hta2405.unite.controller;
 
 import com.hta2405.unite.action.admin.*;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 
+@MultipartConfig(
+        maxFileSize = 1024 * 1024 * 5      // 5MB
+)
 @WebServlet("/admin/*")
 public class AdminFrontController extends AbstractFrontController {
 

@@ -42,18 +42,15 @@
     <!-- 가운데 위 -->
     <div class="center">
         <div class="c_table">
-            <h3><a href="${contextPath }"></a>게시판</h3>
+            <h3><a href="${pageContext.request.contextPath}/board/home">게시판</a></h3>
             <table class="styled-table">
                 <tbody>
-                <tr><td>게시글이 없습니다</td><td></td></tr>
-                <tr><td>게시글이 없습니다</td><td></td></tr>
-                <tr><td>게시글이 없습니다</td><td></td></tr>
-                <tr><td>게시글이 없습니다</td><td></td></tr>
+                	<tr><td>게시글이 없습니다</td><td></td></tr>
                 </tbody>
             </table>
         </div>
         <div class="c_table">
-            <h3>결재 대기 문서</h3><br>
+            <h3><a href="${pageContext.request.contextPath}/doc/waiting">결재 대기 문서</a></h3><span class="plus"></span><br>
             <jsp:include page="doc/waiting_box.jsp"/>
         </div>
     </div>

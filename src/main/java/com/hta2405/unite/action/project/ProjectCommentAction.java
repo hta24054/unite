@@ -9,6 +9,7 @@ import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ProjectDAO;
 import com.hta2405.unite.dao.ProjectbDao;
 import com.hta2405.unite.dto.ProjectTask;
+import com.hta2405.unite.util.ProjectUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +26,9 @@ public class ProjectCommentAction implements Action {
         System.out.println(projectid);
         System.out.println(task_num);
 
+        String left = ProjectUtil.getProjectName(projectid);
+        req.setAttribute("left", left);
+        
         ProjectbDao user_task = new ProjectbDao();
         List<ProjectTask> task = user_task.getUserTaskDetail(userid, projectid, task_num);
         

@@ -459,4 +459,29 @@ public class EmpDao {
         }
         return null;
     }
+
+    public List<Emp> searchEmp(String query) {
+        List<Emp> list = new ArrayList<>();
+        if (query == null || query.trim().isEmpty()) {
+            return list; // 빈 결과 반환
+        }
+        String sql = """
+                	SELECT * FROM EMP e JOIN JOB j
+                	ON e.JOB_ID = j.JOB_ID
+                    where ENAME LIKE ?
+                	ORDER BY j.JOB_RANK, e.emp_id
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "%" + query + "%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(makeEmp(rs));
+            }
+        } catch (SQLException e) {
+            System.out.println("부서 회원 정보 가져오기 오류");
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

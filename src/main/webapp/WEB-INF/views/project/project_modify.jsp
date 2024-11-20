@@ -13,7 +13,7 @@
 		<form action="modifyProcess" method="post" enctype="multipart/form-data" name="modifyform">
 			<input type="hidden" name="userid" value="${task.memberId }">
 			<input type="hidden" name="num" value="${task.taskNum}">
-			<h1>MVC 게시판 - 수정</h1>
+			<h2><c:out value="${left}"/> - 수정</h2>
 			<div class="form-group">
 				<label for="board_name">글쓴이</label>
 				<input value="${task.memberName}" readOnly type="text" class="form-control">

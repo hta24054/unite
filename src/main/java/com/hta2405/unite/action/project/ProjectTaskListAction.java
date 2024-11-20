@@ -11,6 +11,7 @@ import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ProjectbDao;
 import com.hta2405.unite.dto.ProjectTask;
+import com.hta2405.unite.util.ProjectUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,10 +30,9 @@ public class ProjectTaskListAction implements Action {
         System.out.println("userid : " + userid + "projectid" + projectid);
         
         //프르젝트 이름
-        ProjectbDao project_name = new ProjectbDao();
-        String left = project_name.getProjectName(projectid);
+        String left = ProjectUtil.getProjectName(projectid);
         request.setAttribute("left", left);
-        System.out.println("left : " + left); //값 확인
+        
         
         //project_member 이름
         ProjectbDao user_name = new ProjectbDao();

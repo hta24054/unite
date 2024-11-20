@@ -25,8 +25,7 @@ public class DocVacationFileDownloadAction implements Action {
         String fileUUID = req.getParameter("fileUUID");
 
         // 실제 파일 경로
-        String uploadPath = req.getServletContext().getRealPath(UPLOAD_DIRECTORY);
-        String filePath = uploadPath + File.separator + fileUUID + "_" + fileName;
+        String filePath = UPLOAD_DIRECTORY + File.separator + fileUUID + "_" + fileName;
         System.out.println("실제 파일 경로: " + filePath);
 
         File downloadFile = new File(filePath);

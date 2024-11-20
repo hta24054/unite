@@ -49,10 +49,24 @@
     
     #box{border: none !important;}
     #horizon {width: 180px !important;}
-	tr td:nth-child(1) {width: 70%; text-align: left;}
-	tr td:nth-child(2) {width: 30%; text-align: right;}
-	
-	
+    /*게시판*/
+    .styled-table{text-align: left;}
+	.styled-table tr td:nth-child(1) {width: 70%; }
+	.styled-table tr td:nth-child(2) {width: 30%; }
+	/*전자문서*/
+	#waiting_table{text-align: center;}
+	#waiting_table tr th:nth-child(1) { width: 14% !important; }
+	#waiting_table thead tr th:nth-child(2) { width: 18% !important; }
+	#waiting_table thead tr th:nth-child(3) { width: 18% !important; }
+	#waiting_table thead tr th:nth-child(4) { width: 35% !important; }
+	#waiting_table thead tr th:nth-child(5) { width: 20% !important; }
+
+	.plus {
+   		font: italic bold 1.2rem "Fira Sans", serif;
+    	color: #555; 
+    	margin-left: 8px; 
+	}
+
 		/* 테이블 전체 스타일 */
 	table.styled-table{
 	    width: 100%;                /* 테이블 너비 전체 사용 */

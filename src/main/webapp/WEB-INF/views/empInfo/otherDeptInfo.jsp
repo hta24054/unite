@@ -4,6 +4,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>타 부서 인사정보</title>
 <jsp:include page="../common/header.jsp" />
 <script
@@ -13,135 +14,7 @@
 
 <jsp:include page="empInfo_leftbar.jsp" />
 
-<script>
-	$(document)
-			.ready(
-					function() {
-						if ($.fn.fancytree) {
-							$("#tree").fancytree({
-								source : [ {
-									title : "대표이사",
-									key : "대표이사",
-									folder : true,
-									children : [ {
-										title : "부사장",
-										key : "부사장",
-										folder : true
-									}, {
-										title : "경영기획본부",
-										key : "경영기획본부",
-										folder : true,
-										children : [ {
-											title : "재무관리팀",
-											key : "재무관리팀",
-											folder : true
-										}, {
-											title : "인사관리팀",
-											key : "인사관리팀",
-											folder : true
-										} ]
-									}, {
-										title : "SI사업본부",
-										key : "SI사업본부",
-										folder : true,
-										children : [ {
-											title : "신용평가팀",
-											key : "신용평가팀",
-											folder : true
-										}, {
-											title : "금융SI팀",
-											key : "금융SI팀",
-											folder : true
-										}, {
-											title : "비금융SI팀",
-											key : "비금융SI팀",
-											folder : true
-										}, {
-											title : "SM팀",
-											key : "SM팀",
-											folder : true
-										} ]
-									}, {
-										title : "영업본부",
-										key : "영업본부",
-										folder : true,
-										children : [ {
-											title : "솔루션영업팀",
-											key : "솔루션영업팀",
-											folder : true
-										}, {
-											title : "SI영업팀",
-											key : "SI영업팀",
-											folder : true
-										}, {
-											title : "SM영업팀",
-											key : "SM영업팀",
-											folder : true
-										} ]
-									}, {
-										title : "R&D본부",
-										key : "R&D본부",
-										folder : true,
-										children : [ {
-											title : "연구개발팀",
-											key : "연구개발팀",
-											folder : true
-										} ]
-									} ]
-								} ],
-								click : function(event, data) {
-									const department = data.node.key;
-									console.log("선택된 부서: " + department);
-									loadEmployees(department); // 선택된 부서명을 사용
-								}
-							});
-						} else {
-							console.error('fancytree 플러그인이 로드되지 않았습니다.');
-						}
 
-						function loadEmployees(department) {
-							console.log("AJAX 요청 시작: 부서명 - " + department);
-							$
-									.ajax({
-										url : '${pageContext.request.contextPath}/empInfo/viewotherdept',
-										method : 'GET',
-										data : {
-											departmentName : department
-										}, // 동적으로 선택된 부서명을 사용
-										success : function(data) {
-											updateEmployeeTable(data,
-													department);
-										},
-										error : function() {
-											console.log("AJAX 요청 실패");
-										}
-									});
-						}
-
-						function updateEmployeeTable(data, department) {
-							const tableBody = $('#employeeTableBody');
-							tableBody.empty();
-							if (department) {
-								$('#deptName').text(department);
-							} else {
-								$('#deptName').text('부서 선택');
-							}
-							$.each(data, function(key, value) {
-								var html = "<tr>";
-								html += "<td>" + value.mobile + "</td>";
-								html += "<td><a href='"
-										+ '${pageContext.request.contextPath}'
-										+ "/empInfo/view?id=" + value.empId
-										+ "'>" + value.ename + "</a></td>";
-								html += "<td>" + value.school + "</td>";
-								html += "<td>" + value.email + "</td>";
-								html += "<td>" + value.tel + "</td>";
-								html += "</tr>";
-								tableBody.append(html);
-							});
-						}
-					});
-</script>
 <style>
 .main-container {
 	display: flex;
@@ -261,5 +134,160 @@ th {
 			</div>
 		</div>
 	</div>
+
+	<script>
+		$(document)
+				.ready(
+						function() {
+							$("#tree").fancytree({
+								source : [ {
+									title : "대표이사",
+									key : "1000",
+									folder : true,
+									children : [ {
+										title : "부사장",
+										key : "1001",
+										folder : true
+									}, {
+										title : "경영기획본부",
+										key : "1100",
+										folder : true,
+										children : [ {
+											title : "재무관리팀",
+											key : "1110",
+											folder : true
+										}, {
+											title : "인사관리팀",
+											key : "1120",
+											folder : true
+										} ]
+									}, {
+										title : "SI사업본부",
+										key : "1200",
+										folder : true,
+										children : [ {
+											title : "신용평가팀",
+											key : "1210",
+											folder : true
+										}, {
+											title : "금융SI팀",
+											key : "1220",
+											folder : true
+										}, {
+											title : "비금융SI팀",
+											key : "1230",
+											folder : true
+										}, {
+											title : "SM팀",
+											key : "1240",
+											folder : true
+										} ]
+									}, {
+										title : "영업본부",
+										key : "1300",
+										folder : true,
+										children : [ {
+											title : "솔루션영업팀",
+											key : "1310",
+											folder : true
+										}, {
+											title : "SI영업팀",
+											key : "1320",
+											folder : true
+										}, {
+											title : "SM영업팀",
+											key : "1330",
+											folder : true
+										} ]
+									}, {
+										title : "R&D본부",
+										key : "1400",
+										folder : true,
+										children : [ {
+											title : "연구개발팀",
+											key : "1410",
+											folder : true
+										} ]
+									} ]
+								} ],
+								click : function(event, data) {
+									const deptId = data.node.key;
+									console.log("선택된 부서: " + deptId);
+									loadEmployees(deptId); // 선택된 부서명을 사용
+								}
+							});
+
+							function loadEmployees(deptId) {
+
+								$
+										.ajax({
+											url : '${pageContext.request.contextPath}/empInfo/viewotherdept',
+											method : 'GET',
+											data : {
+												deptId : deptId
+											},
+											success : function(data) {
+												console.log("AJAX 응답 데이터:",
+														data);
+												updateDepartmentName(data.deptName1);
+												updateEmployeeTable(
+														data.empList,
+														data.jobName,
+														data.deptName);
+											},
+											error : function(xhr, status, error) {
+												console.log("AJAX 요청 실패:",
+														status, error);
+											}
+										});
+							}
+
+							function updateDepartmentName(deptName1) {
+								if (deptName1) {
+									$('#deptName').text(deptName1);
+								} else {
+									$('#deptName').text('부서 선택');
+								}
+							}
+
+							function updateEmployeeTable(empList, jobName,
+									deptName) {
+								const tableBody = $('#employeeTableBody');
+								tableBody.empty();
+								$('#noDataMessage').remove();
+
+								if (empList.length === 0) {
+									tableBody
+											.append("<tr><td colspan='6'>직원이 없습니다.</td></tr>");
+								} else {
+									$
+											.each(
+													empList,
+													function(index, emp) {
+														let html = "<tr>";
+														html += "<td>"
+																+ deptName[emp.deptId]
+																+ "</td>";
+														html += "<td><a href='/unite/empInfo/view?id="
+																+ emp.empId
+																+ "'>"
+																+ emp.ename
+																+ "</a></td>";
+														html += "<td>"
+																+ jobName[emp.jobId]
+																+ "</td>";
+														html += "<td>"
+																+ emp.email
+																+ "</td>";
+														html += "<td>"
+																+ emp.tel
+																+ "</td>";
+														html += "</tr>";
+														tableBody.append(html);
+													});
+								}
+							}
+						});
+	</script>
 </body>
 </html>

@@ -2,8 +2,12 @@ package com.hta2405.unite.controller;
 
 import com.hta2405.unite.action.admin.*;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 
+@MultipartConfig(
+        maxFileSize = 1024 * 1024 * 5      // 5MB
+)
 @WebServlet("/admin/*")
 public class AdminFrontController extends AbstractFrontController {
 
@@ -24,8 +28,9 @@ public class AdminFrontController extends AbstractFrontController {
         actionMap.put("/notice/update", AdminNoticeEditAction::new);
         actionMap.put("/notice/delete", AdminNoticeDeleteAction::new);
         actionMap.put("/emp-manage", AdminEmpManageAction::new);
-        actionMap.put("/emp-manage/fire", AdminEmpFireAction::new);
+        actionMap.put("/emp-manage/register", AdminEmpRegisterAction::new);
         actionMap.put("/emp-manage/edit", AdminEmpEditAction::new);
-        actionMap.put("/emp-manage/edit-process", AdminEmpEditProcessAction::new);
+        actionMap.put("/emp-manage/process", AdminEmpRegisterAndEditProcessAction::new);
+        actionMap.put("/emp-manage/fire", AdminEmpFireAction::new);
     }
 }

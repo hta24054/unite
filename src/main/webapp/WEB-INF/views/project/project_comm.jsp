@@ -17,7 +17,7 @@
 	
 		<table class="table">
 			<tr>
-				<th colspan="2">MVC 게시판 - view 페이지</th>
+				<th colspan="2"><c:out value="${left}"/></th>
 			</tr>
 			<tr>
 				<td><div>글쓴이</div></td>

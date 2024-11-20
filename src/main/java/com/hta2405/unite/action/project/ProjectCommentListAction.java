@@ -2,7 +2,6 @@ package com.hta2405.unite.action.project;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -11,7 +10,7 @@ import com.google.gson.JsonObject;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ProjectbDao;
-import com.hta2405.unite.dto.ProjectTask;
+import com.hta2405.unite.util.ProjectUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +26,7 @@ public class ProjectCommentListAction implements Action {
         System.out.println(userid);
         System.out.println(projectid);
         System.out.println(task_num);
+        
         
         
         ProjectbDao dao = new ProjectbDao();

@@ -231,15 +231,7 @@ function changeBoardName2(boardName1Value){
 }
 
 $(function(){
-	var BoardName2Value = $('.boardName2').filter(function() {
-	    return $(this).css('font-weight') === 'bold' || $(this).css('font-weight') === '700';
-	}).text();
-	
-	let boardName1Value;
-	
-	if(BoardName2Value == ''||BoardName2Value == null){//게시판 홈에서 글쓰기 버튼을 누를 경우 초기화
-		BoardName2Value='공지사항';
-	}
+	var BoardName2Value = $('#boardName2Hidden').val();
 	
 	// BoardName2Text의 따라 BoardName1 구하기
 	if (companyBulletinBoards.includes(BoardName2Value)) {
@@ -302,24 +294,26 @@ document.addEventListener("drop", function (event) {
  	<form method="post" enctype="multipart/form-data"
       name="boardform" onsubmit="event.preventDefault(); submitForm();">
  		<div class="form-group2">
+ 			<input type="hidden" name="postId" value='${postData.postId}'/>
+ 			<input type="hidden" id="boardName2Hidden" name="boardName2Hidden" value='${boardMap[postData.boardId]}'/>
  			<label for="target_board" class="labelName">
  				To.
- 				<select id="boardName1" name="boardName1" class="boardName">
- 					<option value="전사게시판" ${param.boardName1 == '전사게시판' ? 'selected' : ''}>전사게시판</option>
- 					<option value="일반게시판" ${param.boardName1 == '일반게시판' ? 'selected' : ''}>일반게시판</option>
- 					<option value="부서게시판" ${param.boardName1 == '부서게시판' ? 'selected' : ''}>부서게시판</option>
+ 				<select id="boardName1" name="boardName1" class="boardName" disabled>
+ 					<option value="전사게시판" >전사게시판</option>
+ 					<option value="일반게시판" >일반게시판</option>
+ 					<option value="부서게시판" >부서게시판</option>
  				</select>
- 				<select id="boardName2" name="boardName2" class="boardName">
- 					<option value="공지사항" ${param.boardName2 == '공지사항' ? 'selected' : ''}>공지사항</option>
- 					<option value="주간식단표" ${param.boardName2 == '주간식단표' ? 'selected' : ''}>주간식단표</option>
- 					<option value="FAQ" ${param.boardName2 == 'FAQ' ? 'selected' : ''}>FAQ</option>
+ 				<select id="boardName2" name="boardName2" class="boardName" disabled>
+ 					<option value="공지사항">공지사항</option>
+ 					<option value="주간식단표">주간식단표</option>
+ 					<option value="FAQ">FAQ</option>
  				</select>
  			</label>
  		</div>
  		<div class="form-group2">
  			<label for="board_subject" class="labelName">제목</label>
  			<input name="board_subject" id="board_subject" type="text" maxlength="100"
- 					class="form-control2" placeholder="Enter board_subject" required>
+ 					class="form-control2" placeholder="Enter board_subject" value="Re:${postData.postSubject}" required>
  		</div>
  		<div class="form-group2-file">
  			<label for="board_attachFile" class="labelName">파일첨부</label>
@@ -336,6 +330,7 @@ document.addEventListener("drop", function (event) {
 		<textarea class="summernote form-control2" id="board_content" name="board_content" required></textarea>
 		<div class="form-group-btn">
 	 		<button type="submit" class="btn registerBtn">등록</button>
+	 		<button type="reset" class="btn registerBtn tr-post" data-page="${postData.postId}" data-name="${boardMap[postData.boardId]}">돌아가기</button>
  		</div>
  	</form>
  	

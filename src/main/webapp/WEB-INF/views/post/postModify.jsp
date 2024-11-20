@@ -18,7 +18,7 @@
 		display: flex;
 	    justify-content: center;
 	    align-items: center;
-	    height: 60px;
+	    height: 80px;
 	    width: 85%;
 	    border-radius: 10px;
 	}
@@ -87,72 +87,89 @@
         border:3px solid #334466;
         z-index : 1;
 	}
+	.hidden {
+    	display: block;
+	}
 </style>
 <script>
 var fileNo = 0;
 var filesArr = [];
 var deletedFiles = [];
+var maxFileCnt = 5;   // 첨부파일 최대 개수
 
 var companyBulletinBoards = ['공지사항', '주간식단표', 'FAQ'];
 var DepartmentBoards = ['솔루션영업팀'];
 
 /* 첨부파일 추가 */
-function addFile(obj) {
-
-    var maxFileCnt = 5;   // 첨부파일 최대 개수
-    var attFileCnt = document.querySelectorAll('.filebox').length;    // 기존 추가된 첨부파일 개수
-    var remainFileCnt = maxFileCnt - attFileCnt;    // 추가로 첨부가능한 개수
-    var curFileCnt = obj.files.length;  // 현재 선택된 첨부파일 개수
-
-    $('.file-list').css('display', 'block');
+function addFiles(files) {
+    var attFileCnt = $('.filebox').length;
+    var remainFileCnt = maxFileCnt - attFileCnt;
+    var curFileCnt = files.length;
 
     if (curFileCnt > remainFileCnt) {
         alert("첨부파일은 최대 " + maxFileCnt + "개 까지 첨부 가능합니다.");
-    } else {
-        for (const file of obj.files) {
-            if (validation(file)) {
-                var reader = new FileReader();
-                reader.onload = function () {
-                    // 파일 객체에 고유 fileNo 값을 추가해 배열에 저장
-                    file.fileNo = fileNo;
-                    filesArr.push(file);
-                };
-                reader.readAsDataURL(file);
+        return;
+    }
 
-                // 목록 추가
-                let htmlData = '';
-                htmlData += '<div id="file' + ++fileNo + '" class="filebox">';
-                htmlData += '   <p class="name">' + file.name + '</p>';
-                htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><img src="${pageContext.request.contextPath}/image/delete.png"/></a>';
-                htmlData += '</div>';
-                $('.file-list').append(htmlData);
-            }
+    for (const file of files) {
+    	if (validation(file)) {
+            fileListAppendHtml(file);// fileList 추가
         }
     }
-    document.querySelector("input[type=file]").value = "";
+
+    updateFileListVisibility();
+    $("input:file").val(""); // 파일 입력 필드 초기화
 }
 
+//addFile과 handleFiles에서 공통된 파일 처리 로직
+function addFile(obj) {
+    addFiles(obj.files);
+}
 
+function handleFiles(dragFiles) {
+    addFiles(dragFiles);
+}
+
+/* fileList html 추가 */
+function fileListAppendHtml(file) {
+    // 파일 객체에 고유 fileNo 값을 추가해 배열에 저장
+    file.fileNo = fileNo;
+    filesArr.push(file);
+
+    // 목록 추가
+    let htmlData = '';
+    htmlData += '<div id="file' + fileNo + '" class="filebox">';
+    htmlData += '   <p class="name">' + file.name + '</p>';
+    
+    htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo;
+    if (file.isExisting) {// isExisting 조건에 따라 추가
+        htmlData += ', true';
+    }
+    htmlData += ');"><img src="${pageContext.request.contextPath}/image/delete.png"/></a>';
+    
+    htmlData += '</div>';
+    $('.file-list').append(htmlData);
+    fileNo++;
+}
 
 /* 첨부파일 검증 */
-function validation(obj){
-    if (obj.name.length > 100) {
+function validation(file) {
+    const maxSize = 100 * 1024 * 1024; // 100MB
+    if (file.name.length > 100) {
         alert("파일명이 100자 이상인 파일은 제외되었습니다.");
-        return false;
-    } else if (obj.size > (100 * 1024 * 1024)) {
+    } else if (file.size > maxSize) {
         alert("최대 파일 용량인 100MB를 초과한 파일은 제외되었습니다.");
-        return false;
-    } else if (obj.name.lastIndexOf('.') == -1) {
+    } else if (!file.name.includes('.')) {
         alert("확장자가 없는 파일은 제외되었습니다.");
-        return false;
     } else {
         return true;
     }
+    return false;
 }
 
 /* 첨부파일 삭제 */
-function deleteFile(deleteNo, isExistingFile = false) {
-	if (isExistingFile) {
+function deleteFile(deleteNo, isExisting = false) {
+	if (isExisting) {
         // 기존 파일인 경우 deletedFiles 배열에 추가
         const deletedFile = filesArr.find(file => file.fileNo === deleteNo);
         deletedFiles.push(deletedFile);
@@ -162,7 +179,7 @@ function deleteFile(deleteNo, isExistingFile = false) {
     filesArr = filesArr.filter(file => file.fileNo !== deleteNo);
 
     // 파일 목록에서 삭제
-    document.querySelector("#file" + deleteNo).remove();
+    $("#file" + deleteNo).remove();
 
     // 파일 목록이 비어 있으면 숨김 처리
     updateFileListVisibility();
@@ -173,12 +190,9 @@ function updateFileListVisibility() {
 	console.log('update')
 	console.log('filesArr=',filesArr)
 	console.log('deletedFiles=',deletedFiles)
+	console.log(filesArr.length)
 	
-    if (filesArr.length === 0) {
-        $('.file-list').css('display', 'none');
-    }else{
-    	$('.file-list').css('display', 'block');
-    }
+    $('.file-list').toggleClass('hidden', filesArr.length !== 0);
 }
 
 /* 폼 전송 */
@@ -202,7 +216,7 @@ function submitForm() {
 
     $.ajax({
         method: 'POST',
-        url: '../board/post/add',
+        url: '../board/post/modifyProcess',
         dataType: 'json',
         data: formData,
         processData: false,
@@ -210,7 +224,10 @@ function submitForm() {
         cache: false,
         success: function (data) {
             alert(data.message);
-            location.href = "home";
+            console.log('data.boardName2=',data.boardName2)
+            console.log('data.postId=',data.postId)
+            
+			loadBoardPost(data.boardName2,data.postId);
         },
         error: function (xhr, desc, err) {
             alert('에러가 발생하였습니다.');
@@ -261,27 +278,19 @@ $(function(){
 	});
 	
 	
-	 // 게시글에 올려둔 첨부파일 배열에 추가 및 출력
+	// 게시글에 올려둔 첨부파일 배열에 추가 및 출력
     $('.filesHidden').each(function() {
 		
         const file = {
-        	'fileNo'	: fileNo,
+        	'fileNo'	: null,
+            name: $(this).data('post-file-original'),
             postFilePath: $(this).data('post-file-path'),
             postFileUUID: $(this).data('post-file-uuid'),
             postFileType: $(this).data('post-file-type'),
-            postFileOriginal: $(this).data('post-file-original'),
             isExisting: true // 기존 파일임을 표시
         };
-        // filesArr 배열에 추가
-        filesArr.push(file);
-
-        // 목록 추가
-        let htmlData = '';
-        htmlData += '<div id="file' + ++fileNo + '" class="filebox">';
-        htmlData += '   <p class="name">' + file.postFileOriginal + '</p>';
-        htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ', true);"><img src="${pageContext.request.contextPath}/image/delete.png"/></a>';
-        htmlData += '</div>';
-        $('.file-list').append(htmlData);
+        
+        fileListAppendHtml(file);
     });
     updateFileListVisibility()
 	
@@ -294,69 +303,24 @@ $(function(){
 		changeBoardName2(boardName1Value);//boardName2를 boardName1에 맞게 바꿈
 	});
 	
-	// dragover 이벤트: 드래그한 파일이 attachFlie 영역에 있을 때
+ 	// dragover 이벤트: 드래그한 파일이 attachFlie 영역에 있을 때
     $('.attachFile').on('dragover', function(event) {
-        event.preventDefault(); // 기본 동작을 취소
-        $('.attachFile').css('opacity', '0.1')
-        				.addClass('dragoverFile');
-    });
-
-    // dragleave 이벤트: 드래그한 파일이 영역을 벗어났을 때
-    $('.attachFile').on('dragleave', function(event) {
-    	$('.attachFile').css('opacity', '1')
-    					.removeClass('dragoverFile');
-    });
+	    event.preventDefault();
+	    $(this).addClass('dragoverFile');
+	});
+	
+	$('.attachFile').on('dragleave', function() {
+	    $(this).removeClass('dragoverFile');
+	});
 	
     $('.attachFile').on('drop', function(event) {
         event.preventDefault();  // 기본 동작을 취소
-        $('.attachFile').css('opacity', '1')
-						.removeClass('dragoverFile');
+        $(this).removeClass('dragoverFile');
 	
         var dragFiles = event.originalEvent.dataTransfer.files;  // 드롭된 파일들
         handleFiles(dragFiles);  // 드래그된 파일 처리
     });
 
-    // 파일 처리 함수
-    function handleFiles(dragFiles) {
-    	// 첨부파일을 넣을시 list를 보이게 함
-
-    	console.log('dragFiles=',dragFiles)
-    	
-	    var maxFileCnt = 5;   // 첨부파일 최대 개수
-	    var attFileCnt = document.querySelectorAll('.filebox').length;    // 기존 추가된 첨부파일 개수
-	    var remainFileCnt = maxFileCnt - attFileCnt;    // 추가로 첨부가능한 개수
-	    var curFileCnt = dragFiles.length;  // 현재 선택된 첨부파일 개수
-	
-	    $('.file-list').css('display', 'block');
-	    
-		// 첨부파일 개수 확인
-	    if (curFileCnt > remainFileCnt) {
-	        alert("첨부파일은 최대 " + maxFileCnt + "개 까지 첨부 가능합니다.");
-	    } else {
-	        for (const file of dragFiles) {
-	        	
-	            if (validation(file)) {
-	                var reader = new FileReader();
-	                reader.onload = function () {
-	                    // 파일 객체에 고유 fileNo 값을 추가해 배열에 저장
-	                    file.fileNo = fileNo;
-	                    filesArr.push(file);
-	                };
-	                reader.readAsDataURL(file);
-	
-	                // 목록 추가
-	                let htmlData = '';
-	                htmlData += '<div id="file' + ++fileNo + '" class="filebox">';
-	                htmlData += '   <p class="name">' + file.name + '</p>';
-	                htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><img src="${pageContext.request.contextPath}/image/delete.png"/></a>';
-	                htmlData += '</div>';
-	                $('.file-list').append(htmlData);
-	            }
-	        
-	   		}
-		    document.querySelector("input[type=file]").value = "";
-		}
-	}
 });
 
 //Drop 영역외에 파일 끌어다 놓았을 때 브라우져 동작막깅
@@ -370,10 +334,11 @@ document.addEventListener("drop", function (event) {
 </script>
 </head>
 <body>
- 	<form action="../board/post/modifyProcess" method="post" enctype="multipart/form-data"
+ 	<form method="post" enctype="multipart/form-data"
       name="boardform" onsubmit="event.preventDefault(); submitForm();">
  		<div class="form-group2">
- 			<input type="hidden" id="boardName2Hidden" value='${boardName2}'/>
+ 			<input type="hidden" name="postId" value='${list[0].postId}'/>
+ 			<input type="hidden" id="boardName2Hidden" name="boardName2Hidden" value='${boardName2}'/>
  			<label for="target_board" class="labelName">
  				To.
  				<select id="boardName1" name="boardName1" class="boardName">
@@ -409,13 +374,12 @@ document.addEventListener("drop", function (event) {
 	 				</c:if>
 	 				<input type="file" id="upfile" onchange="addFile(this);" multiple/>
 	 			</label>
-	 			<span id="filevalue"></span>
  			</div>
  		</div>
  		<div class="file-list"></div>
 		<textarea class="summernote form-control2" id="board_content" name="board_content" required>${list[0].postContent}</textarea>
 		<div class="form-group-btn">
-	 		<button type="submit" class="btn registerBtn">등록</button>
+	 		<button type="submit" class="btn registerBtn">수정</button>
  		</div>
  	</form>
  	
@@ -427,6 +391,8 @@ document.addEventListener("drop", function (event) {
 	            maxHeight: null,
 	            focus: true
 	        });
+	        
+	        $('.boardContent .active').removeClass('active');
 	    });
  	</script>
 </body>

@@ -9,34 +9,13 @@ DROP TABLE emp CASCADE CONSTRAINTS;
 DROP TABLE dept CASCADE CONSTRAINTS;
 
 -- 영훈
-select post.*, nvl(cnt,0) as cnt, img_path, img_original, img_uuid, img_type, post_file.* 
-from post left outer join (select post_id, count(*) as cnt
-							from post_comment
-							group by post_id) pc
-	on post.post_id = pc.post_id
-join post_file
-	on post.post_id = post_file.post_id
-join emp
-	on emp.emp_id = post.emp_id
-where  post.post_id = 55;
 
-select post.*, nvl(cnt,0) as cnt, img_path, img_original, img_uuid, img_type
-from post left outer join (select post_id, count(*) as cnt
-							from post_comment
-							group by post_id) pc
-	on post.post_id = pc.post_id
-join emp
-	on emp.emp_id = post.emp_id
-where  post.post_id = 55;
-
-select *
-from post_file
-where post_id = 56;
-
-ALTER TABLE POST ADD (new_post_content CLOB NOT NULL);
-UPDATE POST SET new_post_content = post_content;
-ALTER TABLE POST DROP COLUMN post_content;
-ALTER TABLE POST RENAME COLUMN new_post_content TO post_content;
+UPDATE POST
+SET BOARD_ID = 5,
+	POST_SUBJECT = 11231,
+	POST_CONTENT = '<p>123</p>',
+	POST_UPDATE_DATE = SYSDATE
+WHERE POST_ID = 63;
 
 
 SELECT

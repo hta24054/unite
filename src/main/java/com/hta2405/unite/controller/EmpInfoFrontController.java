@@ -1,7 +1,7 @@
 package com.hta2405.unite.controller;
 
 import com.hta2405.unite.action.empInfo.EmpViewAction;
-import com.hta2405.unite.action.empInfo.EmpDetailViewAction;
+
 import com.hta2405.unite.action.empInfo.EmpInfoUpdateAction;
 import com.hta2405.unite.action.empInfo.EmpViewDeptAction;
 import com.hta2405.unite.action.empInfo.EmpViewOtherDeptInfoAction;

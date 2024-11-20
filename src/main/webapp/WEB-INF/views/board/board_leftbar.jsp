@@ -1,42 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
-  <style>
-    /* 기본 스타일 설정 */
-    .accordion {
-      height: calc(100vh - 50px); 
-	  border-right: 2px solid rgb(51, 68, 102); 
-	  padding: 30px 0px;
-	  float: left;
-	  margin-top: -50px;
-    }
-    .accordion-title {
-      padding: 15px 100px 15px 80px;
-      cursor: pointer;
-      font-weight: bold;
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      gap:10px;
-    }
-    .accordion-content {
-      display: none;
-      background-color: #fff;
-    }
-    .accordion-a{
-      padding: 15px 100px 15px 80px;
-    }
-    a{
-      text-decoration: none;
-      color:black;
-    }
-    .accordion-a:hover {
-      background-color: #f0f0f0;
-    }
-    span{margin-bottom: "3px";
-    }
-  </style>
-
 <div class="accordion">
   <div class="accordion-item">
     <div class="accordion-title" onclick="toggleAccordion(this)">

@@ -1,15 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+         pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>나의 인사정보</title>
 <link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/css/empInfo.css">
+      href="${pageContext.request.contextPath}/css/empInfo.css">
 <script
-	src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-<jsp:include page="../common/header.jsp" />
-<jsp:include page="empInfo_leftbar.jsp" />
+        src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<jsp:include page="../common/header.jsp"/>
+<jsp:include page="empInfo_leftbar.jsp"/>
 <html>
 <head>
 <style>
@@ -17,6 +17,7 @@ table, .table {
 	width: 90%;
 	border-collapse: collapse;
 	margin: 0 5%;
+	border-radius: 10px;
 }
 
 #photo {
@@ -29,6 +30,7 @@ th {
 }
 
 table {
+	border-radius: 10px;
 	margin-top: 10px;
 }
 
@@ -80,17 +82,31 @@ select[disabled] {
 
 button#editButton {
 	background-color: green;
+	border: 0px;
+	margin-top: 1%;
+	border-radius: 10px;
 	color: white;
+	border-radius: 10px;
 }
 
 button#cancelButton {
 	background-color: red;
+	border: 0px;
+	border-radius: 10px;
 	color: white;
 }
 
 button#saveButton {
 	margin-right: 5%;
+	margin-top: 1%;
+	border: 0px;
+	border-radius: 10px;
 }
+
+button#saveButton:disabled:hover {
+	background-color: white; /* 비활성화 상태에서도 원래 배경색 유지 */
+	cursor: not-allowed;
+} /* 비활성화 상태임을 나타내는 커서 */
 </style>
 
 <script>
@@ -116,6 +132,7 @@ button#saveButton {
 												"1px solid #000");
 								$(this).text("취소").css("background-color",
 										"red").attr("id", "cancelButton");
+								$("#saveButton").removeAttr("disabled");//저장 버튼 활성화
 							} else if ($(this).text() === "취소") {
 								$(".editable").each(
 										function() {
@@ -132,6 +149,7 @@ button#saveButton {
 										});
 								$(this).text("수정").css("background-color",
 										"green").attr("id", "editButton");
+								$("#saveButton").attr("disabled", "disabled"); // 저장 버튼 비활성화
 							}
 						});
 			});
@@ -293,13 +311,12 @@ button#saveButton {
 
 				<c:if test="${details.emp.empId == sessionScope.id}">
 					<button type="button" id="editButton">수정</button>
-					<button type="submit" id="saveButton">저장</button>
+					<button type="submit" id="saveButton" disabled>저장</button>
 				</c:if>
 
 
 			</form>
 		</div>
 	</div>
-
 </body>
 </html>

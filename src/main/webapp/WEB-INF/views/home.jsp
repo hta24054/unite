@@ -28,7 +28,8 @@
     <div class="left">
         <div class="user">
             <%--<img src="${pageContext.request.contextPath}/image/${profile.imgPath }${profile.imgType}" style="width:150px; height:150px; border-radius:50%; border: 1px solid gray;" alt="프로필"><br> --%>
-            <img src="${pageContext.request.contextPath}/image/profile_navy.png" class="user_img" alt="프로필"><br><br>
+            <img src="${pageContext.request.contextPath}/emp/profile-image?UUID=${sessionScope.profileUUID}"
+                 class="user_img" alt="프로필"><br><br>
             <c:out value="${profile.ename }"/> / <c:out value="${job}"/><br>
             <c:out value="${profile.email }"/>
 
@@ -45,7 +46,7 @@
             <h3><a href="${pageContext.request.contextPath}/board/home">게시판</a></h3>
             <table class="styled-table">
                 <tbody>
-                	<tr><td>게시글이 없습니다</td><td></td></tr>
+                   <tr><td>게시글이 없습니다</td><td></td></tr>
                 </tbody>
             </table>
         </div>

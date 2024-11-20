@@ -261,10 +261,10 @@
                 url: `${pageContext.request.contextPath}/admin/notice/update`,
                 method: 'POST',
                 data: {
-                    noticeId: noticeId,
-                    subject: subject,
-                    content: content,
-                    endDate: endDate
+                    noticeId: $('#noticeId').val(),
+                    subject: $('#subject').val(),
+                    content: $('#content').val(),
+                    endDate: $('#endDate').val()
                 },
                 success: function (data) {
                     alert(data.message);

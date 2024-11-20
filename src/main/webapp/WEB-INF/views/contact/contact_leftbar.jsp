@@ -4,8 +4,6 @@
 
 <html>
 <head>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/leftbar.css">
-    <script src="${pageContext.request.contextPath}/js/leftbar.js"></script>
     <meta charset="UTF-8">
     <title>Insert title here</title>
 </head>

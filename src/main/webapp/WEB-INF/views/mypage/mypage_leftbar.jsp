@@ -3,8 +3,6 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/leftbar.css">
-    <script src="${pageContext.request.contextPath}/js/leftbar.js"></script>
     <title>Insert title here</title>
 </head>
 <body>

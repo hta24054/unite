@@ -52,7 +52,7 @@
         }
 
         .search-container-inline input {
-            width: 400px; /* 검색창 너비 */
+            width: 300px; /* 검색창 너비 */
             padding: 8px 16px;
             font-size: 14px;
             border: 1px solid #ccc;

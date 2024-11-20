@@ -271,11 +271,7 @@ $(function(){
 	$('#boardName1').val(boardName1Value);
 	$('#boardName2').val(BoardName2Value);
 	
-	$(".boardName2").css({
-		'font-weight':'normal',
-		'color':'#333',
-		'font-size':'14px'
-	});
+	$(".boardName2,.left a").removeClass('menuActive');
 	
 	
 	// 게시글에 올려둔 첨부파일 배열에 추가 및 출력

@@ -5,7 +5,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>조직도 및 직원 검색</title>
+<title>주소록 조회</title>
 <jsp:include page="../common/header.jsp" />
 <jsp:include page="contact_leftbar.jsp" />
 
@@ -73,6 +73,13 @@ th, td {
 
 #searchInput {
 	border: 1px solid black;
+}
+
+.btn.active {
+	background-color: #28a745 !important; /* 활성화된 버튼 배경색 */
+	color: black !important; /* 활성화된 버튼 글자색 */
+	
+	border: 1px solid #007bb5 !important; /* 활성화된 버튼 테두리 */
 }
 </style>
 </head>
@@ -200,6 +207,8 @@ th, td {
 
 			// 버튼 클릭 이벤트 할당
 			$('#nameSortBtn').click(function() {
+				$(this).addClass('active');
+				$('#jobSortBtn').removeClass('active');
 				const buttonText = $(this).text();
 				if (buttonText === "전체 보기") {
 					loadAllEmployeesByName();
@@ -210,6 +219,8 @@ th, td {
 				}
 			});
 			$('#jobSortBtn').click(function() {
+				$(this).addClass('active');
+				$('#nameSortBtn').removeClass('active');
 				loadAllEmployeesByJob(); // 직급순 정렬 
 			});
 		});

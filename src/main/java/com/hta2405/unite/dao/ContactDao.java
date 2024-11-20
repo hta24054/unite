@@ -4,9 +4,7 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import com.hta2405.unite.dto.Emp;
-import com.hta2405.unite.dto.EmpDetails;
-import com.hta2405.unite.dto.Dept;
-import com.hta2405.unite.dto.Job;
+
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

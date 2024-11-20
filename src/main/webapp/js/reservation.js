@@ -4,7 +4,7 @@ $(document).ready(function(){
 	let isAllDayChk, startDate, endDate;
 	const $resourceType = $("#resourceType");
 	const $resourceName = $("#resourceName");
-	let resourceId;
+	//let resourceId;
 	
 	getResourceList();
 	
@@ -61,29 +61,13 @@ $(document).ready(function(){
             }
 		});
 	});
-	
-	
-	// 자원명 선택 시 resourceId를 할당
-	$resourceName.on("change", function() {
-	    resourceId = $(this).val(); // 선택된 resourceId 값을 가져옵니다.
-	    
-	    if (resourceId) {
-	        localStorage.setItem("selectedResourceId", resourceId);
-	        openBookingDetailModal(event);  // 예약 상세 정보를 불러오는 함수 호출
-	    } else {
-	        console.log("resourceId is required"); // resourceId가 없으면 오류 메시지 출력
-	    }
-	});
 
 	// 자원 예약 목록 불러오기
-	function getResourceBookingList(){		
+	function getReservationList(){		
 		$.ajax({
-			url: "getResourceBookingList",  
+			url: "getReservationList",  
 			type: "get",
 			dataType: "json",
-			data: { 
-	            resourceId: resourceId
-	        },
 	        success: function (data) {
 				events = []; 
 				if (data != null && data.length > 0) {
@@ -95,12 +79,11 @@ $(document).ready(function(){
 			                start: data[i].reservation_start, 
 			                end: data[i].reservation_end,
 		                 	extendedProps: {
-	                             reservationInfo: data[i].reservationInfo,
-	                             resourceId: data[i].resource_id, // 이벤트에 리소스 아이디를 넣어줘야함!!!
+	                             reservationInfo: data[i].reservation_info,
+	                             resourceId: data[i].resource_id,
+	                             empId: data[i].emp_id
 	                        }
 			            });
-			            
-			            //console.log("자원 예약 목록 불러오기 events", events);
 			        }
 			    } 
 			    
@@ -113,9 +96,9 @@ $(document).ready(function(){
 	}
 		
 	// 자원 예약 하기
-	function resourceBooking(eventData) {
+	function resourceReservation(eventData) {
 		$.ajax({
-			url: "resourceBooking",
+			url: "resourceReservation",
 			type: "post",
 	        dataType: "json",
 	        data: {
@@ -127,6 +110,16 @@ $(document).ready(function(){
                 resourceName: $("#resourceName option:selected").text(), // 자원 이름
                 reservationInfo: $("#reservationInfo").val()
             },
+            success: function (data) {
+	            if (data === 0) {
+	                alert('이미 예약된 자원입니다.');
+	                return;  // 이미 예약된 자원이라면 예약을 진행하지 않음
+	            }
+
+	            getReservationList();
+	            $("#reservationModal").modal("hide");
+	        },
+            /*
 	        success: function (data) {
 				events = []; 
 				if (data != null && data.length > 0) {
@@ -139,8 +132,8 @@ $(document).ready(function(){
 			                end: data[i].reservation_end,
 		                 	extendedProps: {
 						        resourceName: $("#resourceName option:selected").text(),
-						        reservationInfo: $("#reservationInfo").val(),
-						        resourceId: data[i].resource_id, // 이벤트에 리소스 아이디를 넣어줘야함!!!
+						       	reservationInfo: data[i].reservation_info,
+						        resourceId: data[i].resource_id,
 						    },
 			            });
 			        }
@@ -150,9 +143,10 @@ $(document).ready(function(){
 					alert('이미 예약된 자원입니다.');
 				}
 				
-				getResourceBookingList();
+				getReservationList();
 				$("#reservationModal").modal("hide"); 
 			},
+			*/
 			error: function () {
                 alert("자원 예약 오류");
             }
@@ -160,19 +154,18 @@ $(document).ready(function(){
 	}
 	
 	// 자원 예약 정보 팝업
-	function openBookingDetailModal(event){
+	function openInfoModal(event){
 		$.ajax({
-			url: "getResourceBookingDetail",
+			url: "getReservationInfo",
 			type: "get",
 	        dataType: "json",
 	        data: { 
-	            resourceId: resourceId  
+	            reservation_id: event.id,
+	        	emp_id: $("#emp_id").val(),
 	        },
 	        success: function (data) {
-
 				events = []; 
 				if (data != null && data.length > 0) {
-					console.log("예약 정보 팝업 data", data);
 					
 			        for (let i = 0; i < data.length; i++) {
 						events.push({
@@ -180,41 +173,92 @@ $(document).ready(function(){
 							allDay: data[i].reservation_allDay,
 			                start: data[i].reservation_start, 
 			                end: data[i].reservation_end,
+			                reservationInfo: data[i].reservation_info,
 		                 	extendedProps: {
-						        resourceName: $("#resourceName option:selected").text(),
-						        reservationInfo: $("#reservationInfo").val(),
-						        resourceId: data[i].resource_id, // 이벤트에 리소스 아이디를 넣어줘야함!!!
+						        reservationInfo: data[i].reservation_info,
+						        resourceId: data[i].resource_id,
+						        empId: data[i].emp_id
 						    },
 			            });
-			            
-			            console.log("예약 정보 팝업 events", events);
 			        }
 			    }
-				
-				$(".modal-header").find("h5").text("예약 정보");
-				$(".modify_area").find(".form-group").remove();
-				
-				if (!$(".modify_area").find(".detail_area").length) {
-				    $(".modify_area").prepend(`
-				        <div class="detail_area">
-				            <ul>
-				            	<li>분류명: </li>
-				            	<li>자원명: </li>
-				            	<li>자원정보: </li>
-				                <li>시작시간: ${moment(event.start).format("YYYY-MM-DD HH:mm")}</li>
-				                <li>종료시간: ${moment(event.end).format("YYYY-MM-DD HH:mm")}</li>
-				                <li>예약자: </li>
-				                <li>사용용도: </li>
-				            </ul>
-				        </div>
-				    `);
-				}
-				
-		        $(".modal-body").find(".btn_wrap").html(`
-		            <button type="reset" class="btn btn-secondary">예약취소</button>
-		        `);
 			    
-			    // allDay 체크 여부
+			    if (data) {
+	                let _html = `<ul>
+					        <li>분류명: ${data.resourceType}</li>
+                        	<li>자원명: ${data.resourceName}</li>`;
+					
+					if (data.resourceInfo) _html += `<li>자원정보: ${data.resourceInfo}</li>`;
+					_html += `
+					        <li>시작시간: ${moment(event.start).format("YYYY-MM-DD HH:mm")}</li>
+					        <li>종료시간: ${event.allDay ? moment(event.start).format("YYYY-MM-DD") + " 00:00" : moment(event.end).format("YYYY-MM-DD HH:mm")}</li>
+					        <li>예약자: ${event.extendedProps.empId}</li>
+					        <li>사용용도: ${event.extendedProps.reservationInfo || ""}</li>
+					    </ul>
+					    <div class="d-flex justify-content-center mt-3">
+						    <button type="button" id="btnCancel" class="btn btn-danger">예약취소</button>
+						</div>
+					`;
+	       
+	                $("#reservationDetailModal").find(".modal-body").html(_html);
+	                $("#reservationDetailModal").modal("show");
+	                
+	                // 예약 취소
+	                $("#btnCancel").off("click").on("click", function() {
+						
+						/*
+				        console.log("예약자", event.extendedProps.empId)
+				        console.log("현재 로그인한 emp_id", $("#emp_id").val())
+						
+						const logInEmpId = $("#emp_id").val(); // 현재 로그인한 emp_id
+
+					    // 예약 정보의 emp_id와 로그인한 사용자 emp_id가 일치하는지 확인
+					    if (event.extendedProps.empId !== logInEmpId) {
+					        alert("예약자만 취소할 수 있습니다.");
+					        return;
+					    }
+					    */
+				        
+				        calncelReservation(event); 
+				     });
+				     
+	            } else {
+	                alert("예약 정보를 찾을 수 없습니다.");
+	            }
+
+				/*
+				if (data) {
+					$(".modal-header").find("h5").text("예약 정보");
+					  
+	                let _html = `<ul>
+					        <li>분류명: ${data.resourceType}</li>
+                        	<li>자원명: ${data.resourceName}</li>`;
+					
+					if (data.resourceInfo) {
+					    _html += `<li>자원정보: ${data.resourceInfo}</li>`;
+					}
+					
+					_html += `
+					        <li>시작시간: ${moment(event.start).format("YYYY-MM-DD HH:mm")}</li>
+					        <li>종료시간: ${event.allDay ? moment(event.start).format("YYYY-MM-DD") + " 00:00" : moment(event.end).format("YYYY-MM-DD HH:mm")}</li>
+					        <li>예약자: ${event.extendedProps.empId}</li>
+					        <li>사용용도: ${event.extendedProps.reservationInfo || ""}</li>
+					    </ul>
+					`;
+
+	                $(".modify_area").find(".form-group").hide();
+	                $(".modify_area").html(_html);
+	                
+	                $(".modal-body").find(".btn_wrap").html(`
+				        <button type="button" id="btnDelete" class="btn btn-danger" style="margin-top: 20px;">예약취소</button>
+				    `);
+	                
+	                $("#reservationModal").modal("show");
+	            } else {
+	                alert("예약 정보를 찾을 수 없습니다.");
+	            }
+			    
+
 			    if (event.allDay) {
 			        $("#allDay").prop("checked", true);
 			        $("#startAt, #endAt").prop("type", "date");
@@ -225,9 +269,7 @@ $(document).ready(function(){
 			        $("#startAt, #endAt").prop("type", "datetime-local");
 			        $("#startAt").val(moment(event.start).format("YYYY-MM-DD HH:mm"));
 			    	$("#endAt").val(moment(event.end).format("YYYY-MM-DD HH:mm"));
-			    }
-			    
-			    $("#reservationModal").modal("show");
+			    }*/
 			   
 			},
 			error: function () {
@@ -236,9 +278,51 @@ $(document).ready(function(){
 		});
 	}
 	
+	// 예약 취소
+	function calncelReservation(event){
+		console.log("예약자", event.extendedProps.empId)
+        console.log("현재 로그인한 emp_id", $("#emp_id").val())
+		const logInEmpId = $("#emp_id").val(); // 현재 로그인한 emp_id
+
+	    // 예약 정보의 emp_id와 로그인 사용자 emp_id가 일치하는지 확인
+	    if (String(event.extendedProps.empId) !== String(logInEmpId)) {
+	        alert("예약자만 취소할 수 있습니다.");
+	        return;
+	    }
+		
+		if(confirm("정말 취소하시겠습니까?")) {
+			$.ajax({
+				url: "cancelReservation",
+				type: "post",
+		        dataType: "json",
+		        data: { 
+		            reservation_id: event.id,  // 예약 ID
+		        	emp_id: $("#emp_id").val(), //예약자 emp_id
+		        },
+		        success: function(data) {
+					if (data === 1) {
+	                    alert("예약이 취소되었습니다.");
+	                    getReservationList(); // 예약 목록 갱신
+	                    $("#reservationDetailModal").modal("hide"); // 모달 닫기
+	                } else {
+	                    alert("예약 취소 실패");
+	                }
+				},
+				error: function(error) {
+		            console.log("예약 취소 오류:", error);
+		            alert("예약 취소 오류");
+		        }
+			});
+		}
+	}
+	
 	// 자원 예약 모달 등록 버튼 클릭 시 초기화
 	$(".btn.btn-info[data-target='#reservationModal']").on("click", function() {
 	    $(".modal-header").find("h5").text("예약 하기"); 
+	    $(".modal-body").find(".btn_wrap").html(`
+	        <button type="reset" class="btn btn-secondary">취소</button>
+	        <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
+	    `);
 	    
 	    $("#allDay").prop("checked", false);
 	    $("#startAt").val("");
@@ -246,12 +330,7 @@ $(document).ready(function(){
 	    $resourceType.val("");
 	    $resourceName.hide().empty().append('<option value="">자원명</option>'); 
 	    $("#reservationInfo").val(""); 
-	    
-	    $(".modal-body").find(".btn_wrap").html(`
-	        <button type="reset" class="btn btn-secondary">취소</button>
-	        <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
-	    `);
-	   
+
 	    // 등록 버튼에 이벤트 바인딩
 	    $("#btnRegister").off("click").on("click", function(e) {
 	        e.preventDefault();
@@ -261,9 +340,10 @@ $(document).ready(function(){
 	            endAt: $("#endAt").val(),
 	            resourceName: $resourceName.val(),
 	            reservationInfo: $("#reservationInfo").val(), 
+	            empId: $("#emp_id").val()
 	        };
 	        
-	        resourceBooking(eventData);
+	        resourceReservation(eventData);
 	    });
 	});
 	
@@ -332,46 +412,51 @@ $(document).ready(function(){
 		        today: '오늘' 
 		    },
 	        initialView: 'timeGridWeek', // 초기 로드 될때 보이는 캘린더 화면
-	        editable: true, // 수정 가능
-	        selectable: true, // 달력 일자 드래그 설정
+	        editable: false, // 수정 불가능
+        	selectable: false, // 선택 불가능
 	        nowIndicator: true, // 현재 시간 마크
 	        dayMaxEvents: true, // 이벤트가 오버되면 높이 제한 (+ 몇 개식으로 표현)
 	        locale: 'ko', // 한국어 설정
 			events: events, // 전역 이벤트 배열 사용
 		    dateClick: function(info) {
 			    console.log("dateClick:", info);
-			    if (!info.event) { // 클릭한 날짜에 자원예약 없는 경우
-                    $("#reservationModal").modal("show");
-                    $(".modal-header").find("h5").text("예약 하기");
-                    $("#startAt").val(moment(info.dateStr).format("YYYY-MM-DD HH:mm"));
-                    $("#endAt").val(moment(info.dateStr).format("YYYY-MM-DD HH:mm"));
+			    if (!info.event) { // 빈 셀 클릭 시
+				    $(".modal-header").find("h5").text("예약 하기"); 
+				    $(".modal-body").find(".btn_wrap").html(`
+				        <button type="reset" class="btn btn-secondary">취소</button>
+				        <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
+				    `);
+				    
+				    $("#allDay").prop("checked", false);
+				    $("#startAt, #endAt").prop("type", "datetime-local");
+			        $("#description").val("");
+				    $resourceType.val("");
+				    $resourceName.hide().empty().append('<option value="">자원명</option>'); 
+				    $("#reservationInfo").val(""); 
+				    
+				    $("#reservationModal").modal("show");
+			
+				    // 등록 버튼에 이벤트 바인딩
+				    $("#btnRegister").off("click").on("click", function(e) {
+				        e.preventDefault();
+				        const eventData = {
+				            allDay: $("#allDay").prop("checked"),
+				            startAt: $("#startAt").val(),
+				            endAt: $("#endAt").val(),
+				            resourceName: $resourceName.val(),
+				            reservationInfo: $("#reservationInfo").val(), 
+				            empId: $("#emp_id").val()
+				        };
+				        
+				        resourceReservation(eventData);
+				    });
                 }
 			},
             eventClick: function(info) {
                 console.log("eventClick info", info.event);
-                
-                /**
-				 * 예약된 이벤트 클릭 시 예약 정보 모달 
-				 * 리소스 테이블에서 필요한 값 - 분류명, 자원명, 자원정보  
-				 * 시작시간, 종료시간, 등록자, 사용용도
-				 */
-				openBookingDetailModal(info.event);
+                console.log("eventClick info", info.event.extendedProps);
+				openInfoModal(info.event);
             },
-	        eventChange: function(info) { // 이벤트가 수정되면 발생하는 이벤트
-	         	
-	        },
-	        select: function(info) {
-			    console.log("select:", info);
-			},
-            eventDataTransform: function(event) { // 이벤트 데이터 변환 함수
-               
-            },
-            eventDidMount: function(info) {
-				 
-			},
-			eventDrop: function(info) {
-	            
-	        },
 		});
 		
 		//선택 상태 해제
@@ -380,5 +465,5 @@ $(document).ready(function(){
 	}
 
 	initCalendar();
-	getResourceBookingList();
+	getReservationList();
 });

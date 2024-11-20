@@ -132,7 +132,7 @@ public class ReservationDAO {
 	} // getRescIdByName end
 	
 	// 자원 예약
-	public int insertResourceBooking(Reservation reservation) {
+	public int insertReservation(Reservation reservation) {
 		 int result = 0;
 
 	    // 중복 확인 
@@ -150,7 +150,7 @@ public class ReservationDAO {
 	         PreparedStatement checkStmt = conn.prepareStatement(check_sql);
 	         PreparedStatement insertStmt = conn.prepareStatement(insert_sql);) {
 
-	        // 중복 확인
+	        // 중복확인
 	        checkStmt.setInt(1, reservation.getResourceId());  // reservation에서 resourceId를 가져옴
 	        
 	        try (ResultSet rs = checkStmt.executeQuery()) {
@@ -160,14 +160,14 @@ public class ReservationDAO {
 	            }
 	        }
 
-	        // 중복이 없을 경우 데이터 삽입
+	        // 중복 없을 경우 데이터 삽입
 	        insertStmt.setInt(1, reservation.getResourceId());  // reservation에서 resourceId를 가져옴
 	        insertStmt.setString(2, reservation.getEmpId());
 	        insertStmt.setTimestamp(3, Timestamp.valueOf(reservation.getReservationStart()));
 	        insertStmt.setTimestamp(4, Timestamp.valueOf(reservation.getReservationEnd()));
 	        insertStmt.setString(5, reservation.getReservationInfo());
 	        insertStmt.setInt(6, reservation.getReservationAllDay());
-
+	        
 	        result = insertStmt.executeUpdate();
 
 	    } catch (Exception e) {
@@ -175,12 +175,11 @@ public class ReservationDAO {
 	        System.out.println("insertResourceBooking() 에러: " + e);
 	    }
 	    return result;
-	} // insertResourceBooking end
+	} 
 	
 
-
 	// 자원 예약 목록 불러오기
-	public JsonArray getResourceBookingList(String resourceId) {
+	public JsonArray getReservationList(String resourceId) {
 	    String sql = """
 	        SELECT * 
 	        FROM reservation
@@ -194,6 +193,7 @@ public class ReservationDAO {
              while (rs.next()) {
             	 JsonObject resourceObj = new JsonObject();
             	 
+            	 resourceObj.addProperty("reservation_id", rs.getInt("reservation_id"));
             	 resourceObj.addProperty("resource_id", rs.getInt("resource_id"));
             	 resourceObj.addProperty("emp_id", rs.getInt("emp_id"));
             	 resourceObj.addProperty("reservation_start", rs.getString("reservation_start"));
@@ -203,113 +203,161 @@ public class ReservationDAO {
             	 
             	 array.add(resourceObj); 
              }
+             
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("getResourceBookingList()에러 :" + e);
         }
+	    
 	    System.out.println("자원 예약 목록" + array);
         return array;
-	}// getResourceBookingList() end
+	}
 
-	
-	/*
-	// 자원 예약 정보 팝업
-	public HashMap<String, String> getResourceBookingDetail(Reservation reservation, Resource resource) {
-		HashMap<String, String> resourceMap = new HashMap<>();  // rescType을 key로, rescName을 value로 저장할 Map
+	// 자원예약 상세정보 팝업
+	public Resource getResourceByReservationId(String reservationId) {
+		Resource resource = null;
+		
 		String sql = """
 				SELECT 
-				    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable,
-				    res.reservation_id,
-				    res.emp_id,
-				    res.reservation_start,
-				    res.reservation_end,
-				    res.reservation_info,
-				    res.reservation_allDay
-				FROM resc
-				LEFT JOIN reservation res
-				ON  resc.resc_id = res.resource_id
-				WHERE resc.resc_id = ?
-				""";
-	    
-	    try (Connection conn = ds.getConnection();
-	         PreparedStatement pstmt = conn.prepareStatement(sql);) {
-	    	
-	    	 pstmt.setInt(1, reservation.getResourceId());  // 예약에서 받은 resourceId 사용
-	    	 
-	    	 try (ResultSet rs = pstmt.executeQuery()) {
+				    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable, 
+				    reservation.reservation_id,
+				    reservation.emp_id,
+				    reservation.reservation_start,
+				    reservation.reservation_end,
+				    reservation.reservation_info,
+				    reservation.reservation_allDay
+				FROM reservation
+				LEFT JOIN resc resc
+				ON reservation.resource_id = resc.resc_id
+				WHERE reservation.reservation_id = ?
+		""";
+		
+		try (Connection conn = ds.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);)  {
 
-	    	        if (rs.next()) {
-	    	            // 조회한 리소스 정보를 Resource 객체에 설정
-	    	        	resource.setResourceId(rs.getLong("resc_id"));
-						resource.setResourceType(rs.getString("resc_type"));
-						resource.setResourceName(rs.getString("resc_name"));
-	    	            resource.setResourceInfo(rs.getString("resc_info"));
-	    	            resource.setResourceUsable(rs.getBoolean("resc_usable"));
+				System.out.println("Input reservationId: " + reservationId);
 
-	    	            // rescType을 key로, rescName을 value로 HashMap에 저장
-	    	            resourceMap.put(rs.getString("resc_type"), rs.getString("resc_name"));
-	    	        }
-	    	 }
-	    	
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        System.out.println("getResourceBookingDetail()에러 :" + e);
-	    } 
+	            pstmt.setString(1, reservationId);
 
-	    System.out.println("자원 예약 정보 팝업 resourceMap" + resourceMap);
-	    return resourceMap;  
-	} //getResourceBookingDetail end
-	*/
+	            try (ResultSet rs = pstmt.executeQuery()) {
+	                if (rs.next()) {
+	                    resource = new Resource();
+	                    resource.setResourceId(rs.getLong("resc_id"));
+	                    resource.setResourceType(rs.getString("resc_type"));
+	                    resource.setResourceName(rs.getString("resc_name"));
+	                    resource.setResourceInfo(rs.getString("resc_info"));
+	                    resource.setResourceUsable(rs.getInt("resc_usable") == 1);
+	                }
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            System.out.println("getResourceByReservationId()에러 :" + e);
+	        }
+	        return resource;
+	}
 
-	public Map<String, Object> getResourceBookingDetail(String resourceId) {
-	    Map<String, Object> resourceData = new HashMap<>();
-	    
+	// 예약 취소
+	public int cancelReservation(String reservationId, String empId) {
+		int result = 0;
+		String sql = """
+				DELETE 
+				FROM reservation 
+				WHERE reservation_id = ? AND emp_id = ?
+			""";
+       
+        try (Connection conn = ds.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);) {
+
+            pstmt.setString(1, reservationId); 
+            pstmt.setString(2, empId);
+            
+            result = pstmt.executeUpdate(); // 삭제 성공 시 1, 실패 시 0
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("cancelReservation()에러 :" + e);
+        }
+        
+        return result;
+	}
+
+	/*
+	// 자원예약 ID 가져오기
+	public String getReservationId(String reservationId) {
+	    String result = null;
 	    String sql = """
-	        SELECT 
-	            resc.resc_id, 
-	            resc.resc_type, 
-	            resc.resc_name, 
-	            resc.resc_info, 
-	            resc.resc_usable,
-	            res.reservation_id,
-	            res.emp_id,
-	            res.reservation_start,
-	            res.reservation_end,
-	            res.reservation_info,
-	            res.reservation_allDay
-	        FROM resc
-	        LEFT JOIN reservation res
-	        ON resc.resc_id = res.resource_id
-	        WHERE resc.resc_id = ?
+	        SELECT reservation.reservation_id
+	        FROM reservation
+	        INNER JOIN resc
+	        ON reservation.resource_id = resc.resc_id
+	        WHERE reservation.reservation_id = ?
 	    """;
-	    
-	    try (Connection conn = ds.getConnection();
+
+	    try (Connection conn = ds.getConnection(); 
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
-	        
-	        pstmt.setString(1, resourceId);
-	        
+
+	        pstmt.setString(1, reservationId);
+
 	        try (ResultSet rs = pstmt.executeQuery()) {
 	            if (rs.next()) {
-	                resourceData.put("resc_id", rs.getString("resc_id"));
-	                resourceData.put("resc_type", rs.getString("resc_type"));
-	                resourceData.put("resc_name", rs.getString("resc_name"));
-	                resourceData.put("resc_info", rs.getString("resc_info"));
-	                resourceData.put("resc_usable", rs.getBoolean("resc_usable"));
-	                resourceData.put("reservation_id", rs.getInt("reservation_id"));
-	                resourceData.put("emp_id", rs.getString("emp_id"));
-	                resourceData.put("reservation_start", rs.getTimestamp("reservation_start"));
-	                resourceData.put("reservation_end", rs.getTimestamp("reservation_end"));
-	                resourceData.put("reservation_info", rs.getString("reservation_info"));
-	                resourceData.put("reservation_allDay", rs.getBoolean("reservation_allDay"));
+	                result = rs.getString("reservation_id"); 
 	            }
 	        }
 	    } catch (Exception e) {
 	        e.printStackTrace();
+	        System.out.println("getReservationId() 에러: " + e);
 	    }
-	    
-	    return resourceData;
+
+	    System.out.println("getReservationId 값 " + result);
+	    return result;
+	}*/
+	
+	// 나의 자원 예약목록
+	public List<Map<String, Object>> getMyReservationList(String empId) {
+	    List<Map<String, Object>> list = new ArrayList<>();
+
+	    String sql  = """
+	            SELECT rs.resc_type, rs.resc_name,
+					   reservation.reservation_start, reservation.reservation_end
+						FROM reservation reservation
+						JOIN resc rs 
+						ON reservation.resource_id = rs.resc_id
+						WHERE reservation.emp_id = ?
+	    """;
+
+	    try (Connection conn = ds.getConnection();
+	         PreparedStatement pstmt = conn.prepareStatement(sql);) {
+
+	        // empId와 reservationId 파라미터 설정
+	        pstmt.setString(1, empId);
+
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            while (rs.next()) {
+	                Map<String, Object> map = new HashMap<>();
+	                Reservation reservation = new Reservation();
+	                Resource resource = new Resource();
+
+	                resource.setResourceType(rs.getString("resc_type"));
+	                resource.setResourceName(rs.getString("resc_name"));
+	                reservation.setReservationStart(rs.getTimestamp("reservation_start").toLocalDateTime());
+	                reservation.setReservationEnd(rs.getTimestamp("reservation_end").toLocalDateTime());
+
+	                map.put("reservation", reservation);
+	                map.put("resource", resource);
+
+	                list.add(map);
+	            }
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        System.out.println("getMyReservationList() 오류: " + e);
+	    }
+
+	    System.out.println("나의 자원 예약목록 " + list);
+	    return list;
 	}
 
-
+	// 나의 자원예약 상세보기 팝업
 
 }

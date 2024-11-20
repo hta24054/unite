@@ -7,7 +7,6 @@
 	<title>자원예약</title> 
 	<jsp:include page="../common/fullcalendar.jsp" />
 	<script src="${pageContext.request.contextPath}/js/reservation.js"></script>
-	
 	<style>
 		.container {
 			max-width: 1900px;
@@ -44,9 +43,9 @@
 				<aside>
 					<h3>자원예약</h3>
 					<button class="btn btn-info" data-toggle="modal" data-target="#reservationModal">예약 하기</button>
-					<div>
-						<a href="${pageContext.request.contextPath}/reservation/reservationList">&middot; 나의 예약 목록</a>
-					</div>
+					<a href="${pageContext.request.contextPath}/reservation/myReservationList?emp_id=${id}">
+						&middot; 나의 예약 목록
+					</a>
 				</aside>
 			</div>
 			<div class="col-sm-10 px-5">
@@ -119,5 +118,23 @@
 		</div>
 	</div>
 	<%-- 자원 예약 모달 --%>
+	
+	<!-- 예약 상세정보 모달 -->
+	<div class="modal" id="reservationDetailModal">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title">예약 정보</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+	            <div class="modal-body">
+					<!-- data 영역 -->
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!-- 예약 상세정보 모달 -->
 </body>
 </html>

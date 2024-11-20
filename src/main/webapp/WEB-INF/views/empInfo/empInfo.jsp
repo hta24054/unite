@@ -175,7 +175,7 @@ button#saveButton {
 					</caption>
 					<tr id="tr">
 						<th rowspan="4" id="photo"><img
-							src="${pageContext.request.contextPath}/${details.emp.imgPath}"
+							src="${pageContext.request.contextPath}/emp/profile-image?UUID=${details.emp.imgUUID}"
 							alt="${details.emp.ename}의 사진" width="200"></th>
 						<th>이름</th>
 						<th>성별</th>

@@ -32,131 +32,15 @@
             border: 1px solid #ddd;
         }
     </style>
-    <script>
-    $(document).ready(function () {
-        // 조직도 아이콘 클릭 이벤트 처리
-        $('.orgChartIcon').on('click', function(event) {
-            event.preventDefault();
-            const targetId = $(this).data('target');
-            localStorage.setItem('selectedInputId', targetId);
-            $('#orgChartModal').modal('show');
-        });
-
-        // "선택" 열 추가
-        $('#employeeTableContainer thead tr').prepend('<th>선택</th>');
-
-        // 직원 목록 행에 체크박스를 추가하는 함수
-        function addCheckboxes() {
-            $('#employeeTableBody tr').each(function () {
-                const empId = $(this).find('td:eq(0)').text().trim();
-                $(this).prepend('<td><input type="checkbox" name="selectedEmp" value="' + empId + '"></td>');
-                $(this).find('td:eq(1)').hide();  // empId 열 숨기기
-            });
-        }
-
-        // 최초 로딩 시 체크박스 추가
-        addCheckboxes();    
-
-        // AJAX 후 체크박스를 다시 추가
-        $(document).on('ajaxSuccess', function () {
-            addCheckboxes();
-        });
-
-        // 추가 버튼 클릭 시 선택된 직원의 이름을 쉼표로 구분해 textarea에 추가
-        $('#addEmpBtn').on('click', function() {
-            const selectedEmpNames = $('input[name="selectedEmp"]:checked')
-                .map(function () {
-                    return $(this).closest('tr').find('td:eq(2)').text().trim();  // 직원 이름
-                })
-                .get();
-
-            if (selectedEmpNames.length > 0) {
-                const empTextArea = $('#empTextArea');
-                let existingText = empTextArea.val();
-                selectedEmpNames.forEach(function(empName) {
-                    if (!existingText.includes(empName)) {
-                        existingText += (existingText ? ', ' : '') + empName; // 쉼표로 구분하여 이름 추가
-                    }
-                });
-                empTextArea.val(existingText); // 이름 추가
-            } else {
-                alert('직원을 선택해 주세요.');
-            }
-        });
-
-        // 삭제 버튼 클릭 시 선택된 직원 이름을 textarea에서 삭제
-        $('#deleteEmpBtn').on('click', function() {
-            const empTextArea = $('#empTextArea');
-            const selectedEmpNames = $('input[name="selectedEmp"]:checked')
-                .map(function () {
-                    return $(this).closest('tr').find('td:eq(2)').text().trim();  // 직원 이름
-                })
-                .get();
-
-            if (selectedEmpNames.length > 0) {
-                let existingText = empTextArea.val();
-                selectedEmpNames.forEach(function(empName) {
-                    const regex = new RegExp('(,\\s*)?' + empName + '(,\\s*)?', 'g');
-                    existingText = existingText.replace(regex, ''); // 이름 삭제
-                    existingText = existingText.replace(/,\s*$/, ''); // 마지막 쉼표 제거
-                });
-                empTextArea.val(existingText.trim()); // 삭제된 이름 업데이트
-            } else {
-                alert('삭제할 직원을 선택해 주세요.');
-            }
-        });
-
-        // 등록 버튼 클릭 시 textarea에 있는 직원 정보를 실제 폼에 등록
-        $('#insertEmpBtn').on('click', function() {
-            const targetInputId = localStorage.getItem('selectedInputId');
-            if (!targetInputId) {
-                alert('유효한 입력 필드가 선택되지 않았습니다.');
-                return;
-            }
-
-            const empTextArea = $('#empTextArea');
-            const selectedEmpNames = empTextArea.val().trim();
-
-            if (selectedEmpNames === '') {
-                alert('직원 정보를 추가해 주세요.');
-                return;
-            }
-
-            if (targetInputId === 'manager') {
-                const empNamesArray = selectedEmpNames.split(',').filter(name => name.trim() !== '');
-                if (empNamesArray.length > 1) {
-                    alert('책임자는 한 명만 지정할 수 있습니다.');
-                    return;
-                }
-            }
-
-            const targetInput = $('#' + targetInputId);
-            targetInput.prop('readonly', false);
-            targetInput.val(selectedEmpNames);
-            targetInput.prop('readonly', true);
-
-            alert('등록된 직원: ' + selectedEmpNames);
-            $('#orgChartModal').modal('hide');
-        });
-
-        $('#projectForm').on('submit', function(e) {
-            const manager = $('#manager').val().trim();
-            if (!manager) {
-                alert('책임자를 지정해 주세요.');
-                e.preventDefault();  // 제출 취소
-            }
-        });
-    });
-
-
-</script>
-
-
+    <script>	
+    	const contextPath = "${pageContext.request.contextPath}";  
+    	const userid = "${sessionScope.id}";
+   	</script>
+	<script src="${pageContext.request.contextPath }/js/project_organ.js"></script> 
 </head>
 <body>
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="project_leftbar.jsp"/>
-
     <div class="container mt-4">
         <h2>프로젝트 생성</h2>
         <form id="projectForm" action="doCreate" method="post">
@@ -236,14 +120,13 @@
                 <div class="employee-table">
                     <table id="employeeTable">
                         <tbody id="employeeTableBody">
-                            <!-- 직원 목록이 동적으로 추가됨 -->
+                            
                         </tbody>
                     </table>
                 </div>
                 <div class="text-area-container mt-3">
-                    <textarea id="empTextArea" class="form-control" rows="3" cols="100"placeholder="선택된 직원 추가..." readOnly></textarea>
+                   <div id="selectedEmployees" style="border: 1px solid #ccc; padding: 10px; width: 750px; min-height: 50px;"></div>
                     <button type="button" id="addEmpBtn" class="btn btn-primary mt-2">추가</button>
-                    <button type="button" id="deleteEmpBtn" class="btn btn-danger mt-2">삭제</button>
 	                <button type="button" class="btn btn-success mt-2" id="insertEmpBtn">등록</button>
                 </div>
             </div>

@@ -71,7 +71,7 @@ public class ProjectbDao {
 	                task_file_path, task_file_original, task_file_uuid, task_file_type) VALUES
 	                (?, ?, ?, ?, sysdate, ?, ?, ?, ?)
 	    """;
-	    String updateSql = "UPDATE task SET task_subject = ?, task_content = ?, task_update_date = sysdate, task_file_path = ?, task_file_original = ?, task_file_uuid = ?, task_file_type = ? WHERE emp_id = ? AND project_id = ?";
+	    String updateSql = "UPDATE task SET task_subject = ?, task_content = ?, task_date = sysdate, task_file_path = ?, task_file_original = ?, task_file_uuid = ?, task_file_type = ? WHERE emp_id = ? AND project_id = ?";
 
 	    try (Connection conn = ds.getConnection()) {
 	        conn.setAutoCommit(false);  // 트랜잭션 시작
@@ -582,7 +582,7 @@ public class ProjectbDao {
 	    return 1; // 기본값
 	}
 	public int commentsInsert(ProjectTask taskComment) {
-		String sql = "INSERT INTO task_comment (task_comment_id, task_comment_writer, task_id, task_comment_content, task_comment_date, task_comment_re_ref, task_comment_re_lev, task_comment_re_seq) "
+		String sql = "INSERT INTO task_comment (task_comment_id, task_comment_writer, task_id, task_comment_content, task_comment_date, task_comment_re_lev, task_comment_re_seq, task_comment_re_ref) "
 		           + "VALUES (seq_task_comment.nextval, ?, ?, ?, SYSDATE, ?, ?, seq_task_comment.nextval)";
 
 	    int result = 0;
@@ -590,8 +590,8 @@ public class ProjectbDao {
 	        pstmt.setString(1, taskComment.getMemberId());
 	        pstmt.setInt(2, taskComment.getTaskNum());
 	        pstmt.setString(3, taskComment.getTaskContent());
-	        pstmt.setInt(4, taskComment.getBoard_re_ref()); // task_comment_id를 task_comment_re_seq로 설정
-	        pstmt.setInt(5, taskComment.getBoard_re_lev()); // 대댓글이면 lev = 1
+	        pstmt.setInt(4, taskComment.getBoard_re_lev()); // task_comment_id를 task_comment_re_seq로 설정
+	        pstmt.setInt(5, taskComment.getBoard_re_seq()); // 대댓글이면 lev = 1
 	        result = pstmt.executeUpdate();
 	    } catch (Exception e) {
 	        e.printStackTrace();

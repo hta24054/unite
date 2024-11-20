@@ -10,6 +10,7 @@ import com.hta2405.unite.dao.ProjectbDao;
 import com.hta2405.unite.dto.Emp;
 import com.hta2405.unite.dto.ProjectTask;
 import com.hta2405.unite.util.EmpUtil;
+import com.hta2405.unite.util.ProjectUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +27,8 @@ public class ProjectModifyAction implements Action {
         System.out.println(projectid);
         System.out.println(task_num);
 
-        
+        String left = ProjectUtil.getProjectName(projectid);
+        req.setAttribute("left", left);
         
         
         ProjectbDao user_task = new ProjectbDao();

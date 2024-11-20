@@ -1,6 +1,5 @@
 $(document).ready(function () {
     let index = 0;
-
     // 쿠키 확인 함수
     function getCookie(name) {
         const cookies = document.cookie.split('; ');
@@ -48,7 +47,6 @@ $(document).ready(function () {
 
     // 첫 팝업 표시
     showPopup();
-
     //include css 제거
     const targetElement = document.querySelector("body > div > div.center > div:nth-child(2) > div");
     targetElement.classList.remove("container");
@@ -81,7 +79,7 @@ $(document).ready(function () {
 	                    // 행을 생성하여 추가
 	                    let row = `
 	                        <tr>
-	                            <td><a href="javascript:void(0);" onclick="loadBoardList('${board.boardName2}', 1)">[${board.boardName2}]</a>&nbsp;${post.postSubject}</td> 
+	                            <td><a href="board/home?name=${board.boardName2}">[${board.boardName2}]</a>&nbsp;${post.postSubject}</td> 
 	                            <td><img src="${contextPath}/image/profile_navy.png" class="user_img" alt="프로필" style="width:20px; height: 20px;">&nbsp;${data.name[post.postWriter]}<br>${formattedDate}</td>
 	                        </tr>`;
 	                    tableBody.append(row);  // 생성된 row를 테이블에 추가
@@ -95,49 +93,26 @@ $(document).ready(function () {
 	        }
 	    });
 	}
+    // 기존 waiting_box.jsp의 데이터가 로드된 이후 실행
+    function modifyWaitingDocsForHome() {
+        const $tbody = $('#waiting_table tbody'); // 테이블 본문 선택
+        const rows = $tbody.find('tr'); // 모든 행 선택
+        const maxVisibleRows = 4; // 최대 표시할 행 수
+
+        // 현재 행 개수 확인
+        const totalRows = rows.length;
+		
+        if (totalRows > maxVisibleRows) {
+            rows.slice(maxVisibleRows).hide(); // 5번째 행부터 숨기기
+            const extraCount = totalRows - maxVisibleRows; // 추가 문서 수 계산
+            $('h3:contains("결재 대기 문서")').append(`<span class="plus"> +${extraCount}건</span>`);
+        }
+        
+    }
+    modifyWaitingDocsForHome();
+    // waiting_box.jsp가 로드된 후 실행
+    setTimeout(modifyWaitingDocsForHome, 100); 
 	
 	loadBoardData();  // 페이지 로드 시 데이터 로드
     //setInterval(loadBoardData, 3000);  // 3초마다 데이터 갱신
 });
-
-	
-		//게시판 데이터를 갱신하는 함수
-		/*function loadBoardData() {
-		        $.ajax({
-		            url: "home", // 서블릿 URL
-		            type: "GET",
-		            dataType: "json",
-		            success: function (data) {
-		                let tableBody = $(".styled-table tbody");
-		                tableBody.empty(); // 기존 데이터 초기화
-		
-		                // "boards"와 "posts" 데이터를 가져오기
-		                let boards = data.boards; // Gson에서 추가한 "boards"
-		                let posts = data.posts;   // Gson에서 추가한 "posts"
-		
-		                // 데이터를 조합하여 테이블에 추가
-		                for (let i = 0; i < boards.length; i++) {
-		                    let board = boards[i];
-		                    let post = posts[i];
-		
-		                    let row = `
-		                        <tr>
-		                            <td>${board.boardName1}</td>
-		                            <td>${post.postSubject} (${new Date(post.postUpdateDate).toLocaleString()})</td>
-		                            <td>${post.postWriter}</td>
-		                        </tr>`;
-		                    tableBody.append(row);
-		                }
-		            },
-		            error: function (xhr, status, error) {
-		                console.error("게시판 데이터를 불러오는 데 실패했습니다: " + error);
-		            }
-		        });
-		    }
-		
-		// 페이지 로드 후 3초마다 게시판 갱신
-		$(document).ready(function() {
-		    loadBoardData();  // 초기 데이터 로드
-		    //setInterval(loadBoardData, 3000);  // 3초마다 게시판 갱신
-		});
-	*/

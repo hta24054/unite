@@ -7,6 +7,7 @@ import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ProjectDAO;
 import com.hta2405.unite.dto.ProjectDetail;
+import com.hta2405.unite.util.ProjectUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,8 +22,7 @@ public class ProjectDetailAction implements Action {
         System.out.println("projectId: " + projectId + "\nuserid : " + userid);
         req.getSession().setAttribute("projectId", projectId);
         //프로젝트 detail이동시 leftbar바에 추가 
-        ProjectDAO projectDAO1 = new ProjectDAO();
-        String left = projectDAO1.getProjectName(projectId);
+        String left = ProjectUtil.getProjectName(projectId);
         req.setAttribute("left", left);
         System.out.println("left : " + left); //값 확인
         

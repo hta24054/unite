@@ -51,7 +51,7 @@
 
 .board_view_content{
 	min-height: 250px;
-	padding: 20px 0px 30px;
+	padding: 20px 20px 30px;
 }
 
 .preview-btn,.download-btn{
@@ -74,6 +74,17 @@ sup {
 	padding: 0px 40px;
 	border-top: 1px solid #ccc;
 }
+
+.viewIcon{
+	margin-left: 20px;
+    margin-bottom: 1px;
+}
+
+.page-link{
+	display:inline-block; 
+	color:#212529; 
+	line-height:1.5;
+}
 </style>
 </head>
 <body>
@@ -81,7 +92,7 @@ sup {
 	<div class="boardViewcontainer">
 	    <table class="table">
     		<tr>
-    			<td colspan="3" class="board_view_header">
+    			<td colspan="3" class="board_view_header" style="padding: 12px 25px 0px;">
     				<span class="left_subeject">
 	    				<c:out value="${postDataAndFile[0].postSubject}"/>
 	    				<c:out value="[${postDataAndFile[0].postCommentCnt}]"/>
@@ -95,24 +106,22 @@ sup {
 	    					</button>
 	    					
 	    					<%-- href의 주소를 #으로 설정합니다. --%>
-	    					<a href="#">
-	    						<button class="btn board_view_btn" data-toggle="modal"
-	    							data-target="#myModal">삭제</button>
-	    					</a>
+    						<button class="btn board_view_btn" data-toggle="modal"
+    							data-target="#myModal">삭제</button>
 	    				</c:if>
-	   					<a href="reply?num=${boarddata.board_num}">
-	   						<button class="btn board_view_btn">답글</button>
-	   					</a>
-	    				<a href="list">
-	   						<button class="btn board_view_btn">목록</button>
-	   					</a>
+   						<button class="btn board_view_btn postReply-link"
+   								data-page="post/reply?num=${postDataAndFile[0].postId}">답글</button>
+   								
+	   					<button class="btn board_view_btn page-link" data-page='1'
+	   							data-name='${boardMap[postDataAndFile[0].boardId]}'>목록</button>
+	   					
     				</span>
     			</td>
     		</tr>
     		<tr>
     			<td colspan="3" style="padding-top: 10px;">
     				
-    				<img src=${'/unite/image/profile_black.png'} alt="프로필 이미지" class="icon">
+    				<img src=${'/unite/image/profile_black.png'} alt="프로필 이미지" class="icon viewIcon">
 				    <div class="username">${empMap[postDataAndFile[0].postWriter]}</div>
 				    <div class="date"> ${postDataAndFile[0].getFormattedPostDate()} </div>
     			</td>
@@ -131,8 +140,6 @@ sup {
 	    				<tr>
 			    			<td colspan="3" style="padding: 0px 12px 0px 12px;"><img src="${pageContext.request.contextPath}/image/attach.png" style="width:13px; margin: 0px 5px 0px 20px;">
 			    				<a href="down?postFileId=${postFile.postFileId}">${postFile.postFileOriginal}</a>
-			    				<button class="preview-btn" onclick="previewFile('${postFile.postFileId}')">미리보기</button>
-      							<button class="download-btn" onclick="location.href='down?postFileId=${postFile.postFileId}'">다운로드</button>
 			    			</td>
     					</tr>
 		    		</c:forEach>
@@ -141,7 +148,7 @@ sup {
     		<tr>
     			<td colspan="3" style="padding-bottom:12px;">
 					<div class="file-meta">
-						<img src='/unite/image/comments.png' alt="프로필 이미지" class="icon" style="margin-left: 15px;margin-bottom: 1px;"/>
+						<img src='/unite/image/comments.png' alt="프로필 이미지" class="icon viewIcon" style="margin-left: 15px;"/>
 						<span class="comments">
 							댓글&nbsp;
 							<sup id="count" style="font-family: arial, sans-serif;"></sup>
@@ -159,7 +166,7 @@ sup {
     		<div class="modal-dialog">
     			<div class="modal-content">
     				<div class="modal-body">
-    					<form name="deleteForm" action="delete" method="post">
+    					<form name="deleteForm" action="post/delete" method="post">
     						<%-- http://localhost:8088/Board_Ajax/boards/detail?num=22
     							 주소를 보면 num을 파라미터로 넘기고 있습니다.
     							 이 값을 가져와서 ${param.num}를 사용 또는 ${boarddata.board_num}
@@ -167,12 +174,9 @@ sup {
     						 <input type="hidden" name="num" value="${param.num}"
     						 		id="comment_board_num">
     						 <div class="form-group">
-    						 	<label for="board_pass">비밀번호</label>
-    						 	<input type="password" class="form-control"
-    						 			placeholder="Enter password"
-    						 			name="board_pass" id="board_pass">
+    						 	<label>정말 삭제하시겠습니까? <br> 복구가 불가능합니다.</label>
     						 </div>
-    						 <button type="submit" class="btn btn-primary">전송</button>
+    						 <button type="submit" class="btn btn-primary">삭제</button>
     						 <button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>
     					</form>
     				</div>

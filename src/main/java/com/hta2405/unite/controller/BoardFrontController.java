@@ -5,9 +5,11 @@ import com.hta2405.unite.action.board.BoardHomeProcessAction;
 import com.hta2405.unite.action.board.BoardListAction;
 import com.hta2405.unite.action.post.PostAddAction;
 import com.hta2405.unite.action.post.PostCommentsListAction;
+import com.hta2405.unite.action.post.PostDeleteAction;
 import com.hta2405.unite.action.post.PostDetailAction;
 import com.hta2405.unite.action.post.PostModifyAction;
 import com.hta2405.unite.action.post.PostModifyProcessAction;
+import com.hta2405.unite.action.post.PostReplyAction;
 import com.hta2405.unite.action.post.PostWriteAction;
 
 import jakarta.servlet.ServletException;
@@ -32,6 +34,8 @@ public class BoardFrontController extends AbstractFrontController {
         actionMap.put("/post/add", PostAddAction::new);//게시글 추가 액션
         actionMap.put("/post/modify", PostModifyAction::new);//게시글 수정 폼 조회 액션
         actionMap.put("/post/modifyProcess", PostModifyProcessAction::new);//게시글 수정 액션
+        actionMap.put("/post/delete", PostDeleteAction::new);//게시글 삭제 액션
+        actionMap.put("/post/reply", PostReplyAction::new);//게시글 답글 액션
         actionMap.put("/post/comments/list", PostCommentsListAction::new);//게시글의 댓글 리스트
     }
 }

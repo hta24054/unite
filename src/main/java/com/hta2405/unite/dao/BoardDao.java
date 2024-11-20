@@ -3,7 +3,9 @@ package com.hta2405.unite.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.naming.InitialContext;
@@ -147,12 +149,24 @@ public class BoardDao {
 	}
 
 	private int postFile_insert(Connection con, List<PostFile> postFiles) {
+		return postFile_insert(con, postFiles, false);
+	}
+	
+	private int postFile_insert(Connection con, List<PostFile> postFiles, boolean postIdCheck) {
 		int num = 0;
-		String getPostId_sql = "(SELECT MAX(POST_ID) FROM POST)";
-		String sql = """
-				INSERT INTO POST_FILE( POST_ID, POST_FILE_PATH, POST_FILE_ORIGINAL, POST_FILE_UUID, POST_FILE_TYPE)
-				VALUES( %1$s, ?, ?, ?, ?)
+		String sql = "";
+		if(postIdCheck) {//글쓰기 수정(postId 있을 경우)
+			sql = """
+					INSERT INTO POST_FILE( POST_FILE_PATH, POST_FILE_ORIGINAL, POST_FILE_UUID, POST_FILE_TYPE, POST_ID)
+					VALUES( ?, ?, ?, ?, ?)
+					""";
+		}else {//글쓰기(postId 없는 경우)
+			String getPostId_sql = "(SELECT MAX(POST_ID) FROM POST)";
+			sql = """
+				INSERT INTO POST_FILE( POST_FILE_PATH, POST_FILE_ORIGINAL, POST_FILE_UUID, POST_FILE_TYPE, POST_ID)
+				VALUES( ?, ?, ?, ?, %1$s)
 				""".formatted(getPostId_sql);
+		}
 		
 		try (	PreparedStatement pstmt = con.prepareStatement(sql);){
 			for(PostFile postFile : postFiles) {
@@ -160,6 +174,9 @@ public class BoardDao {
 				pstmt.setString(2, postFile.getPostFileOriginal());
 				pstmt.setString(3, postFile.getPostFileUUID());
 				pstmt.setString(4, postFile.getPostFileType());
+				if(postIdCheck) {
+					pstmt.setLong(5, postFile.getPostId());
+				}
 				num += pstmt.executeUpdate();
 			}
 			return num;
@@ -258,7 +275,7 @@ public class BoardDao {
 	}
 
 	//조회수 업데이트 - 글번호에 해당하는 조회수를 1 증가합니다.
-	public void setReadCountUpdate(int num) {
+	public void setReadCountUpdate(Long postId) {
 		String sql = """
 				update post 
 				set post_view = post_view + 1
@@ -267,7 +284,7 @@ public class BoardDao {
 		try (	Connection con = ds.getConnection();
 				PreparedStatement pstmt = con.prepareStatement(sql);){
 			
-			pstmt.setInt(1, num);
+			pstmt.setLong(1, postId);
 			pstmt.executeUpdate();
 		}catch (Exception e) {
 			System.out.println("setReadCountUpdate() 에러"+e);
@@ -275,7 +292,7 @@ public class BoardDao {
 		}
 	}
 
-	public List<Object> getDetail(int postId) {
+	public List<Object> getDetail(Long postId) {
 		String sql = """
 				select post.*, nvl(cnt,0) as cnt, img_path, img_original, img_uuid, img_type
 				from post left outer join (select post_id, count(*) as cnt
@@ -291,7 +308,7 @@ public class BoardDao {
 		List<Object> list = new ArrayList<>();
 		try (	Connection con = ds.getConnection();
 				PreparedStatement pstmt = con.prepareStatement(sql);){
-			pstmt.setInt(1, postId);
+			pstmt.setLong(1, postId);
 			
 			List<PostFile> postFileList = getDetailPostFile(con, postId);
 			
@@ -330,7 +347,7 @@ public class BoardDao {
 		return null;
 	}
 
-	private List<PostFile> getDetailPostFile(Connection con, int postId) {
+	private List<PostFile> getDetailPostFile(Connection con, Long postId) {
 		ArrayList<PostFile> list = new ArrayList<>();
 		String sql = """
 				select *
@@ -338,7 +355,7 @@ public class BoardDao {
 				where post_id = ?
 				""";
 		try (	PreparedStatement pstmt = con.prepareStatement(sql);){
-			pstmt.setInt(1, postId);
+			pstmt.setLong(1, postId);
 			try (ResultSet rs = pstmt.executeQuery()){
 				while(rs.next()) {
 					PostFile postFile = new PostFile();
@@ -359,6 +376,168 @@ public class BoardDao {
 		}
 		return null;
 	}
+
+	public Boolean postAndFileModify(Post postData, List<PostFile> postFileList, List<String> deletePostFileUUIDList){
+		int result =0;
+		try(	Connection con = ds.getConnection();){
+			con.setAutoCommit(false);
+			try {
+				result+=postModify(con, postData);
+				result+=postFileModify(con, postFileList, deletePostFileUUIDList);
+				
+				if(result==2) {
+					con.commit();
+					return true;
+				}else{
+					con.rollback();
+					return false;
+				}
+			}catch (Exception e) {
+				e.printStackTrace();
+				if(con != null) {
+					try {
+						con.rollback();
+					}catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				}
+			}
+			con.setAutoCommit(true);
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("postAndFileModify() 에러: "+ e);
+		}
+		return false;
+	}
 	
+	private int postModify(Connection con, Post postData) {
+		String sql = """
+				UPDATE POST
+				SET BOARD_ID = ?,
+					POST_SUBJECT = ?,
+					POST_CONTENT = ?,
+					POST_UPDATE_DATE = SYSDATE
+				WHERE POST_ID = ?
+				""";
+		try(	PreparedStatement pstmt = con.prepareStatement(sql);){
+			pstmt.setLong(1, postData.getBoardId());
+			pstmt.setString(2, postData.getPostSubject());
+			pstmt.setString(3, postData.getPostContent());
+			pstmt.setLong(4, postData.getPostId());
+			int result = pstmt.executeUpdate();
+			if(result==1) {
+				System.out.println("업데이트 성공");
+				return result;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("postModify() 에러: "+ e);
+		}
+		return 0;
+	}
+
+	//첨부파일 추가 및 삭제
+	private int postFileModify(Connection con, List<PostFile> postFileList, List<String> deletePostFileUUIDList) {
+		int insertResult = 1;//첨부파일 추가 안하는 경우를 대비해 1설정
+		int deleteResult = 1;//첨부파일 삭제 안하는 경우를 대비해 1설정
+		
+		if(!postFileList.isEmpty()) {//게시글 첨부파일 추가
+			insertResult = postFile_insert(con, postFileList, true);
+		}
+		if(!deletePostFileUUIDList.isEmpty()) {
+			deleteResult = postFile_delete(con, deletePostFileUUIDList);
+		}
+		
+		return (insertResult>0&&deleteResult>0)?1:0;
+	}
+	
+	//게시글 첨부파일 삭제
+	private int postFile_delete(Connection con, List<String> deletePostFileUUIDList) {
+		int result = 0;
+		String sql = """
+				DELETE FROM POST_FILE
+				WHERE POST_FILE_UUID = ?
+				""";
+		
+		try(	PreparedStatement pstmt = con.prepareStatement(sql);){
+			for(String UUID : deletePostFileUUIDList) {
+				pstmt.setString(1, UUID);
+				result += pstmt.executeUpdate();
+			}
+			return result;
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("postModify() 에러: "+ e);
+		}
+		return 0;
+	}
+
+	public boolean postDelete(int postId) {
+		String select_sql = """
+				select post_re_ref, post_re_lev, post_re_seq 
+				from post
+				where post_id = ? 
+				""";
+		
+		String post_delete_sql = """
+				delete from post
+				where post_re_ref = ? 
+				and  post_re_lev >= ? 
+				and  post_re_seq >= ? 
+				and  post_re_seq <=( nvl((select min(post_re_seq)-1 
+										from post 
+										where post_re_ref = ? 
+				 						and post_re_lev = ? 
+				 						and post_re_seq > ?), 
+				 					   (select max(post_re_seq) 
+				 						from post 
+				 						where post_re_ref = ?)
+				 						)
+									)""";
+		try(	Connection con = ds.getConnection();
+				PreparedStatement pstmt = con.prepareStatement(select_sql);){//1
+			pstmt.setInt(1, postId);
+			try (ResultSet rs = pstmt.executeQuery();){//2
+				if(rs.next()) {
+					try(PreparedStatement pstmt2 = con.prepareStatement(post_delete_sql);){//3
+						pstmt2.setInt(1, rs.getInt("post_re_ref"));
+						pstmt2.setInt(2, rs.getInt("post_re_lev"));
+						pstmt2.setInt(3, rs.getInt("post_re_seq"));
+						pstmt2.setInt(4, rs.getInt("post_re_ref"));
+						pstmt2.setInt(5, rs.getInt("post_re_lev"));
+						pstmt2.setInt(6, rs.getInt("post_re_seq"));
+						pstmt2.setInt(7, rs.getInt("post_re_ref"));
+						
+						if(pstmt2.executeUpdate() >= 1) {
+							return true; // 삭제가 안된 경우에는 false를 반환
+						}
+					}//try 3
+				}//if(rs.next()) {
+			}//try2
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("postDelete() 에러"+e);
+		}
+		
+		return false;
+	}
+
+	
+	public HashMap<Long, String> getIdToboardName2Map() {
+        HashMap<Long, String> map = new HashMap<>();
+        String sql = """
+                    SELECT board_id, board_name2 from board
+                """;
+        try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                map.put(rs.getLong("board_id"), rs.getString("board_name2"));
+            }
+        } catch (SQLException e) {
+            System.out.println("boardMap 불러오기 에러");
+            e.printStackTrace();
+        }
+        return map;
+    }
 	
 }

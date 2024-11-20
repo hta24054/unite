@@ -22,15 +22,16 @@ public class PostDetailAction implements Action {
 		BoardDao boardDao = new BoardDao();
 		
 		//글번호 파라미터 값을 num변수에 저장합니다.
-		int num = Integer.parseInt(req.getParameter("num"));
+		Long postId = Long.parseLong(req.getParameter("num"));
 		
 		//내용을 확인할 글의 조회수를 증가시킵니다.
-		boardDao.setReadCountUpdate(num);
+		boardDao.setReadCountUpdate(postId);
 		System.out.println("count 증가");
 		
-		System.out.println("num="+num);
+		System.out.println("postId="+postId);
 		//글 내용을 DAO에서 읽은 후 얻은 결과를 list에 저장합니다.
-		List<Object> list = boardDao.getDetail(num);
+		
+		List<Object> list = boardDao.getDetail(postId);
 		
 		System.out.println("list="+list);
 		
@@ -45,6 +46,9 @@ public class PostDetailAction implements Action {
 			
 			//emp의 ename을 가져오기 위함
 			req.setAttribute("empMap", new EmpDao().getIdToENameMap());
+			
+			//board의 boardName2를 가져오기 위함
+			req.setAttribute("boardMap", boardDao.getIdToboardName2Map());
 			
 			// boarddata 객체를 request 객체에 저장합니다.
 			req.setAttribute("postDataAndFile", list); // post, emp, postFileList

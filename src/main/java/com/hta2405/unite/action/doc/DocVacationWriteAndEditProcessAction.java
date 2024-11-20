@@ -73,7 +73,8 @@ public class DocVacationWriteAndEditProcessAction implements Action {
             String fileName = fileUUID + "_" + fileOriginalName;
 
             // 저장 경로 설정 및 파일 저장
-            String uploadPath = req.getServletContext().getRealPath(UPLOAD_DIRECTORY);
+            String uploadPath = UPLOAD_DIRECTORY;
+            System.out.println(uploadPath);
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists() && !uploadDir.mkdirs()) {
                 throw new IOException("업로드 폴더를 생성할 수 없습니다: " + uploadPath);

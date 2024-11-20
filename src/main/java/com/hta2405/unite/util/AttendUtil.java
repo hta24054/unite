@@ -169,6 +169,7 @@ public class AttendUtil {
         Emp targetEmp = empDao.getEmpById(empId);
         //총 연차 부여일
         req.setAttribute("allVacCount", targetEmp.getVacationCount());
+        req.setAttribute("emp", targetEmp);
         int usedAnnualVacation = attendDao.getUsedAnnualVacationCount(targetEmp.getEmpId(), year);
         List<DocVacation> vacList = attendDao.getUsedVacationList(targetEmp.getEmpId(), year);
 

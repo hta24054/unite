@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>나의 연차</title>
+    <title>휴가 관리</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
@@ -62,12 +62,13 @@
     </style>
 </head>
 <body>
-<h2 id="main_title">나의 연차</h2>
+<h2 id="main_title">나의 휴가 관리</h2>
 <div class="container">
     <!-- 연도변경 -->
     <div class="text-center my-4">
         <button id="prevYear" class="btn btn-outline-dark">&lt;</button>
-        <span id="currentYearMonth" style="font-weight: bold; font-size: 25px">&nbsp;&nbsp;${param.year}년&nbsp;&nbsp;</span>
+        <span id="currentYearMonth"
+              style="font-weight: bold; font-size: 25px">&nbsp;&nbsp;${param.year}년&nbsp;&nbsp;</span>
         <button id="nextYear" class="btn btn-outline-dark">&gt;</button>
     </div>
     <%--    요약 테이블--%>
@@ -161,6 +162,13 @@
 
             // 새 URL로 이동
             window.location.href = "?" + params;
+        }
+
+        // title 수정(직원휴가관리 일 경우 param에 있는 값)
+        const params = new URLSearchParams(window.location.search);
+        const emp = params.get('empId'); // 'emp' 파라미터 값 가져오기
+        if (emp) { // 'emp' 파라미터가 존재할 경우
+            $('#main_title').text('직원 휴가 관리 - ' + '${emp.ename}');
         }
     });
 </script>

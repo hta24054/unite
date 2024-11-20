@@ -96,4 +96,26 @@ public class NoticeDao {
         }
         return 0;
     }
+
+    public List<Notice> getAliveNotice() {List<Notice> list = new ArrayList<>();
+        String sql = """
+                SELECT * FROM NOTICE
+                where NOTICE_END_DATE >= sysdate-1
+                ORDER BY NOTICE_ID desc
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Notice(rs.getLong("notice_id"),
+                        rs.getString("notice_subject"),
+                        rs.getString("notice_content"),
+                        rs.getDate("notice_end_date").toLocalDate()));
+            }
+        } catch (SQLException e) {
+            System.out.println("공지사항 가져오기 오류");
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

@@ -18,7 +18,6 @@ import static com.hta2405.unite.util.EmpUtil.isHrDept;
 
 public class AttendVacationEmpListAction implements Action {
     private final EmpDao empDao = new EmpDao();
-    private final DeptDao deptDao = new DeptDao();
 
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -29,10 +28,6 @@ public class AttendVacationEmpListAction implements Action {
             return CommonUtil.alertAndGoBack(resp, "인사부서가 아닙니다.");
         }
         checkAttendRole(emp, req);
-        req.setAttribute("empList", empDao.getSubEmpListByEmp(emp));
-        req.setAttribute("jobMap", new JobDao().getIdToJobNameMap());
-        req.setAttribute("deptMap", deptDao.getIdToDeptNameMap());
-        req.setAttribute("deptName", deptDao.getDeptNameById(emp.getDeptId()));
         return new ActionForward(false, "/WEB-INF/views/attend/attendVacationEmpList.jsp");
     }
 }

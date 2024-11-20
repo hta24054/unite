@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>근태 관리</title>
+    <title>전 직원 휴가 관리(인사부서) - 직원 목록</title>
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="attend_leftbar.jsp"/>
     <style>
@@ -40,28 +40,33 @@
 <body>
 <h2 id="main_title">전 직원 휴가 관리(인사부서) - 직원 목록</h2>
 <div class="container">
-    <table class="table table-striped table-bordered shadow-sm p-3 mb-5 bg-body rounded">
-        <thead>
-        <tr>
-            <th>성명</th>
-            <th>부서</th>
-            <th>직위</th>
-            <th>전화번호</th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach var="emp" items="${empList}">
-            <tr>
-                <td>
-                    <a href="${pageContext.request.contextPath}/attend/vacation/emp?empId=${emp.empId}&year=<%=LocalDate.now().getYear()%>">${emp.ename}</a>
-                </td>
-                <td>${deptMap[emp.deptId]}</td>
-                <td>${jobMap[emp.jobId]}</td>
-                <td>${emp.tel}</td>
-            </tr>
-        </c:forEach>
-        </tbody>
-    </table>
+    <jsp:include page="../common/empTree.jsp"/>
 </div>
+<script>
+    function updateEmployeeTable(empList, jobName) {
+        const tableBody = $('#employeeTableBody');
+        tableBody.empty();
+        $('#noDataMessage').remove();
+
+        if (empList.length === 0) {
+            tableBody.append("<tr><td colspan='4'>직원이 없습니다.</td></tr>");
+        } else {
+            $.each(empList, function (index, emp) {
+                let html = "<tr>";
+                html += "<td style='display: none;'>" + emp.empId + "</td>"; // 숨긴 empId 열
+                html += "<td><a href='" + getEmployeeDetailUrl(emp.empId) + "'>" + emp.ename + "</a></td>"; // 앵커 태그 추가
+                html += "<td>" + emp.tel + "</td>";
+                html += "<td>" + jobName[emp.jobId] + "</td>";
+                html += "</tr>";
+                tableBody.append(html);
+            });
+        }
+    }
+    // 직원 상세 페이지 URL 생성 함수
+    function getEmployeeDetailUrl(empId) {
+        // 직원 상세 정보로 이동하는 URL 생성
+        return '${pageContext.request.contextPath}/attend/vacation/emp?empId=' + empId + '&year=<%=LocalDate.now().getYear()%>';
+    }
+</script>
 </body>
 </html>

@@ -39,10 +39,10 @@
             <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/attend/empList">부서원 근태
                 관리</a></li>
         </c:if>
-        <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/attend/vacation/my">나의 연차</a>
+        <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/attend/vacation/my">휴가 관리</a>
         </li>
         <c:if test="${hrDept}">
-            <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/attend/vacation/empList">연차
+            <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/attend/vacation/empList">휴가
                 관리(인사)</a></li>
         </c:if>
     </ul>

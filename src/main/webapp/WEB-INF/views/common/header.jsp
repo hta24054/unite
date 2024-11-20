@@ -94,7 +94,7 @@
          --%>
         <li class="nav-item1">
             <a class="nav-link" href="${pageContext.request.contextPath}/home"><img
-                    src="${pageContext.request.contextPath}/image/logo_header.png" style="width:80px;"></a>
+                    src="${pageContext.request.contextPath}/image/logo_header.png" style="width:100px;"></a>
         </li>
         <li class="nav-item">
             <a class="nav-link a1" href="${pageContext.request.contextPath}/attend/my">&nbsp;근태관리&nbsp;</a>

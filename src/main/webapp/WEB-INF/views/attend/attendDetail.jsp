@@ -56,8 +56,6 @@
         #specify th {
             width: 20%;
         }
-
-        /* 캡션과 테이블 간격 설정 */
     </style>
 </head>
 <body>

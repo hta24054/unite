@@ -21,12 +21,22 @@
             margin-bottom: 20px;
             font-weight: bold;
         }
+        .container {
+            display: flex;
+            flex-direction: column; /* 요소를 수직 배치 */
+        }
+
+        #vac_count_button {
+            align-self: flex-end; /* 버튼을 수평으로 우측 정렬 */
+            background-color: #334466;
+            color: white;
+        }
     </style>
 </head>
 <body>
 <h2 id="main_title">전 직원 휴가 관리(인사부서) - 직원 목록</h2>
-<button type="button" class="btn btn-info" id="vac_count_button">전 직원 부여 연차 갱신</button>
 <div class="container">
+    <button type="button" class="btn" id="vac_count_button">전 직원 부여 연차 갱신</button>
     <jsp:include page="../common/empTree.jsp"/>
 </div>
 <script>
@@ -43,11 +53,11 @@
                 if (data.status === 'success') {
                     alert("연차 개수가 갱신되었습니다.");
                     window.location.href = '${pageContext.request.contextPath}/attend/vacation/empList';
-                }else{
+                } else {
                     alert("연차 개수 갱신 오류");
                     window.location.href = '${pageContext.request.contextPath}/attend/vacation/empList';
                 }
-            },error: function () {
+            }, error: function () {
                 alert("연차 개수 갱신 오류");
                 window.location.href = '${pageContext.request.contextPath}/attend/vacation/empList';
             }

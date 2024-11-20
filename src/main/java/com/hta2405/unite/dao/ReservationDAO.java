@@ -208,8 +208,6 @@ public class ReservationDAO {
             e.printStackTrace();
             System.out.println("getResourceBookingList()에러 :" + e);
         }
-	    
-	    System.out.println("자원 예약 목록" + array);
         return array;
 	}
 
@@ -233,9 +231,7 @@ public class ReservationDAO {
 		""";
 		
 		try (Connection conn = ds.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);)  {
-
-				System.out.println("Input reservationId: " + reservationId);
+             PreparedStatement pstmt = conn.prepareStatement(sql);) {
 
 	            pstmt.setString(1, reservationId);
 
@@ -315,15 +311,33 @@ public class ReservationDAO {
 	// 나의 자원 예약목록
 	public List<Map<String, Object>> getMyReservationList(String empId) {
 	    List<Map<String, Object>> list = new ArrayList<>();
+	    
+	    /*
+	    String sql  = """
+	            SELECT  rs.resc_type, rs.resc_name, rs.resc_info,
+	    		         
+	    		        (select ename from emp where emp_id  = ?) ename,
+	            
+					    reservation.reservation_start, reservation.reservation_end, 
+					    reservation.reservation_info, reservation.reservation_id
+				FROM reservation reservation
+				JOIN resc rs 
+				ON reservation.resource_id = rs.resc_id
+				WHERE reservation.emp_id = ?
+				ORDER BY reservation.reservation_id
+	    	""";
+	    */
 
 	    String sql  = """
-	            SELECT rs.resc_type, rs.resc_name,
-					   reservation.reservation_start, reservation.reservation_end
-						FROM reservation reservation
-						JOIN resc rs 
-						ON reservation.resource_id = rs.resc_id
-						WHERE reservation.emp_id = ?
-	    """;
+	            SELECT  rs.resc_type, rs.resc_name, rs.resc_info,
+					    reservation.reservation_start, reservation.reservation_end, 
+					    reservation.reservation_info, reservation.reservation_id
+				FROM reservation reservation
+				JOIN resc rs 
+				ON reservation.resource_id = rs.resc_id
+				WHERE reservation.emp_id = ?
+				ORDER BY reservation.reservation_id
+	    	""";
 
 	    try (Connection conn = ds.getConnection();
 	         PreparedStatement pstmt = conn.prepareStatement(sql);) {
@@ -339,9 +353,12 @@ public class ReservationDAO {
 
 	                resource.setResourceType(rs.getString("resc_type"));
 	                resource.setResourceName(rs.getString("resc_name"));
+	                resource.setResourceInfo(rs.getString("resc_info"));
 	                reservation.setReservationStart(rs.getTimestamp("reservation_start").toLocalDateTime());
 	                reservation.setReservationEnd(rs.getTimestamp("reservation_end").toLocalDateTime());
-
+	                reservation.setReservationInfo(rs.getString("reservation_info"));
+	                reservation.setReservationId(rs.getInt("reservation_id"));
+	                
 	                map.put("reservation", reservation);
 	                map.put("resource", resource);
 
@@ -353,11 +370,56 @@ public class ReservationDAO {
 	        e.printStackTrace();
 	        System.out.println("getMyReservationList() 오류: " + e);
 	    }
-
-	    System.out.println("나의 자원 예약목록 " + list);
+	    
+	    System.out.println("나의 자원 예약목록" + list);
 	    return list;
 	}
 
-	// 나의 자원예약 상세보기 팝업
+	// 나의 예약목록 상세보기 팝업
+	public Resource getMyReservationDetail(String reservationId, String empId) {
+		Resource resource = null;
+		
+		String sql = """
+				SELECT 
+				    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable, 
+				    reservation.reservation_id,
+				    reservation.emp_id,
+				    reservation.reservation_start,
+				    reservation.reservation_end,
+				    reservation.reservation_info,
+				    reservation.reservation_allDay
+				FROM reservation
+				LEFT JOIN resc resc
+				ON reservation.resource_id = resc.resc_id
+				WHERE reservation.reservation_id = ? AND reservation.emp_id = ?
+		""";
+		
+		try (Connection conn = ds.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);) {
+
+			pstmt.setString(1, reservationId);
+            pstmt.setString(2, empId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                	 System.out.println("Data found for reservation_id: " + reservationId + ", emp_id: " + empId);
+                	
+                    resource = new Resource();
+                    resource.setResourceId(rs.getLong("resc_id"));
+                    resource.setResourceType(rs.getString("resc_type"));
+                    resource.setResourceName(rs.getString("resc_name"));
+                    resource.setResourceInfo(rs.getString("resc_info"));
+                    resource.setResourceUsable(rs.getInt("resc_usable") == 1);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("getMyReservationDetail()에러 :" + e);
+        }
+		System.out.println("Mapped Resource: " + resource);
+        return resource;
+	}
+
+
 
 }

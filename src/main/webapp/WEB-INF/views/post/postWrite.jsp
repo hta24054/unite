@@ -17,7 +17,7 @@
 		display: flex;
 	    justify-content: center;
 	    align-items: center;
-	    height: 60px;
+	    height: 80px;
 	    width: 85%;
 	    border-radius: 10px;
 	}
@@ -86,66 +86,79 @@
         border:3px solid #334466;
         z-index : 1;
 	}
+	.hidden {
+    	display: block;
+	}
+	
 </style>
 <script>
 var fileNo = 0;
 var filesArr = [];
+var maxFileCnt = 5;   // 첨부파일 최대 개수
 
 var companyBulletinBoards = ['공지사항', '주간식단표', 'FAQ'];
 var DepartmentBoards = ['솔루션영업팀'];
 
 /* 첨부파일 추가 */
-function addFile(obj) {
-
-    var maxFileCnt = 5;   // 첨부파일 최대 개수
-    var attFileCnt = document.querySelectorAll('.filebox').length;    // 기존 추가된 첨부파일 개수
-    var remainFileCnt = maxFileCnt - attFileCnt;    // 추가로 첨부가능한 개수
-    var curFileCnt = obj.files.length;  // 현재 선택된 첨부파일 개수
-
-    $('.file-list').css('display', 'block');
+function addFiles(files) {
+    var attFileCnt = $('.filebox').length;
+    var remainFileCnt = maxFileCnt - attFileCnt;
+    var curFileCnt = files.length;
 
     if (curFileCnt > remainFileCnt) {
         alert("첨부파일은 최대 " + maxFileCnt + "개 까지 첨부 가능합니다.");
-    } else {
-        for (const file of obj.files) {
-            if (validation(file)) {
-                var reader = new FileReader();
-                reader.onload = function () {
-                    // 파일 객체에 고유 fileNo 값을 추가해 배열에 저장
-                    file.fileNo = fileNo;
-                    filesArr.push(file);
-                };
-                reader.readAsDataURL(file);
+        return;
+    }
 
-                // 목록 추가
-                let htmlData = '';
-                htmlData += '<div id="file' + ++fileNo + '" class="filebox">';
-                htmlData += '   <p class="name">' + file.name + '</p>';
-                htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><img src="${pageContext.request.contextPath}/image/delete.png"/></a>';
-                htmlData += '</div>';
-                $('.file-list').append(htmlData);
-            }
+    for (const file of files) {
+    	if (validation(file)) {
+            fileListAppendHtml(file);// fileList 추가
         }
     }
-    document.querySelector("input[type=file]").value = "";
+
+    updateFileListVisibility();
+    $("input:file").val(""); // 파일 입력 필드 초기화
 }
 
+//addFile과 handleFiles에서 공통된 파일 처리 로직
+function addFile(obj) {
+    addFiles(obj.files);
+}
 
+function handleFiles(dragFiles) {
+    addFiles(dragFiles);
+}
+
+/* fileList html 추가 */
+function fileListAppendHtml(file){
+	// 파일 객체에 고유 fileNo 값을 추가해 배열에 저장
+	file.fileNo = fileNo;
+	filesArr.push(file);
+	
+	// 목록 추가
+	let htmlData = '';
+	htmlData += '<div id="file' + fileNo + '" class="filebox">';
+	htmlData += '   <p class="name">' + file.name + '</p>';
+	htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><img src="${pageContext.request.contextPath}/image/delete.png"/></a>';
+	htmlData += '</div>';
+	$('.file-list').append(htmlData);
+	
+	fileNo++; // 값 증가
+}
 
 /* 첨부파일 검증 */
-function validation(obj){
-    if (obj.name.length > 100) {
+function validation(file) {
+    const maxSize = 100 * 1024 * 1024; // 100MB
+    if (file.name.length > 100) {
         alert("파일명이 100자 이상인 파일은 제외되었습니다.");
-        return false;
-    } else if (obj.size > (100 * 1024 * 1024)) {
+    } else if (file.size > maxSize) {
         alert("최대 파일 용량인 100MB를 초과한 파일은 제외되었습니다.");
-        return false;
-    } else if (obj.name.lastIndexOf('.') == -1) {
+    } else if (!file.name.includes('.')) {
         alert("확장자가 없는 파일은 제외되었습니다.");
-        return false;
     } else {
         return true;
     }
+    return false;
 }
 
 /* 첨부파일 삭제 */
@@ -155,7 +168,7 @@ function deleteFile(deleteNo) {
     filesArr = filesArr.filter(file => file.fileNo !== deleteNo);
 
     // 파일 목록에서 삭제
-    document.querySelector("#file" + deleteNo).remove();
+    $("#file" + deleteNo).remove();
 
     // 파일 목록이 비어 있으면 숨김 처리
     updateFileListVisibility();
@@ -163,10 +176,10 @@ function deleteFile(deleteNo) {
 
 /* 파일 목록이 비어있으면 숨김 처리 */
 function updateFileListVisibility() {
-    if (filesArr.length === 0) {
-        $('.file-list').css('display', 'none');
-    }
+	console.log(filesArr.length)
+    $('.file-list').toggleClass('hidden', filesArr.length !== 0);
 }
+
 
 /* 폼 전송 */
 function submitForm() {
@@ -241,11 +254,7 @@ $(function(){
 	$('#boardName1').val(boardName1Value);
 	$('#boardName2').val(BoardName2Value);
 	
-	$(".boardName2").css({
-		'font-weight':'normal',
-		'color':'#333',
-		'font-size':'14px'
-	});
+	$(".boardName2,.left a").removeClass('menuActive');
 	
 	//boardName1 select를 바꿀때마다 boardName2가 같이 바뀜
 	$('#boardName1').change(function() {
@@ -257,63 +266,22 @@ $(function(){
 	
 	// dragover 이벤트: 드래그한 파일이 attachFlie 영역에 있을 때
     $('.attachFile').on('dragover', function(event) {
-        event.preventDefault(); // 기본 동작을 취소
-        $('.attachFile').css('opacity', '0.1')
-        				.addClass('dragoverFile');
-    });
-    // dragleave 이벤트: 드래그한 파일이 영역을 벗어났을 때
-    $('.attachFile').on('dragleave', function(event) {
-    	$('.attachFile').css('opacity', '1')
-    					.removeClass('dragoverFile');
-    });
+	    event.preventDefault();
+	    $(this).addClass('dragoverFile');
+	});
+	
+	$('.attachFile').on('dragleave', function() {
+	    $(this).removeClass('dragoverFile');
+	});
+	
     $('.attachFile').on('drop', function(event) {
         event.preventDefault();  // 기본 동작을 취소
-        $('.attachFile').css('opacity', '1')
-						.removeClass('dragoverFile');
+        $(this).removeClass('dragoverFile');
 	
         var dragFiles = event.originalEvent.dataTransfer.files;  // 드롭된 파일들
         handleFiles(dragFiles);  // 드래그된 파일 처리
     });
 
-    // 파일 처리 함수
-    function handleFiles(dragFiles) {
-    	// 첨부파일을 넣을시 list를 보이게 함
-
-	    var maxFileCnt = 5;   // 첨부파일 최대 개수
-	    var attFileCnt = document.querySelectorAll('.filebox').length;    // 기존 추가된 첨부파일 개수
-	    var remainFileCnt = maxFileCnt - attFileCnt;    // 추가로 첨부가능한 개수
-	    var curFileCnt = dragFiles.length;  // 현재 선택된 첨부파일 개수
-	
-	    $('.file-list').css('display', 'block');
-	    
-		// 첨부파일 개수 확인
-	    if (curFileCnt > remainFileCnt) {
-	        alert("첨부파일은 최대 " + maxFileCnt + "개 까지 첨부 가능합니다.");
-	    } else {
-	        for (const file of dragFiles) {
-	        	
-	            if (validation(file)) {
-	                var reader = new FileReader();
-	                reader.onload = function () {
-	                    // 파일 객체에 고유 fileNo 값을 추가해 배열에 저장
-	                    file.fileNo = fileNo;
-	                    filesArr.push(file);
-	                };
-	                reader.readAsDataURL(file);
-	
-	                // 목록 추가
-	                let htmlData = '';
-	                htmlData += '<div id="file' + ++fileNo + '" class="filebox">';
-	                htmlData += '   <p class="name">' + file.name + '</p>';
-	                htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><img src="${pageContext.request.contextPath}/image/delete.png"/></a>';
-	                htmlData += '</div>';
-	                $('.file-list').append(htmlData);
-	            }
-	        
-	   		}
-		    document.querySelector("input[type=file]").value = "";
-		}
-	}
 });
 
 //Drop 영역외에 파일 끌어다 놓았을 때 브라우져 동작막깅
@@ -327,7 +295,7 @@ document.addEventListener("drop", function (event) {
 </script>
 </head>
 <body>
- 	<form action="../board/post/add" method="post" enctype="multipart/form-data"
+ 	<form method="post" enctype="multipart/form-data"
       name="boardform" onsubmit="event.preventDefault(); submitForm();">
  		<div class="form-group2">
  			<label for="target_board" class="labelName">
@@ -358,7 +326,6 @@ document.addEventListener("drop", function (event) {
 	 				파일선택
  					<input type="file" id="upfile" onchange="addFile(this);" multiple />
 	 			</label>
-	 			<span id="filevalue"></span>
  			</div>
  		</div>
  		<div class="file-list"></div>
@@ -376,6 +343,8 @@ document.addEventListener("drop", function (event) {
 	            maxHeight: null,
 	            focus: true
 	        });
+
+			$('.boardContent .active').removeClass('active');
 	    });
  	</script>
 </body>

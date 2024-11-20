@@ -28,15 +28,14 @@
     <div class="left">
         <div class="user">
             <%--<img src="${pageContext.request.contextPath}/image/${profile.imgPath }${profile.imgType}" style="width:150px; height:150px; border-radius:50%; border: 1px solid gray;" alt="프로필"><br> --%>
-            <img src="${pageContext.request.contextPath}/emp/profile-image?UUID=${sessionScope.profileUUID}"
-                 class="user_img" alt="프로필"><br><br>
+           	<img src="${pageContext.request.contextPath}/emp/profile-image?UUID=${sessionScope.profileUUID}"
+               	 class="user_img" alt="프로필"><br><br>
             <c:out value="${profile.ename }"/> / <c:out value="${job}"/><br>
             <c:out value="${profile.email }"/>
-
+            
+	        <span class="attend"><jsp:include page="attend/attendButton.jsp"/></span>
         </div>
-
         <br>
-        <jsp:include page="attend/attendButton.jsp"/>
     </div>
 
 

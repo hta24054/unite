@@ -20,7 +20,7 @@ public class PostModifyAction implements Action {
 		BoardDao boardDao = new BoardDao();
 		
 		//파라미터로 전달받은 수정할 글 번호를 postId변수에 저장합니다.
-		int postId = Integer.parseInt(req.getParameter("id"));
+		Long postId = Long.parseLong(req.getParameter("id"));
 		
 		//글 내용을 불러와서 list에 저장
 		List<Object> list = boardDao.getDetail(postId);

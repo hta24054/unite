@@ -1,6 +1,9 @@
 $(function() {
 	let pathName = window.location.pathname;
-	
+	var boardName2;
+	const urlParams = new URLSearchParams(window.location.search); 
+	const key = urlParams.get('name'); // "home에서 key = boardName2값"
+
     // 현재 페이지 URL을 확인하여 게시판 홈이면 피드형 레이아웃으로 표시
     if (pathName === '/unite/board/home') {
         loadBoardHome(); // 게시판 홈 데이터를 로드
@@ -13,17 +16,9 @@ $(function() {
     // 왼쪽 메뉴 클릭 이벤트 - 리스트형 레이아웃으로 게시글 표시
     $('.boardName2').click(function(e) {
 		
-		$('.boardName2').css({
-			'font-weight':'normal',
-			'color':'#333',
-			'font-size':'14px'
-		});
-		$(this).css({
-			'font-weight':'bold',
-			'color':'#334466',
-			'font-size':'16px'
-		});
-		
+		$('.boardName2,.left a').removeClass('menuActive');
+		$(this).addClass('menuActive');
+		$(this).parent().parent().prev('a').addClass('menuActive');
 		
 		//html 초기화
 		$('.boardContent').html('');
@@ -33,6 +28,13 @@ $(function() {
 
         loadBoardList(boardName2, 1); // 클릭한 메뉴에 맞는 게시판 데이터를 로드
     });
+
+	$('.boardName2').each(function(){ //홈에서 클릭한 boardName2 실행
+		if($(this).text() == key){
+			$(this).trigger('click'); //트리거로 click이벤트 발생
+		}
+		
+	})
 
  	// 왼쪽 글쓰기 클릭 이벤트 or 게시글 수정 버튼 클릭 이벤트
     $(document).on('click', '.writeBtn, .postModify-link', function (e) {
@@ -52,8 +54,29 @@ $(function() {
         loardBoardWrite(postPage,title,boardName2); // 글쓰기 메서드 호출
     });
     
+    // 왼쪽 글쓰기 클릭 이벤트 or 게시글 수정 버튼 클릭 이벤트
+    $(document).on('click', '.postReply-link', function (e) {
+		
+		//html 초기화
+		$('.boardContent').html('');
+		
+        e.preventDefault();
+        var postPage = $(this).data('page');
+        var title = '게시글 답글';
+        var boardName2 = $('.boardTitle').text();
+        
+		
+        loardBoardWrite(postPage,title,boardName2); // 글쓰기 메서드 호출
+    });
+    
+    
+    
     $(document).on('click', '.page-link', function(event) {
 		var nextPage = $(this).data('page');  // data-page에서 페이지 번호 가져오기
+		
+		if(boardName2 == null){
+			boardName2 = $(this).data('name');
+		}
 		
 		if(nextPage != null ){
 		    event.preventDefault();  // 기본 동작 방지 (링크 이동 방지)

@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -90,11 +89,11 @@
 	.hidden {
     	display: block;
 	}
+	
 </style>
 <script>
 var fileNo = 0;
 var filesArr = [];
-var deletedFiles = [];
 var maxFileCnt = 5;   // 첨부파일 최대 개수
 
 var companyBulletinBoards = ['공지사항', '주간식단표', 'FAQ'];
@@ -131,25 +130,20 @@ function handleFiles(dragFiles) {
 }
 
 /* fileList html 추가 */
-function fileListAppendHtml(file) {
-    // 파일 객체에 고유 fileNo 값을 추가해 배열에 저장
-    file.fileNo = fileNo;
-    filesArr.push(file);
-
-    // 목록 추가
-    let htmlData = '';
-    htmlData += '<div id="file' + fileNo + '" class="filebox">';
-    htmlData += '   <p class="name">' + file.name + '</p>';
-    
-    htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo;
-    if (file.isExisting) {// isExisting 조건에 따라 추가
-        htmlData += ', true';
-    }
-    htmlData += ');"><img src="${pageContext.request.contextPath}/image/delete.png"/></a>';
-    
-    htmlData += '</div>';
-    $('.file-list').append(htmlData);
-    fileNo++;
+function fileListAppendHtml(file){
+	// 파일 객체에 고유 fileNo 값을 추가해 배열에 저장
+	file.fileNo = fileNo;
+	filesArr.push(file);
+	
+	// 목록 추가
+	let htmlData = '';
+	htmlData += '<div id="file' + fileNo + '" class="filebox">';
+	htmlData += '   <p class="name">' + file.name + '</p>';
+	htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><img src="${pageContext.request.contextPath}/image/delete.png"/></a>';
+	htmlData += '</div>';
+	$('.file-list').append(htmlData);
+	
+	fileNo++; // 값 증가
 }
 
 /* 첨부파일 검증 */
@@ -168,13 +162,8 @@ function validation(file) {
 }
 
 /* 첨부파일 삭제 */
-function deleteFile(deleteNo, isExisting = false) {
-	if (isExisting) {
-        // 기존 파일인 경우 deletedFiles 배열에 추가
-        const deletedFile = filesArr.find(file => file.fileNo === deleteNo);
-        deletedFiles.push(deletedFile);
-    }
-	
+function deleteFile(deleteNo) {
+
     // filesArr 배열에서 삭제할 파일을 fileNo로 찾음
     filesArr = filesArr.filter(file => file.fileNo !== deleteNo);
 
@@ -187,13 +176,10 @@ function deleteFile(deleteNo, isExisting = false) {
 
 /* 파일 목록이 비어있으면 숨김 처리 */
 function updateFileListVisibility() {
-	console.log('update')
-	console.log('filesArr=',filesArr)
-	console.log('deletedFiles=',deletedFiles)
 	console.log(filesArr.length)
-	
     $('.file-list').toggleClass('hidden', filesArr.length !== 0);
 }
+
 
 /* 폼 전송 */
 function submitForm() {
@@ -203,20 +189,12 @@ function submitForm() {
 
     // 삭제되지 않은 파일만 폼데이터에 담기
     filesArr.forEach(file => {
-    	if (!file.isExisting) {
-            // 새로 추가된 파일만 처리
-            formData.append("attach_file" + j++, file);
-        }
-    });
-    
- 	// 삭제된 기존 파일 데이터 전달
-    deletedFiles.forEach(file => {
-        formData.append("deleted_files", JSON.stringify(file));
+        formData.append("attach_file" + j++, file);
     });
 
     $.ajax({
         method: 'POST',
-        url: '../board/post/modifyProcess',
+        url: '../board/post/add',
         dataType: 'json',
         data: formData,
         processData: false,
@@ -224,10 +202,7 @@ function submitForm() {
         cache: false,
         success: function (data) {
             alert(data.message);
-            console.log('data.boardName2=',data.boardName2)
-            console.log('data.postId=',data.postId)
-            
-			loadBoardPost(data.boardName2,data.postId);
+            location.href = "home";
         },
         error: function (xhr, desc, err) {
             alert('에러가 발생하였습니다.');
@@ -273,25 +248,6 @@ $(function(){
 	
 	$(".boardName2,.left a").removeClass('menuActive');
 	
-	
-	// 게시글에 올려둔 첨부파일 배열에 추가 및 출력
-    $('.filesHidden').each(function() {
-		
-        const file = {
-        	'fileNo'	: null,
-            name: $(this).data('post-file-original'),
-            postFilePath: $(this).data('post-file-path'),
-            postFileUUID: $(this).data('post-file-uuid'),
-            postFileType: $(this).data('post-file-type'),
-            isExisting: true // 기존 파일임을 표시
-        };
-        
-        fileListAppendHtml(file);
-    });
-    updateFileListVisibility()
-	
-	
-	
 	//boardName1 select를 바꿀때마다 boardName2가 같이 바뀜
 	$('#boardName1').change(function() {
 		let boardName1Value = $(this).val();  // 첫 번째 select의 선택 값
@@ -299,7 +255,8 @@ $(function(){
 		changeBoardName2(boardName1Value);//boardName2를 boardName1에 맞게 바꿈
 	});
 	
- 	// dragover 이벤트: 드래그한 파일이 attachFlie 영역에 있을 때
+	
+	// dragover 이벤트: 드래그한 파일이 attachFlie 영역에 있을 때
     $('.attachFile').on('dragover', function(event) {
 	    event.preventDefault();
 	    $(this).addClass('dragoverFile');
@@ -333,16 +290,16 @@ document.addEventListener("drop", function (event) {
  	<form method="post" enctype="multipart/form-data"
       name="boardform" onsubmit="event.preventDefault(); submitForm();">
  		<div class="form-group2">
- 			<input type="hidden" name="postId" value='${list[0].postId}'/>
- 			<input type="hidden" id="boardName2Hidden" name="boardName2Hidden" value='${boardName2}'/>
+ 			<input type="hidden" name="postId" value='${postData.postId}'/>
+ 			<input type="hidden" id="boardName2Hidden" name="boardName2Hidden" value='${boardMap[postData.boardId]}'/>
  			<label for="target_board" class="labelName">
  				To.
- 				<select id="boardName1" name="boardName1" class="boardName">
- 					<option value="전사게시판">전사게시판</option>
- 					<option value="일반게시판">일반게시판</option>
- 					<option value="부서게시판">부서게시판</option>
+ 				<select id="boardName1" name="boardName1" class="boardName" disabled>
+ 					<option value="전사게시판" >전사게시판</option>
+ 					<option value="일반게시판" >일반게시판</option>
+ 					<option value="부서게시판" >부서게시판</option>
  				</select>
- 				<select id="boardName2" name="boardName2" class="boardName">
+ 				<select id="boardName2" name="boardName2" class="boardName" disabled>
  					<option value="공지사항">공지사항</option>
  					<option value="주간식단표">주간식단표</option>
  					<option value="FAQ">FAQ</option>
@@ -352,7 +309,7 @@ document.addEventListener("drop", function (event) {
  		<div class="form-group2">
  			<label for="board_subject" class="labelName">제목</label>
  			<input name="board_subject" id="board_subject" type="text" maxlength="100"
- 					class="form-control2" placeholder="Enter board_subject" value="${list[0].postSubject}" required>
+ 					class="form-control2" placeholder="Enter board_subject" value="Re:${postData.postSubject}" required>
  		</div>
  		<div class="form-group2-file">
  			<label for="board_attachFile" class="labelName">파일첨부</label>
@@ -361,21 +318,15 @@ document.addEventListener("drop", function (event) {
  				이 곳에 파일을 드래그 하세요. 또는 
 	 			<label class="fileLabel">
 	 				파일선택
-	 				<c:if test="${list[2] != null and not empty list[2]}">
-	    				<c:forEach var="postFile" items="${list[2]}">
-			 				<input type="hidden" class="filesHidden"
-			 						data-post-file-path="${postFile.postFilePath}"  data-post-file-uuid="${postFile.postFileUUID}"
-			 						data-post-file-type="${postFile.postFileType}"  data-post-file-original= "${postFile.postFileOriginal}"/>
-		 				</c:forEach>
-	 				</c:if>
-	 				<input type="file" id="upfile" onchange="addFile(this);" multiple/>
+ 					<input type="file" id="upfile" onchange="addFile(this);" multiple />
 	 			</label>
  			</div>
  		</div>
  		<div class="file-list"></div>
-		<textarea class="summernote form-control2" id="board_content" name="board_content" required>${list[0].postContent}</textarea>
+		<textarea class="summernote form-control2" id="board_content" name="board_content" required></textarea>
 		<div class="form-group-btn">
-	 		<button type="submit" class="btn registerBtn">수정</button>
+	 		<button type="submit" class="btn registerBtn">등록</button>
+	 		<button type="reset" class="btn registerBtn tr-post" data-page="${postData.postId}" data-name="${boardMap[postData.boardId]}">돌아가기</button>
  		</div>
  	</form>
  	
@@ -387,8 +338,8 @@ document.addEventListener("drop", function (event) {
 	            maxHeight: null,
 	            focus: true
 	        });
-	        
-	        $('.boardContent .active').removeClass('active');
+
+			$('.boardContent .active').removeClass('active');
 	    });
  	</script>
 </body>

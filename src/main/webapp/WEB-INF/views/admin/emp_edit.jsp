@@ -53,7 +53,7 @@
         #main_title {
             color: #334466;
             margin-left: 500px;
-            margin-bottom: 20px;
+            /*margin-bottom: 20px;*/
             font-weight: bold;
         }
 
@@ -89,18 +89,41 @@
         .cert-item button, .lang-item button {
             margin-left: 5px;
         }
+
+        .table, .table th, .table td {
+            border: 2px solid black;
+        }
+        td, th {
+            border: 2px solid black;
+            padding: 4px; /* 기존 15px에서 줄임 */
+            line-height: 1.5; /* 텍스트 줄 간격 설정 */
+            color: black;
+            vertical-align: middle; /* 텍스트 수직 중앙 정렬 */
+            text-align: center;
+            width: 14%;
+            height: 40px; /* 최소 높이 설정 */
+        }
+        .table, .table th, .table td {
+            border: 2px solid black;
+        }
+        .button-container {
+            width: 80%; /* 테이블과 동일한 너비로 설정 */
+            margin: 10px auto 0; /* 위쪽 간격 추가, 중앙 정렬 */
+            text-align: right; /* 버튼을 오른쪽 정렬 */
+        }
     </style>
 </head>
 <body>
 <h2 id="main_title">직원 수정</h2>
 <div class="main-container">
-    <div class="content">
-        <form id="emp-form" enctype="multipart/form-data">
+    <form id="emp-form" enctype="multipart/form-data">
+        <div class="input-group input-group-sm mb-3">
             <table class="table">
                 <tr id="tr">
                     <th rowspan="4" id="photo">
                         <span id="showImage">
-                                <c:set var="src" value='${pageContext.request.contextPath}/emp/profile-image?UUID=${emp.imgUUID}'/>
+                                <c:set var="src"
+                                       value='${pageContext.request.contextPath}/emp/profile-image?UUID=${emp.imgUUID}'/>
                             <c:if test="${!empty emp.imgUUID}">
                                 <img src="${pageContext.request.contextPath}/image/cancel.png" alt="파일삭제"
                                      width="20px" class="remove_img"/>
@@ -118,15 +141,18 @@
                     <th>내선번호</th>
                 </tr>
                 <tr>
-                    <td><input type="text" value="${emp.ename}" name="ename" data-name="이름" placeholder="이름" required></td>
+                    <td><input type="text" value="${emp.ename}" name="ename" data-name="이름" placeholder="이름" required>
+                    </td>
                     <td>
                         <select name="gender">
                             <option value="남" ${emp.gender == '남' ? 'selected' : ''}>남성</option>
                             <option value="여" ${emp.gender == '여' ? 'selected' : ''}>여성</option>
                         </select>
                     </td>
-                    <td><input type="text" name="email" placeholder="이메일" data-name="이메일" value="${emp.email}" required ></td>
-                    <td><input type="text" name="tel" placeholder="02-0000-0000" maxlength="13" data-name="내선번호" value="${emp.tel}" required></td>
+                    <td><input type="text" name="email" placeholder="이메일" data-name="이메일" value="${emp.email}" required>
+                    </td>
+                    <td><input type="text" name="tel" placeholder="02-0000-0000" maxlength="13" data-name="내선번호"
+                               value="${emp.tel}" required></td>
                 </tr>
                 <tr>
                     <th>부서</th>
@@ -141,14 +167,17 @@
                                 ${emp.deptId == dept.deptId ? 'selected' : ''}>${dept.deptName}</option>
                         </c:forEach>
                     </select></td>
-                    <td><input type="text" name="empId" value="${emp.empId}" placeholder="사번" data-name="사번" readonly></td>
+                    <td><input type="text" name="empId" value="${emp.empId}" placeholder="사번" data-name="사번" readonly>
+                    </td>
                     <td><select name="jobId" data-name="직책" required>
                         <c:forEach var="job" items="${jobList}">
                             <option value="${job.jobId}"
                                 ${emp.jobId == job.jobId ? 'selected' : ''}>${job.jobName}</option>
                         </c:forEach>
                     </select></td>
-                    <td><input type="text" name="mobile" value="${emp.mobile}" data-name="휴대전화" placeholder="010-0000-0000" maxlength="13" required></td>
+                    <td><input type="text" name="mobile" value="${emp.mobile}" data-name="휴대전화"
+                               placeholder="010-0000-0000"
+                               maxlength="13" required></td>
                 </tr>
             </table>
 
@@ -163,7 +192,8 @@
                         <input type="text" name="account" value="${emp.account}" placeholder="계좌번호"
                                data-name="계좌번호" required></td>
                     <th>긴급연락처</th>
-                    <td><input type="text" name="mobile2" value="${emp.mobile2}" data-name="긴급연락처" placeholder="010-0000-0000" maxlength="13" required></td>
+                    <td><input type="text" name="mobile2" value="${emp.mobile2}" data-name="긴급연락처"
+                               placeholder="010-0000-0000" maxlength="13" required></td>
                 </tr>
                 <tr>
                     <th>채용구분</th>
@@ -202,7 +232,9 @@
                         </select>
                     </td>
                     <th>주소</th>
-                    <td><input type="text" name="address" value="${emp.address}" data-name="주소" placeholder="주소" required></td>
+                    <td><input type="text" name="address" value="${emp.address}" data-name="주소" placeholder="주소"
+                               required>
+                    </td>
                     <th>자격증</th>
                     <td id="certifications" style="position: relative;">
                         <c:forEach var="cert" items="${certList}">
@@ -220,7 +252,9 @@
                 </tr>
                 <tr>
                     <th>최종학력</th>
-                    <td><input type="text" name="school" value="${emp.school}" data-name="최종학력" placeholder="최종학력" required></td>
+                    <td><input type="text" name="school" value="${emp.school}" data-name="최종학력" placeholder="최종학력"
+                               required>
+                    </td>
                     <th>결혼여부</th>
                     <td>
                         <select name="married">
@@ -233,7 +267,7 @@
                         <c:forEach var="lang" items="${langList}">
                             <div class="lang-item">
                                 <input type="text" name="lang" value="${lang.langName}"
-                                       class="form-control lang-input" data-name="외국어" placeholder = "외국어능력" required>
+                                       class="form-control lang-input" data-name="외국어" placeholder="외국어능력" required>
                                 <button type="button" class="btn btn-sm btn-light remove-lang">-</button>
                             </div>
                         </c:forEach>
@@ -253,12 +287,12 @@
                     </select></td>
                 </tr>
             </table>
-        </form>
+        </div>
         <div class="button-container">
             <button type="button" id="submit-button" class="btn btn-success">수정완료</button>
             <button type="button" onclick="history.back()" class="btn btn-secondary">뒤로가기</button>
         </div>
-    </div>
+    </form>
 </div>
 <script>
     $(document).ready(function () {

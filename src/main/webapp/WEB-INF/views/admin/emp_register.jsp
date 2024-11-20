@@ -53,7 +53,7 @@
         #main_title {
             color: #334466;
             margin-left: 500px;
-            margin-bottom: 20px;
+            /*margin-bottom: 20px;*/
             font-weight: bold;
         }
 
@@ -89,13 +89,35 @@
         .cert-item button, .lang-item button {
             margin-left: 5px;
         }
+
+        .table, .table th, .table td {
+            border: 2px solid black;
+        }
+        td, th {
+            border: 2px solid black;
+            padding: 4px; /* 기존 15px에서 줄임 */
+            line-height: 1.5; /* 텍스트 줄 간격 설정 */
+            color: black;
+            vertical-align: middle; /* 텍스트 수직 중앙 정렬 */
+            text-align: center;
+            width: 14%;
+            height: 40px; /* 최소 높이 설정 */
+        }
+        .table, .table th, .table td {
+            border: 2px solid black;
+        }
+        .button-container {
+            width: 80%; /* 테이블과 동일한 너비로 설정 */
+            margin: 10px auto 0; /* 위쪽 간격 추가, 중앙 정렬 */
+            text-align: right; /* 버튼을 오른쪽 정렬 */
+        }
     </style>
 </head>
 <body>
 <h2 id="main_title">직원 등록</h2>
 <div class="main-container">
-    <div class="content">
-        <form id="emp-form" enctype="multipart/form-data">
+    <form id="emp-form" enctype="multipart/form-data">
+        <div class="input-group input-group-sm mb-3">
             <table class="table">
                 <tr id="tr">
                     <th rowspan="4" id="photo">
@@ -172,7 +194,7 @@
                 </tr>
                 <tr>
                     <th>채용구분</th>
-                    <td><select name="hireType" data-name = "채용구분" required>
+                    <td><select name="hireType" data-name="채용구분" required>
                         <option value="" selected>선택</option>
                         <option value="신입">신입
                         </option>
@@ -256,12 +278,12 @@
                     </select></td>
                 </tr>
             </table>
-        </form>
+        </div>
         <div class="button-container">
             <button type="button" id="submit-button" class="btn btn-success">수정완료</button>
             <button type="button" onclick="history.back()" class="btn btn-secondary">뒤로가기</button>
         </div>
-    </div>
+    </form>
 </div>
 <script>
     $(document).ready(function () {

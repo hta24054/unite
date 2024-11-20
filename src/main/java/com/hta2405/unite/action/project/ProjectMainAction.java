@@ -22,7 +22,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 
-	@MultipartConfig(
+@MultipartConfig(
 	    fileSizeThreshold = 1024 * 1024 * 1, // 1MB
 	    maxFileSize = 1024 * 1024 * 10,      // 10MB
 	    maxRequestSize = 1024 * 1024 * 50    // 50MB
@@ -38,25 +38,22 @@ import jakarta.servlet.http.Part;
 	            ProjectDAO projectDAO = new ProjectDAO();
 	            boolean success = false;
 
-	            // 프로젝트 상태에 따라 업데이트하고, 파일을 업로드 처리
+	            // 프로젝트 상태 업데이트
+	            if ("completed".equals(status)) {
+	                success = projectDAO.updateProjectStatus(projectId, true, false);
+	            } else if ("cancelled".equals(status)) {
+	                success = projectDAO.updateProjectStatus(projectId, false, true);
+	            }
+
+	            // 파일이 있을 경우에만 파일 업로드 처리
 	            List<ProjectInfo> uploadedFiles = processFileUpload(req, resp);
 	            if (!uploadedFiles.isEmpty()) {
 	                // 파일 업로드 후 상태에 따른 처리
-	                if ("completed".equals(status)) {
-	                    // 프로젝트 완료 상태로 업데이트
-	                    success = projectDAO.updateProjectStatus(projectId, true, false);
-	                    // 완료 상태의 파일 정보 저장
-	                    success = projectDAO.saveUploadedFiles(projectId, uploadedFiles, 1);
-	                } else if ("cancelled".equals(status)) {
-	                    // 프로젝트 취소 상태로 업데이트
-	                    success = projectDAO.updateProjectStatus(projectId, false, true);
-	                    // 취소 상태의 파일 정보 저장
-	                    success = projectDAO.saveUploadedFiles(projectId, uploadedFiles, 2);
-	                }
+	                int fileStatus = "completed".equals(status) ? 1 : 2;
+	                success &= projectDAO.saveUploadedFiles(projectId, uploadedFiles, fileStatus);
 	            }
 
-
-	            // JSON 응답 반환
+	            // 상태 업데이트 결과 반환
 	            resp.setContentType("application/json");
 	            resp.getWriter().write("{\"success\":" + success + "}");
 	            return null;
@@ -73,7 +70,7 @@ import jakarta.servlet.http.Part;
 	        ServletContext sc = req.getServletContext();
 	        String uploadDir = sc.getRealPath("projectupload");
 	        File uploadDirectory = new File(uploadDir);
-	        
+
 	        if (!uploadDirectory.exists()) {
 	            uploadDirectory.mkdir();
 	        }
@@ -115,3 +112,4 @@ import jakarta.servlet.http.Part;
 	        response.getWriter().write(new Gson().toJson(Map.of("error", errorMessage)));
 	    }
 	}
+

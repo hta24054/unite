@@ -9,24 +9,10 @@
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="attend_leftbar.jsp"/>
     <style>
-        .table {
-            width: 70%;
-            margin: auto;
-        }
-
-        table, td, th {
-            border-collapse: collapse;
-        }
-
         h2 {
             text-align: left;
             color: black;
             margin: 0;
-        }
-
-        caption {
-            caption-side: top;
-            margin-bottom: 30px;
         }
 
         #main_title {
@@ -39,10 +25,35 @@
 </head>
 <body>
 <h2 id="main_title">전 직원 휴가 관리(인사부서) - 직원 목록</h2>
+<button type="button" class="btn btn-info" id="vac_count_button">전 직원 부여 연차 갱신</button>
 <div class="container">
     <jsp:include page="../common/empTree.jsp"/>
 </div>
 <script>
+    $('#vac_count_button').click(function () {
+        if (!confirm("전 직원 연차 부여 개수를 갱신합니다.")) {
+            return false;
+        }
+        $.ajax({
+            url: '${pageContext.request.contextPath}/attend/vacation/set-count',
+            method: 'POST',
+            contentType: "application/json; charset=UTF-8",
+            dataType: "json",
+            success: function (data) {
+                if (data.status === 'success') {
+                    alert("연차 개수가 갱신되었습니다.");
+                    window.location.href = '${pageContext.request.contextPath}/attend/vacation/empList';
+                }else{
+                    alert("연차 개수 갱신 오류");
+                    window.location.href = '${pageContext.request.contextPath}/attend/vacation/empList';
+                }
+            },error: function () {
+                alert("연차 개수 갱신 오류");
+                window.location.href = '${pageContext.request.contextPath}/attend/vacation/empList';
+            }
+        });
+    })
+
     function updateEmployeeTable(empList, jobName) {
         const tableBody = $('#employeeTableBody');
         tableBody.empty();
@@ -62,6 +73,7 @@
             });
         }
     }
+
     // 직원 상세 페이지 URL 생성 함수
     function getEmployeeDetailUrl(empId) {
         // 직원 상세 정보로 이동하는 URL 생성

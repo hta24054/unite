@@ -484,4 +484,27 @@ public class EmpDao {
         }
         return list;
     }
+
+    public int updateAllEmpVacCount() {
+        String sql = """
+                UPDATE EMP
+                    SET VACATION_COUNT = CASE
+                        WHEN MONTHS_BETWEEN(sysdate, HIREDATE) >= 36
+                            THEN GREATEST(0, LEAST(25, 15 + FLOOR((MONTHS_BETWEEN(sysdate, HIREDATE) / 12 - 2) / 2)))
+                        WHEN MONTHS_BETWEEN(sysdate, HIREDATE) >= 12
+                            THEN 15
+                        ELSE
+                            GREATEST(0, FLOOR(MONTHS_BETWEEN(sysdate, HIREDATE)))
+                    END
+                where 1=1
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.executeUpdate();
+            return 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

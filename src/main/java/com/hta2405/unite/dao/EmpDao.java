@@ -25,11 +25,11 @@ public class EmpDao {
 
     public int insertEmp(Emp emp, List<Cert> certList, List<Lang> langList) {
         String sql = """
-                    INSERT INTO EMP(PASSWORD, ENAME, DEPT_ID, JOB_ID, GENDER, EMAIL,
+                    INSERT INTO EMP(EMP_ID, PASSWORD, ENAME, DEPT_ID, JOB_ID, GENDER, EMAIL,
                                     TEL, MOBILE, MOBILE2, IMG_PATH, IMG_ORIGINAL, IMG_UUID, IMG_TYPE,
                                     HIREDATE, HIRETYPE, BIRTHDAY, BIRTHDAY_TYPE, SCHOOL, MAJOR, BANK,
                                     ACCOUNT, ADDRESS, MARRIED, CHILD, ETYPE, VACATION_COUNT)
-                    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
                             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
                             ?, ?, ?, ?, ?, ?)
 
@@ -37,32 +37,33 @@ public class EmpDao {
         try (Connection conn = ds.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             conn.setAutoCommit(false);
-            ps.setString(1, emp.getPassword());
-            ps.setString(2, emp.getEname());
-            ps.setLong(3, emp.getDeptId());
-            ps.setLong(4, emp.getJobId());
-            ps.setString(5, emp.getGender());
-            ps.setString(6, emp.getEmail());
-            ps.setString(7, emp.getTel());
-            ps.setString(8, emp.getMobile());
-            ps.setString(9, emp.getMobile2());
-            ps.setString(10, emp.getImgPath());
-            ps.setString(11, emp.getImgOriginal());
-            ps.setString(12, emp.getImgUUID());
-            ps.setString(13, emp.getImgType());
-            ps.setString(14, String.valueOf(emp.getHireDate()));
-            ps.setString(15, emp.getHireType());
-            ps.setString(16, String.valueOf(emp.getBirthday()));
-            ps.setString(17, emp.getBirthdayType());
-            ps.setString(18, emp.getSchool());
-            ps.setString(19, emp.getMajor());
-            ps.setString(20, emp.getBank());
-            ps.setString(21, emp.getAccount());
-            ps.setString(22, emp.getAddress());
-            ps.setString(23, String.valueOf(emp.isMarried() ? 1 : 0));
-            ps.setString(24, String.valueOf(emp.isChild() ? 1 : 0));
-            ps.setString(25, emp.getEtype());
-            ps.setLong(26, emp.getVacationCount());
+            ps.setString(1, emp.getEmpId());
+            ps.setString(2, emp.getPassword());
+            ps.setString(3, emp.getEname());
+            ps.setLong(4, emp.getDeptId());
+            ps.setLong(5, emp.getJobId());
+            ps.setString(6, emp.getGender());
+            ps.setString(7, emp.getEmail());
+            ps.setString(8, emp.getTel());
+            ps.setString(9, emp.getMobile());
+            ps.setString(10, emp.getMobile2());
+            ps.setString(11, emp.getImgPath());
+            ps.setString(12, emp.getImgOriginal());
+            ps.setString(13, emp.getImgUUID());
+            ps.setString(14, emp.getImgType());
+            ps.setString(15, String.valueOf(emp.getHireDate()));
+            ps.setString(16, emp.getHireType());
+            ps.setString(17, String.valueOf(emp.getBirthday()));
+            ps.setString(18, emp.getBirthdayType());
+            ps.setString(19, emp.getSchool());
+            ps.setString(20, emp.getMajor());
+            ps.setString(21, emp.getBank());
+            ps.setString(22, emp.getAccount());
+            ps.setString(23, emp.getAddress());
+            ps.setString(24, String.valueOf(emp.isMarried() ? 1 : 0));
+            ps.setString(25, String.valueOf(emp.isChild() ? 1 : 0));
+            ps.setString(26, emp.getEtype());
+            ps.setLong(27, emp.getVacationCount());
             int result = ps.executeUpdate();
             if (result != 1) {
                 conn.rollback();

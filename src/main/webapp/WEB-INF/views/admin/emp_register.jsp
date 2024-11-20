@@ -4,7 +4,7 @@
 
 <html>
 <head>
-    <title>직원 수정</title>
+    <title>직원 등록</title>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/empInfo.css">
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="admin_leftbar.jsp"/>
@@ -92,7 +92,7 @@
     </style>
 </head>
 <body>
-<h2 id="main_title">직원 수정</h2>
+<h2 id="main_title">직원 등록</h2>
 <div class="main-container">
     <div class="content">
         <form id="emp-form" enctype="multipart/form-data">
@@ -100,7 +100,8 @@
                 <tr id="tr">
                     <th rowspan="4" id="photo">
                         <span id="showImage">
-                                <c:set var="src" value='${pageContext.request.contextPath}/emp/profile-image?UUID=${emp.imgUUID}'/>
+                            <c:set var="src"
+                                   value='${pageContext.request.contextPath}/emp/profile-image?UUID=${emp.imgUUID}'/>
                             <c:if test="${!empty emp.imgUUID}">
                                 <img src="${pageContext.request.contextPath}/image/cancel.png" alt="파일삭제"
                                      width="20px" class="remove_img"/>
@@ -118,15 +119,17 @@
                     <th>내선번호</th>
                 </tr>
                 <tr>
-                    <td><input type="text" value="${emp.ename}" name="ename" data-name="이름" placeholder="이름" required></td>
+                    <td><input type="text" name="ename" data-name="이름" placeholder="이름" required></td>
                     <td>
-                        <select name="gender">
-                            <option value="남" ${emp.gender == '남' ? 'selected' : ''}>남성</option>
-                            <option value="여" ${emp.gender == '여' ? 'selected' : ''}>여성</option>
+                        <select name="gender" data-name="성별" required>
+                            <option value="" selected>선택</option>
+                            <option value="남">남성</option>
+                            <option value="여">여성</option>
                         </select>
                     </td>
-                    <td><input type="text" name="email" placeholder="이메일" data-name="이메일" value="${emp.email}" required ></td>
-                    <td><input type="text" name="tel" placeholder="02-0000-0000" maxlength="13" data-name="내선번호" value="${emp.tel}" required></td>
+                    <td><input type="text" name="email" placeholder="이메일" data-name="이메일" required></td>
+                    <td><input type="text" name="tel" placeholder="02-0000-0000" maxlength="13" data-name="내선번호"
+                               required></td>
                 </tr>
                 <tr>
                     <th>부서</th>
@@ -136,73 +139,71 @@
                 </tr>
                 <tr>
                     <td><select name="deptId" data-name="부서" required>
+                        <option value="" selected>선택</option>
                         <c:forEach var="dept" items="${deptList}">
-                            <option value="${dept.deptId}"
-                                ${emp.deptId == dept.deptId ? 'selected' : ''}>${dept.deptName}</option>
+                            <option value="${dept.deptId}">${dept.deptName}</option>
                         </c:forEach>
                     </select></td>
-                    <td><input type="text" name="empId" value="${emp.empId}" placeholder="사번" data-name="사번" readonly></td>
+                    <td><input type="text" name="empId" placeholder="사번" data-name="사번" maxlength="6" required></td>
                     <td><select name="jobId" data-name="직책" required>
+                        <option value="" selected>선택</option>
                         <c:forEach var="job" items="${jobList}">
-                            <option value="${job.jobId}"
-                                ${emp.jobId == job.jobId ? 'selected' : ''}>${job.jobName}</option>
+                            <option value="${job.jobId}">${job.jobName}</option>
                         </c:forEach>
                     </select></td>
-                    <td><input type="text" name="mobile" value="${emp.mobile}" data-name="휴대전화" placeholder="010-0000-0000" maxlength="13" required></td>
+                    <td><input type="text" name="mobile" data-name="휴대전화" placeholder="010-0000-0000" maxlength="13"
+                               required></td>
                 </tr>
             </table>
 
             <table>
                 <tr>
                     <th>입사일</th>
-                    <td><input type="date" name="hireDate" value="${emp.hireDate}" data-name="입사일" required></td>
+                    <td><input type="date" name="hireDate" data-name="입사일" required></td>
 
                     <th rowspan="2">계좌번호</th>
-                    <td rowspan="2"><input type="text" name="bank" value="${emp.bank}" placeholder="은행명"
+                    <td rowspan="2"><input type="text" name="bank" placeholder="은행명"
                                            data-name="은행" required>
-                        <input type="text" name="account" value="${emp.account}" placeholder="계좌번호"
+                        <input type="text" name="account" placeholder="계좌번호(-포함)"
                                data-name="계좌번호" required></td>
                     <th>긴급연락처</th>
-                    <td><input type="text" name="mobile2" value="${emp.mobile2}" data-name="긴급연락처" placeholder="010-0000-0000" maxlength="13" required></td>
+                    <td><input type="text" name="mobile2" data-name="긴급연락처" placeholder="010-0000-0000" maxlength="13"
+                               required></td>
                 </tr>
                 <tr>
                     <th>채용구분</th>
-                    <td><select name="hireType">
-                        <option value="신입"
-                        ${emp.hireType == '신입' ? 'selected' : ''}>신입
+                    <td><select name="hireType" data-name = "채용구분" required>
+                        <option value="" selected>선택</option>
+                        <option value="신입">신입
                         </option>
-                        <option value="경력"
-                        ${emp.hireType == '경력' ? 'selected' : ''}>경력
+                        <option value="경력">경력
                         </option>
-                        <option value="인턴"
-                        ${emp.hireType == '인턴' ? 'selected' : ''}>인턴
+                        <option value="인턴">인턴
                         </option>
                     </select></td>
                     <th>직원구분</th>
-                    <td><select name="etype">
-                        <option value="정규직"
-                        ${emp.etype == '정규직' ? 'selected' : ''}>정규직
+                    <td><select name="etype" data-name="직원구분" required>
+                        <option value="" selected>선택</option>
+                        <option value="정규직">정규직
                         </option>
-                        <option value="계약직"
-                        ${emp.etype == '계약직' ? 'selected' : ''}>계약직
+                        <option value="계약직">계약직
                         </option>
-                        <option value="퇴직"
-                        ${emp.etype == '퇴직' ? 'selected' : ''}>퇴직
+                        <option value="퇴직">퇴직
                         </option>
                     </select></td>
                 </tr>
                 <tr>
                     <th>생년월일</th>
                     <td>
-                        <input type="date" name="birthday" placeholder="YYYY/MM/DD" value="${emp.birthday}"
+                        <input type="date" name="birthday" placeholder="YYYY/MM/DD"
                                data-name="생일" required>
                         <select name="birthday_type">
-                            <option value="양력" ${emp.birthdayType == '양력' ? 'selected' : ''}>양력</option>
-                            <option value="음력" ${emp.birthdayType == '음력' ? 'selected' : ''}>음력</option>
+                            <option value="양력" selected>양력</option>
+                            <option value="음력">음력</option>
                         </select>
                     </td>
                     <th>주소</th>
-                    <td><input type="text" name="address" value="${emp.address}" data-name="주소" placeholder="주소" required></td>
+                    <td><input type="text" name="address" data-name="주소" placeholder="주소" required></td>
                     <th>자격증</th>
                     <td id="certifications" style="position: relative;">
                         <c:forEach var="cert" items="${certList}">
@@ -220,10 +221,11 @@
                 </tr>
                 <tr>
                     <th>최종학력</th>
-                    <td><input type="text" name="school" value="${emp.school}" data-name="최종학력" placeholder="최종학력" required></td>
+                    <td><input type="text" name="school" data-name="최종학력" placeholder="최종학력" required></td>
                     <th>결혼여부</th>
                     <td>
-                        <select name="married">
+                        <select name="married" data-name="결혼여부" required>
+                            <option value="" selected>선택</option>
                             <option value="1" ${emp.married == '1' ? 'selected' : ''}>Y</option>
                             <option value="0" ${emp.married == '0' ? 'selected' : ''}>N</option>
                         </select>
@@ -232,8 +234,8 @@
                     <td id="languages" rowspan="2" style="position: relative;">
                         <c:forEach var="lang" items="${langList}">
                             <div class="lang-item">
-                                <input type="text" name="lang" value="${lang.langName}"
-                                       class="form-control lang-input" data-name="외국어" placeholder = "외국어능력" required>
+                                <input type="text" name="lang"
+                                       class="form-control lang-input" data-name="외국어" placeholder="외국어능력" required>
                                 <button type="button" class="btn btn-sm btn-light remove-lang">-</button>
                             </div>
                         </c:forEach>
@@ -248,8 +250,9 @@
                     <td><input type="text" name="major" placeholder="전공" value="${emp.major}"></td>
                     <th>자녀</th>
                     <td><select name="child" data-name="자녀유무" required>
-                        <option value="0" ${emp.child == '0' ? 'selected' : ''}>N</option>
-                        <option value="1" ${emp.child == '1' ? 'selected' : ''}>Y</option>
+                        <option value="" selected>선택</option>
+                        <option value="0">N</option>
+                        <option value="1">Y</option>
                     </select></td>
                 </tr>
             </table>
@@ -285,7 +288,7 @@
         })
 
         $('#submit-button').on('click', function (event) {
-            if (!confirm("직원을 수정하시겠습니까?")) {
+            if (!confirm("직원을 등록하시겠습니까?")) {
                 return false;
             }
             event.preventDefault();
@@ -328,14 +331,14 @@
                 contentType: false, // 기본 Content-Type 설정 해제
                 success: function (response) {
                     if (response.status === 'success') {
-                        alert("직원 수정이 완료되었습니다.");
+                        alert("직원 등록이 완료되었습니다.");
                         window.location.href = "${pageContext.request.contextPath}/admin/emp-manage";
                     } else {
-                        alert("직원 수정 중 오류가 발생했습니다.");
+                        alert("직원 등록 중 오류가 발생했습니다.");
                     }
                 },
                 error: function () {
-                    alert("직원 수정 중 오류가 발생했습니다.");
+                    alert("직원 등록 중 오류가 발생했습니다.");
                 }
             });
         });

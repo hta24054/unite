@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class AdminEmpEditProcessAction implements Action {
+public class AdminEmpRegisterAndEditProcessAction implements Action {
     private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("profile.upload.directory");
     private final EmpDao empDao = new EmpDao();
 

@@ -4,7 +4,7 @@ $(document).ready(function(){
 	let isAllDayChk, startDate, endDate;
 	const $resourceType = $("#resourceType");
 	const $resourceName = $("#resourceName");
-	let resourceId;
+	//let resourceId;
 	
 	getResourceList();
 	
@@ -196,12 +196,32 @@ $(document).ready(function(){
 					        <li>사용용도: ${event.extendedProps.reservationInfo || ""}</li>
 					    </ul>
 					    <div class="d-flex justify-content-center mt-3">
-						    <button type="button" id="btnDelete" class="btn btn-danger">예약취소</button>
+						    <button type="button" id="btnCancel" class="btn btn-danger">예약취소</button>
 						</div>
 					`;
 	       
 	                $("#reservationDetailModal").find(".modal-body").html(_html);
 	                $("#reservationDetailModal").modal("show");
+	                
+	                // 예약 취소
+	                $("#btnCancel").off("click").on("click", function() {
+						
+						/*
+				        console.log("예약자", event.extendedProps.empId)
+				        console.log("현재 로그인한 emp_id", $("#emp_id").val())
+						
+						const logInEmpId = $("#emp_id").val(); // 현재 로그인한 emp_id
+
+					    // 예약 정보의 emp_id와 로그인한 사용자 emp_id가 일치하는지 확인
+					    if (event.extendedProps.empId !== logInEmpId) {
+					        alert("예약자만 취소할 수 있습니다.");
+					        return;
+					    }
+					    */
+				        
+				        calncelReservation(event); 
+				     });
+				     
 	            } else {
 	                alert("예약 정보를 찾을 수 없습니다.");
 	            }
@@ -256,6 +276,44 @@ $(document).ready(function(){
                 alert("예약 정보 팝업 불러오기 실패");
             }
 		});
+	}
+	
+	// 예약 취소
+	function calncelReservation(event){
+		console.log("예약자", event.extendedProps.empId)
+        console.log("현재 로그인한 emp_id", $("#emp_id").val())
+		const logInEmpId = $("#emp_id").val(); // 현재 로그인한 emp_id
+
+	    // 예약 정보의 emp_id와 로그인 사용자 emp_id가 일치하는지 확인
+	    if (String(event.extendedProps.empId) !== String(logInEmpId)) {
+	        alert("예약자만 취소할 수 있습니다.");
+	        return;
+	    }
+		
+		if(confirm("정말 취소하시겠습니까?")) {
+			$.ajax({
+				url: "cancelReservation",
+				type: "post",
+		        dataType: "json",
+		        data: { 
+		            reservation_id: event.id,  // 예약 ID
+		        	emp_id: $("#emp_id").val(), //예약자 emp_id
+		        },
+		        success: function(data) {
+					if (data === 1) {
+	                    alert("예약이 취소되었습니다.");
+	                    getReservationList(); // 예약 목록 갱신
+	                    $("#reservationDetailModal").modal("hide"); // 모달 닫기
+	                } else {
+	                    alert("예약 취소 실패");
+	                }
+				},
+				error: function(error) {
+		            console.log("예약 취소 오류:", error);
+		            alert("예약 취소 오류");
+		        }
+			});
+		}
 	}
 	
 	// 자원 예약 모달 등록 버튼 클릭 시 초기화

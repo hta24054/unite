@@ -138,6 +138,14 @@ GROUP BY resc_name;
 SELECT * 
 FROM reservation;
 
+
+
+DELETE FROM reservation
+WHERE reservation_id = 43
+AND emp_id = '241101';
+
+
+
 SELECT * 
 FROM resc;
 
@@ -158,6 +166,44 @@ FROM reservation
 LEFT JOIN resc resc
 ON reservation.resource_id = resc.resc_id
 WHERE reservation.reservation_id = 1;
+
+
+
+select ename, emp_id from emp;
+
+
+
+
+SELECT e.ename
+FROM emp e
+JOIN reservation r ON e.emp_id = r.emp_id;
+
+
+
+
+SELECT 
+    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable,
+    reservation.reservation_id, reservation.emp_id, reservation.reservation_start,
+    reservation.reservation_end, reservation.reservation_info, reservation.reservation_allDay,
+    emp.ename AS emp_name
+FROM reservation
+LEFT JOIN resc resc ON reservation.resource_id = resc.resc_id
+LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id
+WHERE reservation.reservation_id = 36;
+
+
+SELECT 
+    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable, 
+    emp.ename AS emp_name
+FROM reservation
+LEFT JOIN resc resc
+ON reservation.resource_id = resc.resc_id
+LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id
+WHERE reservation.reservation_id = 43;
+
+
+
+
 
 
 

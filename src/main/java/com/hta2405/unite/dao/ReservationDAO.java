@@ -256,7 +256,29 @@ public class ReservationDAO {
 	        return resource;
 	}
 
+	// 예약 취소
+	public int cancelReservation(String reservationId, String empId) {
+		int result = 0;
+		String sql = """
+				DELETE 
+				FROM reservation 
+				WHERE reservation_id = ? AND emp_id = ?
+			""";
+       
+        try (Connection conn = ds.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);) {
 
+            pstmt.setString(1, reservationId); 
+            pstmt.setString(2, empId);
+            
+            result = pstmt.executeUpdate(); // 삭제 성공 시 1, 실패 시 0
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return result;
+	}
 
 
 

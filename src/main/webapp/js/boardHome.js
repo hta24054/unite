@@ -16,17 +16,9 @@ $(function() {
     // 왼쪽 메뉴 클릭 이벤트 - 리스트형 레이아웃으로 게시글 표시
     $('.boardName2').click(function(e) {
 		
-		$('.boardName2').css({
-			'font-weight':'normal',
-			'color':'#333',
-			'font-size':'14px'
-		});
-		$(this).css({
-			'font-weight':'bold',
-			'color':'#334466',
-			'font-size':'16px'
-		});
-		
+		$('.boardName2,.left a').removeClass('menuActive');
+		$(this).addClass('menuActive');
+		$(this).parent().parent().prev('a').addClass('menuActive');
 		
 		//html 초기화
 		$('.boardContent').html('');

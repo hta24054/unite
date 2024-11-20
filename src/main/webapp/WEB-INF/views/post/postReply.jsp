@@ -246,11 +246,7 @@ $(function(){
 	$('#boardName1').val(boardName1Value);
 	$('#boardName2').val(BoardName2Value);
 	
-	$(".boardName2").css({
-		'font-weight':'normal',
-		'color':'#333',
-		'font-size':'14px'
-	});
+	$(".boardName2,.left a").removeClass('menuActive');
 	
 	//boardName1 select를 바꿀때마다 boardName2가 같이 바뀜
 	$('#boardName1').change(function() {

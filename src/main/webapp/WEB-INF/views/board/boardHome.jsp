@@ -33,12 +33,14 @@
   }
   
   .sidebar .title{
-  	padding: 40px 25px 20px;
+  	padding: 55px 0px 20px
   }
   
   .sidebar h2 {
-    font-size: 2rem;
-    margin: 0px;
+    margin: 0px;;
+  	color: rgb(51, 68, 102);
+  	font-size: 30px;
+    font-weight: bold;
   }
 
   .accordion button {
@@ -77,10 +79,11 @@
 
   /* 오른쪽 게시판 영역 */
   .content {
-    margin-left: 250px;
+    margin-left: 350px;
     width: calc(100% - 200px);
     height: 100%;
     overflow-y: auto;
+    padding: 15px 20px 0px;
   }
 
   .post {
@@ -112,7 +115,7 @@
   	cursor: pointer;
   }
   .boardWrite{
-	  padding: 5px 35px 20px;
+	  padding: 5px 25px 20px;
 	  height: 80px;
   }
   .writeBtn{
@@ -195,6 +198,12 @@
 	 background-color: rgba(0, 0, 0, .05);
 	 cursor: pointer;
   }
+  
+  .menuActive{
+	font-weight: bold;
+	font-size: 23px;
+	color: #334466;
+  }
 </style>
 <script src="${pageContext.request.contextPath}/js/jquery-3.7.1.js"></script>
 <script src="${pageContext.request.contextPath}/js/boardHome.js"></script>
@@ -206,7 +215,7 @@
 	<div class="sidebar">
 	  <section class="title">
 	    <h2>
-	    	<a id="boardHome">게시판</a>
+	    	<a href="#" id="boardHome" style="text-decoration: none;color: rgb(51, 68, 102);">게시판</a>
 	    </h2>
 	  </section>
 	  
@@ -214,28 +223,38 @@
 	    <button class="writeBtn">글쓰기</button>
 	  </section>
 	  
-	  <section class="companyBoard">
-	    <button onclick="togglePanel('all-board')">전사게시판</button>
-	    <div id="all-board" class="panel">
-	      <div class="boardName2">공지사항</div>
-	      <div class="boardName2">주간식단표</div>
-	      <div class="boardName2">FAQ</div>
-	    </div>
-	  </section>
+	  <ul class="list-group" style="list-style-type: disc; padding-left: 20px;">
+        <!-- 전사게시판 메뉴 -->
+        <li class="left" style="border: none;">
+            <a  href="#" onclick="toggleSubMenu('#submenu-doc-draft')">전사게시판</a>
+            <ul class="submenu" id="submenu-doc-draft">
+                <li class="left" style="border: none;">
+                    <a href="#" class="boardName2">공지사항</a>
+                </li>
+                <li class="left" style="border: none;">
+                    <a href="#" class="boardName2">주간식단표</a>
+                </li>
+                <li class="left" style="border: none;">
+                    <a href="#" class="boardName2">FAQ</a>
+                </li>
+            </ul>
+        </li>
+
+		<!-- 일반게시판 메뉴 -->
+		<li class="left" style="border: none;"><a href="#" class="boardName2">일반게시판</a></li>
+
+        <!-- 부서게시판 메뉴 -->
+        <li class="left" style="border: none;">
+            <a href="#" onclick="toggleSubMenu('#submenu-doc-list')">부서게시판</a>
+            <ul class="submenu" id="submenu-doc-list">
+                <li class="left" style="border: none;">
+                    <a href="#" class="boardName2">솔루션영업팀</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
 	  
-	  <section class="generalBoard">
-	    <button onclick="togglePanel('general-board')">일반게시판</button>
-	    <div id="general-board" class="panel">
-	      <div class="boardName2">일반게시판</div>
-	    </div>
-	  </section>
 	  
-	  <section class="departmentBoard">
-	    <button onclick="togglePanel('department-board')">부서게시판</button>
-	    <div id="department-board" class="panel">
-	      <div class="boardName2">솔루션영업팀</div>
-	    </div>
-	  </section>
 	</div>
 
 	<div class="content">
@@ -245,12 +264,6 @@
 	  </div>
 	</div>
 </div>
-<script>
-	function togglePanel(panelId) {
-	  const panel = document.getElementById(panelId);
-	  panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-	}
-</script>
 
 
 </body>

@@ -9,6 +9,22 @@ DROP TABLE emp CASCADE CONSTRAINTS;
 DROP TABLE dept CASCADE CONSTRAINTS;
 
 -- 영훈
+ALTER TABLE POST_FILE DROP CONSTRAINT FK_POST_TO_POST_FILE;
+ALTER TABLE post_file
+  ADD CONSTRAINT FK_post_TO_post_file
+    FOREIGN KEY (post_id)
+    REFERENCES post (post_id) ON DELETE CASCADE;
+  
+ALTER TABLE post_comment DROP CONSTRAINT FK_post_TO_post_comment;
+ALTER TABLE post_comment
+  ADD CONSTRAINT FK_post_TO_post_comment
+    FOREIGN KEY (post_id)
+    REFERENCES post (post_id) ON DELETE CASCADE;
+    
+SELECT constraint_name
+FROM user_constraints
+WHERE table_name = 'POST_FILE'
+  AND constraint_type = 'R';
 
 UPDATE POST
 SET BOARD_ID = 5,

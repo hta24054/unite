@@ -20,5 +20,4 @@ public class ReservationWeekCalenderAction implements Action {
 
 	    return forward;
 	}
-
 }

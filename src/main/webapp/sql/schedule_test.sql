@@ -134,20 +134,59 @@ GROUP BY resc_name;
 
 
 
+SELECT reservation_start, reservation_end
+FROM reservation
+WHERE emp_id = '241001';
 
-SELECT * 
-FROM reservation;
-
-
-
-DELETE FROM reservation
-WHERE reservation_id = 43
-AND emp_id = '241101';
+SELECT resc_type, resc_name
+FROM resc
+WHERE resc_id = 1;
 
 
 
-SELECT * 
-FROM resc;
+SELECT r.reservation_start, r.reservation_end, 
+       rs.resc_type, rs.resc_name
+FROM reservation r
+JOIN resc rs ON r.resource_id = rs.resc_id
+WHERE r.emp_id = '241001' AND rs.resc_id = 1;
+
+/* 나의 예약목록 */
+SELECT reservation.reservation_start, reservation.reservation_end, 
+       rs.resc_type, rs.resc_name
+FROM reservation reservation
+JOIN resc rs 
+ON reservation.resource_id = rs.resc_id
+WHERE reservation.emp_id = '241001' 
+AND reservation.reservation_id = 50;
+
+SELECT reservation.reservation_id
+FROM reservation
+LEFT JOIN resc
+ON reservation.resource_id = resc.resc_id;
+
+
+
+
+SELECT reservation.reservation_id
+				FROM reservation
+				INNER JOIN resc
+				ON reservation.resource_id = resc.resc_id
+				WHERE reservation.reservation_id = 50
+
+SELECT * from reservation;		
+
+				
+SELECT rs.resc_type, rs.resc_name,
+	   reservation.reservation_start, reservation.reservation_end
+FROM reservation reservation
+JOIN resc rs 
+ON reservation.resource_id = rs.resc_id
+WHERE reservation.emp_id = '241001'
+AND reservation.reservation_id = 50	
+				
+				
+
+
 
 
 SELECT 
@@ -167,19 +206,9 @@ LEFT JOIN resc resc
 ON reservation.resource_id = resc.resc_id
 WHERE reservation.reservation_id = 1;
 
-
-
-select ename, emp_id from emp;
-
-
-
-
 SELECT e.ename
 FROM emp e
 JOIN reservation r ON e.emp_id = r.emp_id;
-
-
-
 
 SELECT 
     resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable,
@@ -199,7 +228,7 @@ FROM reservation
 LEFT JOIN resc resc
 ON reservation.resource_id = resc.resc_id
 LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id
-WHERE reservation.reservation_id = 43;
+WHERE reservation.reservation_id = ?;
 
 
 

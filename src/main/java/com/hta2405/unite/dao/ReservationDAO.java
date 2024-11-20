@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -251,8 +253,6 @@ public class ReservationDAO {
 	            e.printStackTrace();
 	            System.out.println("getResourceByReservationId()에러 :" + e);
 	        }
-
-	        System.out.println("자원예약 상세정보 resource " + resource);
 	        return resource;
 	}
 
@@ -275,9 +275,88 @@ public class ReservationDAO {
 
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("cancelReservation()에러 :" + e);
         }
         
         return result;
+	}
+
+	// 자원예약 ID 가져오기
+	public String getReservationId(String reservationId) {
+	    String result = null;
+	    String sql = """
+	        SELECT reservation.reservation_id
+	        FROM reservation
+	        INNER JOIN resc
+	        ON reservation.resource_id = resc.resc_id
+	        WHERE reservation.reservation_id = ?
+	    """;
+
+	    try (Connection conn = ds.getConnection(); 
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setString(1, reservationId);
+
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            if (rs.next()) {
+	                result = rs.getString("reservation_id"); 
+	            }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        System.out.println("getReservationId() 에러: " + e);
+	    }
+
+	    System.out.println("getReservationId 값 " + result);
+	    return result;
+	}
+	
+	// 나의 자원 예약목록
+	public List<Map<String, Object>> getMyReservationList(String empId, String reservationId) {
+	    List<Map<String, Object>> list = new ArrayList<>();
+
+	    String sql  = """
+	            SELECT rs.resc_type, rs.resc_name,
+	    			   reservation.reservation_start, reservation.reservation_end
+	            FROM reservation reservation
+	            JOIN resc rs 
+	            ON reservation.resource_id = rs.resc_id
+	            WHERE reservation.emp_id = ? 
+	            AND reservation.reservation_id = ?
+	    """;
+
+	    try (Connection conn = ds.getConnection();
+	         PreparedStatement pstmt = conn.prepareStatement(sql);) {
+
+	        // empId와 reservationId 파라미터 설정
+	        pstmt.setString(1, empId);
+	        pstmt.setString(2, reservationId);
+
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            while (rs.next()) {
+	                Map<String, Object> map = new HashMap<>();
+	                Reservation reservation = new Reservation();
+	                Resource resource = new Resource();
+
+	                resource.setResourceType(rs.getString("resc_type"));
+	                resource.setResourceName(rs.getString("resc_name"));
+	                reservation.setReservationStart(rs.getTimestamp("reservation_start").toLocalDateTime());
+	                reservation.setReservationEnd(rs.getTimestamp("reservation_end").toLocalDateTime());
+
+	                map.put("reservation", reservation);
+	                map.put("resource", resource);
+
+	                list.add(map);
+	            }
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        System.out.println("getMyReservationList() 오류: " + e);
+	    }
+
+	    System.out.println("나의 자원 예약목록 " + list);
+	    return list;
 	}
 
 

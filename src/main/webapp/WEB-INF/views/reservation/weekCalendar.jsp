@@ -7,7 +7,6 @@
 	<title>자원예약</title> 
 	<jsp:include page="../common/fullcalendar.jsp" />
 	<script src="${pageContext.request.contextPath}/js/reservation.js"></script>
-	
 	<style>
 		.container {
 			max-width: 1900px;
@@ -45,7 +44,7 @@
 					<h3>자원예약</h3>
 					<button class="btn btn-info" data-toggle="modal" data-target="#reservationModal">예약 하기</button>
 					<div>
-						<a href="${pageContext.request.contextPath}/reservation/reservationList">&middot; 나의 예약 목록</a>
+						<a href="${pageContext.request.contextPath}/reservation/myReservationList">&middot; 나의 예약 목록</a>
 					</div>
 				</aside>
 			</div>

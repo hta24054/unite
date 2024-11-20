@@ -370,9 +370,7 @@ $(document).ready(function(){
 				    `);
 				    
 				    $("#allDay").prop("checked", false);
-				    //$("#startAt").val(moment(info.dateStr).format("YYYY-MM-DD HH:mm"));
-                    //$("#endAt").val(moment(info.dateStr).format("YYYY-MM-DD HH:mm"));
-                    $("#endAt").val("");
+				    $("#startAt, #endAt").prop("type", "datetime-local");
 			        $("#description").val("");
 				    $resourceType.val("");
 				    $resourceName.hide().empty().append('<option value="">자원명</option>'); 

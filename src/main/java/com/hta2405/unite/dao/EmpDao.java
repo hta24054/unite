@@ -468,7 +468,7 @@ public class EmpDao {
         String sql = """
                 	SELECT * FROM EMP e JOIN JOB j
                 	ON e.JOB_ID = j.JOB_ID
-                    where ENAME LIKE ?
+                    where ENAME LIKE ? and HIRED = 1
                 	ORDER BY j.JOB_RANK, e.emp_id
                 """;
         try (Connection conn = ds.getConnection();

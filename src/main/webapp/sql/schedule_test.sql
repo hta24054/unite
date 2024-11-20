@@ -159,6 +159,7 @@ ON reservation.resource_id = rs.resc_id
 WHERE reservation.emp_id = '241001' 
 AND reservation.reservation_id = 50;
 
+
 SELECT reservation.reservation_id
 FROM reservation
 LEFT JOIN resc
@@ -167,32 +168,22 @@ ON reservation.resource_id = resc.resc_id;
 
 
 
-SELECT reservation.reservation_id
-				FROM reservation
-				INNER JOIN resc
-				ON reservation.resource_id = resc.resc_id
-				WHERE reservation.reservation_id = 50
-
-				
-SELECT rs.resc_type, rs.resc_name, 
-	   reservation.reservation_start, reservation.reservation_end
-FROM reservation reservation
-JOIN resc rs 
-ON reservation.resource_id = rs.resc_id
-WHERE reservation.emp_id = '241001'
-AND reservation.reservation_id = 50;
-				
-
-
-
-
-
-
 SELECT * from reservation;		
 
 /* 나의 자원 예약목록 + 이름 불러오기 */
 SELECT rs.resc_type, rs.resc_name, (select ename from emp where emp_id  = '241001') ename,
-	   reservation.reservation_start, reservation.reservation_end
+	   reservation.reservation_start, reservation.reservation_end, reservation.reservation_id
+FROM reservation reservation
+JOIN resc rs 
+ON reservation.resource_id = rs.resc_id
+WHERE reservation.emp_id = '241001';
+
+
+
+
+SELECT rs.resc_type, rs.resc_name, (select ename from emp where emp_id  = '241001') ename,
+	   reservation.reservation_start, reservation.reservation_end, 
+	   reservation.reservation_info, reservation.reservation_id
 FROM reservation reservation
 JOIN resc rs 
 ON reservation.resource_id = rs.resc_id
@@ -211,8 +202,17 @@ SELECT
 FROM reservation
 LEFT JOIN resc resc
 ON reservation.resource_id = resc.resc_id
-WHERE reservation.reservation_id = 51 AND reservation.emp_id = '241001';
+WHERE reservation.reservation_id = 8 AND reservation.emp_id = '241001';
 
+
+SELECT  rs.resc_type, rs.resc_name, rs.resc_info,
+	    reservation.reservation_start, reservation.reservation_end, 
+	    reservation.reservation_info, reservation.reservation_id
+FROM reservation reservation
+JOIN resc rs 
+ON reservation.resource_id = rs.resc_id
+WHERE reservation.emp_id = ?
+ORDER BY reservation.reservation_id;
 
 
 SELECT 

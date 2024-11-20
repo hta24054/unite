@@ -27,13 +27,18 @@
     }
 
     .a1 {
-        transition: all 0.3s ease; /* 부드러운 전환 효과 */
+        transition: all 0.3s ease; /* 호버 시 부드러운 전환 효과 */
     }
 
-    .a1:hover,
-    .a1.active {
+    .a1:hover {
         font-size: 1.2em; /* 글자 크기 증가 */
         font-weight: bold; /* 글자 굵게 */
+    }
+
+    .a1.active {
+        transition: none; /* 전환 효과 제거 */
+        font-size: 1.2em; /* 클릭된 상태의 글자 크기 */
+        font-weight: bold; /* 클릭된 상태의 글자 굵게 */
     }
 
     textarea {
@@ -77,21 +82,9 @@
         color: #fff;
     }
 </style>
-<%--필터가 없는 경우 필요  --%>
-<%--<c:if test="${empty id }">
-    <script>
-        location.href = "${pageContext.request.contextPath}/members/login";
-    </script>
-</c:if>--%>
 
-<%--<c:if test="${!empty id }"> --%>
 <nav class="navbar navbar-expand-sm right-block navbar-dark">
     <ul class="navbar-nav">
-        <%--
-            <li class="nav-ite">
-                <a class="nav-link" href="${pageContext.request.contextPath }/#">홈</a>
-            </li>
-         --%>
         <li class="nav-item1">
             <a class="nav-link" href="${pageContext.request.contextPath}/home"><img
                     src="${pageContext.request.contextPath}/image/logo_header.png" style="width:100px;"></a>
@@ -130,20 +123,30 @@
             </c:if>
         </li>
         <li class="nav-item3 user_info">
-            <img src="${pageContext.request.contextPath}/emp/profile-image?UUID=${sessionScope.profileUUID}" style="width:30px;">&nbsp;&nbsp;
-            <%--${.name} --%> <span>${ename}님</span>
+            <img src="${pageContext.request.contextPath}/emp/profile-image?UUID=${sessionScope.profileUUID}"
+                 style="width:30px;">&nbsp;&nbsp;
+            <span>${ename}님</span>
             <a href="${pageContext.request.contextPath}/emp/logout">로그아웃</a>
         </li>
-        <%--<c:if test="${id=='admin' }">
-        Drop down
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">관리자</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="${pageContext.request.contextPath }/members/list">회원정보</a>
-                    <a class="dropdown-item" href="${pageContext.request.contextPath }/boards/list">게시판</a>
-                </div>
-            </li>
-        </c:if>	 --%>
+
     </ul>
 </nav>
-<%--</c:if> --%>
+<script>
+    $(document).ready(function () {
+        const currentPath = window.location.pathname; // 현재 URL 경로 가져오기
+        const contextPath = '${pageContext.request.contextPath}'; // JSP에서 contextPath 가져오기
+
+        // 현재 URL에서 'unite/' 뒤 첫 번째 단어 추출
+        const currentSegment = currentPath.replace(contextPath + '/', '').split('/')[0];
+
+        $('.navbar-nav .nav-link').each(function () {
+            const linkPath = $(this).attr('href'); // 링크의 href 속성 가져오기
+            const linkSegment = linkPath.replace(contextPath + '/', '').split('/')[0];
+
+            // 'unite/' 뒤 첫 번째 경로가 같으면 active 클래스 추가
+            if (currentSegment === linkSegment) {
+                $(this).addClass('active');
+            }
+        });
+    });
+</script>

@@ -5,8 +5,6 @@ $(document).ready(function () {
     $('.sidebar a').each(function () {
         const link = $(this);
         const linkPath = link.attr('href').split('?')[0]; // 링크 경로에서 파라미터 제거
-        console.log(linkPath)
-        console.log("현재 : " + currentPath)
         // 경로만 비교 (contextPath 포함)
         if (linkPath === currentPath) {
             link.addClass('active'); // 현재 링크 활성화

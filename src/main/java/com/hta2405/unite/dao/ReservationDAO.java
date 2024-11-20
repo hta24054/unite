@@ -213,7 +213,7 @@ public class ReservationDAO {
         return array;
 	}
 
-	// 자원예약 상세정보
+	// 자원예약 상세정보 팝업
 	public Resource getResourceByReservationId(String reservationId) {
 		Resource resource = null;
 		
@@ -281,6 +281,7 @@ public class ReservationDAO {
         return result;
 	}
 
+	/*
 	// 자원예약 ID 가져오기
 	public String getReservationId(String reservationId) {
 	    String result = null;
@@ -309,7 +310,7 @@ public class ReservationDAO {
 
 	    System.out.println("getReservationId 값 " + result);
 	    return result;
-	}
+	}*/
 	
 	// 나의 자원 예약목록
 	public List<Map<String, Object>> getMyReservationList(String empId) {
@@ -357,6 +358,6 @@ public class ReservationDAO {
 	    return list;
 	}
 
-
+	// 나의 자원예약 상세보기 팝업
 
 }

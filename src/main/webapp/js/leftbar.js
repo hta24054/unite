@@ -1,4 +1,11 @@
 $(document).ready(function () {
+    adjustSidebarHeight();
+
+    // 리사이즈 이벤트 핸들러
+    $(window).on('resize', function () {
+        adjustSidebarHeight();
+    });
+
     const currentPath = window.location.pathname; // 현재 URL 경로 (파라미터 제외)
     const contextPath = '${pageContext.request.contextPath}'; // contextPath 가져오기
 
@@ -11,6 +18,11 @@ $(document).ready(function () {
         }
     });
 });
+function adjustSidebarHeight() {
+    console.log("높이설정~")
+    const sidebar = $('.sidebar'); // jQuery 객체로 선택
+    sidebar.css('height', $(document).height() + 'px'); // 문서 높이로 동적 설정
+}
 
 // 하위 메뉴 열고 닫기
 function toggleSubMenu(submenuId) {

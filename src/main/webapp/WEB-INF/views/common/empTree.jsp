@@ -64,6 +64,18 @@
         .search-container-inline input:focus {
             border-color: #0066cc;
         }
+
+        .search-container-inline button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        .search-container-inline img {
+            width: 20px;
+            height: 20px;
+        }
     </style>
 </head>
 <body>
@@ -81,6 +93,9 @@
                 직원 목록
                 <div class="search-container-inline">
                     <input type="text" id="searchInput" placeholder="직원 이름 검색">
+                    <button id="searchButton">
+                        <img src="https://img.icons8.com/ios-glyphs/30/000000/search.png" alt="Search Icon">
+                    </button>
                 </div>
             </h5>
             <table class="table table-bordered mt-4" id="tree_table">
@@ -101,22 +116,19 @@
 </div>
 <script>
     $(document).ready(function () {
-        // 검색어 입력 시 실시간 검색 (debounce 적용)
-        let debounceTimeout;
-        $('#searchInput').on('input', function () {
-            const searchQuery = this.value.trim(); // 공백 제거
+        // 검색 버튼 클릭 이벤트
+        $('#searchButton').on('click', function (event) {
+            event.preventDefault(); // 폼 제출 막기
+            const searchQuery = $('#searchInput').val().trim();
+            executeSearch(searchQuery);
+        });
 
-            // 검색어가 비어 있으면 초기 메시지 표시 후 종료
-            if (searchQuery === '') {
-                showInitialMessage(); // 테이블 초기화
-                return;
+        // 검색 입력 필드에서 엔터 키 입력 처리
+        $('#searchInput').on('keypress', function (event) {
+            if (event.which === 13) { // Enter 키 코드
+                const searchQuery = this.value.trim();
+                executeSearch(searchQuery);
             }
-
-            // 기존 요청 취소 후 debounce
-            clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(function () {
-                searchEmployees(searchQuery);
-            }, 300); // 300ms 대기
         });
     });
 
@@ -159,8 +171,8 @@
             loadEmployees(deptId);
         }
     });
-    showInitialMessage();
 
+    // 부서 선택 시 직원 목록 로드
     function loadEmployees(deptId) {
         $.ajax({
             url: '${pageContext.request.contextPath}/emp/empTree',
@@ -172,9 +184,13 @@
         });
     }
 
-    // 검색 입력 필드 이벤트 리스너 추가
-    $('#searchInput').on('input', function () {
-        const searchQuery = this.value;
+    // 검색 실행 함수
+    function executeSearch(searchQuery) {
+        // 검색어가 비어 있으면 초기 메시지 표시 후 종료
+        if (!searchQuery || searchQuery === "") {
+            showInitialMessage();
+            return;
+        }
 
         // 검색어를 백엔드로 전송
         $.ajax({
@@ -182,10 +198,10 @@
             method: 'GET',
             data: {query: searchQuery},
             success: function (data) {
-                updateEmployeeTable(data.empList, data.jobName); // 테이블 업데이트
+                updateEmployeeTable(data.empList, data.jobName);
             }
         });
-    });
+    }
 
     // 직원 테이블 업데이트
     function updateEmployeeTable(empList, jobName) {
@@ -206,17 +222,6 @@
                 tableBody.append(html);
             });
         }
-    }
-    // 검색어 기반 직원 목록 불러오기
-    function searchEmployees(searchQuery) {
-        $.ajax({
-            url: '${pageContext.request.contextPath}/emp/search',
-            method: 'GET',
-            data: {query: searchQuery},
-            success: function (data) {
-                updateEmployeeTable(data.empList, data.jobName);
-            }
-        });
     }
 
     // 초기 메시지 표시 함수

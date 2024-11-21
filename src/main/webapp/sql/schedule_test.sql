@@ -181,6 +181,30 @@ WHERE reservation.emp_id = '241001';
 
 
 
+SELECT 
+    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable, 
+    (select ename from emp where emp_id  = '241001') ename,
+    reservation.reservation_id,
+    reservation.emp_id,
+    reservation.reservation_start,
+    reservation.reservation_end,
+    reservation.reservation_info,
+    reservation.reservation_allDay
+FROM reservation
+LEFT JOIN resc resc
+ON reservation.resource_id = resc.resc_id
+WHERE reservation.reservation_id = 54;
+
+
+
+
+
+
+
+
+
+
+
 SELECT rs.resc_type, rs.resc_name, (select ename from emp where emp_id  = '241001') ename,
 	   reservation.reservation_start, reservation.reservation_end, 
 	   reservation.reservation_info, reservation.reservation_id

@@ -156,7 +156,7 @@ $(document).ready(function(){
 	// 자원 예약 정보 팝업
 	function openInfoModal(event){
 		$.ajax({
-			url: "getReservationInfo",
+			url: "getReservationModal",
 			type: "get",
 	        dataType: "json",
 	        data: { 

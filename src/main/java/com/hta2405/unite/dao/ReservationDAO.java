@@ -212,7 +212,7 @@ public class ReservationDAO {
 	}
 
 	// 자원예약 상세정보 팝업
-	public Resource getResourceByReservationId(String reservationId) {
+	public Resource getReservationModal(String reservationId) {
 		Resource resource = null;
 		
 		String sql = """

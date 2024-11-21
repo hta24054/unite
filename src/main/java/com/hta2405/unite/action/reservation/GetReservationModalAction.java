@@ -12,7 +12,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class GetReservationInfoAction implements Action {
+public class GetReservationModalAction implements Action {
 	
 	@Override
 	public ActionForward execute(HttpServletRequest request, HttpServletResponse response)
@@ -23,7 +23,7 @@ public class GetReservationInfoAction implements Action {
 		ReservationDAO reservationDAO = new ReservationDAO();
 		Resource resource = new Resource();
 
-		resource = reservationDAO.getResourceByReservationId(reservationId);
+		resource = reservationDAO.getReservationModal(reservationId);
 
 		Gson gson = new Gson();
         String json = gson.toJson(resource);

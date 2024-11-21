@@ -27,11 +27,12 @@
 
 #treeContainer {
 	width: 45%;
+	
 }
 
 #employeeTableContainer {
 	width: 55%;
-	margin-right: 0%;
+
 }
 
 .table {
@@ -126,6 +127,7 @@ th, td {
 				source : [ {
 					title : "대표이사",
 					key : "1000",
+					expanded: true,
 					folder : true,
 					children : [ {
 						title : "부사장",

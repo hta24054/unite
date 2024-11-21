@@ -137,11 +137,6 @@ $(document).ready(function(){
 	        	emp_id: $("#emp_id").val(), 
 	        },
 	        success: function (data) {
-				
-				
-				console.log("empName data:", data.empName);  // empNameMap 확인
-            	console.log("empNameList:", data.empNameList);
-            	 
             	const empNameMap = data.empName; 
 				 
 				events = []; 
@@ -153,10 +148,7 @@ $(document).ready(function(){
                     	
                     	let resourceType = data.empNameList[i].resource.resourceType;
                     	let resourceName = data.empNameList[i].resource.resourceName;
-	
-						console.log("resourceType", resourceType);
-						console.log("resourceName", resourceName);
-
+                    	let resourceInfo = data.empNameList[i].resource.resourceInfo;
 
 						events.push({
 	                        id: data.empNameList[i].reservation_id, 
@@ -166,32 +158,35 @@ $(document).ready(function(){
 	                        reservationInfo: data.empNameList[i].reservation_info,
 	                        extendedProps: {
 	                            reservationInfo: data.empNameList[i].reservation_info,
-	                            resourceId: data.empNameList[i].resource.resourceId,
 	                            empId: empId,
 	                            ename: empName,  // 예약자 이름 추가
+	                            resourceId: data.empNameList[i].resource.resourceId,
 	                            resourceType: resourceType,  // resourceType 추가
-	                            resourceName: resourceName  // resourceName 추가
+	                            resourceName: resourceName,  // resourceName 추가
+	                            resourceInfo: resourceInfo
 	                        },
 	                    });
 			        }
 			    }
 			    
 			  	if (data) {
-	                let _html = `<ul>
-					        <li>분류명: ${data.resourceType}</li>
-                        	<li>자원명: ${data.resourceName}</li>`;
-					
-					if (data.resourceInfo) _html += `<li>자원정보: ${data.resourceInfo}</li>`;
-					_html += `
-					        <li>시작시간: ${moment(event.start).format("YYYY-MM-DD HH:mm")}</li>
-					        <li>종료시간: ${event.allDay ? moment(event.start).format("YYYY-MM-DD") + " 00:00" : moment(event.end).format("YYYY-MM-DD HH:mm")}</li>
-					        <li>예약자: ${event.extendedProps.ename}</li>
-					        <li>사용용도: ${event.extendedProps.reservationInfo || ""}</li>
-					    </ul>
-					    <div class="d-flex justify-content-center mt-3">
-						    <button type="button" id="btnCancel" class="btn btn-danger">예약취소</button>
-						</div>
-					`;
+					  let _html = "<ul>" +
+						    "<li>분류명: " + (events[0]?.extendedProps.resourceType) + "</li>" +
+						    "<li>자원명: " + (events[0]?.extendedProps.resourceName) + "</li>" +
+						    "<li>시작시간: " + moment(event.start).format("YYYY-MM-DD HH:mm") + "</li>" +
+						    "<li>종료시간: " + (event.allDay ? moment(event.start).format("YYYY-MM-DD") + " 00:00" : moment(event.end).format("YYYY-MM-DD HH:mm")) + "</li>" +
+						    "<li>예약자: " + (events[0]?.extendedProps.ename) + "</li>" +
+						    "<li>사용용도: " + (event.extendedProps.reservationInfo || "") + "</li>";
+						
+						// 자원정보 존재할 경우
+						if (events[0]?.extendedProps.resourceInfo) {
+						    _html += "<li>자원정보: " + events[0].extendedProps.resourceInfo + "</li>";
+						}
+						
+						_html += "</ul>" +
+						    "<div class='d-flex justify-content-center mt-3'>" +
+						    "<button type='button' id='btnCancel' class='btn btn-danger'>예약취소</button>" +
+						    "</div>";
 	       
 	                $("#reservationDetailModal").find(".modal-body").html(_html);
 	                $("#reservationDetailModal").modal("show");
@@ -204,15 +199,12 @@ $(document).ready(function(){
 	            } else {
 	                alert("예약 정보를 찾을 수 없습니다.");
 	            }
-			    
-
 			},
 			error: function () {
                 alert("예약 정보 팝업 불러오기 실패");
             }
 		});
 	}
-
 
 /*
 	// 자원 예약 정보 팝업

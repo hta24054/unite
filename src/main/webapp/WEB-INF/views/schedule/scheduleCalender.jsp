@@ -6,19 +6,21 @@
 	<jsp:include page="../common/header.jsp" />
 	<title>캘린더 - 일정관리</title> 
 	<jsp:include page="../common/fullcalendar.jsp" />
+	<jsp:include page="schedule_leftbar.jsp"/>
 	<script src="${pageContext.request.contextPath}/js/calendar.js"></script>
-	<style>
-		.container {
-			max-width: 1900px;
+	<style>		
+		.container-xxl > div {
+		    width: 1800px;
+		    margin: 0 auto;
+		    padding-left: 350px;
 		}
 		
-		h3 {
-			margin-bottom: 20px;
-			color: rgb(51, 68, 102);
-			font-size: 30px;
-			font-weight: 600;
+		@media (max-width: 1600px) {
+		    .container-xxl > div  {
+		     	width: 1380px;
+		    }
 		}
-		
+	
 		#calendar a {
 			text-decoration: none;
 			color: #000;
@@ -39,7 +41,7 @@
 		.fc-day-sat a {
 		  color: blue !important;
 		}
-		
+	
 		.color-group {
 			display: flex;
 		}
@@ -66,20 +68,9 @@
 	</style>
 </head>
 <body>
-	<div class="container">
-		<div class="row">
-			<div class="col-sm-2 px-5">
-				<aside>
-					<h3>캘린더</h3>
-					<button class="btn btn-info" data-toggle="modal" data-target="#scheduleModal">일정 등록</button>
-					<div>
-						<a href="${pageContext.request.contextPath}/schedule/scheduleShare">&middot; 공유 일정 등록</a>
-					</div>
-				</aside>
-			</div>
-			<div class="col-sm-10 px-5">
-				<div id="calendar"></div>
-			</div>
+	<div class="container-xxl mx-5">
+		<div>
+			<div id="calendar"></div>
 		</div>
 	</div>
 	

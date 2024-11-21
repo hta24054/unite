@@ -19,7 +19,6 @@ $(document).ready(function () {
     });
 });
 function adjustSidebarHeight() {
-    console.log("높이설정~")
     const sidebar = $('.sidebar'); // jQuery 객체로 선택
     sidebar.css('height', $(document).height() + 'px'); // 문서 높이로 동적 설정
 }

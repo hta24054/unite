@@ -32,9 +32,9 @@ $(document).ready(function() {
 		    success: function(response) {
 		        if (response.success) {
 		            const taskContentElement = $(`.task-content[data-id='${currentProjectId}'][data-memberid='${memberId}']`);
-            taskContentElement.text(newTaskContent);  // 새로 입력된 내용으로 업데이트
-            taskContentElement.data("content", newTaskContent);  // data-content 업데이트
-            taskContentElement.removeClass('clickable');  // 클릭 가능 상태 제거 (수정 후 더 이상 수정 불가)
+		            taskContentElement.text(newTaskContent);  // 새로 입력된 내용으로 업데이트
+		            taskContentElement.data("content", newTaskContent);  // data-content 업데이트
+		            taskContentElement.removeClass('clickable');  // 클릭 가능 상태 제거 (수정 후 더 이상 수정 불가)
 		        } else {
 		            alert("업무 내용 업데이트에 실패했습니다.");
 		        }
@@ -155,7 +155,11 @@ $(document).ready(function() {
 	        }
 	    });
 	});
-	
+	// tr 클릭 시 submitForm 호출
+    $('.clickable-row').on('click', function() {
+        var memberId = $(this).data('member-id'); // data-member-id에서 memberId를 가져옵니다.
+        submitForm(memberId); // submitForm 함수 호출
+    });
 	// 게시물 리스트 업데이트
 	function updatePostList(posts) {
 	    const postListContainer = $("#postTable tbody");

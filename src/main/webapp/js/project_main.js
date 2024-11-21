@@ -114,9 +114,9 @@ function updateBoardList(data) {
             : (viewerNames[0] || '없음');
         
         output += `
-            <tr style="height: 80px;">
+            <tr style="height: 80px;" onclick="goToDetail(${item.projectId})" class="project_main">
                 <td>${item.projectId}</td>
-                <td><a href="${contextPath}/project/detail?projectId=${item.projectId}">${item.projectName}</a></td>
+                <td>${item.projectName}</td>
                 <td>${item.empName}</td>
                 <td>${participants}</td>
                 <td>${viewers}</td>
@@ -146,6 +146,11 @@ function updateBoardList(data) {
     
     output += "</tbody>";
     $('table').append(output);
+}
+
+// tr 클릭 시 상세 페이지로 이동
+function goToDetail(projectId) {
+    window.location.href = `${contextPath}/project/detail?projectId=${projectId}`;
 }
 
 

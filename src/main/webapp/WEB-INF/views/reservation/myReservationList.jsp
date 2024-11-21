@@ -34,8 +34,8 @@
                                 	<th>예약 번호</th>
                                     <th>자원 유형</th>
                                     <th>자원 이름</th>
-                                    <th>예약 시작</th>
-                                    <th>예약 종료</th>
+                                    <th>예약 시작 일시</th>
+                                    <th>예약 종료 일시</th>
                                     <th>사용 용도</th>
                                     <th>자원 정보</th>
                                     <th>예약 취소</th>
@@ -47,8 +47,8 @@
                                     	<td>${item.reservation.reservationId}</td>
                                         <td>${item.resource.resourceType}</td>
                                         <td>${item.resource.resourceName}</td>
-                                        <td>${item.reservation.reservationStart}</td>
-                                        <td>${item.reservation.reservationEnd}</td>
+                                        <td class="start">${item.reservation.reservationStart}</td>
+										<td class="end">${item.reservation.reservationEnd}</td>
                                         <td>${item.reservation.reservationInfo}</td>
                                         <td>${item.resource.resourceInfo}</td>                                        
                                         <td>
@@ -56,7 +56,6 @@
 										        예약 취소
 										    </button>
 										</td>
-                                        
                                     </tr>
                                 </c:forEach>
                             </tbody>
@@ -75,6 +74,10 @@
 	</div>
 	
 	<script>
+		$(".start, .end").each(function () {
+		    $(this).text($(this).text().replace("T", " "));
+		});
+
 	 	// 예약 취소 버튼 클릭 시
 	    $("#btnCancel").off("click").on("click", function (){
 	        const reservationId = $(this).data("reservation-id");

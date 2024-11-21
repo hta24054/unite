@@ -20,12 +20,12 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ProjectModifyAction implements Action {
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String userid = req.getParameter("userid");
+        String userid = req.getParameter("memberId");
         int projectid = (Integer) req.getSession().getAttribute("projectId");
-        int task_num = Integer.parseInt(req.getParameter("num"));
-        System.out.println(userid);
-        System.out.println(projectid);
-        System.out.println(task_num);
+        int task_num = Integer.parseInt(req.getParameter("taskNum"));
+        System.out.println("userid" + userid);
+        System.out.println("projectid" + projectid);
+        System.out.println("task_num" + task_num);
 
         String left = ProjectUtil.getProjectName(projectid);
         req.setAttribute("left", left);

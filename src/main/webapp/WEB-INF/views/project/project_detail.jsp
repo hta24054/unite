@@ -15,6 +15,14 @@
 	    var projectName = "${left}";
 	</script>
 	<script src="${pageContext.request.contextPath }/js/project_detail.js"></script>
+	<script>
+	    function submitForm(memberId) {
+	        // memberId 값을 hidden input에 설정
+	        document.getElementById('memberId').value = memberId;
+	        // 폼을 제출
+	        document.getElementById('postForm').submit();
+	    }
+	</script>
 	<jsp:include page="../common/header.jsp"/>
 	<jsp:include page="project_leftbar.jsp"/>
 	<style>
@@ -104,15 +112,21 @@
 				        </tr>
 				    </thead>
 				    <tbody>
-				        <c:forEach var="project" items="${project2}"> 
-						    <tr>
-								<td><a href="${pageContext.request.contextPath}/projectb/list?memberId=${project.memberId}">${project.taskWriter}</a></td>
-								<td>${project.taskTitle}</td>
-								<td>${project.taskUpdateDate}</td>
-							</tr>
-						</c:forEach> 
+				        <c:forEach var="project" items="${project2}">
+					        <tr>
+					            <td>
+					                <!-- a 태그를 클릭하면 JavaScript로 POST 방식으로 전송 -->
+					                <a href="javascript:void(0);" onclick="submitForm('${project.memberId}')">${project.taskWriter}</a>
+					            </td>
+					            <td>${project.taskTitle}</td>
+					            <td>${project.taskUpdateDate}</td>
+					        </tr>
+					    </c:forEach>
 				    </tbody>
 				</table>
+			    <form id="postForm" action="${pageContext.request.contextPath}/projectb/list" method="POST" style="display:none;">
+				    <input type="hidden" name="memberId" id="memberId">
+				</form>
 			</div>
 			<div class="col-md-4 notification">
 				<h5>알림</h5>

@@ -9,10 +9,17 @@
 	<script src="${pageContext.request.contextPath }/js/project_view.js"></script> 
 	<script>
     	const contextPath = "${pageContext.request.contextPath}";
+    	function submitModifyForm(taskNum, memberId) {
+    	    document.getElementById('hiddenTaskNum').value = taskNum;
+    	    document.getElementById('hiddenMemberId').value = memberId;
+    	    document.getElementById('modifyForm').submit();
+    	}
+
     </script>
 </head>
 <body>
 	<input type="hidden" id="loginid" value="${task.memberId }" name="loginid"><%--view.js에서 사용하기 위해 --%>
+	<input type="hidden" name="num" value="${task.taskNum }" id="comment_board_num">
 	<div class="container">
 	
 		<table class="table">
@@ -47,9 +54,8 @@
 			<tr style="text-align: right; ">
 				<td colspan="2" class="center" style="border-bottom-style: none;">
 					<c:if test="${task.memberId == id || id == 'admin' }">
-					
-						<a href="modify?num=${task.taskNum}&userid=${task.memberId}">
-							<button class="btn btn-info">수정</button>
+						<a href="javascript:void(0);" onclick="submitModifyForm('${task.taskNum}', '${task.memberId}')">
+						    <button class="btn btn-info">수정</button>
 						</a>
 						<%-- href의 주소를 #으로 설정 --%>
 						<a href="#">
@@ -62,6 +68,10 @@
 				</td>
 			</tr>
 		</table>	
+		<form id="modifyForm" action="modify" method="POST" style="display: none;">
+		    <input type="hidden" name="taskNum" id="hiddenTaskNum">
+		    <input type="hidden" name="memberId" id="hiddenMemberId">
+		</form>
 		<div class="modal" id="myModal">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -69,7 +79,6 @@
 						<form name="deleteForm" action="delete" method="post">
 						<%--http://localhost:8088/Board_Ajax/boards/detail?num=22 주소를 보면
 						num을 파라미터로 넘기고 있다. 이 값을 가져와서 ${param.num{를 사용 또는 ${boarddata.board_num --%>
-							<input type="hidden" name="num" value="${task.taskNum }" id="comment_board_num">
 							<div class="form-group">
 								<label for="board_pass">비밀번호</label>
 								<input type="password" class="form-control" placeholder="Enter password" name="board_pass" id="board_pass">

@@ -58,55 +58,10 @@
 		            <th>작성일</th>
 		            <th>수정일</th>
 		            <th>첨부파일</th>
-		            <th></th>
 		        </tr>
 		    </thead>
 		    <tbody id="boardContent">
-		        <c:set var="num" value="${listcount-(page-1)*limit}"/>
-		        <c:forEach var="t" items="${boardlist}" varStatus="status"> 
-				    <tr>
-				        <td>
-				            <c:out value="${num}"/>
-				            <c:set var="num" value="${num - 1}"/>
-				        </td>
-				        <td>
-				            <div>
-				                <c:if test="${t.board_re_lev > 0}"> 
-				                    <c:forEach var="a" begin="0" end="${t.board_re_lev * 2}" step="1">
-				                        &nbsp;
-				                    </c:forEach>
-				                    <img src='${pageContext.request.contextPath}/image/line.gif'>
-				                </c:if>
-				                <a href="detail?num=${num}">
-				                    <c:if test="${t.projectTitle.length() >= 20}">
-				                        <c:out value="${t.projectTitle.substring(0, 20)}..."/>
-				                    </c:if>
-				                    <c:if test="${t.projectTitle.length() < 20}">
-				                        <c:out value="${t.projectTitle}"/>
-				                    </c:if>
-				                </a>[${t.board_cnt}]
-				            </div>
-				        </td>
-				        <td><div>${t.projectContent}</div></td>
-				        <td><div>${t.projectDate}</div></td>
-				        <td><div>${t.projectUpdateDate}</div></td>
-				        <td><div><a href="down?filename=${t.task_file_uuid }${t.task_file_type}&originalFilename=${t.task_file_original}">${t.task_file_original}</a></div></td>
-				        <td>
-			            	<img src="${pageContext.request.contextPath}/image/plus.png" width="20px" onclick="toggleOptions(${status.index})">
-				        </td>
-				    </tr>
-				    <!-- 숨겨진 버튼 행 -->
-				    <tr id="optionsRow-${status.index}" style="display: none;">
-				        <td colspan="7" style="text-align: center;">
-				            <c:if test="${memberId == user}">
-				                <button onclick="editPost(${t.projectId})">수정</button>
-				                <button onclick="deletePost(${t.projectId})">삭제</button>
-				            </c:if>
-				            <button onclick="goToList()">목록</button>
-				            <button onclick="replyPost(${t.projectId})">답변</button>
-				        </td>
-				    </tr>
-				</c:forEach>
+		       
 		    </tbody>
 		</table>
     <jsp:include page="page.jsp"/>

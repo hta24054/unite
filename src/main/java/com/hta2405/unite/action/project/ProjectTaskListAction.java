@@ -25,7 +25,7 @@ public class ProjectTaskListAction implements Action {
 	@Override
 	public ActionForward execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String userid = request.getParameter("memberId");
+		String userid = (String) request.getSession().getAttribute("id");
         int projectid = (Integer) request.getSession().getAttribute("projectId");
         System.out.println("userid : " + userid + "projectid" + projectid);
         

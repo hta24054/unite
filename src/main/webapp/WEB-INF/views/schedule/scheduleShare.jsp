@@ -8,7 +8,13 @@
 	<jsp:include page="../common/fullcalendar.jsp" />
 	<jsp:include page="scheduleShare_leftbar.jsp"/>
 	<script src="${pageContext.request.contextPath}/js/calendar.js"></script>
-	<style>		
+	<style>	
+		@media (max-width: 1600px) {
+		    .container-xl > div {
+			    padding-left: 200px;
+			}
+		}
+			
 		textarea {
 			width: 100%;
 			height: 100px;
@@ -36,7 +42,7 @@
 </head>
 <body>
 	<div class="container-xl">
-		<div style="padding-left: 200px;">
+		<div>
 			<h3 class="mb-5">공유 일정 등록</h3>
 			<div>
 				<input type="hidden" id="schedule_id" name="schedule_id" value="${schedule_id}">

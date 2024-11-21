@@ -212,12 +212,14 @@ public class ReservationDAO {
 	}
 
 	// 자원예약 상세정보 팝업
-	public Resource getReservationModal(String reservationId) {
+	public Resource getReservationModal(String empId, String reservationId) {
 		Resource resource = null;
+		System.out.printf("자원예약 상세정보 empid: %s", empId);
 		
 		String sql = """
 				SELECT 
-				    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable, 
+				    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable,
+				    (select ename from emp where emp_id  = ?) ename, 
 				    reservation.reservation_id,
 				    reservation.emp_id,
 				    reservation.reservation_start,
@@ -233,7 +235,8 @@ public class ReservationDAO {
 		try (Connection conn = ds.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);) {
 
-	            pstmt.setString(1, reservationId);
+				pstmt.setString(1, empId);
+	            pstmt.setString(2, reservationId);
 
 	            try (ResultSet rs = pstmt.executeQuery()) {
 	                if (rs.next()) {
@@ -253,7 +256,64 @@ public class ReservationDAO {
 	}
 	
 	// 자원예약 상세정보 팝업 + 예약자 이름 추가
-	public Map<String, Object> getReservationModalAddEname(String reservationId, String empId) {
+	public List<Map<String, Object>> getReservationModalAddEname(String empId, String reservationId) {
+	    List<Map<String, Object>> resultList = new ArrayList<>();
+	    
+	    String sql = """
+	            SELECT 
+	                resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable, 
+	                (SELECT ename FROM emp WHERE emp_id = ?) AS ename,
+	                reservation.reservation_id,
+	                reservation.emp_id,
+	                reservation.reservation_start,
+	                reservation.reservation_end,
+	                reservation.reservation_info,
+	                reservation.reservation_allDay
+	            FROM reservation
+	            LEFT JOIN resc resc
+	            ON reservation.resource_id = resc.resc_id
+	            WHERE reservation.reservation_id = ?
+	    """;
+	    
+	    try (Connection conn = ds.getConnection();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setString(1, empId);
+	        pstmt.setString(2, reservationId);
+
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            while (rs.next()) {
+	                Map<String, Object> result = new HashMap<>();
+	                Resource resource = new Resource();
+	                
+	                // Resource 객체 생성 및 설정
+	                resource.setResourceId(rs.getLong("resc_id"));
+	                resource.setResourceType(rs.getString("resc_type"));
+	                resource.setResourceName(rs.getString("resc_name"));
+	                resource.setResourceInfo(rs.getString("resc_info"));
+	                resource.setResourceUsable(rs.getInt("resc_usable") == 1);
+	                
+	                // Map에 데이터 추가
+	                result.put("resource", resource);
+	                result.put("ename", rs.getString("ename")); // 이름 추가
+	                
+	                // List에 Map 추가
+	                resultList.add(result);
+	            }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        System.out.println("getReservationModalAddEname() 에러: " + e);
+	    }
+
+	    System.out.println("자원예약 상세정보 팝업 + 예약자 이름 추가: " + resultList);
+	    return resultList;
+	}
+
+	
+	
+	/*
+	public Map<String, Object> getReservationModalAddEname(String empId, String reservationId) {
 		Map<String, Object> result = new HashMap<>();
 	    Resource resource = null;
 		
@@ -294,12 +354,12 @@ public class ReservationDAO {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("getResourceByReservationId()에러 :" + e);
+            System.out.println("getReservationModalAddEname()에러 :" + e);
         }
 	
 		System.out.println("자원예약 상세정보 팝업 + 예약자 이름 추가 :" + result);
         return result;
-	}
+	}*/
 	
 
 	// 예약 취소

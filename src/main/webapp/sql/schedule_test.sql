@@ -180,7 +180,7 @@ WHERE reservation.emp_id = '241001';
 
 
 
-
+/* 자원 예약 정보 팝업 + 이름 추가 */
 SELECT 
     resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable, 
     (select ename from emp where emp_id  = '241001') ename,
@@ -193,12 +193,24 @@ SELECT
 FROM reservation
 LEFT JOIN resc resc
 ON reservation.resource_id = resc.resc_id
-WHERE reservation.reservation_id = 54;
+WHERE reservation.reservation_id = 1;
 
 
+select * from reservation;
 
-
-
+SELECT 
+    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable,
+    (select ename from emp where emp_id  = '241001') ename, 
+    reservation.reservation_id,
+    reservation.emp_id,
+    reservation.reservation_start,
+    reservation.reservation_end,
+    reservation.reservation_info,
+    reservation.reservation_allDay
+FROM reservation
+LEFT JOIN resc resc
+ON reservation.resource_id = resc.resc_id
+WHERE reservation.reservation_id = 1
 
 
 
@@ -260,25 +272,9 @@ SELECT e.ename
 FROM emp e
 JOIN reservation r ON e.emp_id = r.emp_id;
 
-SELECT 
-    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable,
-    reservation.reservation_id, reservation.emp_id, reservation.reservation_start,
-    reservation.reservation_end, reservation.reservation_info, reservation.reservation_allDay,
-    emp.ename AS emp_name
-FROM reservation
-LEFT JOIN resc resc ON reservation.resource_id = resc.resc_id
-LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id
-WHERE reservation.reservation_id = 36;
 
 
-SELECT 
-    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable, 
-    emp.ename AS emp_name
-FROM reservation
-LEFT JOIN resc resc
-ON reservation.resource_id = resc.resc_id
-LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id
-WHERE reservation.reservation_id = ?;
+
 
 
 

@@ -1,7 +1,6 @@
 package com.hta2405.unite.controller;
 
 import com.hta2405.unite.action.reservation.CancelReservationAction;
-import com.hta2405.unite.action.reservation.GetMyReservationDetailAction;
 import com.hta2405.unite.action.reservation.GetMyReservationListAction;
 import com.hta2405.unite.action.reservation.GetReservationInfoAction;
 import com.hta2405.unite.action.reservation.GetReservationListAction;
@@ -27,8 +26,6 @@ public class ReservationFrontController extends AbstractFrontController {
 		actionMap.put("/getReservationList", GetReservationListAction::new);
 		actionMap.put("/getReservationInfo", GetReservationInfoAction::new);
 		actionMap.put("/cancelReservation", CancelReservationAction::new);
-		
 		actionMap.put("/myReservationList", GetMyReservationListAction::new);
-		
 	}
 }

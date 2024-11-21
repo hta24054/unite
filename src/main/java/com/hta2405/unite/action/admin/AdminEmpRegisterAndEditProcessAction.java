@@ -24,9 +24,10 @@ import java.util.UUID;
 public class AdminEmpRegisterAndEditProcessAction implements Action {
     private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("profile.upload.directory");
     private final EmpDao empDao = new EmpDao();
-
+    
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    	System.out.println(UPLOAD_DIRECTORY);
         String empId = req.getParameter("empId");
         Emp existEmp = empDao.getEmpById(empId);
         boolean newRegister = existEmp == null;

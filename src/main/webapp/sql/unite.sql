@@ -1,3 +1,80 @@
+alter table DOC_VACATION modify(VACATION_FILE_TYPE varchar2(100))
+--게시판 제약조건 수정
+ALTER TABLE board MODIFY dept_id null;
+ALTER TABLE board MODIFY dept_id default NULL;
+select * from task where project_id = 7;
+select * from emp;
+select * from task_comment;
+ALTER TABLE NOTICE ADD NOTICE_SUBJECT VARCHAR(150)  NOT NULL;
+delete from post;
+delete from post_file;
+--컬럼 사이즈 및 타입 수정
+ALTER TABLE POST MODIFY post_content CLOB;
+ALTER TABLE POST MODIFY POST_WRITER VARCHAR2(15);
+update
+--게시판 데이터 임시
+INSERT ALL
+INTO BOARD(board_name1, board_name2) VALUES ('전사게시판', '공지사항')
+INTO BOARD(board_name1, board_name2) VALUES ('전사게시판', '주간식단표')
+INTO BOARD(board_name1, board_name2) VALUES ('전사게시판', 'FAQ')
+INTO BOARD(board_name1, board_name2) VALUES ('일반게시판', '일반게시판')
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '경영기획본부', 1100)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '재무관리팀', 1110)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '인사관리팀', 1120)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', 'SI사업본부', 1200)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '신용평가팀', 1210)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '금융SI팀', 1220)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '비금융SI팀', 1230)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', 'SM팀', 1240)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '영업본부	', 1300)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '솔루션영업팀', 1310)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', 'SI영업팀', 1320)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', 'SM영업팀', 1330)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', 'R&B본부', 1400)
+INTO BOARD(board_name1, board_name2, dept_id) VALUES ('부서게시판', '연구개발팀', 1410)
+SELECT *
+FROM DUAL;
+
+select * from post;
+
+ALTER TABLE POST ADD (new_post_content CLOB NOT NULL);
+UPDATE POST SET new_post_content = post_content;
+ALTER TABLE POST DROP COLUMN post_content;
+ALTER TABLE POST RENAME COLUMN new_post_content TO post_content;
+
+
+
+select post.*, board.*, nvl(cnt,0) as cnt
+					from post left outer join (select post_id, count(*) as cnt
+											from post_comment
+											group by post_id) pc
+						on post.post_id = pc.post_id
+					join board
+						on board.board_id = post.board_id
+					order by post_re_ref desc, post_re_seq asc
+
+
+select * from post;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 select * from board;
 select * from task where emp_id = '241103'
 SELECT t.*, e.ename FROM task t join emp e on t.emp_id = e.emp_id WHERE t.project_id = 7 AND t.emp_id = '241103' and t.task_id = 130
@@ -904,48 +981,54 @@ COMMENT ON COLUMN task.task_file_uuid IS '과제파일UUID';
 
 COMMENT ON COLUMN task.task_file_type IS '과제파일MIME';
 
-CREATE TABLE task_commnet
+drop table task_comment;
+CREATE TABLE task_comment
 (
-  task_commnet_id          NUMBER        NOT NULL,
+  task_comment_id          NUMBER        NOT NULL,
   task_comment_writer      VARCHAR2(10)  NOT NULL,
-  task_id                  NUMBER        NOT NULL,
-  task_commnet_ref         NUMBER       ,
-  task_commnet_content     VARCHAR2(300) NOT NULL,
-  task_commnet_date        DATE          NOT NULL,
-  task_commnet_update_date DATE         ,
+  task_id                  NUMBER     references task(task_id) on delete cascade  NOT NULL,
+  task_comment_content     VARCHAR2(300) NOT NULL,
+  task_comment_date        DATE          NOT NULL,
   task_comment_re_ref      NUMBER        NOT NULL,
   task_comment_re_lev      NUMBER        NOT NULL,
   task_comment_re_seq      NUMBER        NOT NULL,
-  CONSTRAINT PK_task_commnet PRIMARY KEY (task_commnet_id)
+  CONSTRAINT PK_task_comment PRIMARY KEY (task_comment_id)
 );
+select * from task;
+select * from task_comment
+select task_comment_id from task_comment where task_comment_content = 'ab'
+select * from task_comment;
 
-CREATE SEQUENCE SEQ_task_commnet
+
+drop sequence seq_task_comment
+
+CREATE SEQUENCE SEQ_task_comment
 START WITH 1
 INCREMENT BY 1;
 
 
 
-COMMENT ON TABLE task_commnet IS '과제댓글';
+COMMENT ON TABLE task_comment IS '과제댓글';
 
-COMMENT ON COLUMN task_commnet.task_commnet_id IS '댓글id';
+COMMENT ON COLUMN task_comment.task_comment_id IS '댓글id';
 
-COMMENT ON COLUMN task_commnet.task_comment_writer IS '과제댓글작성자';
+COMMENT ON COLUMN task_comment.task_comment_writer IS '과제댓글작성자';
 
-COMMENT ON COLUMN task_commnet.task_id IS '과제id';
+COMMENT ON COLUMN task_comment.task_id IS '과제id';
 
-COMMENT ON COLUMN task_commnet.task_commnet_ref IS '부모댓글id';
+COMMENT ON COLUMN task_comment.task_comment_ref IS '부모댓글id';
 
-COMMENT ON COLUMN task_commnet.task_commnet_content IS '댓글내용';
+COMMENT ON COLUMN task_comment.task_comment_content IS '댓글내용';
 
-COMMENT ON COLUMN task_commnet.task_commnet_date IS '최초등록일자';
+COMMENT ON COLUMN task_comment.task_comment_date IS '최초등록일자';
 
-COMMENT ON COLUMN task_commnet.task_commnet_update_date IS '최종변경일자';
+COMMENT ON COLUMN task_comment.task_comment_update_date IS '최종변경일자';
 
-COMMENT ON COLUMN task_commnet.task_comment_re_ref IS '부모댓글';
+COMMENT ON COLUMN task_comment.task_comment_re_ref IS '부모댓글';
 
-COMMENT ON COLUMN task_commnet.task_comment_re_lev IS '답댓글레벨';
+COMMENT ON COLUMN task_comment.task_comment_re_lev IS '답댓글레벨';
 
-COMMENT ON COLUMN task_commnet.task_comment_re_seq IS '댓글순서';
+COMMENT ON COLUMN task_comment.task_comment_re_seq IS '댓글순서';
 
 ALTER TABLE attend
   ADD CONSTRAINT FK_emp_TO_attend
@@ -1305,14 +1388,100 @@ BEGIN
   FROM DUAL;
 END;
 
-CREATE OR REPLACE TRIGGER SEQ_TRG_task_commnet
-BEFORE INSERT ON task_commnet
+
+UPDATE POST SET POST_WRITER = EMP_ID;
+ALTER TABLE POST DROP COLUMN EMP_ID;
+ALTER TABLE post
+  ADD CONSTRAINT FK_emp_TO_post
+    FOREIGN KEY (post_writer)
+    REFERENCES emp (emp_id);
+
+
+
+select * from task_comment;
+-------------------------------------------------------------------------------
+CREATE OR REPLACE TRIGGER SEQ_TRG_task_comment
+BEFORE INSERT ON task_comment
 REFERENCING NEW AS NEW FOR EACH ROW
 BEGIN
-  SELECT SEQ_task_commnet.NEXTVAL
-  INTO :NEW.task_commnet_id
+  SELECT SEQ_task_comment.NEXTVAL
+  INTO :NEW.task_comment_id
   FROM DUAL;
 END;
+
+DROP TRIGGER SEQ_TRG_task_comment
+
+CREATE OR REPLACE TRIGGER SEQ_TRG_task_comment
+BEFORE INSERT ON task_comment
+REFERENCING NEW AS NEW FOR EACH ROW
+BEGIN
+  -- task_comment_id와 task_comment_re_seq가 동일하게 설정되도록
+  SELECT SEQ_task_comment.NEXTVAL
+  INTO :NEW.task_comment_id
+  FROM DUAL;
+
+  -- task_comment_re_seq도 동일한 값으로 설정
+  :NEW.task_comment_re_seq := :NEW.task_comment_id;
+END;
+select * from task_comment;
+
+
+CREATE OR REPLACE TRIGGER SEQ_TRG_task_comment
+BEFORE INSERT ON task_comment
+REFERENCING NEW AS NEW FOR EACH ROW
+BEGIN
+  -- task_comment_id는 시퀀스를 이용해 자동으로 생성
+  SELECT SEQ_task_comment.NEXTVAL
+  INTO :NEW.task_comment_id
+  FROM DUAL;
+
+  -- 부모 댓글이 있는 경우 대댓글 처리
+  IF :NEW.task_comment_re_ref IS NOT NULL THEN
+    -- 대댓글의 경우 부모 댓글의 task_comment_re_seq를 가져와서 +1을 함
+    DECLARE
+      v_parent_seq INT;
+    BEGIN
+      -- 부모 댓글의 task_comment_re_seq를 가져옴
+      SELECT task_comment_re_seq
+      INTO v_parent_seq
+      FROM task_comment
+      WHERE task_comment_id = :NEW.task_comment_re_ref;
+
+      -- 대댓글의 task_comment_re_seq를 부모 댓글의 task_comment_re_seq + 1로 설정
+      :NEW.task_comment_re_seq := v_parent_seq + 1;
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+        -- 부모 댓글이 없는 경우
+        :NEW.task_comment_re_seq := :NEW.task_comment_id; -- 기본적으로 task_comment_id 값으로 설정
+    END;
+  ELSE
+    -- 댓글인 경우 task_comment_re_seq는 task_comment_id와 동일하게 설정
+    :NEW.task_comment_re_seq := :NEW.task_comment_id;
+  END IF;
+
+  -- task_comment_re_ref는 댓글의 원본글 번호로 설정 (대댓글인 경우 부모 댓글의 task_comment_id)
+  IF :NEW.task_comment_re_ref IS NOT NULL THEN
+    :NEW.task_comment_re_ref := :NEW.task_comment_re_ref;
+  ELSE
+    :NEW.task_comment_re_ref := :NEW.task_comment_id; -- 댓글인 경우 자신을 참조
+  END IF;
+
+END;
+
+select * from task_comment;
+
+-------------------------------------------------------------------------------0
+INSERT INTO task_commnet (task_comment_writer, task_id, task_commnet_content, task_commnet_date, task_comment_re_lev, task_comment_re_seq)
+VALUES ('241103', 213, '댓글 내용', SYSDATE, 0, 1);
+SELECT * 
+FROM USER_TRIGGERS
+WHERE TRIGGER_NAME = 'SEQ_TRG_TASK_COMMNET';
+
+SELECT *
+FROM USER_ERRORS
+WHERE NAME = 'SEQ_TRG_TASK_COMMNET'
+AND TYPE = 'TRIGGER';
+
 
 --JOB 데이터 입력
 INSERT ALL

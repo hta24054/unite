@@ -77,8 +77,8 @@ public class ProjectDoCreateAction implements Action {
 
         // 포워드 설정
         ActionForward forward = new ActionForward();
-        forward.setPath("/WEB-INF/views/project/project_main.jsp");
-        forward.setRedirect(false);
+        forward.setPath(req.getContextPath() + "/project/main");
+        forward.setRedirect(true);
         return forward;
     }
 

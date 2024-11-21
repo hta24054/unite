@@ -1,6 +1,5 @@
 package com.hta2405.unite.dao;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -762,7 +761,7 @@ public class ProjectbDao {
 
 	public int commentsUpdate(ProjectTask comment) {
 		int result = 0;
-		String sql = "update task_comment set task_comment_content = ? where task_comment_id = ?";
+		String sql = "update task_comment set task_comment_content = ?, task_comment_date = sysdate where task_comment_id = ?";
 		
 		try (Connection con = ds.getConnection();
 				PreparedStatement pstmt = con.prepareStatement(sql);){

@@ -14,6 +14,7 @@ import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ProjectDAO;
 import com.hta2405.unite.dto.ProjectDetail;
 import com.hta2405.unite.dto.ProjectInfo;
+import com.hta2405.unite.util.ConfigUtil;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -28,6 +29,7 @@ import jakarta.servlet.http.Part;
 	    maxRequestSize = 1024 * 1024 * 50    // 50MB
 	)
 	public class ProjectMainAction implements Action {
+		private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("projectdone.upload.directory");
 	    @Override
 	    public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 	        String action = req.getParameter("action");
@@ -67,12 +69,16 @@ import jakarta.servlet.http.Part;
 
 	    private List<ProjectInfo> processFileUpload(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
 	        List<ProjectInfo> uploadedFiles = new ArrayList<>();
-	        ServletContext sc = req.getServletContext();
-	        String uploadDir = sc.getRealPath("projectupload");
+	        String uploadDir = UPLOAD_DIRECTORY;
+	        
+	        // 디렉토리가 없으면 생성
 	        File uploadDirectory = new File(uploadDir);
-
 	        if (!uploadDirectory.exists()) {
-	            uploadDirectory.mkdir();
+	            boolean dirCreated = uploadDirectory.mkdirs(); // 디렉토리 생성
+	            if (!dirCreated) {
+	                sendErrorResponse(resp, "디렉토리 생성에 실패했습니다.");
+	                return uploadedFiles;
+	            }
 	        }
 
 	        Collection<Part> fileParts = req.getParts();

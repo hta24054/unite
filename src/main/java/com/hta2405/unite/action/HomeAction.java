@@ -1,5 +1,9 @@
 package com.hta2405.unite.action;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -11,18 +15,17 @@ import com.hta2405.unite.dao.NoticeDao;
 import com.hta2405.unite.dto.Emp;
 import com.hta2405.unite.dto.Job;
 import com.hta2405.unite.util.LocalDateTimeAdapter;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-
 public class HomeAction implements Action {
 	private final NoticeDao noticeDao = new NoticeDao();
+
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    	
     	String userid = (String) req.getSession().getAttribute("id");
 
 		req.setAttribute("noticeList", noticeDao.getAliveNotice());
@@ -42,16 +45,22 @@ public class HomeAction implements Action {
 	        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter()).create();
 	        BoardDao board = new BoardDao();
 	        ArrayList<Object> list = board.getBoardListAll();
-
+	        
+	        
 	        JsonObject object = new JsonObject();
 	        JsonElement jeEmpMap = gson.toJsonTree(new EmpDao().getIdToENameMap());
+	        JsonElement jeEmpUUIDMap = gson.toJsonTree(new EmpDao().getIdToENameUUIDMap());
+	        
+	        
 	        JsonElement je1 = gson.toJsonTree(list.get(0));
 	        JsonElement je2 = gson.toJsonTree(list.get(1));
-
+	        
 	        object.add("boards", je1);
 	        object.add("posts", je2);
 	        object.add("name", jeEmpMap);
-
+	        object.add("emp", jeEmpUUIDMap);
+	        System.out.println(jeEmpUUIDMap);
+	        
 	        resp.setContentType("application/json;charset=utf-8");
 	        resp.getWriter().print(object);
 	        return null;  // 여기서는 JSP로 포워드하지 않고 JSON만 반환

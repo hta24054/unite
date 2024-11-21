@@ -10,6 +10,7 @@
     <jsp:include page="common/header.jsp"/>
     <script>
         const contextPath = "${pageContext.request.contextPath}";
+        const imgUUID = "${sessionScope.profileUUID}";
         const notices = [
             <c:forEach items="${noticeList}" var="notice">
             {

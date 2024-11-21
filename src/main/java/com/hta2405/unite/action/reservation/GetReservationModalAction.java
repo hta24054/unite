@@ -1,10 +1,16 @@
 package com.hta2405.unite.action.reservation;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
+import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dao.ReservationDAO;
 import com.hta2405.unite.dto.Resource;
 
@@ -18,20 +24,23 @@ public class GetReservationModalAction implements Action {
 	public ActionForward execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
-		String empId = request.getParameter("emp_id"); // 예약자
 		String reservationId = request.getParameter("reservation_id"); //자원테이블 예약 ID
 
 		ReservationDAO reservationDAO = new ReservationDAO();
-		Resource resource = new Resource();
+		List<Map<String, Object>> reservationAddEnameList = reservationDAO.getReservationModal(reservationId);
 
-		resource = reservationDAO.getReservationModal(empId, reservationId);
+        Gson gson = new Gson();
+        JsonElement mapToJsonList = gson.toJsonTree(reservationAddEnameList);
+        
+        HashMap<String, String> empNameMap = new EmpDao().getIdToENameMap();
+        JsonElement mapToJson = gson.toJsonTree(empNameMap);
+        
+        JsonObject arr = new JsonObject();
+        arr.add("empName", mapToJson);
+        arr.add("empNameList", mapToJsonList);
 
-		Gson gson = new Gson();
-        String json = gson.toJson(resource);
-
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(json);
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().print(arr);
 
         return null;
 	}

@@ -35,18 +35,19 @@ public class ProjectModifyProcessAction implements Action {
         boolean result = task_modify.modify(modify);
         
         System.out.println(result);
-        if(!result) {
-			System.out.println("게시판 수정 실패");
-			forward.setRedirect(false);
-			req.setAttribute("message", "게시판 수정 오류입니다");
-			forward.setPath("/WEB-INF/views/error/error.jsp");
-		}else {
-			//수정 성공의 경우
-			System.out.println("게시판 수정 완료");
-			forward.setRedirect(true);
-			//수정한 글 내용을 보여주기 위해 글 내용 보기 페이지로 이동하기 위해 경로설정
-			forward.setPath("comm?num="+ modify.getTaskNum()+"&userid="+modify.getMemberId());
-		}
+        if (!result) {
+            System.out.println("게시판 수정 실패");
+            forward.setRedirect(false);
+            req.setAttribute("message", "게시판 수정 오류입니다");
+            forward.setPath("/WEB-INF/views/error/error.jsp");
+        } else {
+            System.out.println("게시판 수정 완료");
+
+            // 리다이렉트할 때 쿼리 스트링 없이 이동
+            forward.setRedirect(true);
+            forward.setPath("comm");
+        }
+
         return forward;
     }
 

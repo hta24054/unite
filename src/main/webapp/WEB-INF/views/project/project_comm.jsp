@@ -14,7 +14,12 @@
     	    document.getElementById('hiddenMemberId').value = memberId;
     	    document.getElementById('modifyForm').submit();
     	}
-
+	    function submitForm(memberId) {
+	        // memberId 값을 hidden input에 설정
+	        document.getElementById('memberId').value = memberId;
+	        // 폼을 제출
+	        document.getElementById('postForm').submit();
+	    }
     </script>
 </head>
 <body>
@@ -62,12 +67,15 @@
 							<button class="btn btn-danger" data-toggle="modal" data-target="#myModal">삭제</button>
 						</a>
 					</c:if>
-					<a href="list?memberId=${task.memberId }">
-						<button class="btn btn-warning">목록</button>
+					<a href="javascript:void(0);" onclick="submitForm('${task.memberId}')">
+					    <button class="btn btn-warning">목록</button>
 					</a>
 				</td>
 			</tr>
 		</table>	
+		<form id="postForm" action="${pageContext.request.contextPath}/projectb/list" method="POST" style="display:none;">
+		    <input type="hidden" name="memberId" id="memberId">
+		</form>
 		<form id="modifyForm" action="modify" method="POST" style="display: none;">
 		    <input type="hidden" name="taskNum" id="hiddenTaskNum">
 		    <input type="hidden" name="memberId" id="hiddenMemberId">

@@ -28,12 +28,11 @@
 		.rows{text-align: right; margin-right: 130px;}
 		.gray{color: gray;}
 		th:nth-child(1), td:nth-child(1) {width: 60px;}
-		th:nth-child(2), td:nth-child(2) {width: 180px;}
+		th:nth-child(2), td:nth-child(2) {width: 160px;}
 		<%--th:nth-child(3), td:nth-child(3) {width: 360px;}--%>
-		th:nth-child(4), td:nth-child(4) {width: 160px;}
-		th:nth-child(5), td:nth-child(5) {width: 160px;}
+		th:nth-child(4), td:nth-child(4) {width: 175px;}
+		th:nth-child(5), td:nth-child(5) {width: 175px;}
 		th:nth-child(6), td:nth-child(6) {width: 100px;}
-		th:nth-child(7), td:nth-child(7) {width: 10px;}
     </style>
     
 </head>

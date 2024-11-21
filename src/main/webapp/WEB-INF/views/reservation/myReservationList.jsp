@@ -4,45 +4,58 @@
 <html>
 <head>
 	<jsp:include page="../common/header.jsp" />
-	<title>나의 예약목록</title> 
+	<title>나의 예약목록</title>
+	<style>
+		.container {
+			max-width: 1900px;
+		}
+	</style> 
 </head>
 <body>
 	<div class="container">
 		<div class="row">
-			<div class="col-sm-3 px-5">
+			<div class="col-sm-2 px-5">
 				<aside>
 					<h3>자원예약</h3>
 					<p>나의 예약 목록</p>
 				</aside>
 			</div>
 			
-			<div class="col-sm-9 px-5">
+			<div class="col-sm-10 px-5">
                 <h3>나의 예약 목록</h3>
                 
                 <!-- 예약 목록이 있을 때 -->
                 <c:if test="${not empty reservationList}">
                     <form action="${pageContext.request.contextPath}/reservation/myReservationList" method="get">
-                        <table>
+                    	<input type="hidden" id="emp_id" name="emp_id" value="${id}">
+                        <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
+                                	<th>예약 번호</th>
                                     <th>자원 유형</th>
                                     <th>자원 이름</th>
-                                    <th>예약 시작</th>
-                                    <th>예약 종료</th>
-                                    <th>상세보기/취소</th>
+                                    <th>예약 시작 일시</th>
+                                    <th>예약 종료 일시</th>
+                                    <th>사용 용도</th>
+                                    <th>자원 정보</th>
+                                    <th>예약 취소</th>
                                 </tr>
                             </thead> 
                             <tbody>
                                 <c:forEach var="item" items="${reservationList}">
                                     <tr>
+                                    	<td>${item.reservation.reservationId}</td>
                                         <td>${item.resource.resourceType}</td>
                                         <td>${item.resource.resourceName}</td>
-                                        <td>${item.reservation.reservationStart}</td>
-                                        <td>${item.reservation.reservationEnd}</td>
-                                        <td class="d-flex">
-                                        	<button type="button" class="btn btn-info" data-toggle="modal" data-target="#reservationDetailModal">상세 보기</button>
-                                            <button type="button" class="btn btn-secondary">예약 취소</button>
-                                        </td>
+                                        <td class="start">${item.reservation.reservationStart}</td>
+										<td class="end">${item.reservation.reservationEnd}</td>
+                                        <td>${item.reservation.reservationInfo}</td>
+                                        <td>${item.resource.resourceInfo}</td>                                        
+                                        <td>
+										    <button type="button" id="btnCancel" class="btn btn-secondary" data-reservation-id="${item.reservation.reservationId}">
+										        예약 취소
+										    </button>
+										</td>
                                     </tr>
                                 </c:forEach>
                             </tbody>
@@ -60,22 +73,38 @@
 		</div>
 	</div>
 	
-	<!-- 예약 상세보기 모달 -->
-	<div class="modal" id="reservationDetailModal">
-	    <div class="modal-dialog">
-	        <div class="modal-content">
-	            <div class="modal-header">
-	                <h5 class="modal-title">예약 정보</h5>
-	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	                    <span aria-hidden="true">&times;</span>
-	                </button>
-	            </div>
-	            <div class="modal-body">
-					
-	            </div>
-	        </div>
-	    </div>
-	</div>
-	<!-- 예약 상세보기 모달 -->
+	<script>
+		$(".start, .end").each(function () {
+		    $(this).text($(this).text().replace("T", " "));
+		});
+
+	 	// 예약 취소 버튼 클릭 시
+	    $("#btnCancel").off("click").on("click", function (){
+	        const reservationId = $(this).data("reservation-id");
+	   
+	        if (confirm("정말 취소하시겠습니까?")) {
+	            $.ajax({
+	            	url: "${pageContext.request.contextPath}/reservation/cancelReservation",
+					type: "post",
+			        dataType: "json",
+	                data: { 
+	                    reservation_id: reservationId, 
+	                    emp_id: $("#emp_id").val()
+	                },
+	                success: function (data) {
+	                    if (data === 1) {
+	                        alert("예약이 취소되었습니다.");
+	                        location.reload();
+	                    } else {
+	                        alert("예약 취소 실패");
+	                    }
+	                },
+	                error: function (error) {
+	                    alert("예약 취소 오류");
+	                }
+	            });
+	        }
+	    });
+	</script>
 </body>
 </html>

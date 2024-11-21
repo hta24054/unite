@@ -1,9 +1,9 @@
 package com.hta2405.unite.controller;
 
 import com.hta2405.unite.action.reservation.CancelReservationAction;
-import com.hta2405.unite.action.reservation.GetMyReservationDetailAction;
 import com.hta2405.unite.action.reservation.GetMyReservationListAction;
-import com.hta2405.unite.action.reservation.GetReservationInfoAction;
+import com.hta2405.unite.action.reservation.GetReservationModalAction;
+import com.hta2405.unite.action.reservation.GetReservationModalAddEnameAction;
 import com.hta2405.unite.action.reservation.GetReservationListAction;
 import com.hta2405.unite.action.reservation.GetResourceIdAction;
 import com.hta2405.unite.action.reservation.GetResourceListAction;
@@ -25,10 +25,11 @@ public class ReservationFrontController extends AbstractFrontController {
 		actionMap.put("/getResourceId", GetResourceIdAction::new);
 		actionMap.put("/resourceReservation", ResourceReservationAction::new);
 		actionMap.put("/getReservationList", GetReservationListAction::new);
-		actionMap.put("/getReservationInfo", GetReservationInfoAction::new);
-		actionMap.put("/cancelReservation", CancelReservationAction::new);
 		
+		actionMap.put("/getReservationModal", GetReservationModalAction::new);
+		actionMap.put("/getReservationModalAddEname", GetReservationModalAddEnameAction::new);
+		
+		actionMap.put("/cancelReservation", CancelReservationAction::new);
 		actionMap.put("/myReservationList", GetMyReservationListAction::new);
-		actionMap.put("/myReservationDetail", GetMyReservationDetailAction::new);
 	}
 }

@@ -12,18 +12,19 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class GetReservationInfoAction implements Action {
+public class GetReservationModalAction implements Action {
 	
 	@Override
 	public ActionForward execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
-		String reservationId = request.getParameter("reservation_id"); //자원테이블 예약 ID
 		
+		String empId = request.getParameter("emp_id"); // 예약자
+		String reservationId = request.getParameter("reservation_id"); //자원테이블 예약 ID
+
 		ReservationDAO reservationDAO = new ReservationDAO();
 		Resource resource = new Resource();
 
-		resource = reservationDAO.getResourceByReservationId(reservationId);
+		resource = reservationDAO.getReservationModal(empId, reservationId);
 
 		Gson gson = new Gson();
         String json = gson.toJson(resource);

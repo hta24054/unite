@@ -159,6 +159,7 @@ ON reservation.resource_id = rs.resc_id
 WHERE reservation.emp_id = '241001' 
 AND reservation.reservation_id = 50;
 
+
 SELECT reservation.reservation_id
 FROM reservation
 LEFT JOIN resc
@@ -167,32 +168,132 @@ ON reservation.resource_id = resc.resc_id;
 
 
 
-SELECT reservation.reservation_id
-				FROM reservation
-				INNER JOIN resc
-				ON reservation.resource_id = resc.resc_id
-				WHERE reservation.reservation_id = 50
-
-				
-SELECT rs.resc_type, rs.resc_name, 
-	   reservation.reservation_start, reservation.reservation_end
-FROM reservation reservation
-JOIN resc rs 
-ON reservation.resource_id = rs.resc_id
-WHERE reservation.emp_id = '241001'
-AND reservation.reservation_id = 50;
-				
-
-
-
-
-
-
 SELECT * from reservation;		
 
 /* 나의 자원 예약목록 + 이름 불러오기 */
 SELECT rs.resc_type, rs.resc_name, (select ename from emp where emp_id  = '241001') ename,
-	   reservation.reservation_start, reservation.reservation_end
+	   reservation.reservation_start, reservation.reservation_end, reservation.reservation_id
+FROM reservation reservation
+JOIN resc rs 
+ON reservation.resource_id = rs.resc_id
+WHERE reservation.emp_id = '241001';
+
+
+
+/* 자원 예약 정보 팝업 + 이름 추가 */
+SELECT 
+    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable, 
+    (select ename from emp where emp_id  = '241001') ename,
+    reservation.reservation_id,
+    reservation.emp_id,
+    reservation.reservation_start,
+    reservation.reservation_end,
+    reservation.reservation_info,
+    reservation.reservation_allDay
+FROM reservation
+LEFT JOIN resc resc
+ON reservation.resource_id = resc.resc_id
+WHERE reservation.reservation_id = 5;
+
+
+
+
+SELECT 
+    resc.resc_id, 
+    resc.resc_type, 
+    resc.resc_name, 
+    resc.resc_info, 
+    resc.resc_usable, 
+    CASE 
+        WHEN reservation.emp_id = '241001' THEN (SELECT ename FROM emp WHERE emp_id = reservation.emp_id) 
+        ELSE NULL 
+    END AS ename,
+    reservation.reservation_id,
+    reservation.emp_id,
+    reservation.reservation_start,
+    reservation.reservation_end,
+    reservation.reservation_info,
+    reservation.reservation_allDay
+FROM reservation
+LEFT JOIN resc resc ON reservation.resource_id = resc.resc_id
+WHERE reservation.reservation_id = 5;
+
+
+
+
+select * from reservation;
+
+TRUNCATE TABLE reservation;
+
+
+SELECT 
+	                resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable, 
+	                reservation.reservation_id,
+	                reservation.emp_id,
+	                reservation.reservation_start,
+	                reservation.reservation_end,
+	                reservation.reservation_info,
+	                reservation.reservation_allDay
+	            FROM reservation
+	            LEFT JOIN resc resc
+	            ON reservation.resource_id = resc.resc_id
+	            WHERE reservation.reservation_id = ?
+	            
+	            
+	   SELECT 
+	                resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable, 
+	                reservation.reservation_id,
+	                reservation.emp_id,
+	                reservation.reservation_start,
+	                reservation.reservation_end,
+	                reservation.reservation_info,
+	                reservation.reservation_allDay
+	            FROM reservation
+	            LEFT JOIN resc resc
+	            ON reservation.resource_id = resc.resc_id
+	            WHERE reservation.reservation_id = 13       
+	            
+	            
+
+SELECT 
+    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable,
+    (select ename from emp where emp_id  = '241001') ename, 
+    reservation.reservation_id,
+    reservation.emp_id,
+    reservation.reservation_start,
+    reservation.reservation_end,
+    reservation.reservation_info,
+    reservation.reservation_allDay
+FROM reservation
+LEFT JOIN resc resc
+ON reservation.resource_id = resc.resc_id
+WHERE reservation.reservation_id = 1
+
+
+
+SELECT 
+    emp.ename, 
+    reservation.emp_id
+FROM reservation
+LEFT JOIN resc resc
+    ON reservation.resource_id = resc.resc_id
+LEFT JOIN emp emp
+    ON reservation.emp_id = emp.emp_id
+WHERE emp.emp_id = '241001';
+
+
+
+
+
+
+
+
+
+
+
+SELECT rs.resc_type, rs.resc_name, (select ename from emp where emp_id  = '241001') ename,
+	   reservation.reservation_start, reservation.reservation_end, 
+	   reservation.reservation_info, reservation.reservation_id
 FROM reservation reservation
 JOIN resc rs 
 ON reservation.resource_id = rs.resc_id
@@ -211,8 +312,17 @@ SELECT
 FROM reservation
 LEFT JOIN resc resc
 ON reservation.resource_id = resc.resc_id
-WHERE reservation.reservation_id = 51 AND reservation.emp_id = '241001';
+WHERE reservation.reservation_id = 8 AND reservation.emp_id = '241001';
 
+
+SELECT  rs.resc_type, rs.resc_name, rs.resc_info,
+	    reservation.reservation_start, reservation.reservation_end, 
+	    reservation.reservation_info, reservation.reservation_id
+FROM reservation reservation
+JOIN resc rs 
+ON reservation.resource_id = rs.resc_id
+WHERE reservation.emp_id = ?
+ORDER BY reservation.reservation_id;
 
 
 SELECT 
@@ -236,25 +346,9 @@ SELECT e.ename
 FROM emp e
 JOIN reservation r ON e.emp_id = r.emp_id;
 
-SELECT 
-    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable,
-    reservation.reservation_id, reservation.emp_id, reservation.reservation_start,
-    reservation.reservation_end, reservation.reservation_info, reservation.reservation_allDay,
-    emp.ename AS emp_name
-FROM reservation
-LEFT JOIN resc resc ON reservation.resource_id = resc.resc_id
-LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id
-WHERE reservation.reservation_id = 36;
 
 
-SELECT 
-    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable, 
-    emp.ename AS emp_name
-FROM reservation
-LEFT JOIN resc resc
-ON reservation.resource_id = resc.resc_id
-LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id
-WHERE reservation.reservation_id = ?;
+
 
 
 

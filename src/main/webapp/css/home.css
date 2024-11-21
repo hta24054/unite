@@ -61,8 +61,8 @@
     /*#horizon {width: 180px !important;}*/
     /*게시판*/
     .styled-table{text-align: left;}
-	.styled-table tr td:nth-child(1) {width: 70%; }
-	.styled-table tr td:nth-child(2) {width: 30%; }
+	.styled-table tr td:nth-child(1) {width: 63%; }
+	.styled-table tr td:nth-child(2) {width: 37%; padding: 5px;}
 	/*전자문서*/
 	#waiting_table{text-align: center;}
 	#waiting_table tr th:nth-child(1) { width: 14% !important; }

@@ -125,6 +125,76 @@ $(document).ready(function(){
 		});
 	}
 	
+	/*
+	// 자원 예약 정보 팝업 + 이름추가
+	function openInfoModal(event){
+		$.ajax({
+			url: "getReservationModalAddEname",
+			type: "get",
+	        dataType: "json",
+	        data: { 
+	            reservation_id: event.id,
+	        	emp_id: $("#emp_id").val(),
+	        },
+	        success: function (data) {
+				
+				events = []; 
+				if (data != null && data.length > 0) {
+					
+			        for (let i = 0; i < data.length; i++) {
+						events.push({
+							id: data[i].reservation_id, 
+							allDay: data[i].reservation_allDay,
+			                start: data[i].reservation_start, 
+			                end: data[i].reservation_end,
+			                reservationInfo: data[i].reservation_info,
+		                 	extendedProps: {
+						        reservationInfo: data[i].reservation_info,
+						        resourceId: data[i].resource_id,
+						        empId: data[i].emp_id,
+						        
+						    },
+			            });
+			        }
+			    }
+			    
+			    if (data) {
+	                let _html = `<ul>
+					        <li>분류명: ${data.resourceType}</li>
+                        	<li>자원명: ${data.resourceName}</li>`;
+					
+					if (data.resourceInfo) _html += `<li>자원정보: ${data.resourceInfo}</li>`;
+					_html += `
+					        <li>시작시간: ${moment(event.start).format("YYYY-MM-DD HH:mm")}</li>
+					        <li>종료시간: ${event.allDay ? moment(event.start).format("YYYY-MM-DD") + " 00:00" : moment(event.end).format("YYYY-MM-DD HH:mm")}</li>
+					        <li>예약자: ${event.extendedProps.ename}</li>
+					        <li>사용용도: ${event.extendedProps.reservationInfo || ""}</li>
+					    </ul>
+					    <div class="d-flex justify-content-center mt-3">
+						    <button type="button" id="btnCancel" class="btn btn-danger">예약취소</button>
+						</div>
+					`;
+	       
+	                $("#reservationDetailModal").find(".modal-body").html(_html);
+	                $("#reservationDetailModal").modal("show");
+	                
+	                // 예약 취소
+	                $("#btnCancel").off("click").on("click", function() {
+				        
+				        calncelReservation(event); 
+				     });
+				     
+	            } else {
+	                alert("예약 정보를 찾을 수 없습니다.");
+	            }
+			},
+			error: function () {
+                alert("예약 정보 팝업 불러오기 실패");
+            }
+		});
+	}*/
+	
+
 	// 자원 예약 정보 팝업
 	function openInfoModal(event){
 		$.ajax({

@@ -137,67 +137,74 @@ $(document).ready(function(){
 	        	emp_id: $("#emp_id").val(), 
 	        },
 	        success: function (data) {
-
+				
+				
+				console.log("empName data:", data.empName);  // empNameMap 확인
+            	console.log("empNameList:", data.empNameList);
+            	 
+            	const empNameMap = data.empName; 
+				 
 				events = []; 
-				if (data != null && data.length > 0) {
-			        for (let i = 0; i < data.length; i++) {
+				if (data != null && data.empNameList.length > 0) {
+			        for (let i = 0; i < data.empNameList.length; i++) {
+						
+						let empId = data.empNameList[i].empId;  
+                    	let empName = empNameMap[empId] || "예약자";  
+                    	
+                    	let resourceType = data.empNameList[i].resource.resourceType;
+                    	let resourceName = data.empNameList[i].resource.resourceName;
+	
+						console.log("resourceType", resourceType);
+						console.log("resourceName", resourceName);
+
+
 						events.push({
-							id: data[i].reservation_id, 
-							allDay: data[i].reservation_allDay,
-			                start: data[i].reservation_start, 
-			                end: data[i].reservation_end,
-			                reservationInfo: data[i].reservation_info,
-		                 	extendedProps: {
-						        reservationInfo: data[i].reservation_info,
-						        resourceId: data[i].resource_id,
-						        empId: data[i].emp_id
-						    },
-			            });
+	                        id: data.empNameList[i].reservation_id, 
+	                        allDay: data.empNameList[i].reservation_allDay,
+	                        start: data.empNameList[i].reservation_start, 
+	                        end: data.empNameList[i].reservation_end,
+	                        reservationInfo: data.empNameList[i].reservation_info,
+	                        extendedProps: {
+	                            reservationInfo: data.empNameList[i].reservation_info,
+	                            resourceId: data.empNameList[i].resource.resourceId,
+	                            empId: empId,
+	                            ename: empName,  // 예약자 이름 추가
+	                            resourceType: resourceType,  // resourceType 추가
+	                            resourceName: resourceName  // resourceName 추가
+	                        },
+	                    });
 			        }
 			    }
 			    
-			    if (data) {
-				    let _html = `<ul>`;
-				    
-				    data.forEach(function(item) {
-				        const ename = item.ename;
-				        const resourceType = item.resource.resourceType;
-				        const resourceName = item.resource.resourceName;
-				        const resourceInfo = item.resource.resourceInfo || ""; 
-				       
-				        _html += `
-				        	<li>종일: ${event.allDay ? "종일" : false}</li>
-				            <li>분류명: ${resourceType}</li>
-				            <li>자원명: ${resourceName}</li>
-				        `;
-				
-				        if (resourceInfo) _html += `<li>자원정보: ${resourceInfo}</li>`;
-				
-				        _html += `
-				            <li>시작시간: ${moment(event.start).format("YYYY-MM-DD HH:mm")}</li>
-				            <li>종료시간: ${event.allDay ? moment(event.start).format("YYYY-MM-DD") + " 00:00" : moment(event.end).format("YYYY-MM-DD HH:mm")}</li>
-				            <li>예약자: ${ename}</li>
-				            <li>사용용도: ${event.extendedProps.reservationInfo || ""}</li>
-				        `;
-				    });
-				
-				    _html += `
-				        </ul>
-				        <div class="d-flex justify-content-center mt-3">
-				            <button type="button" id="btnCancel" class="btn btn-danger">예약취소</button>
-				        </div>
-				    `;
-				    
-				    $("#reservationDetailModal").find(".modal-body").html(_html);
-				    $("#reservationDetailModal").modal("show");
-				
-				    $("#btnCancel").off("click").on("click", function() {
+			  	if (data) {
+	                let _html = `<ul>
+					        <li>분류명: ${data.resourceType}</li>
+                        	<li>자원명: ${data.resourceName}</li>`;
+					
+					if (data.resourceInfo) _html += `<li>자원정보: ${data.resourceInfo}</li>`;
+					_html += `
+					        <li>시작시간: ${moment(event.start).format("YYYY-MM-DD HH:mm")}</li>
+					        <li>종료시간: ${event.allDay ? moment(event.start).format("YYYY-MM-DD") + " 00:00" : moment(event.end).format("YYYY-MM-DD HH:mm")}</li>
+					        <li>예약자: ${event.extendedProps.ename}</li>
+					        <li>사용용도: ${event.extendedProps.reservationInfo || ""}</li>
+					    </ul>
+					    <div class="d-flex justify-content-center mt-3">
+						    <button type="button" id="btnCancel" class="btn btn-danger">예약취소</button>
+						</div>
+					`;
+	       
+	                $("#reservationDetailModal").find(".modal-body").html(_html);
+	                $("#reservationDetailModal").modal("show");
+	                
+	                // 예약 취소
+	                $("#btnCancel").off("click").on("click", function() {
 				        cancelReservation(event); 
-				    });
-				
-				} else {
-				    alert("예약 정보를 찾을 수 없습니다.");
-				}
+				     });
+				     
+	            } else {
+	                alert("예약 정보를 찾을 수 없습니다.");
+	            }
+			    
 
 			},
 			error: function () {
@@ -205,8 +212,7 @@ $(document).ready(function(){
             }
 		});
 	}
-	
-	
+
 
 /*
 	// 자원 예약 정보 팝업

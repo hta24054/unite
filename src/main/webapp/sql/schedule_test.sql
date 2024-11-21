@@ -193,10 +193,67 @@ SELECT
 FROM reservation
 LEFT JOIN resc resc
 ON reservation.resource_id = resc.resc_id
-WHERE reservation.reservation_id = 1;
+WHERE reservation.reservation_id = 5;
+
+
+
+
+SELECT 
+    resc.resc_id, 
+    resc.resc_type, 
+    resc.resc_name, 
+    resc.resc_info, 
+    resc.resc_usable, 
+    CASE 
+        WHEN reservation.emp_id = '241001' THEN (SELECT ename FROM emp WHERE emp_id = reservation.emp_id) 
+        ELSE NULL 
+    END AS ename,
+    reservation.reservation_id,
+    reservation.emp_id,
+    reservation.reservation_start,
+    reservation.reservation_end,
+    reservation.reservation_info,
+    reservation.reservation_allDay
+FROM reservation
+LEFT JOIN resc resc ON reservation.resource_id = resc.resc_id
+WHERE reservation.reservation_id = 5;
+
+
 
 
 select * from reservation;
+
+TRUNCATE TABLE reservation;
+
+
+SELECT 
+	                resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable, 
+	                reservation.reservation_id,
+	                reservation.emp_id,
+	                reservation.reservation_start,
+	                reservation.reservation_end,
+	                reservation.reservation_info,
+	                reservation.reservation_allDay
+	            FROM reservation
+	            LEFT JOIN resc resc
+	            ON reservation.resource_id = resc.resc_id
+	            WHERE reservation.reservation_id = ?
+	            
+	            
+	   SELECT 
+	                resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable, 
+	                reservation.reservation_id,
+	                reservation.emp_id,
+	                reservation.reservation_start,
+	                reservation.reservation_end,
+	                reservation.reservation_info,
+	                reservation.reservation_allDay
+	            FROM reservation
+	            LEFT JOIN resc resc
+	            ON reservation.resource_id = resc.resc_id
+	            WHERE reservation.reservation_id = 13       
+	            
+	            
 
 SELECT 
     resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable,
@@ -211,6 +268,23 @@ FROM reservation
 LEFT JOIN resc resc
 ON reservation.resource_id = resc.resc_id
 WHERE reservation.reservation_id = 1
+
+
+
+SELECT 
+    emp.ename, 
+    reservation.emp_id
+FROM reservation
+LEFT JOIN resc resc
+    ON reservation.resource_id = resc.resc_id
+LEFT JOIN emp emp
+    ON reservation.emp_id = emp.emp_id
+WHERE emp.emp_id = '241001';
+
+
+
+
+
 
 
 

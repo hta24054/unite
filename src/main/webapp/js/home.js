@@ -80,7 +80,7 @@ $(document).ready(function () {
 	                    let row = `
 	                        <tr>
 	                            <td><a href="board/home?name=${board.boardName2}">[${board.boardName2}]</a>&nbsp;${post.postSubject}</td> 
-	                            <td><img src="${contextPath}/image/profile_navy.png" class="user_img" alt="프로필" style="width:20px; height: 20px;">&nbsp;${data.name[post.postWriter]}<br>${formattedDate}</td>
+	                            <td><img src="${contextPath}/emp/profile-image?UUID=${data.emp[post.postWriter]}"style="width:30px; height: 30px;">&nbsp;${data.name[post.postWriter]}<br>${formattedDate}</td>
 	                        </tr>`;
 	                    tableBody.append(row);  // 생성된 row를 테이블에 추가
 	                } else {

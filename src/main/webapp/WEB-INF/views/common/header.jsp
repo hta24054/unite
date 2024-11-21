@@ -9,6 +9,11 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/leftbar.css">
 <script src="${pageContext.request.contextPath}/js/leftbar.js"></script>
 <style>
+    @import url('https://cdn.rawgit.com/moonspam/NanumSquare/master/nanumsquare.css');
+    body {
+        font-family: 'nanumsquare', sans-serif;
+    }
+
     body > nav.navbar {
         justify-content: center;
     }

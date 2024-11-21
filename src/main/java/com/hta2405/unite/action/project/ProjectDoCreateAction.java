@@ -1,16 +1,13 @@
 package com.hta2405.unite.action.project;
 
-import java.io.IOException;
-import java.util.List;
-
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ProjectDAO;
-import com.hta2405.unite.dto.ProjectInfo;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
 
 //프로젝트 생성하기 위한 Action. 
 public class ProjectDoCreateAction implements Action {
@@ -77,9 +74,8 @@ public class ProjectDoCreateAction implements Action {
 
         // 포워드 설정
         ActionForward forward = new ActionForward();
-        forward.setPath("/WEB-INF/views/project/project_main.jsp");
-        forward.setRedirect(false);
+        forward.setPath(req.getContextPath() + "/project/main");
+        forward.setRedirect(true);
         return forward;
     }
-
 }

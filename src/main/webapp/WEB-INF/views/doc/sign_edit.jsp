@@ -47,7 +47,8 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="employeeModalLabel">조직도 및 직원 검색</h5>
+                <h5 class="modal-title" id="employeeModalLabel">
+                    조직도 및 직원 검색<span style="color: red">(더블클릭으로 추가)</span></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>

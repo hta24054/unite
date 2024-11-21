@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <html>
 <head>
@@ -163,7 +164,17 @@
                     <td><select name="deptId" data-name="부서" required>
                         <option value="" selected>선택</option>
                         <c:forEach var="dept" items="${deptList}">
-                            <option value="${dept.deptId}">${dept.deptName}</option>
+                            <c:choose>
+                                <c:when test="${fn:endsWith(dept.deptName, '본부')}">
+                                    <option value="${dept.deptId}">&nbsp;&nbsp;${dept.deptName}</option>
+                                </c:when>
+                                <c:when test="${fn:endsWith(dept.deptName, '팀')}">
+                                    <option value="${dept.deptId}">&nbsp;&nbsp;&nbsp;&nbsp;${dept.deptName}</option>
+                                </c:when>
+                                <c:otherwise>
+                                    <option value="${dept.deptId}">${dept.deptName}</option>
+                                </c:otherwise>
+                            </c:choose>
                         </c:forEach>
                     </select></td>
                     <td><input type="text" name="empId" placeholder="사번" data-name="사번" maxlength="6" required></td>
@@ -280,7 +291,7 @@
             </table>
         </div>
         <div class="button-container">
-            <button type="button" id="submit-button" class="btn btn-success">수정완료</button>
+            <button type="button" id="submit-button" class="btn btn-success">등록</button>
             <button type="button" onclick="history.back()" class="btn btn-secondary">뒤로가기</button>
         </div>
     </form>

@@ -20,9 +20,7 @@
 <script>
     $(document).ready(function () {
         function loadWaitingDocs() {
-            $(document).ready(function () {
                 const contextPath = '${pageContext.request.contextPath}';
-
                 $.ajax({
                     url: `\${contextPath}/doc/waiting-process`,
                     method: 'GET',
@@ -60,9 +58,7 @@
                         console.error('Error fetching waiting list:', error);
                     }
                 });
-            });
         }
-
         // 날짜 포맷 함수
         function formatDate(isoDate) {
             const date = new Date(isoDate);

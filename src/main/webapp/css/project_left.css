@@ -15,3 +15,7 @@ select.form-control{
 .rows{text-align: right; margin-right: 130px;}
 
 .gray{color: gray;}
+
+.project_main:hover {
+    background-color: lightgray; /* 회색 배경 */
+}

@@ -4,7 +4,6 @@ $(document).ready(function(){
 	let isAllDayChk, startDate, endDate;
 	const $resourceType = $("#resourceType");
 	const $resourceName = $("#resourceName");
-	//let resourceId;
 	
 	getResourceList();
 	
@@ -229,8 +228,8 @@ $(document).ready(function(){
 		        success: function(data) {
 					if (data === 1) {
 	                    alert("예약이 취소되었습니다.");
-	                    getReservationList(); // 예약 목록 갱신
-	                    $("#reservationDetailModal").modal("hide"); // 모달 닫기
+	                    getReservationList(); 
+	                    $("#reservationDetailModal").modal("hide"); 
 	                } else {
 	                    alert("예약 취소 실패");
 	                }
@@ -282,7 +281,6 @@ $(document).ready(function(){
 	    const $end = $("#endAt");
 	    const $resourceType = $("#resourceType");
 	    const $resourceName = $("#resourceName");
-	    const $reservationInfo = $("#reservationInfo");
 	
 	    if ($start.val().trim() === "") {
 	        alert("시작 날짜/시간을 선택하세요");

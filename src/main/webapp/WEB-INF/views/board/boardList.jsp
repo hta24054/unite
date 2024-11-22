@@ -29,6 +29,49 @@
     margin-bottom: 2px;
  }
  
+ .search-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.serach-main{
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.search-category {
+  padding: 5px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 3px;
+}
+
+.search-input {
+  padding: 5px;
+  flex: 1;
+  border: none;
+  border-radius: 3px;
+}
+
+.search-button {
+  background-color: #f1f1f1;
+  border: none;
+  padding: 5px 10px;
+  margin-left: 10px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.search-button i {
+  font-size: 16px;
+}
+ 
+.search-category, .search-input, .search-button{
+  outline: none;
+}
+
+ 
  body > div > table > thead > tr:nth-child(2) > th:nth-child(1){width:8%}
  body > div > table > thead > tr:nth-child(2) > th:nth-child(2){width:50%}
  body > div > table > thead > tr:nth-child(2) > th:nth-child(3){width:14%}
@@ -107,7 +150,7 @@
 		    </table>
 		    
 		    <div class="center-block">
-		    	<ul class="pagination justify-content-center">
+		    	<ul class="pagination justify-content-center" style="margin-top: 45px;">
 		    		<li class="page-item">
 		    			<a class="page-link ${page <= 1 ? 'gray' : ''}"
 		    				data-page="${page > 1 ? 1 : ''}">
@@ -141,11 +184,24 @@
 		    	</ul>
 		    </div>
 		    
+		    <div class="search-container">
+				<div class="serach-main">
+					<select id="search-category" class="search-category">
+						<option value="title">제목</option>
+							<option value="content">내용</option>
+							<option value="author">작성자</option>
+					</select>
+					<input type="text" id="search-input" class="search-input" placeholder="검색">
+					<button id="search-button" class="search-button">
+							<i class="fa fa-search"></i> 검색
+					</button>
+				</div>
+			</div>
 		  </c:if><%-- <c:if test="${listcount > 0}"> end --%>
 		  
 		  <%-- 게시글이 없는 경우 --%>
 		  <c:if test="${listCount==0}">
-		  	<h3 style = "text-align: center">등록된 글이 없습니다.</h3>
+		  	<h3 style = "margin-top:40px;">등록된 게시글이 없습니다.</h3>
 		  </c:if>
 		  
 	</div> <%-- <div class="container"> end --%>

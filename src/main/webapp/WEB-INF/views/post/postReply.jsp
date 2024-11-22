@@ -64,10 +64,12 @@
 	}
 	.form-group-btn{
 		display: flex;
-	    justify-content: center;
+	    justify-content: flex-end;
 	    height: 70px;
 	    align-items: center;
 	    margin-top: 10px;
+	    gap: 20px;
+	    margin-right: 3px;
 	}
 	.registerBtn{
 		width: 100px;
@@ -194,7 +196,7 @@ function submitForm() {
 
     $.ajax({
         method: 'POST',
-        url: '../board/post/add',
+        url: '../board/post/replyProcess',
         dataType: 'json',
         data: formData,
         processData: false,
@@ -202,7 +204,8 @@ function submitForm() {
         cache: false,
         success: function (data) {
             alert(data.message);
-            location.href = "home";
+            
+            loadBoardPost($('#boardName2').val(), data.url);
         },
         error: function (xhr, desc, err) {
             alert('에러가 발생하였습니다.');
@@ -292,6 +295,11 @@ document.addEventListener("drop", function (event) {
  		<div class="form-group2">
  			<input type="hidden" name="postId" value='${postData.postId}'/>
  			<input type="hidden" id="boardName2Hidden" name="boardName2Hidden" value='${boardMap[postData.boardId]}'/>
+	 		<input type="hidden" name="board_re_ref" value="${postData.postReRef}">
+	 		<input type="hidden" name="board_re_lev" value="${postData.postReLev}">
+	 		<input type="hidden" name="board_re_seq" value="${postData.postReSeq}">
+	 		<input type="hidden" id="board_re" data-ref="${postData.postReRef}" data-lev="${postData.postReLev}"
+	 											data-seq="${postData.postReSeq}">
  			<label for="target_board" class="labelName">
  				To.
  				<select id="boardName1" name="boardName1" class="boardName" disabled>

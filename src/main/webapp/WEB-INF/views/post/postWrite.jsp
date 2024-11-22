@@ -97,7 +97,6 @@ var filesArr = [];
 var maxFileCnt = 5;   // 첨부파일 최대 개수
 
 var companyBulletinBoards = ['공지사항', '주간식단표', 'FAQ'];
-var DepartmentBoards = ['솔루션영업팀'];
 
 /* 첨부파일 추가 */
 function addFiles(files) {
@@ -212,7 +211,7 @@ function submitForm() {
 }
 
 //boardName2를 boardName1에 맞게 바꿈
-function changeBoardName2(boardName1Value){
+function changeBoardName2(boardName1Value, departmentBoards){
 	let $boardName2 = $('#boardName2'); // 두 번째 select 초기화
     $boardName2.empty();
 
@@ -223,14 +222,31 @@ function changeBoardName2(boardName1Value){
 	}else if (boardName1Value === '일반게시판') {
 		$boardName2.append('<option value="' + '일반게시판' + '">' + '일반게시판' + '</option>');
 	}else if (boardName1Value === '부서게시판') {
-		$.each(DepartmentBoards, function(index, DepartmentBoard) {
-			$boardName2.append('<option value="' + DepartmentBoard + '">' + DepartmentBoard + '</option>');
+		$.each(departmentBoards, function(index, departmentBoard) {
+			$boardName2.append('<option value="' + departmentBoard + '">' + departmentBoard + '</option>');
 		});
 	}
 	
 }
 
+function filterBoardName2() {
+    const excludedValues = ['공지사항', '주간식단표', 'FAQ', '일반게시판']; // 제외할 값들
+    let filteredArray = []; // 결과를 담을 배열
+
+    $('.boardName2').each(function() {
+        const value = $(this).text(); // .boardName2 요소의 값 가져오기
+        if (!excludedValues.includes(value)) { // 제외할 값에 포함되지 않으면 추가
+            filteredArray.push(value);
+        }
+    });
+
+    return filteredArray; // 필터링된 배열 반환
+}
+
 $(function(){
+	var departmentBoards = filterBoardName2();
+	console.log(departmentBoards);
+	
 	var BoardName2Value = $('.boardName2').filter(function() {
 	    return $(this).css('font-weight') === 'bold' || $(this).css('font-weight') === '700';
 	}).text();
@@ -244,13 +260,13 @@ $(function(){
 	// BoardName2Text의 따라 BoardName1 구하기
 	if (companyBulletinBoards.includes(BoardName2Value)) {
 		boardName1Value='전사게시판';
-	} else if(DepartmentBoards.includes(BoardName2Value)){
+	} else if(departmentBoards.includes(BoardName2Value)){
 		boardName1Value='부서게시판';
 	} else{
 		boardName1Value='일반게시판';
 	}
 	
-	changeBoardName2(boardName1Value);//boardName2를 boardName1에 맞게 바꿈
+	changeBoardName2(boardName1Value, departmentBoards);//boardName2를 boardName1에 맞게 바꿈
 	$('#boardName1').val(boardName1Value);
 	$('#boardName2').val(BoardName2Value);
 	
@@ -260,7 +276,7 @@ $(function(){
 	$('#boardName1').change(function() {
 		let boardName1Value = $(this).val();  // 첫 번째 select의 선택 값
 		
-		changeBoardName2(boardName1Value);//boardName2를 boardName1에 맞게 바꿈
+		changeBoardName2(boardName1Value, departmentBoards);//boardName2를 boardName1에 맞게 바꿈
 	});
 	
 	

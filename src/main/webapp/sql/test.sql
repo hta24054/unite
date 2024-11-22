@@ -9,6 +9,16 @@ DROP TABLE emp CASCADE CONSTRAINTS;
 DROP TABLE dept CASCADE CONSTRAINTS;
 
 -- 영훈
+
+select count(*) 
+from (select post_subject, post_content, post_writer
+		from post
+		where ? = ?)
+where board_id = 1;
+
+
+
+    
 ALTER TABLE POST_FILE DROP CONSTRAINT FK_POST_TO_POST_FILE;
 ALTER TABLE post_file
   ADD CONSTRAINT FK_post_TO_post_file

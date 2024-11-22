@@ -6,6 +6,7 @@
 <html>
 <head>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/boardView.css" type="text/css">
+<script src="${pageContext.request.contextPath}/js/boardView.js"></script>
 <style>
 .boardViewcontainer{
 	width:100%;
@@ -20,6 +21,9 @@
 .left_subeject{
 	font-size: 2rem;
 	text-align: left;
+	display: flex;
+    align-items: center;
+    gap: 5px;
 }
 .right_btns{
     padding-right: 15px;
@@ -47,11 +51,14 @@
 
 .icon{
 	margin: 0px;
+	margin-left: 20px;
+    margin-bottom: 1px;
 }
 
 .board_view_content{
 	min-height: 250px;
-	padding: 20px 20px 30px;
+    padding: 20px 20px 30px;
+    font-size: 22px;
 }
 
 .preview-btn,.download-btn{
@@ -76,8 +83,7 @@ sup {
 }
 
 .viewIcon{
-	margin-left: 20px;
-    margin-bottom: 1px;
+	border: 1px solid gray;
 }
 
 .page-link{
@@ -85,17 +91,21 @@ sup {
 	color:#212529; 
 	line-height:1.5;
 }
+
+.count{
+	color: #a9a9a9;
+}
 </style>
 </head>
 <body>
-	<input type="hidden" id="loginid" value="${id}" name="loginid"><%--view.js에서 사용하기위해 추가합니다. --%>
+	<input type="hidden" id="empId" value="${id}" name="empId"><%--view.js에서 사용하기위해 추가합니다. --%>
 	<div class="boardViewcontainer">
 	    <table class="table">
     		<tr>
     			<td colspan="3" class="board_view_header" style="padding: 12px 25px 0px;">
     				<span class="left_subeject">
 	    				<c:out value="${postDataAndFile[0].postSubject}"/>
-	    				<c:out value="[${postDataAndFile[0].postCommentCnt}]"/>
+	    				<span class="count" style="font-size: 25px;"><c:out value="[${postDataAndFile[0].postCommentCnt}]"/></span>
     				</span>
     				
     				<span class="right_btns">
@@ -120,8 +130,7 @@ sup {
     		</tr>
     		<tr>
     			<td colspan="3" style="padding-top: 10px;">
-    				
-    				<img src=${'/unite/image/profile_black.png'} alt="프로필 이미지" class="icon viewIcon">
+    				<img src="${pageContext.request.contextPath}/emp/profile-image?UUID=${postDataAndFile[1].imgUUID}" alt="프로필 이미지" class="icon viewIcon">
 				    <div class="username">${empMap[postDataAndFile[0].postWriter]}</div>
 				    <div class="date"> ${postDataAndFile[0].getFormattedPostDate()} </div>
     			</td>
@@ -132,29 +141,25 @@ sup {
     			</td>
     		</tr>
     		
-	    	<%--원문글인 경우에만 첨부파일을 추가 할 수 있습니다. --%>
-    		<c:if test="${postDataAndFile[0].postReLev==0}">
-	    		<%-- 파일을 첨부한 경우 --%>
-    			<c:if test="${postDataAndFile[2] != null}">
-	    			<c:forEach var="postFile" items="${postDataAndFile[2]}">
-	    				<tr>
-			    			<td colspan="3" style="padding: 0px 12px 0px 12px;"><img src="${pageContext.request.contextPath}/image/attach.png" style="width:13px; margin: 0px 5px 0px 20px;">
-			    				<a href="down?postFileId=${postFile.postFileId}">${postFile.postFileOriginal}</a>
-			    			</td>
-    					</tr>
-		    		</c:forEach>
-    			</c:if>
-    		</c:if>
+    		<%-- 파일을 첨부한 경우 --%>
+   			<c:if test="${postDataAndFile[2] != null}">
+    			<c:forEach var="postFile" items="${postDataAndFile[2]}">
+    				<tr>
+		    			<td colspan="3" style="padding: 0px 12px 0px 12px;"><img src="${pageContext.request.contextPath}/image/attach.png" style="width:13px; margin: 0px 5px 0px 20px;">
+		    				<a href="post/down?postFileId=${postFile.postFileId}">${postFile.postFileOriginal}</a>
+		    			</td>
+   					</tr>
+	    		</c:forEach>
+   			</c:if>
     		<tr>
     			<td colspan="3" style="padding-bottom:12px;">
 					<div class="file-meta">
-						<img src='/unite/image/comments.png' alt="프로필 이미지" class="icon viewIcon" style="margin-left: 15px;"/>
+						<img src='/unite/image/comments.png' alt="프로필 이미지" class="icon" style="margin: -1px -4px 0px 15px; width: 30px;"/>
 						<span class="comments">
-							댓글&nbsp;
-							<sup id="count" style="font-family: arial, sans-serif;"></sup>
-							개</span>
+							댓글
+							<sup class="count" id="count" style="font-family: arial, sans-serif;"></sup>개</span>
 						<span style="color:#ccc;">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
-						<span class="views">조회 ${postDataAndFile[0].postView}</span>
+						조회<span class="count"> ${postDataAndFile[0].postView}</span>
 					</div>
     			</td>
     		</tr>
@@ -172,7 +177,7 @@ sup {
     							 이 값을 가져와서 ${param.num}를 사용 또는 ${boarddata.board_num}
     						 --%>
     						 <input type="hidden" name="num" value="${param.num}"
-    						 		id="comment_board_num">
+    						 		id="postId">
     						 <div class="form-group">
     						 	<label>정말 삭제하시겠습니까? <br> 복구가 불가능합니다.</label>
     						 </div>

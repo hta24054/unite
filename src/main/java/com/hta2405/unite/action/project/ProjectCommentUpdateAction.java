@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
-import com.hta2405.unite.dao.CommentDAO;
+import com.hta2405.unite.dao.PostCommentDao;
 import com.hta2405.unite.dao.ProjectbDao;
 import com.hta2405.unite.dto.ProjectTask;
 

@@ -65,10 +65,12 @@
 	}
 	.form-group-btn{
 		display: flex;
-	    justify-content: center;
+	    justify-content: flex-end;
 	    height: 70px;
 	    align-items: center;
 	    margin-top: 10px;
+	    gap: 20px;
+	    margin-right: 3px;
 	}
 	.registerBtn{
 		width: 100px;
@@ -227,6 +229,13 @@ function submitForm() {
             console.log('data.boardName2=',data.boardName2)
             console.log('data.postId=',data.postId)
             
+            $('.boardName2').each(function() {//left메뉴 이벤트 주기
+			    if ($(this).val() === data.boardName2) {
+			    	$(this).addClass('menuActive');
+					$(this).parent().parent().prev('a').addClass('menuActive');
+			    }
+			});
+            
 			loadBoardPost(data.boardName2,data.postId);
         },
         error: function (xhr, desc, err) {
@@ -376,6 +385,7 @@ document.addEventListener("drop", function (event) {
 		<textarea class="summernote form-control2" id="board_content" name="board_content" required>${list[0].postContent}</textarea>
 		<div class="form-group-btn">
 	 		<button type="submit" class="btn registerBtn">수정</button>
+	 		<button type="reset" class="btn registerBtn tr-post" data-page="${list[0].postId}" data-name="${boardName2}">돌아가기</button>
  		</div>
  	</form>
  	

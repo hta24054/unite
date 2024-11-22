@@ -107,12 +107,35 @@ function ajax(sdata){
 	});
 }
 
+$('#search-button').click(function() {
+	const category = $('#search-category').val(); // 선택된 검색 범위
+    const query = $('#search-input').val(); // 검색어
+	const boardName2 = $('.boardTitle').text();
+	
+	console.log(boardName2)
+	if (query.trim()) {
+		// AJAX 요청을 통해 서버로 검색을 전송
+  		$.ajax({
+	        url: 'search', // 서버의 검색 엔드포인트 (적절히 변경)
+	        method: 'GET',
+	        data: { boardName2: boardName2, category: category, query: query },
+	        success: function(response) {
+	          console.log(response); // 서버에서 받은 응답 처리
+	          // 예시: 검색 결과를 화면에 표시하는 코드 추가
+	        },
+	        error: function(error) {
+	          console.log(error);
+	        }
+  		});
+    } else {
+		alert('검색어를 입력해주세요.');
+	}
+});
+
 $(function(){
 	
 	$("#viewCount").change(function(){
 		go(1);//보여줄 페이지를 1페이지로 설정합니다.
 	});//change end
-	
-	
 	
 })

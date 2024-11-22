@@ -296,8 +296,14 @@ $(document).ready(function(){
 		$("#schedule_id").val(event.id);
 	    $("#schedule_name").val(event.title);
 	    
-	    $("#startAt").val(moment(event.start).format("YYYY-MM-DD HH:mm"));
-	    $("#endAt").val(moment(event.end).format("YYYY-MM-DD HH:mm"));
+	    const startDate = moment(event.start).format("YYYY-MM-DD");
+    	//const endDate = moment(event.end).format("YYYY-MM-DD");
+    	
+    	const startDateTime = moment(event.start).format("YYYY-MM-DDTHH:mm"); 
+        const endDateTime = moment(event.end).format("YYYY-MM-DDTHH:mm");
+    	
+    	$("#startAt").val(startDateTime);
+   		$("#endAt").val(endDateTime);
 	    
 	    const description = event.extendedProps && event.extendedProps.description ? event.extendedProps.description : '';
 	    $("#description").val(description);
@@ -308,9 +314,13 @@ $(document).ready(function(){
 	    if (event.allDay) {
 	        $("#allDay").prop("checked", true);
 	        $("#startAt, #endAt").prop("type", "date");
+	        $("#startAt").val(startDate);
+        	$("#endAt").val(startDate);
 	    } else {
 	        $("#allDay").prop("checked", false);
 	        $("#startAt, #endAt").prop("type", "datetime-local");
+	        $("#startAt").val(startDateTime);
+        	$("#endAt").val(endDateTime);
 	    }
 	    
 	    if (event.extendedProps.isShared === true) {//공유 일정

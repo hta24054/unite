@@ -270,10 +270,53 @@ $(document).ready(function(){
 	            empId: $("#emp_id").val()
 	        };
 	        
-	        resourceReservation(eventData);
+	        if (validateForm()) {
+	            resourceReservation(eventData);
+	        }
 	    });
 	});
 	
+	// form 유효성 검사
+	function validateForm() {
+	    const $start = $("#startAt");
+	    const $end = $("#endAt");
+	    const $resourceType = $("#resourceType");
+	    const $resourceName = $("#resourceName");
+	    const $reservationInfo = $("#reservationInfo");
+	
+	    if ($start.val().trim() === "") {
+	        alert("시작 날짜/시간을 선택하세요");
+	        $start.focus();
+	        return false;
+	    }
+	
+	    if ($end.val().trim() === "") {
+	        alert("종료 날짜/시간을 선택하세요");
+	        $end.focus();
+	        return false;
+	    }
+	
+	    if (new Date($start.val()) > new Date($end.val())) {
+	        alert("끝나는 날짜/시간이 시작 날짜/시간보다 이전입니다. 다시 확인해 주세요.");
+	        $start.focus();
+	        return false;
+	    }
+	
+	    if ($resourceType.val().trim() === "") {
+	        alert("분류명을 선택하세요");
+	        $resourceType.focus();
+	        return false;
+	    }
+	
+	    if ($resourceName.val().trim() === "") {
+	        alert("자원명을 선택하세요");
+	        $resourceName.focus();
+	        return false;
+	    }
+	
+	    return true;
+	}
+
 	// 종일 체크박스 상태 변경 시 
     $("#allDay").on("change", function() {
         isAllDayChk = $(this).prop("checked");
@@ -345,7 +388,6 @@ $(document).ready(function(){
 	        locale: 'ko', // 한국어 설정
 			events: events, // 전역 이벤트 배열 사용
 		    dateClick: function(info) {
-			    console.log("dateClick:", info);
 			    if (!info.event) { // 빈 셀 클릭 시
 				    $(".modal-header").find("h5").text("예약 하기"); 
 				    $(".modal-body").find(".btn_wrap").html(`
@@ -354,7 +396,9 @@ $(document).ready(function(){
 				    `);
 				    
 				    $("#allDay").prop("checked", false);
-				    $("#startAt, #endAt").prop("type", "datetime-local");
+				    //$("#startAt, #endAt").prop("type", "datetime-local");
+				    $("#startAt").val(moment(info.date).format("YYYY-MM-DD"));
+			        $("#endAt").val("");
 			        $("#description").val("");
 				    $resourceType.val("");
 				    $resourceName.hide().empty().append('<option value="">자원명</option>'); 
@@ -373,8 +417,10 @@ $(document).ready(function(){
 				            reservationInfo: $("#reservationInfo").val(), 
 				            empId: $("#emp_id").val()
 				        };
-				        
-				        resourceReservation(eventData);
+	
+				        if (validateForm()) {
+				            resourceReservation(eventData);
+				        }
 				    });
                 }
 			},

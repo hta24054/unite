@@ -40,7 +40,7 @@ public class BoardDao {
 						on post.post_id = pc.post_id
 					join board
 						on board.board_id = post.board_id
-					order by post_re_ref desc, post_re_seq asc
+					order by post_date desc
 				""";
 		try (	Connection con = ds.getConnection();
 				PreparedStatement pstmt = con.prepareStatement(sql);){
@@ -76,10 +76,119 @@ public class BoardDao {
 			e.printStackTrace();
 			System.out.println("getBoardListAll() 에러:"+ e);
 		}
-		
+		return null;
+	}
+	
+	public ArrayList<Object> getBoardListAll(Long deptId) {
+		ArrayList<Object> list = new ArrayList<>();
+		ArrayList<Board> boards = new ArrayList<>();
+		ArrayList<Post> posts = new ArrayList<>();
+		ArrayList<Emp> emps = new ArrayList<>();
+		String sql = """
+					select post.*, board.*, nvl(cnt,0) as cnt, img_path, img_original, img_uuid, img_type
+					from post left outer join (select post_id, count(*) as cnt
+											from post_comment
+											group by post_id) pc
+						on post.post_id = pc.post_id
+					join board
+						on board.board_id = post.board_id
+					join emp
+						on emp.emp_id = post.post_writer
+					where board.dept_id IS NULL OR ? IN (0000, 1000, 1001)
+					    OR (? = 1100 AND board.dept_id between 1100 and 1199)
+					    OR (? = 1200 AND board.dept_id between 1200 and 1299)
+					    OR (? = 1300 AND board.dept_id between 1300 and 1399)
+					    OR (? = 1400 AND board.dept_id between 1400 and 1499)
+					    OR (board.dept_id = ?)
+					order by post_date desc
+				""";
+		try (	Connection con = ds.getConnection();
+				PreparedStatement pstmt = con.prepareStatement(sql);){
+			
+			for(int i=1; i<=6; i++) {
+				pstmt.setLong(i, deptId);
+			}
+			
+			try (ResultSet rs= pstmt.executeQuery()){
+				while(rs.next()) {
+					Board board = new Board();
+					Post post = new Post();
+					Emp emp = new Emp();
+					board.setBoardId(rs.getLong("board_id"));
+					board.setBoardName1(rs.getString("board_name1"));
+					board.setBoardName2(rs.getString("board_name2"));
+					board.setDeptId(rs.getLong("dept_id"));
+					post.setBoardId(rs.getLong("board_id"));
+					post.setPostId(rs.getLong("post_id"));
+					post.setPostWriter(rs.getString("post_writer"));
+					post.setPostSubject(rs.getString("post_subject"));
+					post.setPostContent(rs.getString("post_content"));
+					post.setPostDate(rs.getTimestamp("post_date").toLocalDateTime());
+					post.setPostUpdateDate(rs.getTimestamp("post_update_date").toLocalDateTime());
+					post.setPostReRef(rs.getLong("post_re_ref"));
+					post.setPostReLev(rs.getLong("post_re_lev"));
+					post.setPostReSeq(rs.getLong("post_re_seq"));
+					post.setPostView(rs.getLong("post_view"));
+					post.setPostCommentCnt(rs.getLong("cnt"));
+
+					emp.setImgPath(rs.getString("img_path"));
+					emp.setImgOriginal(rs.getString("img_original"));
+					emp.setImgUUID(rs.getString("img_uuid"));
+					emp.setImgType(rs.getString("img_type"));
+					
+					boards.add(board);
+					posts.add(post);
+					emps.add(emp);
+				}
+				list.add(boards);
+				list.add(posts);
+				list.add(emps);
+				return list;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getBoardListAll() 에러:"+ e);
+		}
 		return null;
 	}
 
+
+	public List<Board> getBoardListByDeptId(Long deptId) {
+		List<Board> boardList = new ArrayList<>();
+		String sql = """
+				SELECT *
+				FROM board
+				WHERE 
+				    ? IN (0000, 1000, 1001) AND dept_id IS Not Null
+				    OR (? = 1100 AND dept_id between 1100 and 1199)
+				    OR (? = 1200 AND dept_id between 1200 and 1299)
+				    OR (? = 1300 AND dept_id between 1300 and 1399)
+				    OR (? = 1400 AND dept_id between 1400 and 1499)
+				    OR (dept_id = ?)
+				""";
+		try (	Connection con = ds.getConnection();
+				PreparedStatement pstmt = con.prepareStatement(sql);){
+			for(int i=1; i<=6; i++) {
+				pstmt.setLong(i, deptId);
+			}
+			try (ResultSet rs= pstmt.executeQuery()){
+				while(rs.next()) {
+					Board board = new Board();
+					board.setBoardId(rs.getLong("board_id"));
+					board.setBoardName1(rs.getString("board_name1"));
+					board.setBoardName2(rs.getString("board_name2"));
+					board.setDeptId(rs.getLong("dept_id"));
+					boardList.add(board);
+				}
+				return boardList;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getBoardListByDeptId() 에러:"+ e);
+		}
+		return null;
+	}
+	
 	public Board getBoardListByName2(String boardName2) {
 		Board board = null;
 		String sql = """
@@ -105,6 +214,8 @@ public class BoardDao {
 		}
 		return board;
 	}
+	
+	
 
 	public Boolean postAndFileInsert(Post postData, List<PostFile> postFiles) {
 		int num2 = 0;
@@ -347,7 +458,37 @@ public class BoardDao {
 		return null;
 	}
 
-	private List<PostFile> getDetailPostFile(Connection con, Long postId) {
+	//첨부파일 다운로드
+	public PostFile getPostFile(Long postFileId) {
+		String sql = """
+				select *
+				from post_file
+				where post_file_id = ?
+				""";
+		
+		try(	Connection con = ds.getConnection();
+				PreparedStatement pstmt = con.prepareStatement(sql);){
+			pstmt.setLong(1, postFileId);
+			try (ResultSet rs = pstmt.executeQuery()){
+				if(rs.next()) {
+					PostFile postFile = new PostFile();
+					postFile.setPostFileId(rs.getLong("post_file_id"));
+					postFile.setPostId(rs.getLong("post_id"));
+					postFile.setPostFilePath(rs.getString("post_file_path"));
+					postFile.setPostFileOriginal(rs.getString("post_file_original"));
+					postFile.setPostFileUUID(rs.getString("post_file_uuid"));
+					postFile.setPostFileType(rs.getString("post_file_type"));
+					return postFile;
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getPostFile() 에러: "+e);
+		}
+		return null;
+	}
+	
+	public List<PostFile> getDetailPostFile(Connection con, Long postId) {
 		ArrayList<PostFile> list = new ArrayList<>();
 		String sql = """
 				select *
@@ -539,5 +680,129 @@ public class BoardDao {
         }
         return map;
     }
+
+	public Long postAndFileReply(Post postData, List<PostFile> postFiles) {
+		
+		try(Connection con =ds.getConnection();){
+			//트랜직션을 이용하기 위해서 setAutoCommit을 false로 설정합니다.
+			con.setAutoCommit(false);
+			
+			try {
+				reply_update(con, postData.getPostReRef(), postData.getPostReSeq());
+				Long postId=reply_insert(con, postData, postFiles);
+				
+				if(postId>0) {
+					con.commit();
+					return postId;
+				}else {
+					con.rollback();
+				}
+			}catch (SQLException e) {
+				e.printStackTrace();
+				
+				if(con != null) {
+					try {
+						con.rollback(); // rollback합니다.
+					}catch (SQLException ex) {
+						ex.printStackTrace();
+					}
+				}
+			}
+			con.setAutoCommit(true);
+		}catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("boardReply() 에러"+e);
+		}
+		return 0L;
+	}
+
+	public void reply_update(Connection con, Long post_re_ref, Long post_re_seq) throws SQLException{
+		// BOARD_RE_REF, BOARD_RE_SEQ 값을 확인하여 원문 글에 답글이 달려있다면
+		// 달린 답글들의 BOARD_RE_SEQ값을 1씩 증가시킵니다.
+		// 현재 글을 이미 달린 답글보다 앞에 출력되게 하기 위해서 입니다.
+		
+		String sql = """
+				update post
+				set post_re_seq = post_re_seq + 1
+				where post_re_ref = ?
+				and post_re_seq > ?
+				""";
+		
+		try (PreparedStatement pstmt = con.prepareStatement(sql);){
+			pstmt.setLong(1, post_re_ref);
+			pstmt.setLong(2, post_re_seq);
+			pstmt.executeUpdate();
+		}
+	}
+	
+	//게시글 답글 post, postFile 추가
+	public Long reply_insert(Connection con, Post postData, List<PostFile> postFiles) throws SQLException{
+		int count = 0;
+		Long postId = reply_post_insert(con, postData);
+		
+		if(!postFiles.isEmpty()) {
+			count = postFile_insert(con, postFiles);
+		}else {
+			count = 1;
+		}
+		
+		if(postId>0 && count>0) {
+			return postId;
+		}
+		return 0L;
+	}
+	
+	//게시글 답글 추가
+	public Long reply_post_insert(Connection con, Post postData) throws SQLException{
+		Long postId = 0L;
+		String board_max_sql = "SELECT MAX(POST_ID)+1 FROM POST";
+		try (PreparedStatement pstmt = con.prepareStatement(board_max_sql);){
+			try (ResultSet rs = pstmt.executeQuery()){
+				if(rs.next()) {
+					postId=rs.getLong(1);
+				}
+			}
+		}
+		
+		String sql = """
+				insert into POST(BOARD_ID,POST_WRITER,POST_SUBJECT,POST_CONTENT,
+				POST_DATE,POST_UPDATE_DATE,POST_RE_REF,POST_RE_LEV,POST_RE_SEQ)
+				values( ?, ?, ?, ?, SYSDATE, SYSDATE, ?, ?, ?)
+				""";
+		
+		try(PreparedStatement pstmt = con.prepareStatement(sql);){
+			pstmt.setLong(1, postData.getBoardId());
+			pstmt.setString(2, postData.getPostWriter());
+			pstmt.setString(3, postData.getPostSubject());
+			pstmt.setString(4, postData.getPostContent());
+			pstmt.setLong(5, postData.getPostReRef());
+			pstmt.setLong(6, postData.getPostReLev() + 1);
+			pstmt.setLong(7, postData.getPostReSeq() + 1);
+			pstmt.executeUpdate();
+		}
+		return postId;
+	}
+
+	public int getSearchListCountByBoardId(Long boardId, String category, String query) {
+		String sql = """
+				SELECT COUNT(*) 
+				FROM post 
+				WHERE """ + category + " = ? AND board_id = ? ";
+		int x=0;
+		try (	Connection con = ds.getConnection();
+				PreparedStatement pstmt = con.prepareStatement(sql);){
+			pstmt.setString(1, query);
+			pstmt.setLong(2, boardId);
+			try (ResultSet rs = pstmt.executeQuery()){
+				if(rs.next()) {
+					x = rs.getInt(1);
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getListCountByBoardId() 에러: "+e);
+		}
+		return x;
+	}
 	
 }

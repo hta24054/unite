@@ -1,6 +1,7 @@
 package com.hta2405.unite.action.board;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -12,6 +13,7 @@ import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.BoardDao;
 import com.hta2405.unite.dao.EmpDao;
+import com.hta2405.unite.util.LocalDateAdapter;
 import com.hta2405.unite.util.LocalDateTimeAdapter;
 
 import jakarta.servlet.ServletException;
@@ -29,11 +31,17 @@ public class BoardHomeProcessAction implements Action {
 		        .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
 		        .create();
 
+		//emp를 위해 어댑터 등록
+		Gson gson2 = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .create();
+		
 		
 		//dao를 사용해 이름과 이메일이 같은지 비교
 		BoardDao dao = new BoardDao();
 		
-		ArrayList<Object> list = dao.getBoardListAll();
+		Long deptId = new EmpDao().getEmpById((String) req.getSession().getAttribute("id")).getDeptId();
+		ArrayList<Object> list = dao.getBoardListAll(deptId);//board post emp가 들어있음
 		
 		JsonObject object = null;
 		
@@ -44,29 +52,22 @@ public class BoardHomeProcessAction implements Action {
 			return null;
 		} else {
 			System.out.println("게시글 가져오기 성공");
-			object = new JsonObject();
-			Object boards = list.get(0);
-			Object posts = list.get(1);
-
+			
 			System.out.println("list="+list);
-			System.out.println("boards="+boards);
-
 			
-			JsonElement je1 = gson.toJsonTree(boards);
-			System.out.println("boards="+je1.toString());
-			
-			JsonElement je2 = gson.toJsonTree(posts);
-			System.out.println("posts="+je2.toString());
-			
-			JsonElement jeEmpMap = gson.toJsonTree(new EmpDao().getIdToENameMap());
-			System.out.println("empMap="+jeEmpMap.toString());
+			object = new JsonObject();
+			Object boardList = list.get(0);
+			Object postsList = list.get(1);
+			Object empList = list.get(2);
 			
 			
-			object.add("boards", je1);
-			object.add("posts", je2);
+			
+			object.add("boardList", gson.toJsonTree(boardList));
+			object.add("postList", gson.toJsonTree(postsList));
+			object.add("empList",gson2.toJsonTree(empList));
 			
 			//emp의 ename을 구하기 위한 hashMap
-			object.add("empMap", jeEmpMap);
+			object.add("empMap", gson.toJsonTree(new EmpDao().getIdToENameMap()));
 			
 			resp.setContentType("application/json;charset=utf-8");
 			resp.getWriter().print(object);
@@ -75,5 +76,4 @@ public class BoardHomeProcessAction implements Action {
 		}
 		
 	}
-
 }

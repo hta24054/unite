@@ -4,24 +4,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.hta2405.unite.dto.PostComment;
-import com.hta2405.unite.util.LocalDateTimeAdapter;
 
-public class CommentDAO {
+public class PostCommentDao {
 	private DataSource ds;
 	
-	public CommentDAO() {
+	public PostCommentDao() {
 		try {
 			Context init = new InitialContext();
 			ds = (DataSource) init.lookup("java:comp/env/jdbc/OracleDB");
@@ -30,7 +26,7 @@ public class CommentDAO {
 		}
 	}
 	
-	public int getListCount(int postId) {
+	public int getListCount(Long postId) {
 		String sql ="""
 				select count(*)
 				from post_comment
@@ -40,7 +36,7 @@ public class CommentDAO {
 		try(	Connection con = ds.getConnection();
 				PreparedStatement pstmt = con.prepareStatement(sql);){
 			
-			pstmt.setInt(1, postId);
+			pstmt.setLong(1, postId);
 			try(ResultSet rs = pstmt.executeQuery()){
 				if(rs.next()) {
 					count= rs.getInt(1);
@@ -53,7 +49,7 @@ public class CommentDAO {
 		return count;
 	}
 
-	public JsonArray getCommentList(int postId, int state) {
+	public JsonArray getCommentList(Long postId, int state) {
 		//asc:등록순, desc:최신순
 		//state==1 ? "asc":"desc";
 		JsonArray arr = new JsonArray();
@@ -69,7 +65,7 @@ public class CommentDAO {
 		try(	Connection con = ds.getConnection();
 				PreparedStatement pstmt = con.prepareStatement(sql);){
 			
-			pstmt.setInt(1, postId);
+			pstmt.setLong(1, postId);
 			try(ResultSet rs = pstmt.executeQuery()){
 				
 				while(rs.next()) {
@@ -102,136 +98,155 @@ public class CommentDAO {
 		}
 		return arr;
 	}//getCommentList()메서드 end
-/*
-	public int commentsInsert(PostComment co) {
-		int result=0;
+
+	public int commentsInsert(PostComment postCommentData) {
+		String getPostId_sql = "(SELECT NVL(MAX(comment_id),0)+1 FROM post_comment)";
 		String sql = """
-				insert into comm
-				values(com_seq.nextval,?,?,sysdate,?,?,?,com_seq.nextval)
-				""";
+				insert into post_comment
+				(post_id, post_comment_writer, post_comment_content, post_comment_date, post_comment_update_date,
+				post_comment_file_path, post_comment_file_original, post_comment_file_uuid, post_comment_file_type,
+				post_comment_re_ref, post_comment_re_lev, post_comment_re_seq)
+				values(?,?,?,sysdate,sysdate,?,?,?,?,%1$s,?,?)
+				""".formatted(getPostId_sql);
 		try(	Connection con = ds.getConnection();
 				PreparedStatement pstmt = con.prepareStatement(sql);){
 			
-			pstmt.setString(1, co.getId());
-			pstmt.setString(2, co.getContent());
-			pstmt.setInt(3, co.getComment_board_num());
-			pstmt.setInt(4, co.getComment_re_lev());
-			pstmt.setInt(5, co.getComment_re_seq());
-			result = pstmt.executeUpdate();
+			pstmt.setLong(1, postCommentData.getPostId());
+			pstmt.setString(2, postCommentData.getPostCommentWriter());
+			pstmt.setString(3, postCommentData.getPostCommentContent());
+			pstmt.setString(4, postCommentData.getPostCommentFilePath());
+			pstmt.setString(5, postCommentData.getPostCommentFileOriginal());
+			pstmt.setString(6, postCommentData.getPostCommentFileUUID());
+			pstmt.setString(7, postCommentData.getPostCommentFileType());
+			pstmt.setLong(8, postCommentData.getPostCommentReLev());
+			pstmt.setLong(9, postCommentData.getPostCommentReSeq());
+			
+			int result = pstmt.executeUpdate();
 			if(result ==1) {
 				System.out.println("데이터 삽입 완료되었습니다.");
+				return result;
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("commentsInsert() 에러:"+e);
 		}
-		return result;
-	}//commentsInsert() end
+		return 0;
+	}
 
-	public int commentsUpdate(Comment co) {
-		int result=0;
+	public int commentsUpdate(PostComment postCommentData) {
 		String sql = """
-				update comm
-				set content = ? 
-				where num = ?
+				update post_comment
+				set post_comment_content = ?,
+					post_comment_update_date = sysdate,
+					post_comment_file_path = ?,
+					post_comment_file_original = ?,
+					post_comment_file_uuid = ?,
+					post_comment_file_type = ?
+				where comment_id = ?
 				""";
 		try(	Connection con = ds.getConnection();
 				PreparedStatement pstmt = con.prepareStatement(sql);){
-
-			pstmt.setString(1, co.getContent());
-			pstmt.setInt(2, co.getNum());
-			result = pstmt.executeUpdate();
+			pstmt.setString(1, postCommentData.getPostCommentContent());
+			pstmt.setString(2, postCommentData.getPostCommentFilePath());
+			pstmt.setString(3, postCommentData.getPostCommentFileOriginal());
+			pstmt.setString(4, postCommentData.getPostCommentFileUUID());
+			pstmt.setString(5, postCommentData.getPostCommentFileType());
+			pstmt.setLong(6, postCommentData.getCommentId());
+			int result = pstmt.executeUpdate();
 			if(result ==1) {
 				System.out.println("데이터 변경 완료되었습니다.");
+				return result;
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("commentsUpdate() 에러:"+e);
 		}
-		return result;
+		return 0;
 	}//commentsUpdate() 메서드
 
-	public int commentsDelete(int num) {
-		int result = 0;
+	public int commentsDelete(Long commentId) {
 		String sql =  """
-				delete comm
-				where num=?
+				delete post_comment
+				where comment_id = ?
 				""";
 		try(	Connection con = ds.getConnection();
 				PreparedStatement pstmt = con.prepareStatement(sql);){
-			pstmt.setInt(1, num);
-			result = pstmt.executeUpdate();
+			pstmt.setLong(1, commentId);
+			int result = pstmt.executeUpdate();
 			if(result==1) {
 				System.out.println("데이터 삭제 되었습니다.");
+				return result;
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("commentsDelete() 에러:"+e);
 		}
-		return result;
-	}//commentsDelete() 메서드
-
-	public int commentsReply(Comment c) {
-		int result = 0;
+		return 0;
+	}
+	
+	public int commentsReply(PostComment postCommentData) {
 		
 		try(Connection con = ds.getConnection();){
-			
 			con.setAutoCommit(false);
-			
 			try {
-				reply_update(con, c.getComment_re_ref(), c.getComment_re_seq());
-				result = reply_insert(con,c);
-				con.commit();
+				reply_update(con, postCommentData.getPostCommentReRef(), postCommentData.getPostCommentReSeq());
+				int result = reply_insert(con,postCommentData);
+				if(result > 0) {
+					con.commit();
+					return result;
+				}
+				con.rollback();
 			}catch (Exception e) {
-				e.printStackTrace(); //오류 확인용
+				e.printStackTrace();
 				if(con != null) {
-					try {
-						con.rollback();//rollback합니다.
-					}catch (Exception ex) {
-						ex.printStackTrace();
-					} 
+					con.rollback();
 				}
 			}
 			con.setAutoCommit(true);
-			
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		return result;
-	}//commentsReply() end
+		return 0;
+	}
 
-	private void reply_update(Connection con, int re_ref, int re_seq) 
+	private void reply_update(Connection con, Long postCommentReRef, Long postCommentReSeq) 
 													throws SQLException{
-		String update_sql = """
-				update comm
-				set comment_re_seq = comment_re_seq + 1
-				where comment_re_ref = ?
-				and comment_re_seq > ?
+		String sql = """
+				update post_comment
+				set post_comment_re_seq = post_comment_re_seq + 1
+				where post_comment_re_ref = ?
+				and post_comment_re_seq > ?
 				""";
-		try (	PreparedStatement pstmt = con.prepareStatement(update_sql);){
-			pstmt.setInt(1, re_ref);
-			pstmt.setInt(2, re_seq);
+		try (	PreparedStatement pstmt = con.prepareStatement(sql);){
+			pstmt.setLong(1, postCommentReRef);
+			pstmt.setLong(2, postCommentReSeq);
 			pstmt.executeUpdate();
 		}
 	}
 
-	private int reply_insert(Connection con, Comment co) throws SQLException{
+	private int reply_insert(Connection con, PostComment postCommentData) throws SQLException{
 		int result = 0;
 		String sql = """
-				insert into comm
-				values(com_seq.nextval, ?, ?, sysdate, ?, ?, ?, ?)
+				insert into post_comment
+				(post_id, post_comment_writer, post_comment_content, post_comment_date, post_comment_update_date,
+				post_comment_file_path, post_comment_file_original, post_comment_file_uuid, post_comment_file_type,
+				post_comment_re_ref, post_comment_re_lev, post_comment_re_seq)
+				values(?,?,?,sysdate,sysdate,?,?,?,?,?,?,?)
 				""";
 		try (PreparedStatement pstmt = con.prepareStatement(sql);){
-			pstmt.setString(1, co.getId());
-			pstmt.setString(2, co.getContent());
-			pstmt.setInt(3, co.getComment_board_num());
-			pstmt.setInt(4, co.getComment_re_lev() + 1);
-			pstmt.setInt(5, co.getComment_re_seq() + 1);
-			pstmt.setInt(6, co.getComment_re_ref());
+			pstmt.setLong(1, postCommentData.getPostId());
+			pstmt.setString(2, postCommentData.getPostCommentWriter());
+			pstmt.setString(3, postCommentData.getPostCommentContent());
+			pstmt.setString(4, postCommentData.getPostCommentFilePath());
+			pstmt.setString(5, postCommentData.getPostCommentFileOriginal());
+			pstmt.setString(6, postCommentData.getPostCommentFileUUID());
+			pstmt.setString(7, postCommentData.getPostCommentFileType());
+			pstmt.setLong(8, postCommentData.getPostCommentReRef());
+			pstmt.setLong(9, postCommentData.getPostCommentReLev() +1);
+			pstmt.setLong(10, postCommentData.getPostCommentReSeq() +1);
 			result = pstmt.executeUpdate();
 		}
 		return result;
 	}
-*/
 
 }

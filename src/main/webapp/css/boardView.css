@@ -40,15 +40,19 @@ textarea.form-control {
 	font-size: 17px;
 }
 
+.comment-area .comment-head .comment-order{
+	margin-top: 10px;
+    height: 20px;
+}
+    
 .comment-area .comment-head .comment-order .comment-order-list {
-	display: inline-block;
-	margin-top: 4px;
+	margin-bottom: 10px;
 	font-size: 13px;
 	vertical-align: top;
-}
-
-dl, ol, ul {
-	list-style: none;
+	display: flex;
+    gap: 20px;
+    height: 30px;
+    line-height: 30px;
 }
 
 .comment-area .comment-head .comment-order .comment-order-item:first-child {
@@ -57,10 +61,9 @@ dl, ol, ul {
 
 .comment-area .comment-head .comment-order .comment-order-item {
 	float: left;
-	margin-left: 8px;
 }
 
-body, button, li, ol, textarea, ul {
+body, button, ol, textarea{
 	margin: 0;
 	padding: 0;
 }
@@ -107,13 +110,24 @@ textarea.comment-write-area-text {
 	max-height: 500px;
 }
 
+.comment-area .comment-list .comment-nick-box{
+	display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
 .comment-area .comment-list .comment-nick-box, .comment-list-item--reply {
-	margin-bottom: 4px;
+	margin-bottom: 8px;
+}
+
+.comment-area .comment-list .comment-nick-box .comment-info-date {
+	font-size: 14px;
+    color: gray;
 }
 
 .comment-area .comment-list .comment-nick-area {
 	position: relative;
-	padding: 12px 23px 10px 0;
+	padding: 6px 23px 5px 0;
 }
 
 .comment-list-item--reply.lev1 {
@@ -126,7 +140,6 @@ textarea.comment-write-area-text {
 
 .comment-area .comment-list .comment-list-item {
 	position: relative;
-	border-top: 1px solid #f2f2f2;
 }
 
 .comment-area .comment-list .comment-nick-box .comment-nickname {
@@ -195,6 +208,11 @@ textarea.comment-write-area-text {
 	background: transparent;
 	color: #000000;
 	outline: 0;
+}
+
+.comment-box .comment-text-box{
+	padding-left: 3px;
+    font-size: 18px;
 }
 
 button, textarea {
@@ -266,19 +284,19 @@ a:hover {
 	float: right;
 }
 
-.red {
-	color: red;
+.sodomy {
+	color: rgb(51, 68, 102);
+	font-size: 15px;
+	line-height: 28px;
 }
 
 .gray {
 	color: gray;
 }
 
-.comment-list-item .comment-nick-area img {
+.comment-list-item .comment-nick-area .profileImg {
 	border-radius: 50%;
-	border: 1px solid #ccc;
 	float: left;
-	margin-right: 20px;
 }
 
 .comment-write-area-text {
@@ -311,4 +329,28 @@ a:hover {
 
 .hide{
 	display:none;
+}
+
+.comment-info-button{
+	font-size: 13px;
+    color: gray !important;
+    font-weight: bolder;
+    margin-top: 2px;
+}
+
+.comment-order-list,.comment-list{
+	list-style: none;
+	padding: 0;
+}
+
+.replyImg{
+	width: 13px;
+    border: none;
+    height: 15px;
+    opacity: 0.5;
+    margin: -4px 2px 0px 0px;
+}
+
+.profileImg{
+	border: 1px solid #ccc;
 }

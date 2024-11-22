@@ -2,12 +2,61 @@ $(document).ready(function(){
 	let calendar;
 	let events = []; 
 	let isAllDayChk, startDate, endDate;
-	let currentDate;
+	let calendarInitialized = false; // 캘린더 초기화 여부 확인
+	
+	// 공휴일 불러오기
+	function fetchHolidayData(data) {
+	    const startMonth = data.startStr.substring(0, 7);
 
-	// 개인 일정, 공유 일정 모두 불러오기
+	    $.ajax({
+	        url: "holiday",  
+	        type: "get",
+	        data: {
+	            year: startMonth.substring(0, 4), 
+	            month: startMonth.substring(5, 7) 
+	        },
+	        dataType: "json",
+	        success: function (response) {
+	            console.log("공휴일 불러오기 성공", response);
+	
+	            const holidayData = response.map(holiday => ({
+	                title: holiday.holidayName,  
+	                start: holiday.holidayDate,  
+	                allDay: true,                
+	                color: 'red'                 
+	            }));
+	
+	            // 중복 공휴일 체크 후 추가
+	            holidayData.forEach(holiday => {
+	                if (!events.some(event => event.title === holiday.title && event.start === holiday.start)) {
+	                    events.push(holiday);
+	                }
+	            });
+		
+				// 캘린더 초기화 한 번만
+	            if (!calendarInitialized) {
+	                initCalendar();
+	                calendarInitialized = true;
+	            }
+	        },
+	        error: function (error) {
+	            console.log('공휴일 불러오기 오류', error);
+	        }
+	    });
+	}
+
+	// 개인/공유 일정, 공휴일 불러오기
 	function fetchAllData() {
 	    events = []; // 배열 초기화
-	    Promise.all([fetchListData(), fetchSharedListData()]);
+	    Promise.all([
+			fetchListData(), 
+			fetchSharedListData()
+		]).then(() => {
+	        fetchHolidayData({
+	            startStr: moment().startOf('month').format('YYYY-MM-DD'),
+	            endStr: moment().endOf('month').format('YYYY-MM-DD')
+	        });
+	    });
 	}
 	
 	// 일정 리스트 불러오기
@@ -120,7 +169,7 @@ $(document).ready(function(){
             success: function (data) {
                 console.log("일정 추가 성공", data);
 
-				events = []; 
+				//events = []; 
                 if (data != null && data.length > 0) {
 			        for (let i = 0; i < data.length; i++) {
 						const isAllDay = data[i].schedule_allDay === 1;
@@ -144,7 +193,6 @@ $(document).ready(function(){
             }
         });
     }
-    
     
     // 일정 수정
 	function updateEvent(eventData) {
@@ -210,7 +258,6 @@ $(document).ready(function(){
 	
 	// 일정 삭제
 	function deleteEvent(eventData) {
-		
 		if(confirm("정말 삭제하시겠습니까?")) {
 			$.ajax({
 				url: "scheduleDelete",
@@ -240,9 +287,6 @@ $(document).ready(function(){
 	    
 	    $("#startAt").val(moment(event.start).format("YYYY-MM-DD HH:mm"));
 	    $("#endAt").val(moment(event.end).format("YYYY-MM-DD HH:mm"));
-	    
-	    //$("#description").val(event.description);
-	    //$("#description").val(event.extendedProps.description);
 	    
 	    const description = event.extendedProps && event.extendedProps.description ? event.extendedProps.description : '';
 	    $("#description").val(description);
@@ -277,8 +321,6 @@ $(document).ready(function(){
 	    
 	    // 일정 수정
 	    $("#btnUpdate").off("click").on("click", function() {
-	        console.log("data Update");
-	        
 	        const eventData = {
 	            schedule_id: $("#schedule_id").val(),
 	            schedule_name: $("#schedule_name").val(),
@@ -289,7 +331,7 @@ $(document).ready(function(){
 	            allDay: $("#allDay").prop("checked")
 	        };
 	            
-	        updateEvent(eventData); // 수정 함수 호출
+	        updateEvent(eventData);
 	    });
 	    
 	    // 일정 삭제
@@ -300,8 +342,7 @@ $(document).ready(function(){
 	            schedule_id: $("#schedule_id").val() 
 	        };
 	        
-	        deleteEvent(eventData); // 삭제 함수 호출
-	        
+	        deleteEvent(eventData);
 	    });
 	
 	    $("#scheduleModal").modal('show');
@@ -367,7 +408,6 @@ $(document).ready(function(){
             $end.focus();
             return false;
         }
-     
         return true;
     }
     
@@ -417,11 +457,17 @@ $(document).ready(function(){
     $('#bgColor').on("change", function () {
 	    $(this).css('color', $(this).val());
 	});
+	
 
 	// 캘린더 생성
 	function initCalendar(){
 		const calendarEl = document.getElementById('calendar'); 
 		if (!calendarEl) return;
+		
+		const startStr = moment().startOf('month').format('YYYY-MM-DD');
+    	const endStr = moment().endOf('month').format('YYYY-MM-DD');
+    	
+    	fetchHolidayData({ startStr, endStr });
 		
 		calendar = new FullCalendar.Calendar(calendarEl, {
 	        expandRows: true, // 화면에 맞게 높이 재설정
@@ -439,7 +485,7 @@ $(document).ready(function(){
 		    },
 	        initialView: 'dayGridMonth', // 초기 로드 될때 보이는 캘린더 화면(기본 설정: 달)
 	        editable: true, // 수정 가능
-	        selectable: true, // 달력 일자 드래그 설정
+	        selectable: false, // 달력 일자 드래그 설정
 	        nowIndicator: true, // 현재 시간 마크
 	        dayMaxEvents: true, // 이벤트가 오버되면 높이 제한 (+ 몇 개식으로 표현)
 	        locale: 'ko', // 한국어 설정
@@ -502,13 +548,6 @@ $(document).ready(function(){
             eventDidMount: function(info) {
 				 //.log("info.event.extendedProps.isShared", info.event.extendedProps.isShared);
 				 //console.log("info.event.extendedProps", info.event.extendedProps);
-				 
-				 /*	
-	             if (info.event.extendedProps.isShared) {
-	                info.el.setAttribute('data-editable', 'false');
-	             } else {
-	                info.el.setAttribute('data-editable', 'true');
-	             }*/
 			},
 			eventDrop: function(info) {
 	            updateDragEvent(info); // 드래그 후, 일정 이동했을 때 서버로 변경사항 전달

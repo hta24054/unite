@@ -12,7 +12,6 @@ import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dao.ReservationDAO;
-import com.hta2405.unite.dto.Resource;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

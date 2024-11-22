@@ -7,10 +7,16 @@
 	<jsp:include page="myReservation_leftbar.jsp"/>
 	<title>나의 예약목록</title>
 	<style>
-		.container-xxl > div {
-		    width: 1400px;
+		.container-xxl {
+		    display: flex;
+		    flex-wrap: wrap;
 		    margin: 0 auto;
-		    padding-left: 200px;
+		}
+		
+		.container-xxl > div {
+		    flex: 1; 
+		    max-width: 100%;
+		    padding: 0 50px; 
 		}
 	</style> 
 </head>

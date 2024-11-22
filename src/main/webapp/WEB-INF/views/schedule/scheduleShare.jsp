@@ -9,10 +9,16 @@
 	<jsp:include page="scheduleShare_leftbar.jsp"/>
 	<script src="${pageContext.request.contextPath}/js/calendar.js"></script>
 	<style>	
-		@media (max-width: 1600px) {
-		    .container-xl > div {
-			    padding-left: 200px;
-			}
+		.container-xxl {
+		    display: flex;
+		    flex-wrap: wrap;
+		    margin: 0 auto;
+		}
+		
+		.container-xxl > div {
+		    flex: 1; 
+		    max-width: 100%;
+		    padding-left: 50px; 
 		}
 			
 		textarea {
@@ -41,7 +47,7 @@
 	</style>
 </head>
 <body>
-	<div class="container-xl">
+	<div class="container-xxl mx-5">
 		<div>
 			<h3 class="mb-5">공유 일정 등록</h3>
 			<div>

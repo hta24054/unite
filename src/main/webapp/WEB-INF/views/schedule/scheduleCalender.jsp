@@ -9,16 +9,21 @@
 	<jsp:include page="schedule_leftbar.jsp"/>
 	<script src="${pageContext.request.contextPath}/js/calendar.js"></script>
 	<style>		
-		.container-xxl > div {
-		    width: 1800px;
+		.container-xxl {
+		    display: flex;
+		    flex-wrap: wrap;
 		    margin: 0 auto;
-		    padding-left: 350px;
 		}
 		
-		@media (max-width: 1600px) {
-		    .container-xxl > div  {
-		     	width: 1380px;
-		    }
+		.container-xxl > div {
+		    flex: 1; 
+		    max-width: 100%;
+		    padding-left: 50px; 
+		}
+		
+		#calendar {
+		  max-width: 100%;
+		  margin: 0 auto;
 		}
 	
 		#calendar a {

@@ -9,10 +9,21 @@
 	<jsp:include page="../common/fullcalendar.jsp" />
 	<script src="${pageContext.request.contextPath}/js/reservation.js"></script>
 	<style>
-		.container-xxl > div {
-		    width: 1500px;
+		.container-xxl {
+		    display: flex;
+		    flex-wrap: wrap;
 		    margin: 0 auto;
-		    padding-left: 80px;
+		}
+		
+		.container-xxl > div {
+		    flex: 1; 
+		    max-width: 100%;
+		    padding: 0 50px; 
+		}
+		
+		#calendar {
+		  max-width: 100%;
+		  margin: 0 auto;
 		}
 		
 		.btn_wrap {
@@ -37,8 +48,10 @@
 	</style>
 </head>
 <body>
-	<div class="container-xxl mx-5">
-		<div id="calendar"></div>
+	<div class="container-xxl">
+		<div>
+			<div id="calendar"></div>
+		</div>
 	</div>
 	
 	<%-- 자원 예약 모달 --%>

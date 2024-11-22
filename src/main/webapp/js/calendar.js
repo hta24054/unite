@@ -2,11 +2,29 @@ $(document).ready(function(){
 	let calendar;
 	let events = []; 
 	let isAllDayChk, startDate, endDate;
-	let calendarInitialized = false; // 캘린더 초기화 여부 확인
+	
+	// 개인/공유 일정, 공휴일 불러오기
+	function fetchAllData() {
+	    events = []; // 배열 초기화
+	    Promise.all([
+			fetchListData(), 
+			fetchSharedListData()
+		]).then(() => {
+	        fetchHolidayData({
+	            startStr: moment().startOf('month').format('YYYY-MM-DD'),
+	            endStr: moment().endOf('month').format('YYYY-MM-DD')
+	        });
+	    });
+	}
 	
 	// 공휴일 불러오기
 	function fetchHolidayData(data) {
 	    const startMonth = data.startStr.substring(0, 7);
+	    
+	    // 이미 공휴일 데이터가 로드되었는지 확인하기 위한 flag
+	    if (window.holidayDataLoaded) {
+	        return; // 이미 공휴일 데이터를 불러왔으면, 더 이상 실행하지 않음
+	    }
 
 	    $.ajax({
 	        url: "holiday",  
@@ -23,21 +41,27 @@ $(document).ready(function(){
 	                title: holiday.holidayName,  
 	                start: holiday.holidayDate,  
 	                allDay: true,                
-	                color: 'red'                 
+	                color: 'red',  // 이 값은 이벤트의 기본 색상만 설정
+	                editable: false,  // 공휴일은 드래그 불가
+    				droppable: false, // 다른 날짜로 드래그 불가
+				    extendedProps: { 
+				        isHoliday: true, // 공휴일
+				    }            
 	            }));
+	            
+	            console.log("holidayData", holidayData)
 	
 	            // 중복 공휴일 체크 후 추가
 	            holidayData.forEach(holiday => {
-	                if (!events.some(event => event.title === holiday.title && event.start === holiday.start)) {
-	                    events.push(holiday);
-	                }
-	            });
+				    if (!events.some(event => event.title === holiday.title && event.start === holiday.start)) {
+				        events.push(holiday);  // 이벤트 추가
+				    }
+				});
+				
+				// 공휴일 데이터가 로드되었음을 플래그로 저장
+            	window.holidayDataLoaded = true;
 		
-				// 캘린더 초기화 한 번만
-	            if (!calendarInitialized) {
-	                initCalendar();
-	                calendarInitialized = true;
-	            }
+				initCalendar();
 	        },
 	        error: function (error) {
 	            console.log('공휴일 불러오기 오류', error);
@@ -45,19 +69,6 @@ $(document).ready(function(){
 	    });
 	}
 
-	// 개인/공유 일정, 공휴일 불러오기
-	function fetchAllData() {
-	    events = []; // 배열 초기화
-	    Promise.all([
-			fetchListData(), 
-			fetchSharedListData()
-		]).then(() => {
-	        fetchHolidayData({
-	            startStr: moment().startOf('month').format('YYYY-MM-DD'),
-	            endStr: moment().endOf('month').format('YYYY-MM-DD')
-	        });
-	    });
-	}
 	
 	// 일정 리스트 불러오기
 	function fetchListData(){
@@ -464,10 +475,10 @@ $(document).ready(function(){
 		const calendarEl = document.getElementById('calendar'); 
 		if (!calendarEl) return;
 		
-		const startStr = moment().startOf('month').format('YYYY-MM-DD');
-    	const endStr = moment().endOf('month').format('YYYY-MM-DD');
+		//const startStr = moment().startOf('month').format('YYYY-MM-DD');
+    	//const endStr = moment().endOf('month').format('YYYY-MM-DD');
     	
-    	fetchHolidayData({ startStr, endStr });
+    	//fetchHolidayData({ startStr, endStr });
 		
 		calendar = new FullCalendar.Calendar(calendarEl, {
 	        expandRows: true, // 화면에 맞게 높이 재설정
@@ -529,8 +540,12 @@ $(document).ready(function(){
 			    }
 			},
             eventClick: function(info) {
-                console.log("eventClick info", info.event);
-                openDetailModal(info.event);
+                console.log("eventClick info.event.extendedProps", info.event.extendedProps);
+                if (info.event.extendedProps.isHoliday) {
+			        return;  
+			    } else {
+					openDetailModal(info.event);
+				}
             },
 	        eventChange: function(info) { // 이벤트가 수정되면 발생하는 이벤트
 	         	updateDragEvent(info);
@@ -546,11 +561,21 @@ $(document).ready(function(){
                 return event; // 수정된 이벤트 반환
             },
             eventDidMount: function(info) {
-				 //.log("info.event.extendedProps.isShared", info.event.extendedProps.isShared);
 				 //console.log("info.event.extendedProps", info.event.extendedProps);
 			},
-			eventDrop: function(info) {
-	            updateDragEvent(info); // 드래그 후, 일정 이동했을 때 서버로 변경사항 전달
+			eventDragStart: function(info) {
+				console.log("eventDragStart", info.event.extendedProps.color);
+				
+				if (info.event && info.event.extendedProps && info.event.extendedProps.color) {
+			        
+			        if (info.event.extendedProps.color === 'red') {
+			            return false; 
+			        }
+			    }
+	        },
+			eventDrop: function(info, revertFunc) {
+				console.log("eventDrop", info.event.extendedProps.color)
+	            updateDragEvent(info); 
 	        },
 			/*
 			eventRender: function(info) {

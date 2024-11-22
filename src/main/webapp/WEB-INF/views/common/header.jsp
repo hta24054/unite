@@ -119,8 +119,7 @@
             <a class="nav-link a1" href="${pageContext.request.contextPath}/project/main">&nbsp;프로젝트&nbsp;</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link a1"
-               href="${pageContext.request.contextPath}/reservation/weekCalendar">&nbsp;자원예약&nbsp;</a>
+            <a class="nav-link a1" href="${pageContext.request.contextPath}/reservation/reservationCalender">&nbsp;자원예약&nbsp;</a>
         </li>
         <li class="nav-item">
             <a class="nav-link a1" href="${pageContext.request.contextPath}/mypage/password">&nbsp;마이페이지&nbsp;</a>

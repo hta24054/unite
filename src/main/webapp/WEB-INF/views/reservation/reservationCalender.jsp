@@ -4,19 +4,26 @@
 <html>
 <head>
 	<jsp:include page="../common/header.jsp" />
+	<jsp:include page="reservation_leftbar.jsp"/>
 	<title>자원예약</title> 
 	<jsp:include page="../common/fullcalendar.jsp" />
 	<script src="${pageContext.request.contextPath}/js/reservation.js"></script>
 	<style>
-		.container {
-			max-width: 1900px;
+		.container-xxl {
+		    display: flex;
+		    flex-wrap: wrap;
+		    margin: 0 auto;
 		}
 		
-		h3 {
-			margin-bottom: 20px;
-			color: rgb(51, 68, 102);
-			font-size: 30px;
-			font-weight: 600;
+		.container-xxl > div {
+		    flex: 1; 
+		    max-width: 100%;
+		    padding: 0 50px; 
+		}
+		
+		#calendar {
+		  max-width: 100%;
+		  margin: 0 auto;
 		}
 		
 		.btn_wrap {
@@ -29,28 +36,21 @@
 			margin: 0 5px;
 		}
 		
-		ul, li {
+		.deatail_list {
 			list-style: none;
 			padding: 0;
 			margin: 0;
 		}
+		
+		.deatail_list li + li {
+			margin-top: 10px;
+		}
 	</style>
 </head>
 <body>
-	<div class="container">
-		<div class="row">
-			<div class="col-sm-2 px-5">
-				<aside>
-					<h3>자원예약</h3>
-					<button class="btn btn-info" data-toggle="modal" data-target="#reservationModal">예약 하기</button>
-					<a href="${pageContext.request.contextPath}/reservation/myReservationList?emp_id=${id}">
-						&middot; 나의 예약 목록
-					</a>
-				</aside>
-			</div>
-			<div class="col-sm-10 px-5">
-				<div id="calendar"></div>
-			</div>
+	<div class="container-xxl">
+		<div>
+			<div id="calendar"></div>
 		</div>
 	</div>
 	

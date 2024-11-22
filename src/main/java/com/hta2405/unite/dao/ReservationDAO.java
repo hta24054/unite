@@ -76,6 +76,7 @@ public class ReservationDAO {
 	            FROM resc
 	            WHERE resc_type = ? AND resc_usable = '1'
 	            GROUP BY resc_type, resc_name, resc_usable
+	            ORDER BY resc_id ASC
 	        """;
 		
 		try (Connection conn = ds.getConnection();

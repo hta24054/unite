@@ -169,7 +169,7 @@ $(document).ready(function(){
 			    }
 			    
 			  	if (data) {
-					  let _html = "<ul>" +
+					  let _html = "<ul class='deatail_list'>" +
 						    "<li>분류명: " + (events[0]?.extendedProps.resourceType) + "</li>" +
 						    "<li>자원명: " + (events[0]?.extendedProps.resourceName) + "</li>" +
 						    "<li>시작시간: " + moment(event.start).format("YYYY-MM-DD HH:mm") + "</li>" +

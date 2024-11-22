@@ -18,7 +18,7 @@ public class ReservationFrontController extends AbstractFrontController {
 	
 	@Override
     public void init() throws ServletException {
-    actionMap.put("/weekCalendar", ReservationWeekCalenderAction::new);
+		actionMap.put("/reservationCalender", ReservationWeekCalenderAction::new);
 		actionMap.put("/getResourceList", GetResourceListAction::new);
 		actionMap.put("/resourceSelectChange", ResourceSelectChangeAction::new);
 		actionMap.put("/getResourceId", GetResourceIdAction::new);

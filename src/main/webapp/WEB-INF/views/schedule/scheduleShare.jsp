@@ -204,8 +204,6 @@
 	            dataType: 'json',
 	            data: shareData,
 	            success: function(data) {
-	            	console.log("공유 일정 등록 성공", data); 
-	            	
 	            	alert('공유 일정이 등록되었습니다.');
 	                addEventToCalendar(shareData);  
 	                

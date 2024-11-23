@@ -297,8 +297,6 @@ $(document).ready(function(){
 	    $("#schedule_name").val(event.title);
 	    
 	    const startDate = moment(event.start).format("YYYY-MM-DD");
-    	//const endDate = moment(event.end).format("YYYY-MM-DD");
-    	
     	const startDateTime = moment(event.start).format("YYYY-MM-DDTHH:mm"); 
         const endDateTime = moment(event.end).format("YYYY-MM-DDTHH:mm");
     	
@@ -323,23 +321,24 @@ $(document).ready(function(){
         	$("#endAt").val(endDateTime);
 	    }
 	    
-	    if (event.extendedProps.isShared === true) {//공유 일정
+	    // 공유 일정
+	    if (event.extendedProps.isShared === true) {
 		    $(".modal-header").find("h5").text("공유 일정");
-		    
 		    $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", true);
-		    
 		    $(".modal-body").find(".btn_wrap").html(`
 		        <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
 		    `);
 		} else {
+			$(".modal-header").find("h5").text("상세 일정");
+			$("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);
+			
 		    $(".modal-body").find(".btn_wrap").html(`
 		        <button type="reset" class="btn btn-secondary">취소</button>
 		        <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
 		        <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
 		    `);
 		}
-	    
-	    
+	     
 	    // 일정 수정
 	    $("#btnUpdate").off("click").on("click", function() {
 	        const eventData = {
@@ -383,6 +382,8 @@ $(document).ready(function(){
 	    $("#description").val("");
 	    $("#bgColor").val("#1e3a8a");
 	    $("#allDay").prop("checked", false);
+	    
+	    $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);
 	
 	    // 등록 버튼에 이벤트 바인딩
 	    $("#btnRegister").off("click").on("click", function(e) {
@@ -512,50 +513,46 @@ $(document).ready(function(){
 	        locale: 'ko', // 한국어 설정
 			events: events, // 전역 이벤트 배열 사용
 		    dateClick: function(info) {
-			    if (!info.event) { // 클릭한 날짜에 일정이 없는 경우
-			        $(".modal-header").find("h5").text("일정 등록"); 
-			        $(".modal-body").find(".btn_wrap").html(`
-			            <button type="reset" class="btn btn-secondary">취소</button>
-			            <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
-			        `);
-			
-			        $("#schedule_name").val("");
-			        $("#startAt").val(moment(info.date).format("YYYY-MM-DD"));
-			      
-			        $("#endAt").val("");
-			        $("#description").val("");
-			        $("#bgColor").val("#1e3a8a");
-			        $("#allDay").prop("checked", false);
-			
-			        $("#scheduleModal").modal("show");
-			        
-			        // 등록 버튼에 이벤트 바인딩
-				    $("#btnRegister").off("click").on("click", function(e) {
-				        e.preventDefault();
-				        const eventData = {
-				            schedule_name: $("#schedule_name").val(),
-				            startAt: $("#startAt").val(),
-				            endAt: $("#endAt").val(),
-				            bgColor: $("#bgColor").val(),
-				            description: $("#description").val(),
-				            allDay: $("#allDay").prop("checked")
-				        };
-				        if (validateForm()) {
-				            addEvent(eventData);
-				        }
-				    });
-			        
-			    } else {
-			        openDetailModal(info.event);
-			    }
+			    
+			    $(".modal-header").find("h5").text("일정 등록"); 
+		        $(".modal-body").find(".btn_wrap").html(`
+		            <button type="reset" class="btn btn-secondary">취소</button>
+		            <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
+		        `);
+		
+		        $("#schedule_name").val("");
+		        $("#startAt").val('YYYY-MM-DD HH:mm');
+		        $("#endAt").val('YYYY-MM-DD HH:mm');
+		        $("#description").val("");
+		        $("#bgColor").val("#1e3a8a");
+		        $("#allDay").prop("checked", false);
+		        $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);
+		
+		        $("#scheduleModal").modal("show");
+		        
+		        // 등록 버튼에 이벤트 바인딩
+			    $("#btnRegister").off("click").on("click", function(e) {
+			        e.preventDefault();
+			        const eventData = {
+			            schedule_name: $("#schedule_name").val(),
+			            startAt: $("#startAt").val(),
+			            endAt: $("#endAt").val(),
+			            bgColor: $("#bgColor").val(),
+			            description: $("#description").val(),
+			            allDay: $("#allDay").prop("checked")
+			        };
+			        if (validateForm()) {
+			            addEvent(eventData);
+			        }
+			    });
 			},
             eventClick: function(info) {
                 console.log("eventClick info.event.extendedProps", info.event.extendedProps);
                 if (info.event.extendedProps.isHoliday) {
 			        return;  
-			    } else {
-					openDetailModal(info.event);
-				}
+			    } 
+			    
+			    openDetailModal(info.event);
             },
 	        eventChange: function(info) { // 이벤트가 수정되면 발생하는 이벤트
 	         	updateDragEvent(info);

@@ -10,6 +10,39 @@ DROP TABLE dept CASCADE CONSTRAINTS;
 
 -- 영훈
 
+select count(*) 
+from (select post_subject, post_content, post_writer
+		from post
+		where ? = ?)
+where board_id = 1;
+
+
+
+    
+ALTER TABLE POST_FILE DROP CONSTRAINT FK_POST_TO_POST_FILE;
+ALTER TABLE post_file
+  ADD CONSTRAINT FK_post_TO_post_file
+    FOREIGN KEY (post_id)
+    REFERENCES post (post_id) ON DELETE CASCADE;
+  
+ALTER TABLE post_comment DROP CONSTRAINT FK_post_TO_post_comment;
+ALTER TABLE post_comment
+  ADD CONSTRAINT FK_post_TO_post_comment
+    FOREIGN KEY (post_id)
+    REFERENCES post (post_id) ON DELETE CASCADE;
+    
+SELECT constraint_name
+FROM user_constraints
+WHERE table_name = 'POST_FILE'
+  AND constraint_type = 'R';
+
+UPDATE POST
+SET BOARD_ID = 5,
+	POST_SUBJECT = 11231,
+	POST_CONTENT = '<p>123</p>',
+	POST_UPDATE_DATE = SYSDATE
+WHERE POST_ID = 63;
+
 
 SELECT
     c.constraint_name,
@@ -37,10 +70,22 @@ ORDER BY
 c.constraint_name, col.position;
 
 
-ALTER TABLE POST ADD (new_post_content CLOB);
+--POST_WRITER 컬럼 변경
+UPDATE POST SET POST_WRITER = EMP_ID;
+ALTER TABLE POST DROP COLUMN EMP_ID;
+ALTER TABLE post
+  ADD CONSTRAINT FK_emp_TO_post
+    FOREIGN KEY (post_writer)
+    REFERENCES emp (emp_id);
+
+
+--POST_CONTENT 타입 변경
+ALTER TABLE POST ADD (new_post_content CLOB NOT NULL);
 UPDATE POST SET new_post_content = post_content;
 ALTER TABLE POST DROP COLUMN post_content;
 ALTER TABLE POST RENAME COLUMN new_post_content TO post_content;
+
+
 
 -- 외래키 지정 --emp_id 추가
 ALTER TABLE post
@@ -52,7 +97,6 @@ ALTER TABLE post
     REFERENCES emp (emp_id);
     
 --게시판 제약조건 수정
-ALTER TABLE POST MODIFY POST_CONTENT NOT NULL;
 ALTER TABLE board MODIFY dept_id null;
 ALTER TABLE board MODIFY dept_id default NULL;
 
@@ -93,6 +137,8 @@ select * from board;
 select * from dept;
 select * from post;
 select * from post_FILE;
+select * from post_comment;
+select * from emp;
 
 --post와 post_file 출력
 select post.*, post_file.* 

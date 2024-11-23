@@ -1,5 +1,6 @@
 package com.hta2405.unite.dto;
 
+import com.hta2405.unite.enums.AttendType;
 import lombok.*;
 
 import java.time.Duration;
@@ -18,7 +19,7 @@ public class Attend {
     private LocalDateTime attendIn;
     private LocalDateTime attendOut;
     private Duration workTime;
-    private String attendType; //일반, 출장, 휴가
+    private AttendType attendType; //일반, 출장, 외근, 휴가...
 
     public Attend(LocalDate attendDate) {
         this.attendDate = attendDate;

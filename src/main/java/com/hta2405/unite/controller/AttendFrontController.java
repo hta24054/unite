@@ -9,14 +9,15 @@ public class AttendFrontController extends AbstractFrontController {
 
     @Override
     public void init() throws ServletException {
-        actionMap.put("/attendIn", new AttendInAction());
-        actionMap.put("/attendOut", new AttendOutAction());
-        actionMap.put("/attendInfo", new AttendInfoAction());
-        actionMap.put("/my", new AttendMyDetailAction());
-        actionMap.put("/empList", new AttendEmpListAction());
-        actionMap.put("/emp", new AttendEmpDetailAction());
-        actionMap.put("/vacation/my", new AttendVacationDetailAction());
-        actionMap.put("/vacation/empList", new AttendVacationEmpListAction());
-        actionMap.put("/vacation/emp", new AttendVacationEmpDetailAction());
+        actionMap.put("/attendIn", AttendInAction::new);
+        actionMap.put("/attendOut", AttendOutAction::new);
+        actionMap.put("/attendInfo", AttendInfoAction::new);
+        actionMap.put("/my", AttendMyDetailAction::new);
+        actionMap.put("/empList", AttendEmpListAction::new);
+        actionMap.put("/emp", AttendEmpDetailAction::new);
+        actionMap.put("/vacation/my", AttendMyVacationDetailAction::new);
+        actionMap.put("/vacation/empList", AttendVacationEmpListAction::new);
+        actionMap.put("/vacation/emp", AttendVacationEmpDetailAction::new);
+        actionMap.put("/vacation/set-count", AttendVacationSetCountAction::new);
     }
 }

@@ -1,4 +1,4 @@
-package com.hta2405.unite.action.board;
+package com.hta2405.unite.action.reservation;
 
 import java.io.IOException;
 
@@ -8,15 +8,16 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class BoardWriteAction implements Action {
+public class ReservationWeekCalenderAction implements Action {
 
 	@Override
-	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
+	public ActionForward execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
 		ActionForward forward = new ActionForward();
-		forward.setRedirect(false);
-		forward.setPath("/WEB-INF/views/board/boardWrite.jsp");
-		return forward;
-	}
+	    forward.setRedirect(false); 
+	    forward.setPath("/WEB-INF/views/reservation/reservationCalender.jsp");
 
+	    return forward;
+	}
 }

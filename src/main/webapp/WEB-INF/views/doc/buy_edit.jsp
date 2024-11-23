@@ -5,147 +5,110 @@
 <head>
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="doc_leftbar.jsp"/>
-
+    <link href="${pageContext.request.contextPath}/css/doc.css" rel="stylesheet">
     <meta charset="UTF-8">
     <title>구매신청서 수정</title>
-    <style>
-        .header-cell {
-            font-size: 36px;
-            font-weight: bold;
-            padding: 20px 0;
-        }
-
-        .title-input, .form-control {
-            font-size: 16px;
-        }
-
-        /* 테두리 색상을 검정색으로 설정 */
-        .table-bordered, .table-bordered td, .table-bordered th {
-            align-content: center;
-            border-color: black !important;
-        }
-
-        .item_form {
-            width: 18%;
-        }
-
-        #modify {
-            width: 10%;
-        }
-
-        .item_form {
-            width: 18%;
-            text-align: right; /* 품명, 규격을 제외한 수량, 단가, 금액 우측 정렬 */
-        }
-
-        #modify {
-            width: 10%;
-        }
-
-        /* 우측 정렬을 적용하는 클래스 */
-        .text-right-align {
-            text-align: right;
-        }
-    </style>
 </head>
 <body>
 <form id="doc_form" action="${pageContext.request.contextPath}/doc/buy_write" method="POST">
     <div class="container mt-4">
-        <!-- 기안용지 제목 -->
-        <div class="text-center mb-4">
-            <h1 class="header-cell">구매신청서</h1>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <table class="table table-bordered">
-                    <tr>
-                        <td class="table-secondary font-weight-bold text-center">문서번호</td>
-                        <td><input type="text" name="docId" value="${doc.docId}" readonly></td>
-                        <input type="hidden" name="docBuyId" value="${doc.docBuyId}">
-                    </tr>
-                    <tr>
-                        <td class="table-secondary font-weight-bold text-center">부&nbsp;&nbsp;&nbsp;서</td>
-                        <td>${dept.deptName}</td>
-                    </tr>
-                    <tr>
-                        <td class="table-secondary font-weight-bold text-center">기 안 자</td>
-                        <td>${writer.ename}</td>
-                        <input type="hidden" name="writer" value="${writer.empId}">
-                    </tr>
-                    <tr>
-                        <td class="table-secondary font-weight-bold text-center">작 성 일</td>
-                        <td>${doc.docCreateDate}</td>
-                    </tr>
-                </table>
+        <div class="document-wrapper">
+            <!-- 기안용지 제목 -->
+            <div class="text-center mb-4">
+                <h1 class="header-cell">구매신청서</h1>
             </div>
-            <!-- 결재자 테이블 -->
-            <div class="col-md-6">
-                <jsp:include page="sign_edit.jsp"/>
-            </div>
-        </div>
 
-        <!-- 기타 정보 테이블 -->
-        <table class="table table-bordered mt-4 item_table" id="itemTable">
-            <tr>
-                <th colspan="1" class="table-secondary font-weight-bold text-center">제목</th>
-                <td colspan="5">
-                    <input type="text" name="title" class="form-control" placeholder="제목을 입력하세요" data-name="제목"
-                           value="${doc.docTitle}"
-                           required>
-                </td>
-            </tr>
-            <tr>
-                <th class="table-secondary font-weight-bold text-center item_form">품명</th>
-                <th class="table-secondary font-weight-bold text-center item_form">규격</th>
-                <th class="table-secondary font-weight-bold text-center item_form text-right-align">수량</th>
-                <th class="table-secondary font-weight-bold text-center item_form text-right-align">단가</th>
-                <th class="table-secondary font-weight-bold text-center item_form text-right-align">금액</th>
-                <th class="table-secondary font-weight-bold text-center" id="modify">추가/삭제</th>
-            </tr>
-            <c:forEach var="item" items="${doc.buyList}">
-                <tr class="item-row">
-                    <td><input type="text" class="form-control title-input" name="product_name" data-name="품명"
-                               value="${item.productName}" required>
-                    </td>
-                    <td><input type="text" class="form-control title-input" name="standard" data-name="규격"
-                               value="${item.standard}" required>
-                    </td>
-                    <td><input type="text" class="form-control title-input quantity text-right-align" name="quantity"
-                               value="${item.quantity}"
-                               data-name="수량" required></td>
-                    <td><input type="text" class="form-control title-input price text-right-align" name="price"
-                               value="${item.price}"
-                               data-name="단가" required></td>
-                    <td class="subTotal text-right-align"></td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-sm btn-light add-row">+</button>
-                        <button type="button" class="btn btn-sm btn-light remove-row">-</button>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <table class="table table-bordered">
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">문서번호</td>
+                            <td><input type="text" name="docId" value="${doc.docId}" readonly></td>
+                            <input type="hidden" name="docBuyId" value="${doc.docBuyId}">
+                        </tr>
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">부&nbsp;&nbsp;&nbsp;서</td>
+                            <td>${dept.deptName}</td>
+                        </tr>
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">기 안 자</td>
+                            <td>${writer.ename}</td>
+                            <input type="hidden" name="writer" value="${writer.empId}">
+                        </tr>
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">작 성 일</td>
+                            <td>${doc.docCreateDate.toLocalDate()}</td>
+                        </tr>
+                    </table>
+                </div>
+                <!-- 결재자 테이블 -->
+                <div class="col-md-6">
+                    <jsp:include page="sign_edit.jsp"/>
+                </div>
+            </div>
+
+            <!-- 기타 정보 테이블 -->
+            <table class="table table-bordered mt-4 item_table" id="itemTable">
+                <tr>
+                    <th colspan="1" class="table-secondary font-weight-bold text-center">제목</th>
+                    <td colspan="5">
+                        <input type="text" name="title" class="form-control" placeholder="제목을 입력하세요" data-name="제목"
+                               value="${doc.docTitle}"
+                               required>
                     </td>
                 </tr>
-            </c:forEach>
-            <tr>
-                <td colspan="4" class="table-secondary font-weight-bold text-center">합계</td>
-                <td id="total" class="text-right-align"></td>
-                <td class="table-secondary font-weight-bold text-center"></td>
-            </tr>
-            <tr>
-                <th colspan="6" class="table-secondary font-weight-bold text-center">내용</th>
-            </tr>
-            <tr>
-                <td colspan="6">
+                <tr>
+                    <th class="table-secondary font-weight-bold text-center item_form">품명</th>
+                    <th class="table-secondary font-weight-bold text-center item_form">규격</th>
+                    <th class="table-secondary font-weight-bold text-center item_form text-right-align">수량</th>
+                    <th class="table-secondary font-weight-bold text-center item_form text-right-align">단가</th>
+                    <th class="table-secondary font-weight-bold text-center item_form text-right-align">금액</th>
+                    <th class="table-secondary font-weight-bold text-center" id="modify">추가/삭제</th>
+                </tr>
+                <c:forEach var="item" items="${doc.buyList}">
+                    <tr class="item-row">
+                        <td><input type="text" class="form-control title-input" name="product_name" data-name="품명"
+                                   value="${item.productName}" required>
+                        </td>
+                        <td><input type="text" class="form-control title-input" name="standard" data-name="규격"
+                                   value="${item.standard}" required>
+                        </td>
+                        <td><input type="text" class="form-control title-input quantity text-right-align"
+                                   name="quantity"
+                                   value="${item.quantity}"
+                                   data-name="수량" required></td>
+                        <td><input type="text" class="form-control title-input price text-right-align" name="price"
+                                   value="${item.price}"
+                                   data-name="단가" required></td>
+                        <td class="subTotal text-right-align"></td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-sm btn-light add-row">+</button>
+                            <button type="button" class="btn btn-sm btn-light remove-row">-</button>
+                        </td>
+                    </tr>
+                </c:forEach>
+                <tr>
+                    <td colspan="4" class="table-secondary font-weight-bold text-center">합계</td>
+                    <td id="total" class="text-right-align"></td>
+                    <td class="table-secondary font-weight-bold text-center"></td>
+                </tr>
+                <tr>
+                    <th colspan="6" class="table-secondary font-weight-bold text-center">내용</th>
+                </tr>
+                <tr>
+                    <td colspan="6">
                     <textarea name="content" class="form-control" rows="4" placeholder="내용을 입력하세요" data-name="내용"
                               required>${doc.docContent}</textarea>
-                </td>
-            </tr>
-        </table>
-
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="button-container">
+            <button type="button" form="doc_form" class="btn btn-success" id="submit-button">수정완료</button>
+            <button type="reset" form="doc_form" class="btn btn-secondary">초기화</button>
+        </div>
     </div>
     <!-- 버튼 영역 -->
-    <div class="text-right mt-3">
-        <button type="button" form="doc_form" class="btn btn-success" id="submit-button">결재 상신</button>
-        <button type="reset" form="doc_form" class="btn btn-secondary">초기화</button>
-    </div>
 </form>
 <script>
     $(document).ready(function () {

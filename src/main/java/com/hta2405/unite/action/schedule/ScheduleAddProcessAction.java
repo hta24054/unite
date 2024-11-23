@@ -7,6 +7,7 @@ import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ScheduleDAO;
 import com.hta2405.unite.dto.Schedule;
+import com.hta2405.unite.util.CalendarDateTimeUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,27 +24,29 @@ public class ScheduleAddProcessAction implements Action {
 		String description = request.getParameter("description");
 		String startAt = request.getParameter("startAt");
 		String endAt = request.getParameter("endAt");
-		System.out.println("startAt=" + startAt);
-		System.out.println("endAt=" + endAt);
+		//System.out.println("startAt=" + startAt);
+		//System.out.println("endAt=" + endAt);
 		String bgColor = request.getParameter("bgColor");
 		int allDay = request.getParameter("allDay") == null ? 0 : Integer.parseInt(request.getParameter("allDay"));
 		
-		Schedule s = new Schedule();
+		Schedule schedule = new Schedule();
 		
-		s.setEmpId(empId);
-		s.setScheduleName(scheduleName);
-		s.setScheduleContent(description);
-		LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(startAt);
-		LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(endAt);
+		schedule.setEmpId(empId);
+		schedule.setScheduleName(scheduleName);
+		schedule.setScheduleContent(description);
+		//LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(startAt);
+		//LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(endAt);
+		LocalDateTime startDateTime = CalendarDateTimeUtil.parseDateTimeWithoutT(startAt);
+		LocalDateTime endDateTime = CalendarDateTimeUtil.parseDateTimeWithoutT(endAt);
 		
-		s.setScheduleStart(startDateTime);
-		s.setScheduleEnd(endDateTime);
-		s.setScheduleColor(bgColor);
-		s.setScheduleAllDay(allDay);
+		schedule.setScheduleStart(startDateTime);
+		schedule.setScheduleEnd(endDateTime);
+		schedule.setScheduleColor(bgColor);
+		schedule.setScheduleAllDay(allDay);
 		
 		ScheduleDAO sdao = new ScheduleDAO();
 		
-		int ok = sdao.insertSchedule(s);
+		int ok = sdao.insertSchedule(schedule);
 		response.getWriter().print(ok);
 		return null;
 	}

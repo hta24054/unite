@@ -1,12 +1,14 @@
 package com.hta2405.unite.dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Arrays;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -14,6 +16,7 @@ import javax.sql.DataSource;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.hta2405.unite.dto.Holiday;
 import com.hta2405.unite.dto.Schedule;
 import com.hta2405.unite.dto.ScheduleShare;
 
@@ -30,7 +33,7 @@ public class ScheduleDAO {
 	}
 
 	//일정 등록
-	public int insertSchedule(Schedule s) {
+	public int insertSchedule(Schedule schedule) {
 		int result = 0;
 		String sql = """
 			    INSERT INTO schedule
@@ -41,13 +44,13 @@ public class ScheduleDAO {
 	try(Connection con = ds.getConnection();
 		PreparedStatement pstmt = con.prepareStatement(sql);) {
 		
-		pstmt.setString(1, s.getEmpId());
-		pstmt.setString(2, s.getScheduleName());
-		pstmt.setString(3, s.getScheduleContent());
-		pstmt.setTimestamp(4, Timestamp.valueOf(s.getScheduleStart())); 
-        pstmt.setTimestamp(5, Timestamp.valueOf(s.getScheduleEnd()));
-		pstmt.setString(6, s.getScheduleColor());
-		pstmt.setInt(7, s.getScheduleAllDay());
+		pstmt.setString(1, schedule.getEmpId());
+		pstmt.setString(2, schedule.getScheduleName());
+		pstmt.setString(3, schedule.getScheduleContent());
+		pstmt.setTimestamp(4, Timestamp.valueOf(schedule.getScheduleStart())); 
+        pstmt.setTimestamp(5, Timestamp.valueOf(schedule.getScheduleEnd()));
+		pstmt.setString(6, schedule.getScheduleColor());
+		pstmt.setInt(7, schedule.getScheduleAllDay());
 		
 		result = pstmt.executeUpdate();//삽입 성공시 result는 1
 	} catch (Exception e) {
@@ -95,7 +98,7 @@ public class ScheduleDAO {
 	}
 
 	// 일정 수정
-	public int updateSchedule(Schedule s) {
+	public int updateSchedule(Schedule schedule) {
 		int result = 0;
 		String update_sql = """
 				UPDATE schedule
@@ -107,14 +110,14 @@ public class ScheduleDAO {
 		try(Connection con = ds.getConnection();
 			PreparedStatement pstmt = con.prepareStatement(update_sql);) {
 			
-			pstmt.setString(1, s.getScheduleName());
-	        pstmt.setTimestamp(2, Timestamp.valueOf(s.getScheduleStart()));
-	        pstmt.setTimestamp(3, Timestamp.valueOf(s.getScheduleEnd()));
-	        pstmt.setString(4, s.getScheduleColor());
-	        pstmt.setString(5, s.getScheduleContent());
-	        pstmt.setInt(6, s.getScheduleAllDay());
-	        pstmt.setInt(7, s.getScheduleId());
-	        pstmt.setString(8, s.getEmpId()); 
+			pstmt.setString(1, schedule.getScheduleName());
+	        pstmt.setTimestamp(2, Timestamp.valueOf(schedule.getScheduleStart()));
+	        pstmt.setTimestamp(3, Timestamp.valueOf(schedule.getScheduleEnd()));
+	        pstmt.setString(4, schedule.getScheduleColor());
+	        pstmt.setString(5, schedule.getScheduleContent());
+	        pstmt.setInt(6, schedule.getScheduleAllDay());
+	        pstmt.setInt(7, schedule.getScheduleId());
+	        pstmt.setString(8, schedule.getEmpId()); 
 	        
 	        result = pstmt.executeUpdate();
 	        if (result == 1)
@@ -128,7 +131,7 @@ public class ScheduleDAO {
 	}//updateSchedule end
 
 	// 일정 수정(드래그)
-	public int dragUpdateSchedule(Schedule s) {
+	public int dragUpdateSchedule(Schedule schedule) {
 		int result = 0;
 		String drag_update_sql = """
 				UPDATE schedule
@@ -139,11 +142,11 @@ public class ScheduleDAO {
 		try(Connection con = ds.getConnection();
 			PreparedStatement pstmt = con.prepareStatement(drag_update_sql);) {
 			
-			pstmt.setTimestamp(1, Timestamp.valueOf(s.getScheduleStart()));
-	        pstmt.setTimestamp(2, Timestamp.valueOf(s.getScheduleEnd()));
-	        pstmt.setInt(3, s.getScheduleAllDay());
-	        pstmt.setInt(4, s.getScheduleId());
-	        pstmt.setString(5, s.getEmpId());
+			pstmt.setTimestamp(1, Timestamp.valueOf(schedule.getScheduleStart()));
+	        pstmt.setTimestamp(2, Timestamp.valueOf(schedule.getScheduleEnd()));
+	        pstmt.setInt(3, schedule.getScheduleAllDay());
+	        pstmt.setInt(4, schedule.getScheduleId());
+	        pstmt.setString(5, schedule.getEmpId());
 
             result = pstmt.executeUpdate();
             if (result == 1)
@@ -174,7 +177,7 @@ public class ScheduleDAO {
 	}//deleteSchedule end
 	
 	// 공유 일정 등록
-	public int insertScheduleShare(Schedule s, ScheduleShare share) {
+	public int insertScheduleShare(Schedule schedule, ScheduleShare share) {
 	    int result = 0;
 	    int scheduleId = 0;
 
@@ -187,13 +190,13 @@ public class ScheduleDAO {
 	    try (Connection con = ds.getConnection();
 	         PreparedStatement pstmt = con.prepareStatement(sql);) {
 
-	        pstmt.setString(1, s.getEmpId());
-	        pstmt.setString(2, s.getScheduleName());
-	        pstmt.setString(3, s.getScheduleContent());
-	        pstmt.setTimestamp(4, Timestamp.valueOf(s.getScheduleStart()));
-	        pstmt.setTimestamp(5, Timestamp.valueOf(s.getScheduleEnd()));
-	        pstmt.setString(6, s.getScheduleColor());
-	        pstmt.setInt(7, s.getScheduleAllDay());
+	        pstmt.setString(1, schedule.getEmpId());
+	        pstmt.setString(2, schedule.getScheduleName());
+	        pstmt.setString(3, schedule.getScheduleContent());
+	        pstmt.setTimestamp(4, Timestamp.valueOf(schedule.getScheduleStart()));
+	        pstmt.setTimestamp(5, Timestamp.valueOf(schedule.getScheduleEnd()));
+	        pstmt.setString(6, schedule.getScheduleColor());
+	        pstmt.setInt(7, schedule.getScheduleAllDay());
 
 	        result = pstmt.executeUpdate();
 	        
@@ -220,7 +223,6 @@ public class ScheduleDAO {
 	            """;
 
 	            // share_emp 값에서 여러 공유자 ID를 가져옴
-	            //String[] shareEmpIds = share.getShareEmp().split(",");
 	            String[] shareEmpIds = share.getShareEmp() != null ? share.getShareEmp().split(",") : new String[0];
 
 	            // 공유자 각각을 개별 행으로 추가
@@ -304,6 +306,35 @@ public class ScheduleDAO {
 		    System.out.println("share_sql array " + array);
 		    return array;
 	}//getListSharedSchedule end
+
+	// 공휴일 리스트
+	public List<Holiday> getHoliday(LocalDate startDate, LocalDate endDate) {
+		ArrayList<Holiday> HolidayList = new ArrayList<>();
+        String sql = """
+                    SELECT * 
+					FROM HOLIDAY
+					WHERE HOLIDAY_DATE BETWEEN ? AND ?
+					AND holiday_name NOT IN ('토요일', '일요일')
+					ORDER BY HOLIDAY_DATE
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, Date.valueOf(startDate));
+            ps.setDate(2, Date.valueOf(endDate));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Holiday holiday = new Holiday(rs.getLong("holiday_id"),
+                        rs.getDate("holiday_date").toLocalDate(),
+                        rs.getString("holiday_name"));
+                HolidayList.add(holiday);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        
+        System.out.println("HolidayList " + HolidayList);
+        return HolidayList;
+	}
 	
 	
 }

@@ -23,11 +23,18 @@
             width: 100%;
         }
 
+        #tree_table {
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         /* 제목 스타일 */
         .title {
             color: #334466;
             font-size: 18px;
-            margin: 0; /* 기본 마진 제거 */
+            margin: 0;
             font-weight: bold;
             border-bottom: 1px solid black;
             padding-bottom: 10px;
@@ -37,13 +44,38 @@
             margin-bottom: 25px;
         }
 
-        #tree_table {
-            text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        /* 검색창 스타일 */
+        .search-container-inline {
+            display: inline-flex; /* 제목과 같은 줄에 배치 */
+            align-items: center; /* 수직 중앙 정렬 */
+            margin-left: 20px; /* 제목과 검색창 사이 간격 */
         }
 
+        .search-container-inline input {
+            width: 300px; /* 검색창 너비 */
+            padding: 8px 16px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-container-inline input:focus {
+            border-color: #0066cc;
+        }
+
+        .search-container-inline button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        .search-container-inline img {
+            width: 20px;
+            height: 20px;
+        }
     </style>
 </head>
 <body>
@@ -57,7 +89,15 @@
 
         <!-- 직원 목록 테이블 영역 -->
         <div id="employeeTableContainer">
-            <h5 class="title">직원 목록</h5>
+            <h5 class="title">
+                직원 목록
+                <div class="search-container-inline">
+                    <input type="text" id="searchInput" placeholder="직원 이름 검색">
+                    <button id="searchButton">
+                        <img src="https://img.icons8.com/ios-glyphs/30/000000/search.png" alt="Search Icon">
+                    </button>
+                </div>
+            </h5>
             <table class="table table-bordered mt-4" id="tree_table">
                 <thead>
                 <tr>
@@ -75,10 +115,27 @@
     </div>
 </div>
 <script>
+    $(document).ready(function () {
+        // 검색 버튼 클릭 이벤트
+        $('#searchButton').on('click', function (event) {
+            event.preventDefault(); // 폼 제출 막기
+            const searchQuery = $('#searchInput').val().trim();
+            executeSearch(searchQuery);
+        });
+
+        // 검색 입력 필드에서 엔터 키 입력 처리
+        $('#searchInput').on('keypress', function (event) {
+            if (event.which === 13) { // Enter 키 코드
+                const searchQuery = this.value.trim();
+                executeSearch(searchQuery);
+            }
+        });
+    });
+
     $("#tree").fancytree({
         source: [
             {
-                title: "대표이사", key: "1000", folder: true, children: [
+                title: "대표이사", key: "1000", expanded: true, folder: true, children: [
                     {title: "부사장", key: "1001", folder: true},
                     {
                         title: "경영기획본부", key: "1100", folder: true, children: [
@@ -114,8 +171,8 @@
             loadEmployees(deptId);
         }
     });
-    showInitialMessage();
 
+    // 부서 선택 시 직원 목록 로드
     function loadEmployees(deptId) {
         $.ajax({
             url: '${pageContext.request.contextPath}/emp/empTree',
@@ -127,10 +184,30 @@
         });
     }
 
+    // 검색 실행 함수
+    function executeSearch(searchQuery) {
+        // 검색어가 비어 있으면 초기 메시지 표시 후 종료
+        if (!searchQuery || searchQuery === "") {
+            showInitialMessage();
+            return;
+        }
+
+        // 검색어를 백엔드로 전송
+        $.ajax({
+            url: '${pageContext.request.contextPath}/emp/search',
+            method: 'GET',
+            data: {query: searchQuery},
+            success: function (data) {
+                updateEmployeeTable(data.empList, data.jobName);
+            }
+        });
+    }
+
+    // 직원 테이블 업데이트
     function updateEmployeeTable(empList, jobName) {
         const tableBody = $('#employeeTableBody');
-        tableBody.empty();
-        $('#noDataMessage').remove()
+        tableBody.empty(); // 기존 테이블 내용 비우기
+        $('#noDataMessage').remove(); // 기존 메시지가 있다면 제거
 
         if (empList.length === 0) {
             tableBody.append("<tr><td colspan='4'>직원이 없습니다.</td></tr>");
@@ -147,10 +224,11 @@
         }
     }
 
-    //부서 선택 전
+    // 초기 메시지 표시 함수
     function showInitialMessage() {
         const tableBody = $('#employeeTableBody');
-        tableBody.empty();
+        tableBody.empty(); // 기존 테이블 내용 비우기
+        $('#noDataMessage').remove(); // 기존 메시지가 있다면 제거
         $('#employeeTableContainer').append(
             "<div id='noDataMessage' style='text-align: center; padding: 20px; font-weight: bold;'>부서를 선택해주세요</div>"
         );

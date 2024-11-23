@@ -36,6 +36,6 @@ public class Emp {
     private boolean married;
     private boolean child;
     private String etype;
-    private int vacationCount;
+    private Long vacationCount;
     private boolean hired;
 }

@@ -17,6 +17,7 @@
     </script>
 	<jsp:include page="../common/header.jsp"/>
 	<jsp:include page="project_leftbar.jsp"/>
+	
 </head>
 <body>
 	<div class="rows">

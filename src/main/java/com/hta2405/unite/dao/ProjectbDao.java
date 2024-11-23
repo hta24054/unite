@@ -4,13 +4,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.hta2405.unite.dto.ProjectDetail;
 import com.hta2405.unite.dto.ProjectTask;
 
@@ -69,7 +70,7 @@ public class ProjectbDao {
 	                task_file_path, task_file_original, task_file_uuid, task_file_type) VALUES
 	                (?, ?, ?, ?, sysdate, ?, ?, ?, ?)
 	    """;
-	    String updateSql = "UPDATE task SET task_subject = ?, task_content = ?, task_update_date = sysdate, task_file_path = ?, task_file_original = ?, task_file_uuid = ?, task_file_type = ? WHERE emp_id = ? AND project_id = ?";
+	    String updateSql = "UPDATE task SET task_subject = ?, task_content = ?, task_date = sysdate, task_file_path = ?, task_file_original = ?, task_file_uuid = ?, task_file_type = ? WHERE emp_id = ? AND project_id = ?";
 
 	    try (Connection conn = ds.getConnection()) {
 	        conn.setAutoCommit(false);  // 트랜잭션 시작
@@ -322,10 +323,12 @@ public class ProjectbDao {
 	    int startrow = (page - 1) * limit + 1; // 읽기 시작할 row 번호
 	    int endrow = startrow + limit - 1; // 읽을 마지막 row 번호
 	    
+	    String count_comment_sql = "SELECT COUNT(*) FROM task_comment WHERE task_id = ?";
+	    
 	    try (Connection con = ds.getConnection();
 	         PreparedStatement pstmt = con.prepareStatement(task_list_sql)) {
 	        
-	    	pstmt.setInt(1, projectid);
+	        pstmt.setInt(1, projectid);
 	        pstmt.setString(2, userid);
 	        pstmt.setInt(3, endrow);
 	        pstmt.setInt(4, startrow);
@@ -335,15 +338,26 @@ public class ProjectbDao {
 	            while (rs.next()) {
 	                ProjectTask task = new ProjectTask();
 	                task.setProjectTitle(rs.getString("task_subject"));
-                    task.setProjectContent(rs.getString("task_content"));
-                    task.setProjectDate(rs.getString("task_date") != null ? rs.getString("task_date").substring(0,16) : "");
-                    task.setProjectUpdateDate(rs.getString("task_update_date") != null ? rs.getString("task_update_date").substring(0,16) : "");
-                    task.setTask_file_original(rs.getString("task_file_original"));
-                    task.setTask_file_uuid(rs.getString("task_file_uuid"));
-                    task.setTask_file_type(rs.getString("task_file_type"));
+	                task.setProjectContent(rs.getString("task_content"));
+	                task.setProjectDate(rs.getString("task_date") != null ? rs.getString("task_date").substring(0, 16) : "");
+	                task.setProjectUpdateDate(rs.getString("task_update_date") != null ? rs.getString("task_update_date").substring(0, 16) : "");
+	                task.setTask_file_original(rs.getString("task_file_original"));
+	                task.setTask_file_uuid(rs.getString("task_file_uuid"));
+	                task.setTask_file_type(rs.getString("task_file_type"));
 	                
-                    task.setTaskNum(rs.getInt("task_id")); //글번호
-                    task.setMemberId(userid);
+	                task.setTaskNum(rs.getInt("task_id")); // 글번호
+	                task.setMemberId(userid);
+	                
+	                // 댓글 수를 가져오는 쿼리 실행
+	                try (PreparedStatement countPstmt = con.prepareStatement(count_comment_sql)) {
+	                    countPstmt.setInt(1, rs.getInt("task_id"));
+	                    try (ResultSet countRs = countPstmt.executeQuery()) {
+	                        if (countRs.next()) {
+	                            task.setBoard_cnt(countRs.getInt(1)); // 댓글 수 설정
+	                        }
+	                    }
+	                }
+	                
 	                tasklist.add(task);
 	            }
 	        }
@@ -354,6 +368,7 @@ public class ProjectbDao {
 	    
 	    return tasklist;
 	}
+
 
 	public ProjectDetail getFileByUUID(String fileUUID, String userid, int projectid) {
 		String sql = "select task_file_uuid from task where fileUUID = ? and userid = ? and projectid = ?";
@@ -383,6 +398,7 @@ public class ProjectbDao {
 	                task.setProjectTitle(rs.getString("task_subject"));
 	                task.setProjectContent(rs.getString("task_content"));
 	                task.setMemberId(rs.getString("emp_id"));
+	                task.setTaskNum(rs.getInt("task_id"));
 	                
 	                taskList.add(task);
 	            }
@@ -393,15 +409,379 @@ public class ProjectbDao {
 	    return taskList;
 	}
 
+	public boolean modify(ProjectTask modify) {
+		String update_sql = "update task set task_subject = ?, task_content = ?, task_update_date = sysdate where task_id = ? and project_id = ?";
+		try(Connection con = ds.getConnection();
+				PreparedStatement pstmt = con.prepareStatement(update_sql);){
+			pstmt.setString(1, modify.getProjectTitle());
+			pstmt.setString(2, modify.getProjectContent());
+			pstmt.setInt(3, modify.getTaskNum());
+			pstmt.setInt(4, modify.getProjectId());
+			int result = pstmt.executeUpdate();
+			if(result == 1) {
+				System.out.println("성공 업데이트");
+				return true;
+			}
+		}catch(Exception ex) {
+			System.out.println("boardModify() 에러 : " + ex);
+		}
+		return false;
+	}
+
+	public boolean boardDelete(int task_num) {
+	    String delete_sql = "DELETE FROM task WHERE task_id = ?";
+	    try (Connection con = ds.getConnection();
+	         PreparedStatement pstmt = con.prepareStatement(delete_sql)) {
+	        pstmt.setInt(1, task_num);  
+	        int result = pstmt.executeUpdate();  
+	        if (result == 1) {
+	            System.out.println("게시물 삭제 성공");
+	            return true;
+	        } else {
+	            System.out.println("삭제된 게시물이 없습니다.");
+	            return false;
+	        }
+	    } catch (Exception ex) {
+	        System.out.println("boardDelete() 에러 : " + ex);
+	        ex.printStackTrace();
+	    }
+	    return false;
+	}
+
+	/*public int commentsInsert(ProjectTask task_comment) {
+	    int result = 0;
+	    String insert_sql = """
+	        INSERT INTO task_comment (task_comment_writer, task_id, task_comment_content, task_comment_re_ref, task_comment_re_seq, task_comment_re_lev, task_comment_date)
+	        VALUES (?, ?, ?, ?, ?, seq_task_comment.nextval, sysdate)
+	    """;
+
+	    // re_ref, re_seq, re_lev 값을 설정하는 로직
+	    int re_ref = task_comment.getBoard_re_lev() == 0 ? task_comment.getTaskNum() : task_comment.getBoard_re_lev(); // 댓글이 새로 생성될 때 re_ref 설정
+	    int re_seq = task_comment.getBoard_re_seq();
+	    int re_lev = task_comment.getBoard_re_lev() + 1;
+
+	    try (Connection con = ds.getConnection(); PreparedStatement pstmt = con.prepareStatement(insert_sql)) {
+	        pstmt.setString(1, task_comment.getMemberId());
+	        pstmt.setInt(2, task_comment.getTaskNum());
+	        pstmt.setString(3, task_comment.getTaskContent());
+	        pstmt.setInt(4, re_ref);  // re_ref 값 설정
+	        pstmt.setInt(5, re_seq);  // re_seq 값 설정
+
+	        result = pstmt.executeUpdate();
+	        if (result == 1) System.out.println("데이터 삽입 완료되었습니다");
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return result;
+	}*/
+
+
+	//comment 개수
+	public int getListCount(int comment_board_num) {
+		String sql = "select count(*) from task_comment where task_id = ?";
+		int x = 0; 
+		try(Connection con = ds.getConnection();
+				PreparedStatement pstmt = con.prepareStatement(sql);){
+			pstmt.setInt(1, comment_board_num);
+			try(ResultSet rs = pstmt.executeQuery()){
+				if(rs.next()) x = rs.getInt(1);
+			}
+		}catch(Exception ex) {
+			ex.printStackTrace();
+			System.out.println("getListCount() 에러 : " + ex);
+		}
+		return x;
+	}
+
+	public JsonArray getCommentList(int comment_board_num, int state) {
+		JsonArray ja = new JsonArray();
+		String select = """
+				select task_comment_id, task_comment_writer, task_comment_content, task_comment_date, task_comment_re_lev, task_comment_re_seq, task_comment_re_ref, emp.img_original, emp.ename
+				from task_comment join emp on task_comment.task_comment_writer = emp.emp_id 
+				where task_id = ? order by task_comment_re_ref %s, task_comment_re_seq asc
+				""".formatted(state==1 ? "asc" : "desc");
+		try(Connection con = ds.getConnection();
+				PreparedStatement pstmt = con.prepareStatement(select);){
+			pstmt.setInt(1, comment_board_num);
+			try(ResultSet rs = pstmt.executeQuery()){
+				while(rs.next()) {
+					JsonObject object = new JsonObject();
+					object.addProperty("task_comment_id", rs.getInt(1));
+					object.addProperty("task_comment_writer", rs.getString(2));
+					object.addProperty("task_comment_content", rs.getString(3));
+					object.addProperty("task_comment_date", rs.getString(4));
+					object.addProperty("task_comment_re_lev", rs.getInt(5));
+					object.addProperty("task_comment_re_seq", rs.getInt(6));
+					object.addProperty("task_comment_re_ref", rs.getInt(7));
+					object.addProperty("img_original", rs.getString(8));
+					object.addProperty("ename", rs.getString(9));
+					ja.add(object);
+				}
+			}
+		}catch(Exception e) {
+			System.out.println("getCommentList()에러 : " + e);
+		}
+		return ja;
+	}
+
+	public int getParentLev(int taskNum, int parentCommentId) {
+	    int parentLev = 0;
+
+	    String query = "SELECT task_comment_re_lev FROM task_comment WHERE task_id = ? AND task_comment_id = ?";
+	    try (Connection con = ds.getConnection(); 
+	         PreparedStatement pstmt = con.prepareStatement(query)) {
+	        pstmt.setInt(1, taskNum);
+	        pstmt.setInt(2, parentCommentId);
+
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            parentLev = rs.getInt("task_comment_re_lev");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return parentLev;
+	}
+	
+	public int getNextReSeq(int taskNum, int parentCommentId) {
+	    int nextReSeq = 0;
+
+	    String query = "SELECT MAX(task_comment_re_seq) AS max_seq FROM task_comment WHERE task_id = ? AND task_comment_re_ref = ?";
+	    try (Connection con = ds.getConnection(); 
+	         PreparedStatement pstmt = con.prepareStatement(query)) {
+	        pstmt.setInt(1, taskNum);
+	        pstmt.setInt(2, parentCommentId); // 부모 댓글 ID
+
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            nextReSeq = rs.getInt("max_seq") + 1;
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return nextReSeq;
+	}
+	
+
+	public int getMaxSeq(int ref){
+	    String sql = "SELECT NVL(MAX(task_comment_re_seq), 0) + 1 AS max_seq FROM task_comment WHERE task_comment_re_ref = ?";
+	    
+	    try (Connection con = ds.getConnection();PreparedStatement pstmt = con.prepareStatement(sql)) {
+	        pstmt.setInt(1, ref);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            return rs.getInt("max_seq");
+	        }
+	    }catch(Exception e) {
+	    	e.printStackTrace();
+	    }
+	    return 1; // 기본값
+	}
+	public int commentsInsert(ProjectTask taskComment) {
+		String sql = "INSERT INTO task_comment (task_comment_id, task_comment_writer, task_id, task_comment_content, task_comment_date, task_comment_re_lev, task_comment_re_seq, task_comment_re_ref) "
+		           + "VALUES (seq_task_comment.nextval, ?, ?, ?, SYSDATE, ?, ?, seq_task_comment.nextval)";
+
+	    int result = 0;
+	    try (Connection con = ds.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql)) {
+	        pstmt.setString(1, taskComment.getMemberId());
+	        pstmt.setInt(2, taskComment.getTaskNum());
+	        pstmt.setString(3, taskComment.getTaskContent());
+	        pstmt.setInt(4, taskComment.getBoard_re_lev()); // task_comment_id를 task_comment_re_seq로 설정
+	        pstmt.setInt(5, taskComment.getBoard_re_seq()); // 대댓글이면 lev = 1
+	        result = pstmt.executeUpdate();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return result;
+	}
+
+
+	public int getMaxSeq(int taskNum, int parentSeq) {
+	    int maxSeq = 0;
+	    String sql = "SELECT MAX(board_re_seq) FROM task_comment WHERE task_id = ? AND board_re_ref = ?";
+	    try (Connection con = ds.getConnection();
+	         PreparedStatement pstmt = con.prepareStatement(sql)) {
+	        pstmt.setInt(1, taskNum);
+	        pstmt.setInt(2, parentSeq);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            maxSeq = rs.getInt(1);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return maxSeq;
+	}
+
+	public int getNextTaskCommentId() {
+	    String sql = "SELECT task_comment_id_seq.NEXTVAL FROM dual"; // 시퀀스에서 다음 값을 가져오는 쿼리
+	
+	    try (Connection con = ds.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql)) {
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            return rs.getInt(1);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return 0; // 기본값
+	}
+
+	public int getParentSeq(int taskNum, int parentCommentId) {
+	    String sql = "SELECT task_comment_re_seq FROM task_comment WHERE task_id = ? AND task_comment_id = ?";
+	    
+	    try (Connection con = ds.getConnection();
+	         PreparedStatement pstmt = con.prepareStatement(sql)) {
+	        pstmt.setInt(1, taskNum);
+	        pstmt.setInt(2, parentCommentId);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            return rs.getInt("task_comment_re_seq");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return 0; // 부모 댓글이 없을 경우 기본값
+	}
+
+
+	public int getParentLev(int parentRef) {
+	    String sql = "SELECT task_comment_re_lev FROM task_comment WHERE task_comment_re_seq = ?";
+	    
+	    try (Connection con = ds.getConnection();
+	         PreparedStatement pstmt = con.prepareStatement(sql)) {
+	        pstmt.setInt(1, parentRef);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            return rs.getInt("task_comment_re_lev");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return 0; // 부모 댓글이 없을 경우 기본값
+	}
+	
+
+	public int getTaskCommentId(int taskNum) {
+	    String sql = "select task_comment_id from (select task_comment_id from task_comment where task_id = ? order by task_comment_date asc) where rownum = 1"; // 첫 번째 댓글의 task_comment_id 가져오기
+	    
+	    try (Connection con = ds.getConnection();
+	         PreparedStatement pstmt = con.prepareStatement(sql)) {
+	        pstmt.setInt(1, taskNum);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            return rs.getInt("task_comment_id"); // 첫 번째 댓글의 task_comment_id 반환
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return 0; // 첫 번째 댓글이 없을 경우 기본값
+	}
+
+	public int commentsReply(ProjectTask t) {
+	    int result = 0;
+	    try (Connection con = ds.getConnection();){
+	        con.setAutoCommit(false);
+	        try {
+	            // 대댓글 추가 전, 기존 대댓글들의 순서를 업데이트
+	            reply_update(con, t.getBoard_re_ref(), t.getBoard_re_seq());
+	            
+	            // 대댓글 삽입
+	            result = reply_insert(con, t);
+	            
+	            con.commit();
+	        } catch (Exception e) {
+	            e.printStackTrace(); // 오류 확인용
+	            if (con != null) {
+	                try { con.rollback(); }
+	                catch (SQLException ex) { ex.printStackTrace(); }
+	            }
+	        }
+	        con.setAutoCommit(true);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return result;
+	}
+
+
+	private void reply_update(Connection con, int board_re_ref, int board_re_seq) throws SQLException {
+	    String update_sql = "update task_comment set task_comment_re_seq = task_comment_re_seq + 1 where task_comment_re_ref = ? and task_comment_re_seq > ?";
+	    try (PreparedStatement pstmt = con.prepareStatement(update_sql);) {
+	        pstmt.setInt(1, board_re_ref);
+	        pstmt.setInt(2, board_re_seq);
+	        pstmt.executeUpdate();
+	    }
+	}
+
+	
+	private int reply_insert(Connection con, ProjectTask t) {
+	    int result = 0;
+	    String insert_sql = """
+	        insert into task_comment (task_comment_id, task_comment_writer, task_comment_content, task_id, task_comment_date, task_comment_re_lev, task_comment_re_seq, task_comment_re_ref)
+	        values(seq_task_comment.nextval, ?, ?, ?, sysdate, ?, ?, ?)
+	        """;
+	    try(PreparedStatement pstmt = con.prepareStatement(insert_sql);){
+	        pstmt.setString(1, t.getMemberId());
+	        pstmt.setString(2, t.getProjectContent());
+	        pstmt.setInt(3, t.getTaskNum());
+
+	        // lev는 부모 댓글의 lev + 1로 설정
+	        pstmt.setInt(4, t.getBoard_re_lev() + 1); // 대댓글이므로 부모 댓글의 lev + 1
+
+	        // seq는 부모 댓글의 seq 이후로 설정
+	        pstmt.setInt(5, t.getBoard_re_seq() + 1); // 부모 댓글 seq + 1
+	        
+	        pstmt.setInt(6, t.getBoard_re_ref()); // 부모 댓글의 ref 값 사용
+
+	        result = pstmt.executeUpdate();
+	        if(result == 1) System.out.println("데이터 삽입 완료되었습니다");
+	    } catch(SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return result;
+	}
+
+	public int commentsDelete(int num) {
+		int result = 0;
+		String del_sql = "delete task_comment where task_comment_id = ?";
+		try(Connection con = ds.getConnection();
+				PreparedStatement pstmt = con.prepareStatement(del_sql);){
+			pstmt.setInt(1, num);
+			result = pstmt.executeUpdate();
+			if(result == 1) System.out.println("데이터 삭제 되었습니다.");
+		}catch(Exception se) {
+			se.printStackTrace();
+		}
+		return result;
+	}
+
+	public int commentsUpdate(ProjectTask comment) {
+		int result = 0;
+		String sql = "update task_comment set task_comment_content = ?, task_comment_date = sysdate where task_comment_id = ?";
+		
+		try (Connection con = ds.getConnection();
+				PreparedStatement pstmt = con.prepareStatement(sql);){
+			pstmt.setString(1, comment.getTaskContent());
+			pstmt.setInt(2, comment.getProjectId());
+			result = pstmt.executeUpdate();
+			if(result == 1) System.out.println("데이터 수정 되었습니다.");
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+
+
+
+
+
 	
 }
-
-	
-
-
-
-   
-
 
 
 

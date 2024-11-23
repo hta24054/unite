@@ -6,10 +6,6 @@
 <head>
     <meta charset="UTF-8">
     <title>근태 관리</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="attend_leftbar.jsp"/>
     <style>
@@ -27,6 +23,7 @@
             color: black;
             margin: 0;
         }
+
         caption {
             caption-side: top;
             margin-bottom: 30px;
@@ -43,7 +40,7 @@
 <body>
 <h2 id="main_title">부서원 근태 관리(${deptName}) - 직원 목록</h2>
 <div class="container">
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped table-bordered shadow-sm p-3 mb-5 bg-body rounded">
         <thead>
         <tr>
             <th>성명</th>
@@ -55,7 +52,9 @@
         <tbody>
         <c:forEach var="emp" items="${empList}">
             <tr>
-                <td><a href="${pageContext.request.contextPath}/attend/emp?emp=${emp.empId}&year=<%=LocalDate.now().getYear()%>&month=<%=LocalDate.now().getMonthValue()%>">${emp.ename}</a></td>
+                <td>
+                    <a href="${pageContext.request.contextPath}/attend/emp?empId=${emp.empId}&year=<%=LocalDate.now().getYear()%>&month=<%=LocalDate.now().getMonthValue()%>">${emp.ename}</a>
+                </td>
                 <td>${deptMap[emp.deptId]}</td>
                 <td>${jobMap[emp.jobId]}</td>
                 <td>${emp.tel}</td>

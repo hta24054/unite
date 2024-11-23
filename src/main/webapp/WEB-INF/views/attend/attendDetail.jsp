@@ -3,6 +3,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html>
 <head>
+
     <meta charset="UTF-8">
     <title>근태 관리</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
@@ -56,8 +57,6 @@
         #specify th {
             width: 20%;
         }
-
-        /* 캡션과 테이블 간격 설정 */
     </style>
 </head>
 <body>
@@ -65,12 +64,12 @@
 <div class="container">
     <!-- 연도와 월 변경 -->
     <div class="text-center my-4">
-        <button id="prevMonth" class="btn btn-outline-primary">&lt;</button>
-        <span id="currentYearMonth" style="font-weight: bold">${param.year}년 ${param.month}월</span>
-        <button id="nextMonth" class="btn btn-outline-primary">&gt;</button>
+        <button id="prevMonth" class="btn btn-outline-dark">&lt;</button>
+        <span id="currentYearMonth" style="font-weight: bold; font-size: 25px">&nbsp;&nbsp;${param.year}년 ${param.month}월&nbsp;&nbsp;</span>
+        <button id="nextMonth" class="btn btn-outline-dark">&gt;</button>
     </div>
     <%--    요약 테이블--%>
-    <table class="table table-striped table-bordered" id="report">
+    <table class="table table-striped table-bordered shadow-sm p-3 mb-5 bg-body rounded" id="report">
         <thead>
         <tr>
             <th>당월 근무일</th>
@@ -93,7 +92,7 @@
     <br>
     <br>
     <!-- 근태 관리 테이블 -->
-    <table class="table table-striped table-bordered" id="specify">
+    <table class="table table-striped table-bordered shadow-sm p-3 mb-5 bg-body rounded" id="specify">
         <thead>
         <tr>
             <th>날짜</th>
@@ -131,12 +130,12 @@
                 </td>
                 <td class="attend-type">
                     <c:choose>
-                        <c:when test="${not empty attend.attendType}">
-                            <c:if test="${attend.attendType == '결근'}">
-                                <span style="color: red;">${attend.attendType}</span>
+                        <c:when test="${not empty attend.attendType.typeName}">
+                            <c:if test="${attend.attendType.typeName == '결근'}">
+                                <span style="color: red;">${attend.attendType.typeName}</span>
                             </c:if>
-                            <c:if test="${attend.attendType != '결근'}">
-                                ${attend.attendType}
+                            <c:if test="${attend.attendType.typeName != '결근'}">
+                                ${attend.attendType.typeName}
                             </c:if>
                         </c:when>
                         <c:otherwise>-</c:otherwise>
@@ -223,7 +222,7 @@
 
         // title 수정(직원근태관리 일 경우 param에 있는 값)
         const params = new URLSearchParams(window.location.search);
-        const emp = params.get('emp'); // 'emp' 파라미터 값 가져오기
+        const emp = params.get('empId'); // 'emp' 파라미터 값 가져오기
         if (emp) { // 'emp' 파라미터가 존재할 경우
             $('#main_title').text('직원 근태 관리 - ' + '${targetEmp.ename}');
         }

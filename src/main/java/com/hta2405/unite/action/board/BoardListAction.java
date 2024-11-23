@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.BoardDao;
+import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dto.Post;
 import com.hta2405.unite.util.LocalDateTimeAdapter;
 
@@ -39,11 +40,7 @@ public class BoardListAction implements Action {
 		Long boardId = boardDao.getBoardListByName2(boardName2).getBoardId();
 		System.out.println("boardId="+boardId);
 		
-		
 		List<Post> postList = new ArrayList<>();
-		
-		// 올바른 접속 시도하는 경우에만 카운트 되도록하기 위해 세션에 저장합니다.
-		req.getSession().setAttribute("referer", "list");
 		
 		//로그인 성공시 파라미터 page가 없으므로 초기값 필요
 		int page = 1;	//보여줄 page
@@ -106,6 +103,7 @@ public class BoardListAction implements Action {
 		
 		System.out.println("현재 페이지에 보여줄 마지막 페이지 수 : "+endPage);
 		String state = req.getParameter("state");
+
 		
 		if(state == null) {
 			System.out.println("state==null");
@@ -124,6 +122,9 @@ public class BoardListAction implements Action {
 			req.setAttribute("postList", postList);
 			
 			req.setAttribute("limit", limit);
+
+			//emp의 ename을 구하기 위한 hashMap
+			req.setAttribute("empMap",new EmpDao().getIdToENameMap());
 			
 			ActionForward forward = new ActionForward();
 			forward.setRedirect(false);
@@ -136,6 +137,7 @@ public class BoardListAction implements Action {
 			
 			//위에서 request로 담았던 것을 JsonObject에 담습니다.
 			JsonObject object = new JsonObject();
+			object.addProperty("boardName2", boardName2);
 			object.addProperty("page", page);//{"page": 변수 page의 값} 형식으로 저장
 			object.addProperty("maxPage", maxPage);
 			object.addProperty("startPage", startPage);
@@ -151,6 +153,12 @@ public class BoardListAction implements Action {
 			JsonElement je = gson.toJsonTree(postList);
 			System.out.println("postList="+je.toString());
 			object.add("postList", je);
+
+			//emp의 ename을 구하기 위한 hashMap
+			JsonElement jeEmpMap = gson.toJsonTree(new EmpDao().getIdToENameMap());
+			System.out.println("empMap="+jeEmpMap.toString());
+			object.add("empMap", jeEmpMap);
+			
 			
 			resp.setContentType("application/json;charset=utf-8");
 			resp.getWriter().print(object);

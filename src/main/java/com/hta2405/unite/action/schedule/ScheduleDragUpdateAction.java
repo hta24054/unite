@@ -7,6 +7,7 @@ import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ScheduleDAO;
 import com.hta2405.unite.dto.Schedule;
+import com.hta2405.unite.util.CalendarDateTimeUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,19 +25,22 @@ public class ScheduleDragUpdateAction implements Action {
 		String endAt = req.getParameter("endAt");
 		int allDay = req.getParameter("allDay") == null ? 0 : Integer.parseInt(req.getParameter("allDay"));
 		
-		Schedule s = new Schedule();
+		Schedule schedule = new Schedule();
+		schedule.setScheduleId(scheduleId);
+		schedule.setEmpId(empId);
 		
-		s.setScheduleId(scheduleId);
-		s.setEmpId(empId);
-		LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(startAt);
-		LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(endAt);
-		s.setScheduleStart(startDateTime);
-		s.setScheduleEnd(endDateTime);
-		s.setScheduleAllDay(allDay);
+		//LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(startAt);
+		//LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(endAt);
+		LocalDateTime startDateTime = CalendarDateTimeUtil.parseDateTimeWithoutT(startAt);
+		LocalDateTime endDateTime = CalendarDateTimeUtil.parseDateTimeWithoutT(endAt);
 		
-		ScheduleDAO sdao = new ScheduleDAO();
+		schedule.setScheduleStart(startDateTime);
+		schedule.setScheduleEnd(endDateTime);
+		schedule.setScheduleAllDay(allDay);
 		
-		int ok = sdao.dragUpdateSchedule(s);
+		ScheduleDAO scheduleDao = new ScheduleDAO();
+		
+		int ok = scheduleDao.dragUpdateSchedule(schedule);
 		resp.getWriter().print(ok);
 		return null;
 	}

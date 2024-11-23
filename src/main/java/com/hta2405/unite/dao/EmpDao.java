@@ -1,11 +1,14 @@
 package com.hta2405.unite.dao;
 
+import com.hta2405.unite.dto.Cert;
 import com.hta2405.unite.dto.Emp;
+import com.hta2405.unite.dto.Lang;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class EmpDao {
@@ -18,6 +21,239 @@ public class EmpDao {
         } catch (Exception e) {
             System.out.println("DB연결 실패 " + e.getMessage());
         }
+    }
+
+    public int insertEmp(Emp emp, List<Cert> certList, List<Lang> langList) {
+        String sql = """
+                    INSERT INTO EMP(EMP_ID, PASSWORD, ENAME, DEPT_ID, JOB_ID, GENDER, EMAIL,
+                                    TEL, MOBILE, MOBILE2, IMG_PATH, IMG_ORIGINAL, IMG_UUID, IMG_TYPE,
+                                    HIREDATE, HIRETYPE, BIRTHDAY, BIRTHDAY_TYPE, SCHOOL, MAJOR, BANK,
+                                    ACCOUNT, ADDRESS, MARRIED, CHILD, ETYPE, VACATION_COUNT)
+                    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                            ?, ?, ?, ?, ?, ?)
+
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            conn.setAutoCommit(false);
+            ps.setString(1, emp.getEmpId());
+            ps.setString(2, emp.getPassword());
+            ps.setString(3, emp.getEname());
+            ps.setLong(4, emp.getDeptId());
+            ps.setLong(5, emp.getJobId());
+            ps.setString(6, emp.getGender());
+            ps.setString(7, emp.getEmail());
+            ps.setString(8, emp.getTel());
+            ps.setString(9, emp.getMobile());
+            ps.setString(10, emp.getMobile2());
+            ps.setString(11, emp.getImgPath());
+            ps.setString(12, emp.getImgOriginal());
+            ps.setString(13, emp.getImgUUID());
+            ps.setString(14, emp.getImgType());
+            ps.setString(15, String.valueOf(emp.getHireDate()));
+            ps.setString(16, emp.getHireType());
+            ps.setString(17, String.valueOf(emp.getBirthday()));
+            ps.setString(18, emp.getBirthdayType());
+            ps.setString(19, emp.getSchool());
+            ps.setString(20, emp.getMajor());
+            ps.setString(21, emp.getBank());
+            ps.setString(22, emp.getAccount());
+            ps.setString(23, emp.getAddress());
+            ps.setString(24, String.valueOf(emp.isMarried() ? 1 : 0));
+            ps.setString(25, String.valueOf(emp.isChild() ? 1 : 0));
+            ps.setString(26, emp.getEtype());
+            ps.setLong(27, emp.getVacationCount());
+            int result = ps.executeUpdate();
+            if (result != 1) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 0;
+            }
+            if (insertCert(certList, conn) != certList.size()) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 0;
+            }
+            if (insertLang(langList, conn) != langList.size()) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 0;
+            }
+            conn.commit();
+            conn.setAutoCommit(true);
+            return 1;
+        } catch (SQLException e) {
+            System.out.println("부서 회원 정보 가져오기 오류");
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int changePassword(Emp emp) {
+        String sql = """
+                    UPDATE EMP SET
+                    PASSWORD = ?
+                    WHERE EMP_ID = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, emp.getPassword());
+            ps.setString(2, emp.getEmpId());
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("회원정보 변경 오류");
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public int updateEmp(Emp emp, List<Cert> certList, List<Lang> langList) {
+        String sql = """
+                    UPDATE EMP SET
+                    ENAME = ?, DEPT_ID = ?, JOB_ID = ?, GENDER = ?,
+                    EMAIL = ?, TEL = ?, MOBILE = ?, MOBILE2 =?, IMG_PATH = ?, IMG_ORIGINAL = ?,
+                    IMG_UUID = ?, IMG_TYPE = ?, HIREDATE =?, HIRETYPE = ?, BIRTHDAY = ?, BIRTHDAY_TYPE = ?,
+                    SCHOOL = ?, MAJOR = ?, BANK =?, ACCOUNT = ?, ADDRESS = ?, MARRIED = ?, CHILD = ?, ETYPE = ?,
+                    VACATION_COUNT = ?, HIRED = ?
+                    WHERE EMP_ID = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            conn.setAutoCommit(false);
+            ps.setString(1, emp.getEname());
+            ps.setLong(2, emp.getDeptId());
+            ps.setLong(3, emp.getJobId());
+            ps.setString(4, emp.getGender());
+            ps.setString(5, emp.getEmail());
+            ps.setString(6, emp.getTel());
+            ps.setString(7, emp.getMobile());
+            ps.setString(8, emp.getMobile2());
+            ps.setString(9, emp.getImgPath());
+            ps.setString(10, emp.getImgOriginal());
+            ps.setString(11, emp.getImgUUID());
+            ps.setString(12, emp.getImgType());
+            ps.setDate(13, Date.valueOf(emp.getHireDate()));
+            ps.setString(14, emp.getHireType());
+            ps.setDate(15, Date.valueOf(emp.getBirthday()));
+            ps.setString(16, emp.getBirthdayType());
+            ps.setString(17, emp.getSchool());
+            ps.setString(18, emp.getMajor());
+            ps.setString(19, emp.getBank());
+            ps.setString(20, emp.getAccount());
+            ps.setString(21, emp.getAddress());
+            ps.setInt(22, emp.isMarried() ? 1 : 0);
+            ps.setInt(23, emp.isChild() ? 1 : 0);
+            ps.setString(24, emp.getEtype());
+            ps.setLong(25, emp.getVacationCount());
+            ps.setInt(26, emp.isHired() ? 1 : 0);
+            ps.setString(27, emp.getEmpId());
+            int result = ps.executeUpdate();
+            if (result != 1) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 0;
+            }
+            if (deleteCert(emp.getEmpId(), conn) == 0) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 0;
+            }
+            if (deleteLang(emp.getEmpId(), conn) == 0) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 0;
+            }
+            if (insertCert(certList, conn) != certList.size()) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 0;
+            }
+            if (insertLang(langList, conn) != langList.size()) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                return 0;
+            }
+            conn.commit();
+            conn.setAutoCommit(true);
+            return 1;
+        } catch (SQLException e) {
+            System.out.println("회원정보 변경 오류");
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    private int deleteLang(String empId, Connection conn) {
+        String sql = """
+                    DELETE Lang
+                    WHERE EMP_ID =?
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, empId);
+            ps.executeUpdate();
+            return 1;
+        } catch (SQLException e) {
+            System.out.println("어학정보 삭제 오류");
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private int deleteCert(String empId, Connection conn) {
+        String sql = """
+                    DELETE CERT
+                    WHERE EMP_ID =?
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, empId);
+            ps.executeUpdate();
+            return 1;
+        } catch (SQLException e) {
+            System.out.println("자격증 삭제 오류");
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private int insertLang(List<Lang> langList, Connection conn) {
+        String sql = """
+                    INSERT INTO LANG(LANG_NAME, EMP_ID)
+                    VALUES (?, ?)
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            for (Lang lang : langList) {
+                ps.setString(1, lang.getLangName());
+                ps.setString(2, lang.getEmpId());
+                ps.addBatch();
+            }
+            int[] result = ps.executeBatch();
+            return result.length;
+        } catch (SQLException e) {
+            System.out.println("회원 정보 가져오기 오류");
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private int insertCert(List<Cert> certList, Connection conn) {
+        String sql = """
+                    INSERT INTO CERT(CERT_NAME, EMP_ID)
+                    VALUES (?, ?)
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            for (Cert cert : certList) {
+                ps.setString(1, cert.getCertName());
+                ps.setString(2, cert.getEmpId());
+                ps.addBatch();
+            }
+            int[] result = ps.executeBatch();
+            return result.length;
+        } catch (SQLException e) {
+            System.out.println("회원 정보 가져오기 오류");
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public Emp getEmpById(String id) {
@@ -95,54 +331,6 @@ public class EmpDao {
         return list;
     }
 
-    public int updateEmp(Emp emp) {
-        String sql = """
-                    UPDATE EMP SET
-                    PASSWORD = ?, ENAME = ?, DEPT_ID = ?, JOB_ID = ?, GENDER = ?,
-                    EMAIL = ?, TEL = ?, MOBILE = ?, MOBILE2 =?, IMG_PATH = ?, IMG_ORIGINAL = ?,
-                    IMG_UUID = ?, IMG_TYPE = ?, HIREDATE =?, HIRETYPE = ?, BIRTHDAY = ?, BIRTHDAY_TYPE = ?,
-                    SCHOOL = ?, MAJOR = ?, BANK =?, ACCOUNT = ?, ADDRESS = ?, MARRIED = ?, CHILD = ?, ETYPE = ?,
-                    VACATION_COUNT = ?, HIRED = ?
-                    WHERE EMP_ID = ?
-                """;
-        try (Connection conn = ds.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, emp.getPassword());
-            ps.setString(2, emp.getEname());
-            ps.setLong(3, emp.getDeptId());
-            ps.setLong(4, emp.getJobId());
-            ps.setString(5, emp.getGender());
-            ps.setString(6, emp.getEmail());
-            ps.setString(7, emp.getTel());
-            ps.setString(8, emp.getMobile());
-            ps.setString(9, emp.getMobile2());
-            ps.setString(10, emp.getImgPath());
-            ps.setString(11, emp.getImgOriginal());
-            ps.setString(12, emp.getImgUUID());
-            ps.setString(13, emp.getImgType());
-            ps.setDate(14, Date.valueOf(emp.getHireDate()));
-            ps.setString(15, emp.getHireType());
-            ps.setDate(16, Date.valueOf(emp.getBirthday()));
-            ps.setString(17, emp.getBirthdayType());
-            ps.setString(18, emp.getSchool());
-            ps.setString(19, emp.getMajor());
-            ps.setString(20, emp.getBank());
-            ps.setString(21, emp.getAccount());
-            ps.setString(22, emp.getAddress());
-            ps.setInt(23, emp.isMarried() ? 1 : 0);
-            ps.setInt(24, emp.isChild() ? 1 : 0);
-            ps.setString(25, emp.getEtype());
-            ps.setInt(26, emp.getVacationCount());
-            ps.setInt(27, emp.isHired() ? 1 : 0);
-            ps.setString(28, emp.getEmpId());
-            return ps.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println("회원정보 변경 오류");
-            e.printStackTrace();
-            return 0;
-        }
-    }
-
     public List<Emp> getHiredEmpByDeptId(Long deptId) {
         List<Emp> list = new ArrayList<>();
         String sql = """
@@ -206,6 +394,40 @@ public class EmpDao {
         }
     }
 
+    public HashMap<String, String> getIdToENameMap() {
+        HashMap<String, String> map = new HashMap<>();
+        String sql = """
+                    SELECT emp_id, ename from EMP
+                """;
+        try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                map.put(rs.getString("emp_id"), rs.getString("ename"));
+            }
+        } catch (SQLException e) {
+            System.out.println("empMap 불러오기 에러");
+            e.printStackTrace();
+        }
+        return map;
+    }
+    
+    public HashMap<String, String> getIdToENameUUIDMap() {
+        HashMap<String, String> map = new HashMap<>();
+        String sql = """
+                    SELECT emp_id, img_uuid from EMP
+                """;
+        try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                map.put(rs.getString("emp_id"), rs.getString("img_uuid"));
+            }
+        } catch (SQLException e) {
+            System.out.println("empMap 불러오기 에러");
+            e.printStackTrace();
+        }
+        return map;
+    }
+
     private static Emp makeEmp(ResultSet rs) throws SQLException {
         return new Emp(rs.getString("emp_id"),
                 rs.getString("password"),
@@ -233,7 +455,73 @@ public class EmpDao {
                 rs.getInt("married") == 1,
                 rs.getInt("child") == 1,
                 rs.getString("etype"),
-                rs.getInt("vacation_count"),
+                rs.getLong("vacation_count"),
                 rs.getBoolean("hired"));
+    }
+
+    public String getImgOriginal(String uuid) {
+        String sql = """
+                    SELECT IMG_ORIGINAL FROM EMP
+                    WHERE IMG_UUID = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, uuid);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                return rs.getString(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
+    public List<Emp> searchEmp(String query) {
+        List<Emp> list = new ArrayList<>();
+        if (query == null || query.trim().isEmpty()) {
+            return list; // 빈 결과 반환
+        }
+        String sql = """
+                	SELECT * FROM EMP e JOIN JOB j
+                	ON e.JOB_ID = j.JOB_ID
+                    where ENAME LIKE ? and HIRED = 1
+                	ORDER BY j.JOB_RANK, e.emp_id
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "%" + query + "%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(makeEmp(rs));
+            }
+        } catch (SQLException e) {
+            System.out.println("부서 회원 정보 가져오기 오류");
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public int updateAllEmpVacCount() {
+        String sql = """
+                UPDATE EMP
+                    SET VACATION_COUNT = CASE
+                        WHEN MONTHS_BETWEEN(sysdate, HIREDATE) >= 36
+                            THEN GREATEST(0, LEAST(25, 15 + FLOOR((MONTHS_BETWEEN(sysdate, HIREDATE) / 12 - 2) / 2)))
+                        WHEN MONTHS_BETWEEN(sysdate, HIREDATE) >= 12
+                            THEN 15
+                        ELSE
+                            GREATEST(0, FLOOR(MONTHS_BETWEEN(sysdate, HIREDATE)))
+                    END
+                where 1=1
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.executeUpdate();
+            return 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

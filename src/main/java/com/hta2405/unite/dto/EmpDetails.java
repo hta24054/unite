@@ -18,9 +18,9 @@ public class EmpDetails {
 	private Emp emp;
 	private List<Emp> empList;
 	private Job job;
-	private List<Lang> langList; // Lang 리스트 추가
-	private List<Cert> certList; // Cert 리스트 추가
+	private List<Lang> langList; 
+	private List<Cert> certList; 
 	private Dept dept;
-	private Lang lang; // 단일 Lang 필드 
-	private Cert cert; // 단일 Cert 필드
+	private Lang lang;  
+	private Cert cert; 
 }

@@ -5,33 +5,13 @@
 <head>
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="doc_leftbar.jsp"/>
-
+    <link href="${pageContext.request.contextPath}/css/doc.css" rel="stylesheet">
     <meta charset="UTF-8">
     <title>휴가신청서</title>
-    <style>
-        .header-cell {
-            font-size: 36px;
-            font-weight: bold;
-            padding: 20px 0;
-        }
-
-        .title-input, .form-control {
-            font-size: 16px;
-        }
-
-        .table-bordered, .table-bordered td, .table-bordered th {
-            align-content: center;
-            border-color: black !important;
-        }
-
-        #info {
-            text-align: left;
-        }
-    </style>
 </head>
 <body>
-<form id="doc_form" enctype="multipart/form-data">
-    <div class="container mt-4">
+<div class="container mt-4">
+    <div class="document-wrapper">
         <div class="text-center mb-4">
             <h1 class="header-cell">휴가신청서</h1>
         </div>
@@ -68,7 +48,7 @@
             </tr>
             <tr>
                 <th class="table-secondary font-weight-bold text-center">휴가 종류</th>
-                <td>${doc.vacationType}
+                <td>${doc.vacationType.typeName}
                 </td>
             </tr>
             <tr>
@@ -112,8 +92,7 @@
             </tr>
         </table>
     </div>
-    <!-- 버튼 영역 -->
     <jsp:include page="read_button.jsp"/>
-</form>
+</div>
 </body>
 </html>

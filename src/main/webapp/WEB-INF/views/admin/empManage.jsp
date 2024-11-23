@@ -85,17 +85,14 @@
     const contextPath = "${pageContext.request.contextPath}";
 
     function insertEmp() {
-        alert("등록 버튼 클릭됨");
-        // 직원 등록 페이지로 이동하는 GET 요청
-        window.location.href = contextPath + '/admin/emp/insert';
+        window.location.href = contextPath + '/admin/emp-manage/register';
     }
 
     function editEmp() {
-        alert("수정 버튼 클릭됨");
         const empId = $('input[name="selectedEmp"]:checked').val();
 
         if (empId) {
-            window.location.href = contextPath + '/admin/emp/edit?empId=' + empId;
+            window.location.href = contextPath + '/admin/emp-manage/edit?empId=' + empId;
         } else {
             alert("수정할 직원을 선택해 주세요.");
         }

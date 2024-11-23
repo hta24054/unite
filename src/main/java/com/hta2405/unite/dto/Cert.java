@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class Cert {
-    private int certId;
+    private Long certId;
     private String certName;
     private String empId;
    

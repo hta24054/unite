@@ -8,16 +8,18 @@ import jakarta.servlet.annotation.WebServlet;
 public class EmpFrontController extends AbstractFrontController {
     @Override
     public void init() throws ServletException {
-        actionMap.put("/login", new EmpLoginAction());
-        actionMap.put("/loginProcess", new EmpLoginProcessAction());
-        actionMap.put("/logout", new EmpLogoutAction());
-        actionMap.put("/pwInquiry", new EmpPwInquiryAction());
-        actionMap.put("/pwInquiryProcess", new EmpPwInquiryProcessAction());
-        actionMap.put("/emailVerification", new EmpEmailVerificationAction());
-        actionMap.put("/emailVerificationProcess", new EmpEmailVerificationProcessAction());
-        actionMap.put("/sendAuthenCode", new EmpSendAuthenCodeAction());
-        actionMap.put("/changePw", new EmpChangePwAction());
-        actionMap.put("/changePwProcess", new EmpChangePwProcessAction());
-        actionMap.put("/empTree", new EmpTreeAction());
+        actionMap.put("/login", EmpLoginAction::new);
+        actionMap.put("/loginProcess", EmpLoginProcessAction::new);
+        actionMap.put("/logout", EmpLogoutAction::new);
+        actionMap.put("/pwInquiry", EmpPwInquiryAction::new);
+        actionMap.put("/pwInquiryProcess", EmpPwInquiryProcessAction::new);
+        actionMap.put("/emailVerification", EmpEmailVerificationAction::new);
+        actionMap.put("/emailVerificationProcess", EmpEmailVerificationProcessAction::new);
+        actionMap.put("/sendAuthenCode", EmpSendAuthenCodeAction::new);
+        actionMap.put("/changePw", EmpChangePwAction::new);
+        actionMap.put("/changePwProcess", EmpChangePwProcessAction::new);
+        actionMap.put("/empTree", EmpTreeAction::new);
+        actionMap.put("/profile-image", EmpProfileImageAction::new);
+        actionMap.put("/search", EmpSearchAction::new);
     }
 }

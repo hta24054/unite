@@ -5,20 +5,15 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.BoardDao;
-import com.hta2405.unite.dao.DeptDao;
 import com.hta2405.unite.dto.Post;
 import com.hta2405.unite.dto.PostFile;
-import com.oreilly.servlet.MultipartRequest;
-import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -47,10 +42,9 @@ public class PostAddAction implements Action {
         	Long boardId = (boardDao.getBoardListByName2(boardName2)).getBoardId();
     		
     		postData.setBoardId(boardId);
-    		postData.setPostWriter((String) session.getAttribute("ename"));
+    		postData.setPostWriter((String) session.getAttribute("id"));
     		postData.setPostSubject(req.getParameter("board_subject"));
     		postData.setPostContent(req.getParameter("board_content"));
-    		postData.setEmpId((String) session.getAttribute("id"));
         }
 		
 		// 실제 저장 경로를 지정합니다.

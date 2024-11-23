@@ -17,7 +17,7 @@
 		display: flex;
 	    justify-content: center;
 	    align-items: center;
-	    height: 60px;
+	    height: 80px;
 	    width: 85%;
 	    border-radius: 10px;
 	}
@@ -86,63 +86,78 @@
         border:3px solid #334466;
         z-index : 1;
 	}
+	.hidden {
+    	display: block;
+	}
+	
 </style>
 <script>
 var fileNo = 0;
 var filesArr = [];
+var maxFileCnt = 5;   // 첨부파일 최대 개수
+
+var companyBulletinBoards = ['공지사항', '주간식단표', 'FAQ'];
 
 /* 첨부파일 추가 */
-function addFile(obj) {
-
-    var maxFileCnt = 5;   // 첨부파일 최대 개수
-    var attFileCnt = document.querySelectorAll('.filebox').length;    // 기존 추가된 첨부파일 개수
-    var remainFileCnt = maxFileCnt - attFileCnt;    // 추가로 첨부가능한 개수
-    var curFileCnt = obj.files.length;  // 현재 선택된 첨부파일 개수
-
-    $('.file-list').css('display', 'block');
+function addFiles(files) {
+    var attFileCnt = $('.filebox').length;
+    var remainFileCnt = maxFileCnt - attFileCnt;
+    var curFileCnt = files.length;
 
     if (curFileCnt > remainFileCnt) {
         alert("첨부파일은 최대 " + maxFileCnt + "개 까지 첨부 가능합니다.");
-    } else {
-        for (const file of obj.files) {
-            if (validation(file)) {
-                var reader = new FileReader();
-                reader.onload = function () {
-                    // 파일 객체에 고유 fileNo 값을 추가해 배열에 저장
-                    file.fileNo = fileNo;
-                    filesArr.push(file);
-                };
-                reader.readAsDataURL(file);
+        return;
+    }
 
-                // 목록 추가
-                let htmlData = '';
-                htmlData += '<div id="file' + ++fileNo + '" class="filebox">';
-                htmlData += '   <p class="name">' + file.name + '</p>';
-                htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><img src="${pageContext.request.contextPath}/image/delete.png"/></a>';
-                htmlData += '</div>';
-                $('.file-list').append(htmlData);
-            }
+    for (const file of files) {
+    	if (validation(file)) {
+            fileListAppendHtml(file);// fileList 추가
         }
     }
-    document.querySelector("input[type=file]").value = "";
+
+    updateFileListVisibility();
+    $("input:file").val(""); // 파일 입력 필드 초기화
 }
 
+//addFile과 handleFiles에서 공통된 파일 처리 로직
+function addFile(obj) {
+    addFiles(obj.files);
+}
 
+function handleFiles(dragFiles) {
+    addFiles(dragFiles);
+}
+
+/* fileList html 추가 */
+function fileListAppendHtml(file){
+	// 파일 객체에 고유 fileNo 값을 추가해 배열에 저장
+	file.fileNo = fileNo;
+	filesArr.push(file);
+	
+	// 목록 추가
+	let htmlData = '';
+	htmlData += '<div id="file' + fileNo + '" class="filebox">';
+	htmlData += '   <p class="name">' + file.name + '</p>';
+	htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><img src="${pageContext.request.contextPath}/image/delete.png"/></a>';
+	htmlData += '</div>';
+	$('.file-list').append(htmlData);
+	
+	fileNo++; // 값 증가
+}
 
 /* 첨부파일 검증 */
-function validation(obj){
-    if (obj.name.length > 100) {
+function validation(file) {
+    const maxSize = 100 * 1024 * 1024; // 100MB
+    if (file.name.length > 100) {
         alert("파일명이 100자 이상인 파일은 제외되었습니다.");
-        return false;
-    } else if (obj.size > (100 * 1024 * 1024)) {
+    } else if (file.size > maxSize) {
         alert("최대 파일 용량인 100MB를 초과한 파일은 제외되었습니다.");
-        return false;
-    } else if (obj.name.lastIndexOf('.') == -1) {
+    } else if (!file.name.includes('.')) {
         alert("확장자가 없는 파일은 제외되었습니다.");
-        return false;
     } else {
         return true;
     }
+    return false;
 }
 
 /* 첨부파일 삭제 */
@@ -152,7 +167,7 @@ function deleteFile(deleteNo) {
     filesArr = filesArr.filter(file => file.fileNo !== deleteNo);
 
     // 파일 목록에서 삭제
-    document.querySelector("#file" + deleteNo).remove();
+    $("#file" + deleteNo).remove();
 
     // 파일 목록이 비어 있으면 숨김 처리
     updateFileListVisibility();
@@ -160,10 +175,10 @@ function deleteFile(deleteNo) {
 
 /* 파일 목록이 비어있으면 숨김 처리 */
 function updateFileListVisibility() {
-    if (filesArr.length === 0) {
-        $('.file-list').css('display', 'none');
-    }
+	console.log(filesArr.length)
+    $('.file-list').toggleClass('hidden', filesArr.length !== 0);
 }
+
 
 /* 폼 전송 */
 function submitForm() {
@@ -195,90 +210,94 @@ function submitForm() {
     });
 }
 
+//boardName2를 boardName1에 맞게 바꿈
+function changeBoardName2(boardName1Value, departmentBoards){
+	let $boardName2 = $('#boardName2'); // 두 번째 select 초기화
+    $boardName2.empty();
+
+	if (boardName1Value === '전사게시판') {
+		$.each(companyBulletinBoards, function(index, companyBulletinBoard) {
+			$boardName2.append('<option value="' + companyBulletinBoard + '">' + companyBulletinBoard + '</option>');
+		});
+	}else if (boardName1Value === '일반게시판') {
+		$boardName2.append('<option value="' + '일반게시판' + '">' + '일반게시판' + '</option>');
+	}else if (boardName1Value === '부서게시판') {
+		$.each(departmentBoards, function(index, departmentBoard) {
+			$boardName2.append('<option value="' + departmentBoard + '">' + departmentBoard + '</option>');
+		});
+	}
+	
+}
+
+function filterBoardName2() {
+    const excludedValues = ['공지사항', '주간식단표', 'FAQ', '일반게시판']; // 제외할 값들
+    let filteredArray = []; // 결과를 담을 배열
+
+    $('.boardName2').each(function() {
+        const value = $(this).text(); // .boardName2 요소의 값 가져오기
+        if (!excludedValues.includes(value)) { // 제외할 값에 포함되지 않으면 추가
+            filteredArray.push(value);
+        }
+    });
+
+    return filteredArray; // 필터링된 배열 반환
+}
+
 $(function(){
+	var departmentBoards = filterBoardName2();
+	console.log(departmentBoards);
+	
+	var BoardName2Value = $('.boardName2').filter(function() {
+	    return $(this).css('font-weight') === 'bold' || $(this).css('font-weight') === '700';
+	}).text();
+	
+	let boardName1Value;
+	
+	if(BoardName2Value == ''||BoardName2Value == null){//게시판 홈에서 글쓰기 버튼을 누를 경우 초기화
+		BoardName2Value='공지사항';
+	}
+	
+	// BoardName2Text의 따라 BoardName1 구하기
+	if (companyBulletinBoards.includes(BoardName2Value)) {
+		boardName1Value='전사게시판';
+	} else if(departmentBoards.includes(BoardName2Value)){
+		boardName1Value='부서게시판';
+	} else{
+		boardName1Value='일반게시판';
+	}
+	
+	changeBoardName2(boardName1Value, departmentBoards);//boardName2를 boardName1에 맞게 바꿈
+	$('#boardName1').val(boardName1Value);
+	$('#boardName2').val(BoardName2Value);
+	
+	$(".boardName2,.left a").removeClass('menuActive');
+	
+	//boardName1 select를 바꿀때마다 boardName2가 같이 바뀜
 	$('#boardName1').change(function() {
 		let boardName1Value = $(this).val();  // 첫 번째 select의 선택 값
-		let $boardName2 = $('#boardName2'); // 두 번째 select
-
-	    // 두 번째 select 초기화
-	    $boardName2.empty();
-
-		if (boardName1Value === '전사게시판') {
-			var companyBulletinBoards = ['공지사항', '주간식단표', 'FAQ'];
-			$.each(companyBulletinBoards, function(index, companyBulletinBoard) {
-				$boardName2.append('<option value="' + companyBulletinBoard.toLowerCase() + '">' + companyBulletinBoard + '</option>');
-			});
-		}else if (boardName1Value === '일반게시판') {
-			$boardName2.append('<option value="' + '일반게시판'.toLowerCase() + '">' + '일반게시판' + '</option>');
-		}else if (boardName1Value === '부서게시판') {
-			var DepartmentBoards = ['솔루션영업팀'];
-			$.each(DepartmentBoards, function(index, DepartmentBoard) {
-				$boardName2.append('<option value="' + DepartmentBoard.toLowerCase() + '">' + DepartmentBoard + '</option>');
-			});
-		}
+		
+		changeBoardName2(boardName1Value, departmentBoards);//boardName2를 boardName1에 맞게 바꿈
 	});
+	
 	
 	// dragover 이벤트: 드래그한 파일이 attachFlie 영역에 있을 때
     $('.attachFile').on('dragover', function(event) {
-        event.preventDefault(); // 기본 동작을 취소
-        $('.attachFile').css('opacity', '0.1')
-        				.addClass('dragoverFile');
-    });
-
-    // dragleave 이벤트: 드래그한 파일이 영역을 벗어났을 때
-    $('.attachFile').on('dragleave', function(event) {
-    	$('.attachFile').css('opacity', '1')
-    					.removeClass('dragoverFile');
-    });
+	    event.preventDefault();
+	    $(this).addClass('dragoverFile');
+	});
+	
+	$('.attachFile').on('dragleave', function() {
+	    $(this).removeClass('dragoverFile');
+	});
 	
     $('.attachFile').on('drop', function(event) {
         event.preventDefault();  // 기본 동작을 취소
-        $('.attachFile').css('opacity', '1')
-						.removeClass('dragoverFile');
+        $(this).removeClass('dragoverFile');
 	
         var dragFiles = event.originalEvent.dataTransfer.files;  // 드롭된 파일들
         handleFiles(dragFiles);  // 드래그된 파일 처리
     });
 
-    // 파일 처리 함수
-    function handleFiles(dragFiles) {
-    	// 첨부파일을 넣을시 list를 보이게 함
-
-	    var maxFileCnt = 5;   // 첨부파일 최대 개수
-	    var attFileCnt = document.querySelectorAll('.filebox').length;    // 기존 추가된 첨부파일 개수
-	    var remainFileCnt = maxFileCnt - attFileCnt;    // 추가로 첨부가능한 개수
-	    var curFileCnt = dragFiles.length;  // 현재 선택된 첨부파일 개수
-	
-	    $('.file-list').css('display', 'block');
-	    
-		// 첨부파일 개수 확인
-	    if (curFileCnt > remainFileCnt) {
-	        alert("첨부파일은 최대 " + maxFileCnt + "개 까지 첨부 가능합니다.");
-	    } else {
-	        for (const file of dragFiles) {
-	        	
-	            if (validation(file)) {
-	                var reader = new FileReader();
-	                reader.onload = function () {
-	                    // 파일 객체에 고유 fileNo 값을 추가해 배열에 저장
-	                    file.fileNo = fileNo;
-	                    filesArr.push(file);
-	                };
-	                reader.readAsDataURL(file);
-	
-	                // 목록 추가
-	                let htmlData = '';
-	                htmlData += '<div id="file' + ++fileNo + '" class="filebox">';
-	                htmlData += '   <p class="name">' + file.name + '</p>';
-	                htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><img src="${pageContext.request.contextPath}/image/delete.png"/></a>';
-	                htmlData += '</div>';
-	                $('.file-list').append(htmlData);
-	            }
-	        
-	   		}
-		    document.querySelector("input[type=file]").value = "";
-		}
-	}
 });
 
 //Drop 영역외에 파일 끌어다 놓았을 때 브라우져 동작막깅
@@ -292,20 +311,20 @@ document.addEventListener("drop", function (event) {
 </script>
 </head>
 <body>
- 	<form action="../board/post/add" method="post" enctype="multipart/form-data"
+ 	<form method="post" enctype="multipart/form-data"
       name="boardform" onsubmit="event.preventDefault(); submitForm();">
  		<div class="form-group2">
  			<label for="target_board" class="labelName">
  				To.
  				<select id="boardName1" name="boardName1" class="boardName">
- 					<option value="전사게시판">전사게시판</option>
- 					<option value="일반게시판">일반게시판</option>
- 					<option value="부서게시판">부서게시판</option>
+ 					<option value="전사게시판" ${param.boardName1 == '전사게시판' ? 'selected' : ''}>전사게시판</option>
+ 					<option value="일반게시판" ${param.boardName1 == '일반게시판' ? 'selected' : ''}>일반게시판</option>
+ 					<option value="부서게시판" ${param.boardName1 == '부서게시판' ? 'selected' : ''}>부서게시판</option>
  				</select>
  				<select id="boardName2" name="boardName2" class="boardName">
- 					<option value="공지사항">공지사항</option>
- 					<option value="주간식단표">주간식단표</option>
- 					<option value="FAQ">FAQ</option>
+ 					<option value="공지사항" ${param.boardName2 == '공지사항' ? 'selected' : ''}>공지사항</option>
+ 					<option value="주간식단표" ${param.boardName2 == '주간식단표' ? 'selected' : ''}>주간식단표</option>
+ 					<option value="FAQ" ${param.boardName2 == 'FAQ' ? 'selected' : ''}>FAQ</option>
  				</select>
  			</label>
  		</div>
@@ -323,7 +342,6 @@ document.addEventListener("drop", function (event) {
 	 				파일선택
  					<input type="file" id="upfile" onchange="addFile(this);" multiple />
 	 			</label>
-	 			<span id="filevalue"></span>
  			</div>
  		</div>
  		<div class="file-list"></div>
@@ -341,6 +359,8 @@ document.addEventListener("drop", function (event) {
 	            maxHeight: null,
 	            focus: true
 	        });
+
+			$('.boardContent .active').removeClass('active');
 	    });
  	</script>
 </body>

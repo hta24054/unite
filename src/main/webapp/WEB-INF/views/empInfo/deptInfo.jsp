@@ -21,10 +21,9 @@
 <jsp:include page="../common/header.jsp" />
 <jsp:include page="empInfo_leftbar.jsp" />
 <style>
-
-
 .table {
 	width: 20%;
+	margin-left: 5%;
 }
 
 body {
@@ -41,8 +40,10 @@ h2 {
 	margin: 0;
 }
 
+
+
 table {
-  width: 90%;
+	width: 90%;
 	border-collapse: collapse;
 	margin-top: 20px;
 }

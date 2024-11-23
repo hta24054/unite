@@ -20,10 +20,12 @@ public class ProjectTask {
 	private String projectTitle; //글 제목
 	private String projectContent; //글 내용
 	private String board_file; //첨부될 파일 이름
+	
 	private int board_re_ref; //답변 글 작성시 참조되는 글 번호
 	private int board_re_lev; //답변 글의 깊이
 	private int board_re_seq; //답변 글의 순서
 	private int board_readcount; //조회수
+	
 	private String projectDate; //글 등록일자
 	private String projectUpdateDate; //업데이트일자
 	private int board_cnt;
@@ -32,5 +34,7 @@ public class ProjectTask {
     private String task_file_original;
     private String task_file_uuid;
     private String task_file_type;
+    
+    private String taskContent;
 }
 

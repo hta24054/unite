@@ -152,7 +152,7 @@ emp_id         VARCHAR2(10)  NOT NULL,
   CONSTRAINT PK_emp_info PRIMARY KEY (emp_id)
 );
 
-select * from emp;
+select emp_id from emp;
 select * from emp_info;
 
 INSERT INTO emp_info (emp_id, mobile2, hiredate, hiretype, birthday, school, major, bank, account, address, married, child, etype, vacation_count)
@@ -211,18 +211,21 @@ select * from dept;
 select * from emp
 where dept_id = 1000;
 
+delete from cert;
+delete from lang;
+
 INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (1, 'Java Certification', 'admin');
 INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (2, 'AWS Certified Developer', 'admin');
 INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (3, 'PMP Certification', '241101');
-
+insert into cert(cert_id, cert_name, emp_id) values (4 , )
 INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (1, 'English', 'admin');
 INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (2, 'Japanese', 'admin');
-INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (3, 'Spanish', '241101');
-
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (3, 'Spanish', 'admin');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (1, 'Japanese', '241001');
 
 UPDATE EMP 
 SET img_path='image/Test1.png'
-WHERE emp_id='admin'; 
+; 
 SELECT * FROM emp WHERE dept_id = (SELECT dept_id FROM emp WHERE emp_id = '241001');
 SELECT * FROM emp WHERE dept_id = (
     SELECT dept_id FROM emp WHERE emp_id = '241001' AND dept_id IS NOT NULL
@@ -232,3 +235,61 @@ SELECT emp_id, ename, dept_id, job_id, email, tel
 				WHERE dept_id = (SELECT dept_id 
 								 FROM emp 
 								 WHERE emp_id = 'admin');
+								 
+								 
+SELECT e.emp_id, e.ename, e.mobile, e.tel, d.dept_name, j.job_name 
+FROM emp e 
+JOIN dept d ON e.dept_id = d.dept_id 
+JOIN job j ON e.job_id = j.job_id 
+WHERE d.dept_name = '관리자';
+
+SELECT e.emp_id, e.ename, e.mobile, e.tel, d.dept_name, j.job_name
+FROM emp e
+JOIN dept d ON e.dept_id = d.dept_id
+JOIN job j ON e.job_id = j.job_id
+ORDER BY e.ename; 
+
+
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (1, 'Java Certification', 'admin');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (2, 'AWS Certified Developer', 'admin');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (3, 'PMP Certification', '241101');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (4, 'Oracle Certified', '241001');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (5, 'Microsoft Certified', '241002');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (6, 'Cisco Certified', '241101');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (7, 'Scrum Master', '241102');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (8, 'Data Scientist', '241103');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (9, 'Cyber Security Specialist', '241104');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (10, 'Network Administrator', '241105');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (11, 'Java Certification', '241106');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (12, 'AWS Certified Developer', '241107');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (13, 'PMP Certification', '241108');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (14, 'Oracle Certified', '241109');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (15, 'Microsoft Certified', '241110');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (16, 'Cisco Certified', '241111');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (17, 'Scrum Master', '241112');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (18, 'Data Scientist', '241201');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (19, 'Cyber Security Specialist', '241202');
+INSERT INTO cert (cert_id, cert_name, emp_id) VALUES (20, 'Network Administrator', '241203');
+-- 필요한 만큼 데이터를 추가
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (1, 'English', 'admin');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (2, 'Japanese', 'admin');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (3, 'Spanish', 'admin');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (4, 'Japanese', '241001');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (5, 'English', '241002');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (6, 'Spanish', '241101');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (7, 'Korean', '241102');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (8, 'Chinese', '241103');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (9, 'French', '241104');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (10, 'German', '241105');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (11, 'Italian', '241106');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (12, 'Portuguese', '241107');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (13, 'Russian', '241108');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (14, 'Arabic', '241109');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (15, 'Hindi', '241110');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (16, 'Bengali', '241111');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (17, 'Turkish', '241112');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (18, 'Korean', '241201');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (19, 'Chinese', '241202');
+INSERT INTO lang (lang_id, lang_name, emp_id) VALUES (20, 'French', '241203');
+-- 필요한 만큼 데이터를 추가
+select * from dept;

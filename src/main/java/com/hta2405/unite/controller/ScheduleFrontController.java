@@ -4,6 +4,9 @@ import com.hta2405.unite.action.schedule.ScheduleAddProcessAction;
 import com.hta2405.unite.action.schedule.ScheduleCalenderAction;
 import com.hta2405.unite.action.schedule.ScheduleDeleteAction;
 import com.hta2405.unite.action.schedule.ScheduleDragUpdateAction;
+import com.hta2405.unite.action.schedule.ScheduleGetHolidayAction;
+import com.hta2405.unite.action.schedule.ScheduleHolidayAction;
+import com.hta2405.unite.action.schedule.ScheduleHolidayApiAction;
 import com.hta2405.unite.action.schedule.ScheduleListAction;
 import com.hta2405.unite.action.schedule.ScheduleShareAction;
 import com.hta2405.unite.action.schedule.ScheduleShareAddAction;
@@ -18,17 +21,22 @@ public class ScheduleFrontController extends AbstractFrontController {
 
     @Override
     public void init() throws ServletException {
-        actionMap.put("/calender", new ScheduleCalenderAction());
-        actionMap.put("/scheduleList", new ScheduleListAction());
-        actionMap.put("/scheduleAdd", new ScheduleAddProcessAction());
-        actionMap.put("/scheduleUpdate", new ScheduleUpdateAction());
-        actionMap.put("/scheduleDragUpdate", new ScheduleDragUpdateAction());
-        actionMap.put("/scheduleDelete", new ScheduleDeleteAction());
+        actionMap.put("/calender", ScheduleCalenderAction::new);
+        actionMap.put("/scheduleList", ScheduleListAction::new);
+        actionMap.put("/scheduleAdd", ScheduleAddProcessAction::new);
+        actionMap.put("/scheduleUpdate", ScheduleUpdateAction::new);
+        actionMap.put("/scheduleDragUpdate", ScheduleDragUpdateAction::new);
+        actionMap.put("/scheduleDelete", ScheduleDeleteAction::new);
         
         // 공유 일정 등록
-        actionMap.put("/scheduleShare", new ScheduleShareAction());
-        actionMap.put("/sharedScheduleList", new SharedScheduleListAction()); 
-        actionMap.put("/scheduleShareAdd", new ScheduleShareAddAction()); 
+        actionMap.put("/scheduleShare", ScheduleShareAction::new);
+        actionMap.put("/sharedScheduleList", SharedScheduleListAction::new);
+        actionMap.put("/scheduleShareAdd", ScheduleShareAddAction::new);
+        
+        // 공휴일
+        actionMap.put("/holidayApi", ScheduleHolidayApiAction::new);
+        actionMap.put("/holiday", ScheduleHolidayAction::new);
+        actionMap.put("/getHoliday", ScheduleGetHolidayAction::new);
     }
 }
 

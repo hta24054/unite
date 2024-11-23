@@ -33,9 +33,9 @@ public class ContactViewAction implements Action {
             Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
 
            
-            List<Emp> empList = new ContactDao().getContactEmpByDeptId(deptId);
-            JsonElement listToJson = gson.toJsonTree(empList);
-            jsonObject.add("empList", listToJson);
+//            List<Emp> empList = new ContactDao().getContactEmpByDeptId(deptId);
+//            JsonElement listToJson = gson.toJsonTree(empList);
+//            jsonObject.add("empList", listToJson);
 
             HashMap<Long, String> jobNameMap = new JobDao().getIdToJobNameMap();
             JsonElement mapToJson = gson.toJsonTree(jobNameMap);

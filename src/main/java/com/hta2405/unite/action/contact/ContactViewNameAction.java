@@ -19,12 +19,12 @@ public class ContactViewNameAction implements Action {
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         String name = req.getParameter("name");
-        List<EmpDetails> contactList = contactDao.getContactsByName(name);
+//        List<EmpDetails> contactList = contactDao.getContactsByName(name);
         
         Gson gson = new Gson();
-        String json = gson.toJson(contactList);
+//        String json = gson.toJson(contactList);
         resp.setContentType("application/json; charset=utf-8");
-        resp.getWriter().write(json);
+//        resp.getWriter().write(json);
         
         return null;
     }

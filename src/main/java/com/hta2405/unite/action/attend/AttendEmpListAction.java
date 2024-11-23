@@ -12,8 +12,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
+import static com.hta2405.unite.util.AttendUtil.checkAttendRole;
 import static com.hta2405.unite.util.EmpUtil.isManager;
 
 public class AttendEmpListAction implements Action {
@@ -28,6 +30,10 @@ public class AttendEmpListAction implements Action {
         }
         deptDao.getIdToDeptNameMap();
         List<Emp> empList = empDao.getSubEmpListByEmp(emp);
+
+
+        checkAttendRole(emp, req);
+        req.setAttribute("role", empList);
         req.setAttribute("empList", empList);
         req.setAttribute("jobMap", new JobDao().getIdToJobNameMap());
         req.setAttribute("deptMap", deptDao.getIdToDeptNameMap());

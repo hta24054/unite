@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
 
     <meta charset="UTF-8">
-    <title>팝업 관리</title>
+    <title>공지사항</title>
     <script>
         let result = '${message}';
         if (result !== '') {
@@ -29,10 +29,13 @@
             max-width: 40%; /* 원하는 비율로 조정 */
             max-height: 90%; /* 원하는 비율로 조정 */
         }
+        #notice_table th{
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-<h2 id="main_title">팝업 관리</h2>
+<h2 id="main_title">공지사항</h2>
 <div class="container text-center">
     <div class="text-right mb-2">
         <button type="button" class="btn btn-success mr-2" data-toggle="modal" data-target="#noticeWriteModal"
@@ -40,7 +43,7 @@
         </button>
     </div>
 
-    <table class="table table-striped table-bordered" id="resource_table">
+    <table class="table table-striped table-bordered" id="notice_table">
         <thead>
         <tr>
             <th>공지사항 제목</th>
@@ -49,7 +52,7 @@
         </thead>
         <tbody>
         <c:if test="${empty noticeList}">
-            <td>등록된 공지사항이 없습니다.</td>
+            <td colspan="2" style="text-align: center">등록된 공지사항이 없습니다.</td>
         </c:if>
         <c:if test="${!empty noticeList}">
             <c:forEach var="notice" items="${noticeList}">
@@ -159,6 +162,23 @@
         const content = $('#content').val();
         const subject = $('#subject').val();
         const endDate = $('#endDate').val();
+        if(!endDate){
+            alert("게시 종료일을 입력해 주세요");
+            return false;
+        }
+        if(!subject){
+            alert("제목을 입력해 주세요");
+            return false;
+        }
+        if(!content){
+            alert("내용을 입력해 주세요");
+            return false;
+        }
+        if(subject.length>150){
+            alert("제목은 50자 이하로 작성해 주세요");
+            return false;
+        }
+
         $.ajax({
             url: `${pageContext.request.contextPath}/admin/notice/insert`,
             method: 'POST',
@@ -216,19 +236,35 @@
     }
 
     function updateNotice() {
-        const noticeId = $('#noticeId').val();
         const content = $('#content').val();
         const subject = $('#subject').val();
         const endDate = $('#endDate').val();
+        if(!endDate){
+            alert("게시 종료일을 입력해 주세요");
+            return false;
+        }
+        if(!subject){
+            alert("제목을 입력해 주세요");
+            return false;
+        }
+        if(!content){
+            alert("내용을 입력해 주세요");
+            return false;
+        }
+        if(subject.length>150){
+            alert("제목은 50자 이하로 작성해 주세요");
+            return false;
+        }
+
         if (confirm("정말로 수정하시겠습니까?")) {
             $.ajax({
                 url: `${pageContext.request.contextPath}/admin/notice/update`,
                 method: 'POST',
                 data: {
-                    noticeId: noticeId,
-                    subject: subject,
-                    content: content,
-                    endDate: endDate
+                    noticeId: $('#noticeId').val(),
+                    subject: $('#subject').val(),
+                    content: $('#content').val(),
+                    endDate: $('#endDate').val()
                 },
                 success: function (data) {
                     alert(data.message);

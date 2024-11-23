@@ -9,7 +9,7 @@ import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ContactDao;
 import com.hta2405.unite.dao.DeptDao;
 import com.hta2405.unite.dao.JobDao;
-import com.hta2405.unite.dto.EmpDetails;
+import com.hta2405.unite.dto.Emp;
 import com.hta2405.unite.util.LocalDateAdapter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,25 +28,23 @@ public class SearchAction implements Action {
             String query = req.getParameter("query");
 
             JsonObject jsonObject = new JsonObject();
-
             Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
 
             ContactDao contactDao = new ContactDao();
-            List<EmpDetails> empList = contactDao.getContactsByName(query);
+            List<Emp> empList = contactDao.getContactsByName(query);
             JsonElement listToJson = gson.toJsonTree(empList);
             jsonObject.add("empList", listToJson);
 
             HashMap<Long, String> jobNameMap = new JobDao().getIdToJobNameMap();
-            JsonElement mapToJson = gson.toJsonTree(jobNameMap);
-            jsonObject.add("jobName", mapToJson);
+            JsonElement jobNameToJson = gson.toJsonTree(jobNameMap);
+            jsonObject.add("jobName", jobNameToJson);
 
             HashMap<Long, String> deptNameMap = new DeptDao().getIdToDeptNameMap();
-            JsonElement mapToJsonDeptName = gson.toJsonTree(deptNameMap);
-            jsonObject.add("deptName", mapToJsonDeptName);
+            JsonElement deptNameToJson = gson.toJsonTree(deptNameMap);
+            jsonObject.add("deptName", deptNameToJson);
 
             resp.setContentType("application/json;charset=utf-8");
             resp.getWriter().print(jsonObject);
-
         } catch (Exception e) {
             e.printStackTrace();
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

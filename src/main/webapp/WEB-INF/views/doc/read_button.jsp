@@ -1,11 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<div class="text-right mt-3">
+<style>
+    .button-container {
+        margin-bottom: 20px;
+    }
+</style>
+<div class="button-container">
     <c:if test="${role == 'preSignedWriter' || role == 'preSigner'}">
         <button type="button" class="btn btn-success" id="sign">결재</button>
     </c:if>
     <c:if test="${role == 'preSignedWriter'}">
-        <button type="button" class="btn btn-success" id="edit">수정</button>
+        <button type="button" class="btn btn-info" id="edit">수정</button>
     </c:if>
     <c:if test="${role == 'postSignedWriter'|| role == 'postSigner'}">
         <button type="button" class="btn btn-warning" id="revoke">회수</button>
@@ -13,16 +18,20 @@
     <c:if test="${role == 'preSignedWriter'}">
         <button type="button" class="btn btn-danger" id="delete">삭제</button>
     </c:if>
-    <button type="button" class="btn btn-secondary" id="back">목록으로</button>
+    <button id="printButton" class="btn btn-secondary" data-context-path="${pageContext.request.contextPath}">인쇄
+    </button>
+    <script src="${pageContext.request.contextPath}/js/print_doc.js"></script>
+    <button type="button" class="btn btn-light" id="back">목록으로</button>
 </div>
 <script>
     $('#back').click(function () {
-        const previousUrl = document.referrer; //이전 페이지 URL
-        if (previousUrl) {
-            window.location.href = previousUrl;
-        } else {
+        const role = '${role}';
+        if (role === 'viewer') {
             history.back();
-            window.location.reload(); //새로고침
+        } else if (role === 'preSignedWriter' || role === 'preSigner' || role === 'postSigner') {
+            window.location.href = '${pageContext.request.contextPath}/doc/waiting';
+        } else if (role === 'postSignedWriter') {
+            window.location.href = '${pageContext.request.contextPath}/doc/in-progress';
         }
     });
 

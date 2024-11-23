@@ -26,12 +26,12 @@ public class ContactViewDeptAction implements Action {
             return null;
         }
 
-        List<EmpDetails> contactList = contactDao.getContactsByDeptName(deptName);
+//        List<EmpDetails> contactList = contactDao.getContactsByDeptName(deptName);
 
         Gson gson = new Gson();
-        String json = gson.toJson(contactList);
+//        String json = gson.toJson(contactList);
         resp.setContentType("application/json; charset=utf-8");
-        resp.getWriter().write(json);
+//        resp.getWriter().write(json);
 
         return null;
     }

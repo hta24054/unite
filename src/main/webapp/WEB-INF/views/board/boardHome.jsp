@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,8 +10,7 @@
 <style>
   .main {
     font-family: Arial, sans-serif;
-    padding: 56px 0px 0px;
-    display: flex;
+    padding: 60.8px 0px 0px;
     position: absolute;
     top: 0px;
     width: 100%;
@@ -26,19 +26,26 @@
   
   /* 왼쪽 아코디언 메뉴 */
   .sidebar {
+    min-height: calc(100vh - 61px);
+    height: auto !important;
+    margin-top: 0px !important;
+    /*
+    height: 100vh;
     width: 250px;
     border-right: 1px solid #ccc;
-    height: 100vh;
     position: fixed;
+    */
   }
   
   .sidebar .title{
-  	padding: 40px 25px 20px;
+  	padding-bottom: 20px;
   }
   
   .sidebar h2 {
-    font-size: 2rem;
-    margin: 0px;
+    margin: 0px;;
+  	color: rgb(51, 68, 102);
+  	font-size: 30px;
+    font-weight: bold;
   }
 
   .accordion button {
@@ -77,10 +84,15 @@
 
   /* 오른쪽 게시판 영역 */
   .content {
-    margin-left: 250px;
-    width: calc(100% - 200px);
-    height: 100%;
+    margin-left: 350px;
     overflow-y: auto;
+    padding: 15px 20px 0px;
+    min-height: calc(100vh - 61px);
+    /*
+    min-height: 100vh;
+    height: 100%;
+    width: calc(100% - 200px);
+    */
   }
 
   .post {
@@ -112,7 +124,7 @@
   	cursor: pointer;
   }
   .boardWrite{
-	  padding: 5px 35px 20px;
+	  padding: 5px 25px 20px;
 	  height: 80px;
   }
   .writeBtn{
@@ -149,7 +161,7 @@
       align-items: center;
   }
   .board-title span {
-      color: #999;
+      color: #99B;
   }
   .board-content {
       font-size: 18px;
@@ -167,6 +179,7 @@
       width: 24px;
       height: 24px;
       margin-right: 6px;
+      border: 1px solid gray;
   }
   .board-footer .username {
       margin-right: 10px;
@@ -178,6 +191,7 @@
   .icon {
       display: inline-block;
       width: 25px;
+      height: 25px;
       background-color: #ddd;
       border-radius: 50%;
       text-align: center;
@@ -191,10 +205,31 @@
   	  z-index:1;
   }
 	
+  .tr-post:hover{
+	 background-color: rgba(0, 0, 0, .05);
+	 cursor: pointer;
+  }
+  
+  .menuActive{
+	font-weight: bold;
+	font-size: 23px;
+	color: #334466;
+  }
+  
+  .side-box-shadow-option1{
+    box-shadow:none !important;
+  }
+  
+  .side-box-shadow-option2{
+    box-shadow: inset 5px 0px 15px 0 rgba(0, 0, 0, 0.2);
+  }
 </style>
 <script src="${pageContext.request.contextPath}/js/jquery-3.7.1.js"></script>
 <script src="${pageContext.request.contextPath}/js/boardHome.js"></script>
-
+<script>
+const contextPath = "${pageContext.request.contextPath}";
+const profileUUID = "${sessionScope.profileUUID}";
+</script>
 </head>
 <body>
 <jsp:include page="../common/header.jsp"/>
@@ -202,7 +237,7 @@
 	<div class="sidebar">
 	  <section class="title">
 	    <h2>
-	    	<a id="boardHome">게시판</a>
+	    	<a href="#" id="boardHome" style="text-decoration: none;color: rgb(51, 68, 102);">게시판</a>
 	    </h2>
 	  </section>
 	  
@@ -210,28 +245,47 @@
 	    <button class="writeBtn">글쓰기</button>
 	  </section>
 	  
-	  <section class="companyBoard">
-	    <button onclick="togglePanel('all-board')">전사게시판</button>
-	    <div id="all-board" class="panel">
-	      <div class="boardName2">공지사항</div>
-	      <div class="boardName2">주간식단표</div>
-	      <div class="boardName2">FAQ</div>
-	    </div>
-	  </section>
+	  <ul class="list-group" style="list-style-type: disc; padding-left: 20px;">
+        <!-- 전사게시판 메뉴 -->
+        <li class="left" style="border: none;">
+            <a  href="#" class="boardName1" onclick="toggleSubMenu('#submenu-doc-draft')">전사게시판</a>
+            <ul class="submenu" id="submenu-doc-draft">
+                <li class="left" style="border: none;">
+                    <a href="#" class="boardName2">공지사항</a>
+                </li>
+                <li class="left" style="border: none;">
+                    <a href="#" class="boardName2">주간식단표</a>
+                </li>
+                <li class="left" style="border: none;">
+                    <a href="#" class="boardName2">FAQ</a>
+                </li>
+            </ul>
+        </li>
+
+		<!-- 일반게시판 메뉴 -->
+		<li class="left" style="border: none;"><a href="#" class="boardName1 boardName2">일반게시판</a></li>
+
+        <!-- 부서게시판 메뉴 -->
+        <%-- 세션에서 받은 부서리스트 처리 --%>
+		<c:if test="${boardScope != null}"> <%-- 부서가 존재할 경우 --%>
+			<li class="left deptBoard-list" style="border: none;">
+	            <a href="#" class="boardName1" onclick="toggleSubMenu('#submenu-doc-list')">부서게시판</a>
+				<ul class="submenu" id="submenu-doc-list">
+	            
+		            <c:forEach var="board" items="${boardScope}">
+			                <li class="left" style="border: none;">
+			                	<c:if test="${board.deptId != null}">
+			                    	<a href="#" class="boardName2">${board.boardName2}</a>
+			                	</c:if>
+			                </li>
+					</c:forEach>
+				
+		        </ul>
+	        </li>
+		</c:if>
+    </ul>
 	  
-	  <section class="generalBoard">
-	    <button onclick="togglePanel('general-board')">일반게시판</button>
-	    <div id="general-board" class="panel">
-	      <div class="boardName2">일반게시판</div>
-	    </div>
-	  </section>
 	  
-	  <section class="departmentBoard">
-	    <button onclick="togglePanel('department-board')">부서게시판</button>
-	    <div id="department-board" class="panel">
-	      <div class="boardName2">솔루션영업팀</div>
-	    </div>
-	  </section>
 	</div>
 
 	<div class="content">
@@ -241,12 +295,6 @@
 	  </div>
 	</div>
 </div>
-<script>
-	function togglePanel(panelId) {
-	  const panel = document.getElementById(panelId);
-	  panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-	}
-</script>
 
 
 </body>

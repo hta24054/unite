@@ -3,10 +3,17 @@
 <meta charset="UTF-8">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 <%--<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script> --%>
-<script src="${pageContext.request.contextPath }/js/jquery-3.7.1.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-3.7.1.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/leftbar.css">
+<script src="${pageContext.request.contextPath}/js/leftbar.js"></script>
 <style>
+    @import url('https://cdn.rawgit.com/moonspam/NanumSquare/master/nanumsquare.css');
+    body {
+        font-family: 'nanumsquare', sans-serif;
+    }
+
     body > nav.navbar {
         justify-content: center;
     }
@@ -27,13 +34,18 @@
     }
 
     .a1 {
-        transition: all 0.3s ease; /* 부드러운 전환 효과 */
+        transition: all 0.3s ease; /* 호버 시 부드러운 전환 효과 */
     }
 
-    .a1:hover,
-    .a1.active {
+    .a1:hover {
         font-size: 1.2em; /* 글자 크기 증가 */
         font-weight: bold; /* 글자 굵게 */
+    }
+
+    .a1.active {
+        transition: none; /* 전환 효과 제거 */
+        font-size: 1.2em; /* 클릭된 상태의 글자 크기 */
+        font-weight: bold; /* 클릭된 상태의 글자 굵게 */
     }
 
     textarea {
@@ -46,36 +58,44 @@
         top: 2px;
     }
 
-    .nav-item2 {
-        position: absolute;
-        right: 80px;
-        top: 5px;
-    }
-
     .nav-item3 {
         position: absolute;
         right: 10px;
         top: 0px;
     }
-</style>
-<%--필터가 없는 경우 필요  --%>
-<%--<c:if test="${empty id }">
-    <script>
-        location.href = "${pageContext.request.contextPath}/members/login";
-    </script>
-</c:if>--%>
 
-<%--<c:if test="${!empty id }"> --%>
+    .user_info {
+        display: flex;
+        align-items: center;
+        top: 12px;
+    }
+
+    .user_info * {
+        color: #fff;
+    }
+
+    .user_info span {
+        margin-right: 10px;
+    }
+
+    .user_info a:hover {
+        text-decoration: none;
+        color: #fff;
+    }
+
+    .user_info img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%; /* 동그랗게 만들기 */
+        object-fit: cover; /* 이미지 비율 유지 */
+    }
+</style>
+
 <nav class="navbar navbar-expand-sm right-block navbar-dark">
     <ul class="navbar-nav">
-        <%--
-            <li class="nav-ite">
-                <a class="nav-link" href="${pageContext.request.contextPath }/#">홈</a>
-            </li>
-         --%>
         <li class="nav-item1">
             <a class="nav-link" href="${pageContext.request.contextPath}/home"><img
-                    src="${pageContext.request.contextPath}/image/logo_header.png" style="width:80px;"></a>
+                    src="${pageContext.request.contextPath}/image/logo_header.png" style="width:100px;"></a>
         </li>
         <li class="nav-item">
             <a class="nav-link a1" href="${pageContext.request.contextPath}/attend/my">&nbsp;근태관리&nbsp;</a>
@@ -99,32 +119,41 @@
             <a class="nav-link a1" href="${pageContext.request.contextPath}/project/main">&nbsp;프로젝트&nbsp;</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link a1" href="#">&nbsp;자원예약&nbsp;</a>
+            <a class="nav-link a1" href="${pageContext.request.contextPath}/reservation/reservationCalender">&nbsp;자원예약&nbsp;</a>
         </li>
         <li class="nav-item">
             <a class="nav-link a1" href="${pageContext.request.contextPath}/mypage/password">&nbsp;마이페이지&nbsp;</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link a1" href="${pageContext.request.contextPath}/admin/emp-manage">&nbsp;관리자&nbsp;</a>
+            <c:if test="${sessionScope.id=='admin'}">
+                <a class="nav-link a1" href="${pageContext.request.contextPath}/admin/emp-manage">&nbsp;관리자&nbsp;</a>
+            </c:if>
         </li>
-        <li class="nav-item2">
-            <a class="nav-link" href="#"><img src="${pageContext.request.contextPath}/image/profile_white.png"
-                                              style="width:30px;"></a>
+        <li class="nav-item3 user_info">
+            <img src="${pageContext.request.contextPath}/emp/profile-image?UUID=${sessionScope.profileUUID}"
+                 style="width:30px;">&nbsp;&nbsp;
+            <span>${ename}님</span>
+            <a href="${pageContext.request.contextPath}/emp/logout">로그아웃</a>
         </li>
-        <li class="nav-item3" style="line-height: 10px;">
-            <%--${.name} --%><span class="nav-link">${ename}님</span><a class="nav-link"
-                                                                    href="${pageContext.request.contextPath}/emp/logout">로그아웃</a>
-        </li>
-        <%--<c:if test="${id=='admin' }">
-        Drop down
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">관리자</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="${pageContext.request.contextPath }/members/list">회원정보</a>
-                    <a class="dropdown-item" href="${pageContext.request.contextPath }/boards/list">게시판</a>
-                </div>
-            </li>
-        </c:if>	 --%>
+
     </ul>
 </nav>
-<%--</c:if> --%>
+<script>
+    $(document).ready(function () {
+        const currentPath = window.location.pathname; // 현재 URL 경로 가져오기
+        const contextPath = '${pageContext.request.contextPath}'; // JSP에서 contextPath 가져오기
+
+        // 현재 URL에서 'unite/' 뒤 첫 번째 단어 추출
+        const currentSegment = currentPath.replace(contextPath + '/', '').split('/')[0];
+
+        $('.navbar-nav .nav-link').each(function () {
+            const linkPath = $(this).attr('href'); // 링크의 href 속성 가져오기
+            const linkSegment = linkPath.replace(contextPath + '/', '').split('/')[0];
+
+            // 'unite/' 뒤 첫 번째 경로가 같으면 active 클래스 추가
+            if (currentSegment === linkSegment) {
+                $(this).addClass('active');
+            }
+        });
+    });
+</script>

@@ -15,6 +15,16 @@
 	    var projectName = "${left}";
 	</script>
 	<script src="${pageContext.request.contextPath }/js/project_detail.js"></script>
+	<script>
+	    function submitForm(memberId) {
+	        // memberId 값을 hidden input에 설정
+	        document.getElementById('memberId').value = memberId;
+	        // 폼을 제출
+	        document.getElementById('postForm').submit();
+	    }
+	 
+
+	</script>
 	<jsp:include page="../common/header.jsp"/>
 	<jsp:include page="project_leftbar.jsp"/>
 	<style>
@@ -33,6 +43,16 @@
 	    th:nth-child(1), td:nth-child(1) {width: 20%; }
 	    th:nth-child(2), td:nth-child(2) {width: 60%; }
 	    th:nth-child(3), td:nth-child(3) {width: 20%; }
+	    /* tr 요소 클릭 가능 스타일 추가 */
+.clickable-row {
+    cursor: pointer; /* 마우스를 올렸을 때 커서가 클릭 가능한 모양으로 변경 */
+}
+
+/* tr에 마우스를 올렸을 때 배경색 변경 */
+.clickable-row:hover {
+    background-color: lightgray; /* 회색 배경 */
+}
+	    
 	</style>
 </head>
 <body>
@@ -104,16 +124,20 @@
 				        </tr>
 				    </thead>
 				    <tbody>
-				        <c:forEach var="project" items="${project2}"> 
-						    <tr>
-								<td><a href="${pageContext.request.contextPath}/projectb/list?memberId=${project.memberId}">${project.taskWriter}</a></td>
-								<td>${project.taskTitle}</td>
-								<td>${project.taskUpdateDate}</td>
-							</tr>
-						</c:forEach> 
+				        <c:forEach var="project" items="${project2}">
+						    <tr class="clickable-row" data-member-id="${project.memberId}">
+						        <td>
+						            ${project.taskWriter}
+						        </td>
+						        <td>${project.taskTitle}</td>
+						        <td>${project.taskUpdateDate}</td>
+						    </tr>
+						</c:forEach>
 				    </tbody>
 				</table>
-				<a href="${pageContext.request.contextPath}/project/progress" class="btn btn-info btn-sm float-right">상세보기</a> <!-- 제일 우측 하단에 링크 -->
+			    <form id="postForm" action="${pageContext.request.contextPath}/projectb/list" method="POST" style="display:none;">
+				    <input type="hidden" name="memberId" id="memberId">
+				</form>
 			</div>
 			<div class="col-md-4 notification">
 				<h5>알림</h5>

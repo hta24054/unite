@@ -2,8 +2,10 @@ package com.hta2405.unite.util;
 
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.AttendDao;
+import com.hta2405.unite.dao.EmpDao;
 import com.hta2405.unite.dao.HolidayDao;
 import com.hta2405.unite.dto.Attend;
+import com.hta2405.unite.dto.DocVacation;
 import com.hta2405.unite.dto.Emp;
 import com.hta2405.unite.dto.Holiday;
 import com.hta2405.unite.enums.AttendType;
@@ -13,11 +15,15 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
+import static com.hta2405.unite.enums.AttendType.*;
 
 public class AttendUtil {
+    HolidayDao holidayDao = new HolidayDao();
+    AttendDao attendDao = new AttendDao();
+    EmpDao empDao = new EmpDao();
+
     public ActionForward getAttendDetail(HttpServletRequest req, Emp targetEmp) {
         int year = Integer.parseInt(req.getParameter("year"));
         int month = Integer.parseInt(req.getParameter("month"));
@@ -29,7 +35,7 @@ public class AttendUtil {
         List<Attend> allDate = insertAllDays(startDate, endDate);
 
         //휴일 업데이트(Attend객체 내 attendType에 휴일 정보 추가)
-        List<Holiday> holidayList = new HolidayDao().getHoliday(startDate, endDate);
+        List<Holiday> holidayList = holidayDao.getHoliday(startDate, endDate);
         updateHoliday(allDate, holidayList);
 
         //한달간의 해당 직원 근태목록 불러와 업데이트
@@ -42,18 +48,19 @@ public class AttendUtil {
         int lateOrLeaveEarly = 0; //지각, 또는 조퇴일
 
         // attendType ={일반, 출장, 외근, 휴가, 결근, 휴일}
+        // 지각 및 내 근무일 카운트
         for (Attend attend : allDate) {
             if (attend.getAttendType() == null) {
                 continue;
             }
-            if (attend.getAttendType().equals("휴일")) {
+            if (attend.getAttendType().equals(HOLIDAY)) {
                 continue;
             }
-            if (attend.getAttendType().equals("휴가")) {
+            if (attend.getAttendType().isSubTypeOf(VACATION)) {
                 vacation++;
                 continue;
             }
-            if (attend.getAttendType().equals("결근")) {
+            if (attend.getAttendType().equals(ABSENT)) {
                 absent++;
                 continue;
             }
@@ -75,41 +82,43 @@ public class AttendUtil {
     }
 
     private void updateEmpAttend(LocalDate startDate, LocalDate endDate, Emp emp, List<Attend> allDate) {
-        //출근이 찍힌것들만 가져옴
-        ArrayList<Attend> attendList = new AttendDao().getAttendByEmpId(emp, startDate, endDate);
-        int attendIdx = 0;
-        int dateIdx = 0;
-        while (attendIdx < attendList.size()) {
-            Attend attend = attendList.get(attendIdx);
-            Attend date = allDate.get(dateIdx);
-            if (date.getAttendDate()
-                    .equals(attend.getAttendDate())) {
-                date.setEmpId(attend.getEmpId());
-                date.setAttendIn(attend.getAttendIn());
-                date.setAttendOut(attend.getAttendOut());
-                date.setAttendType(attend.getAttendType());
+        // 출근 기록을 날짜별로 매핑
+        List<Attend> attendList = new AttendDao().getAttendByEmpId(emp, startDate, endDate);
+        //휴가, 휴일이 가징 뒤로 정렬되면서,
+        attendList.sort(Comparator.comparing(attend ->
+                attend.getAttendType().isSubTypeOf(AttendType.VACATION) ? 1 : 0));
 
-                // 출, 퇴근시간이 모두 있는 경우에는, 근무 시간 계산 및 설정
-                if (attend.getAttendIn() != null && attend.getAttendOut() != null) {
-                    //근무시간 계산
-                    Duration workDuration = Duration.between(attend.getAttendIn(), attend.getAttendOut());
-                    date.setWorkTime(workDuration);
-                    //지각, 조퇴 카운트
-                }
-                attendIdx++;
-            }
-            dateIdx++;
+        Map<LocalDate, Attend> attendMap = new HashMap<>();
+        for (Attend attend : attendList) {
+            attendMap.put(attend.getAttendDate(), attend);
         }
-        // 결근일 확인
+        System.out.println(attendMap);
+        // allDate를 순회하며 매칭
+        for (Attend date : allDate) {
+            Attend matchedAttend = attendMap.get(date.getAttendDate());
+            if (matchedAttend != null) {
+                date.setEmpId(matchedAttend.getEmpId());
+                date.setAttendIn(matchedAttend.getAttendIn());
+                date.setAttendOut(matchedAttend.getAttendOut());
+                date.setAttendType(matchedAttend.getAttendType());
+
+                // 근무 시간 계산
+                if (matchedAttend.getAttendIn() != null && matchedAttend.getAttendOut() != null) {
+                    Duration workDuration = Duration.between(matchedAttend.getAttendIn(), matchedAttend.getAttendOut());
+                    date.setWorkTime(workDuration);
+                }
+            }
+        }
+
+        // 결근 처리
         LocalDate today = LocalDate.now();
         for (Attend attend : allDate) {
-            String attendType = Optional.ofNullable(attend.getAttendType()).orElse(AttendType.ABSENT.getType());
-            // 오늘보다 이전 날짜, 퇴근 시간이 없고, 휴일 또는 휴가가 아닌 경우 결근 처리
+            AttendType attendType = Optional.ofNullable(attend.getAttendType()).orElse(ABSENT);
             if (attend.getAttendDate().isBefore(today)
                     && attend.getAttendOut() == null
-                    && !attendType.equals(AttendType.HOLIDAY.getType())
-                    && !attendType.equals(AttendType.VACATION.getType())) {
-                attend.setAttendType(AttendType.ABSENT.getType());
+                    && !attendType.equals(HOLIDAY)
+                    && !attendType.isSubTypeOf(VACATION)) {
+                attend.setAttendType(ABSENT);
             }
         }
     }
@@ -133,7 +142,7 @@ public class AttendUtil {
                 Holiday holiday = holidayList.get(holidayIdx);
                 Attend attend = allDate.get(dateIdx);
                 if (holiday.getHolidayDate().equals(attend.getAttendDate())) {
-                    attend.setAttendType("휴일");
+                    attend.setAttendType(AttendType.HOLIDAY);
                     holidayIdx++;
                 }
                 dateIdx++;
@@ -155,25 +164,25 @@ public class AttendUtil {
         return inTime.isAfter(LocalTime.of(9, 0)) || outTime.isBefore(LocalTime.of(18, 0));
     }
 
-    public ActionForward getVacationDetail(HttpServletRequest req, Emp targetEmp) {
+    public ActionForward getVacationDetail(HttpServletRequest req, String empId) {
         int year = Integer.parseInt(req.getParameter("year"));
+        Emp targetEmp = empDao.getEmpById(empId);
         //총 연차 부여일
         req.setAttribute("allVacCount", targetEmp.getVacationCount());
-
-        //모든 특정 년도 휴가 목록 가져옴
-        List<Attend> vacList = new AttendDao().getYearlyVacationByEmpId(targetEmp.getEmpId(), year);
-
-        //전체 휴가 중 '연차'사용 갯수만 카운트
-        int privateVacCount = 0;
-        for (Attend attend : vacList) {
-            if (attend.getAttendType().equals("연차")) {
-                privateVacCount++;
-            }
-        }
+        req.setAttribute("emp", targetEmp);
+        int usedAnnualVacation = attendDao.getUsedAnnualVacationCount(targetEmp.getEmpId(), year);
+        List<DocVacation> vacList = attendDao.getUsedVacationList(targetEmp.getEmpId(), year);
 
         req.setAttribute("vacList", vacList);
         req.setAttribute("givenVacCount", targetEmp.getVacationCount());
-        req.setAttribute("privateVacCount", privateVacCount);
+        req.setAttribute("usedAnnualVacation", usedAnnualVacation);
         return new ActionForward(false, "/WEB-INF/views/attend/vacationDetail.jsp");
+    }
+
+    public static void checkAttendRole(Emp emp, HttpServletRequest req) {
+        boolean hrDept = EmpUtil.isHrDept(emp);
+        boolean manager = EmpUtil.isManager(emp);
+        req.setAttribute("hrDept", hrDept);
+        req.setAttribute("manager", manager);
     }
 }

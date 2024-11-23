@@ -5,40 +5,13 @@
 <head>
     <jsp:include page="../common/header.jsp"/>
     <jsp:include page="doc_leftbar.jsp"/>
-
+    <link href="${pageContext.request.contextPath}/css/doc.css" rel="stylesheet">
     <meta charset="UTF-8">
     <title>구매신청서</title>
-    <style>
-        .header-cell {
-            font-size: 36px;
-            font-weight: bold;
-            padding: 20px 0;
-        }
-
-        /* 테두리 색상을 검정색으로 설정 */
-        .table-bordered, .table-bordered td, .table-bordered th {
-            align-content: center;
-            border-color: black !important;
-        }
-
-        .item_form {
-            width: 18%;
-        }
-
-        .item_form {
-            width: 20%;
-            text-align: right; /* 품명, 규격을 제외한 수량, 단가, 금액 우측 정렬 */
-        }
-
-        /* 우측 정렬을 적용하는 클래스 */
-        .text-right-align {
-            text-align: right;
-        }
-    </style>
 </head>
 <body>
-<form id="doc_form" action="${pageContext.request.contextPath}/doc/buy_process" method="POST">
-    <div class="container mt-4">
+<div class="container mt-4">
+    <div class="document-wrapper">
         <!-- 기안용지 제목 -->
         <div class="text-center mb-4">
             <h1 class="header-cell">구매신청서</h1>
@@ -109,11 +82,9 @@
                 </td>
             </tr>
         </table>
-
     </div>
     <jsp:include page="read_button.jsp"/>
-</form>
-
+</div>
 <script>
     $(document).ready(function () {
         calculateTotal(); // 페이지 로드 시 초기 합계 계산

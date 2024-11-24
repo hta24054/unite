@@ -10,13 +10,71 @@ $(document).ready(function(){
 			fetchListData(), 
 			fetchSharedListData()
 		]).then(() => {
+	        const startMonth = moment().startOf('month').format('YYYY-MM');
+	        const endMonth = moment().add(1, 'year').endOf('month').format('YYYY-MM'); 
+	        
 	        fetchHolidayData({
-	            startStr: moment().startOf('month').format('YYYY-MM-DD'),
-	            endStr: moment().endOf('month').format('YYYY-MM-DD')
+	            startStr: startMonth,
+	            endStr: endMonth
 	        });
 	    });
 	}
 	
+	// 공휴일 불러오기
+	function fetchHolidayData(data) {
+	    const startMonth = data.startStr.substring(0, 7);  
+	    let endMonth = data.endStr.substring(0, 7);  
+	    
+	    const nextMonth = moment(endMonth).add(1, 'month').format('YYYY-MM'); 
+	
+	    // 공휴일 데이터가 로드되었는지 확인하기 위한 flag
+	    if (window.holidayDataLoaded) {
+	        return; 
+	    }
+	
+	    $.ajax({
+	        url: "getHoliday", 
+	        type: "GET",
+	        data: {
+	            start: startMonth,  
+	            end: nextMonth  
+	        },
+	        dataType: "json",
+	        success: function (data) {
+	            // 기존 이벤트와 중복되지 않는 공휴일만 추가
+	            data.holidayList.forEach(function(holiday) {
+	                const isDuplicate = events.some(event => 
+	                    event.start === holiday.holidayDate && event.title === holiday.holidayName
+	                );
+	
+	                if (!isDuplicate) {
+	                    events.push({
+	                        title: holiday.holidayName,  
+	                        start: holiday.holidayDate,  
+	                        allDay: true,  
+	                        color: 'red',  
+	                        editable: false,  // 드래그 불가
+	                        droppable: false, // 다른 날짜로 드래그 불가
+	                        extendedProps: { 
+	                            isHoliday: true, 
+	                        }
+	                    });
+	                }
+	            });
+	
+	            // 공휴일 데이터가 로드되었음을 플래그로 저장
+	            window.holidayDataLoaded = true;
+	
+	            // 캘린더 초기화
+			    initCalendar();
+	        },
+	        error: function (error) {
+	            console.log('공휴일 불러오기 오류', error);
+	        }
+	    });
+	}
+
+	/*
 	// 공휴일 불러오기
 	function fetchHolidayData(data) {
 	    const startMonth = data.startStr.substring(0, 7);
@@ -65,8 +123,7 @@ $(document).ready(function(){
 	            console.log('공휴일 불러오기 오류', error);
 	        }
 	    });
-	}
-
+	}*/
 	
 	// 일정 리스트 불러오기
 	function fetchListData(){
@@ -98,7 +155,7 @@ $(document).ready(function(){
 	                    }
 			        }
 			    }
-     	        // 캘린더 초기화
+			    
 			    initCalendar();
 			    
 			    //calendar.unselect();
@@ -143,7 +200,7 @@ $(document).ready(function(){
 	                    }
 	                }
 	            }
-	            // 캘린더 초기화
+
 	            initCalendar();
 	            
 	            //calendar.unselect();
@@ -242,10 +299,10 @@ $(document).ready(function(){
 	            endAt: endAt,
 	            allDay: info.event.allDay ? 1 : 0
 	        },
-	        success: function(data) {
+	        success: function() {
 	            fetchAllData();
 	        },
-	        error: function(error) {
+	        error: function() {
 	            alert("drag 일정 업데이트 중 오류가 발생했습니다.");
 	        }
 	    });
@@ -558,7 +615,7 @@ $(document).ready(function(){
 			    
 			    openDetailModal(info.event);
             },
-	        eventChange: function(info) { // 이벤트가 수정되면 발생하는 이벤트
+	        eventChange: function(info) {
 	         	updateDragEvent(info);
 	        },
             eventDataTransform: function(event) { // 이벤트 데이터 변환 함수
@@ -571,19 +628,20 @@ $(document).ready(function(){
             eventDidMount: function(info) {
 				 //console.log("info.event.extendedProps", info.event.extendedProps);
 			},
-			eventDragStart: function(info) {
-				console.log("eventDragStart", info.event.extendedProps.color);
-				
-				if (info.event && info.event.extendedProps && info.event.extendedProps.color) {
-			        
-			        if (info.event.extendedProps.color === 'red') {
-			            return false; 
-			        }
-			    }
-	        },
 			eventDrop: function(info, revertFunc) {
 	            updateDragEvent(info); 
 	        },
+			datesSet: function(info) {
+			    const startMonth = moment(info.view.currentStart).format('YYYY-MM'); 
+			    const endMonth = moment(info.view.currentEnd).format('YYYY-MM');
+			    
+			    const nextMonth = moment(endMonth).add(1, 'month').format('YYYY-MM'); 
+
+			    fetchHolidayData({
+			        startStr: startMonth,
+			        endStr: nextMonth
+			    });
+			}
 		});
 		
 		//선택 상태 해제

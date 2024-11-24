@@ -292,32 +292,30 @@ $(document).ready(function(){
 		}	
 	}
 	
-	// 상세 일정 팝업 
-	
-	
+	// 팝업 
 	function openDetailModal(event) {
-	    // 모달을 열 때마다 내용 초기화
-	    $(".modal-header").find("h5").text("일정 등록"); // 기본 제목을 '일정 등록'으로 설정
-	    $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false); // 모든 필드를 활성화
+	    $(".modal-header").find("h5").text("일정 등록"); 
+	    $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false); 
 	    $(".modal-body").find(".btn_wrap").html(`
 	        <button type="reset" class="btn btn-secondary">취소</button>
 	        <button type="button" id="btnRegister" class="btn btn-info">등록</button>
-	    `); // 기본 버튼 세팅
+	    `); 
+	    
+	    console.log("event", event)
 	
-	    // 일정 등록 모드일 때 초기화
-	    if (!event) {
-	        // 일정 등록 모드일 때
+	    // 일정 등록 
+	    if (!event) {			
 	        $("#schedule_id").val("");
 	        $("#schedule_name").val("");
 	        $("#startAt").val("");
 	        $("#endAt").val("");
 	        $("#description").val("");
-	        $("#bgColor").val("#1e3a8a"); // 기본 색상
-	        $("#allDay").prop("checked", false); // 기본 allDay 체크 해제
+	        $("#bgColor").val("#1e3a8a"); 
+	        $("#allDay").prop("checked", false); 
 	        return;
 	    }
 	
-	    // 일정 편집 모드일 때
+	    // 상세 일정
 	    $("#schedule_id").val(event.id);
 	    $("#schedule_name").val(event.title);
 	
@@ -379,9 +377,7 @@ $(document).ready(function(){
 	    });
 	
 	    // 일정 삭제
-	    $("#btnDelete").off("click").on("click", function() {
-	        console.log("data Delete");
-	
+	    $("#btnDelete").off("click").on("click", function() {	
 	        const eventData = {
 	            schedule_id: $("#schedule_id").val() 
 	        };
@@ -392,7 +388,6 @@ $(document).ready(function(){
 	    // 모달 열기
 	    $("#scheduleModal").modal('show');
 	}
-
 	
 	/*
 	function openDetailModal(event) {

@@ -31,21 +31,6 @@ public class BoardSearchAction implements Action {
 		String category = req.getParameter("category");
 		String query = req.getParameter("query");
 		
-		switch (category) {
-		case "제목": {
-			category = "";
-		}
-		case "내용": {
-			category = "";
-		}
-		case "작성자": {
-			category = "";
-		}
-		default:
-			category = null;
-		}
-		
-		
 		//Gson 인스턴스 생성할 때 어댑터 등록
 		Gson gson = new GsonBuilder()
 		        .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
@@ -79,8 +64,7 @@ public class BoardSearchAction implements Action {
 		int listCount = boardDao.getSearchListCountByBoardId(boardId,category,query);
 		
 		//리스트를 받아옵니다.
-		postList = boardDao.getPostListByBoardId(page,limit,boardId);
-		//postList = boardDao.getSearchPostListByBoardId(page,limit,boardId,categoryNum,query);
+		postList = boardDao.getSearchPostListByBoardId(page,limit,boardId,category,query);
 		
 		/*
 		 * 총 페이지 수

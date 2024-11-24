@@ -784,14 +784,33 @@ public class BoardDao {
 	}
 
 	public int getSearchListCountByBoardId(Long boardId, String category, String query) {
-		String sql = """
-				SELECT COUNT(*) 
-				FROM post 
-				WHERE """ + category + " = ? AND board_id = ? ";
+		String sql="";
+		if(category.equals("작성자")) {
+			sql = """
+					SELECT COUNT(*)
+					FROM post
+					WHERE post_writer in (
+					    SELECT emp_id
+					    FROM emp
+					    WHERE ename LIKE ?
+					)
+					AND board_id = ?
+					""";
+		}else{
+			String searchColmn = category.equals("제목")? "post_subject": "post_content";
+			
+			sql = """
+					SELECT COUNT(*) 
+					FROM post 
+					WHERE %s LIKE ? 
+					and board_id = ?
+					""".formatted(searchColmn);
+		}
+		
 		int x=0;
 		try (	Connection con = ds.getConnection();
 				PreparedStatement pstmt = con.prepareStatement(sql);){
-			pstmt.setString(1, query);
+			pstmt.setString(1, '%'+query+'%');
 			pstmt.setLong(2, boardId);
 			try (ResultSet rs = pstmt.executeQuery()){
 				if(rs.next()) {
@@ -800,9 +819,84 @@ public class BoardDao {
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("getListCountByBoardId() 에러: "+e);
+			System.out.println("getSearchListCountByBoardId() 에러: "+e);
 		}
 		return x;
 	}
+
+	public List<Post> getSearchPostListByBoardId(int page, int limit, Long boardId, String category, String query) {
+		String searchWhere = "";
+		if(category.equals("제목")) {
+			searchWhere = "post_subject LIKE ? ";
+		}else if(category.equals("내용")) {
+			searchWhere = "post_content LIKE ? ";
+		}else {
+			searchWhere = """
+					post_writer in (
+					    SELECT emp_id
+					    FROM emp
+					    WHERE ename LIKE ?
+					)
+					""";
+		}
+		String post_list_sql ="""
+				select *
+				from ( select rownum rnum, j.*
+						from (
+								select post.*, nvl(cnt,0) as cnt
+								from post left outer join (select post_id, count(*) cnt
+															from post_comment
+															group by post_id) pc
+								on post.post_id = pc.post_id
+								where board_id = ?
+								and %s
+								order by post_re_ref desc, post_re_seq asc
+						) j
+						where rownum <= ? 
+				)
+				where rnum>=? and rnum<=?
+				""".formatted(searchWhere);
+		
+		List<Post> list = new ArrayList<Post>();
+										//한 페이지당 10개씩 목록인 경우 1페이지, 2페이지, 3페이지...
+		int startrow = (page - 1) * limit + 1; //읽기 시작할 row 번호(1		11		21...
+		int endrow = startrow + limit - 1; 	   //읽을 마지막 row 번호(10		20		30...
+		
+		try (	Connection con = ds.getConnection();
+				PreparedStatement pstmt = con.prepareStatement(post_list_sql);){
+			pstmt.setLong(1, boardId);
+			pstmt.setString(2, '%'+query+'%');
+			pstmt.setInt(3, endrow);
+			pstmt.setInt(4, startrow);
+			pstmt.setInt(5, endrow);
+			
+			try (ResultSet rs= pstmt.executeQuery()){
+				//DB에서 가져온 데이터를 BoardBean에 담습니다.
+				while(rs.next()) {
+					Post post = new Post();
+					post.setBoardId(rs.getLong("board_id"));
+					post.setPostId(rs.getLong("post_id"));
+					post.setPostWriter(rs.getString("post_writer"));
+					post.setPostSubject(rs.getString("post_subject"));
+					post.setPostContent(rs.getString("post_content"));
+					post.setPostDate(rs.getTimestamp("post_date").toLocalDateTime());
+					post.setPostUpdateDate(rs.getTimestamp("post_update_date").toLocalDateTime());
+					post.setPostReRef(rs.getLong("post_re_ref"));
+					post.setPostReLev(rs.getLong("post_re_lev"));
+					post.setPostReSeq(rs.getLong("post_re_seq"));
+					post.setPostView(rs.getLong("post_view"));
+					post.setPostCommentCnt(rs.getLong("cnt"));
+					list.add(post);//값을 담은 객체를 리스트에 저장합니다.
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getPostListByBoardId() 에러:"+ e);
+		}
+		
+		return list;
+	}
+	
+	
 	
 }

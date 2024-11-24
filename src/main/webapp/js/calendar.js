@@ -10,6 +10,7 @@ $(document).ready(function(){
 			fetchListData(), 
 			fetchSharedListData()
 		]).then(() => {
+			/*
 	        const startMonth = moment().startOf('month').format('YYYY-MM');
 	        const endMonth = moment().add(1, 'year').endOf('month').format('YYYY-MM'); 
 	        
@@ -17,6 +18,7 @@ $(document).ready(function(){
 	            startStr: startMonth,
 	            endStr: endMonth
 	        });
+	        */
 	    });
 	}
 	
@@ -628,19 +630,17 @@ $(document).ready(function(){
             eventDidMount: function(info) {
 				 //console.log("info.event.extendedProps", info.event.extendedProps);
 			},
-			eventDrop: function(info, revertFunc) {
+			eventDrop: function(info) {
 	            updateDragEvent(info); 
 	        },
 			datesSet: function(info) {
-			    const startMonth = moment(info.view.currentStart).format('YYYY-MM'); 
-			    const endMonth = moment(info.view.currentEnd).format('YYYY-MM');
-			    
-			    const nextMonth = moment(endMonth).add(1, 'month').format('YYYY-MM'); 
-
-			    fetchHolidayData({
-			        startStr: startMonth,
-			        endStr: nextMonth
-			    });
+			     const startMonth = moment().startOf('month').format('YYYY-MM');
+		        const endMonth = moment().add(1, 'year').endOf('month').format('YYYY-MM'); 
+		        
+		        fetchHolidayData({
+		            startStr: startMonth,
+		            endStr: endMonth
+		        });
 			}
 		});
 		

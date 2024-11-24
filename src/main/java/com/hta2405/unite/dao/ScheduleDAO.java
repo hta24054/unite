@@ -328,5 +328,55 @@ public class ScheduleDAO {
         
         System.out.println("HolidayList " + HolidayList);
         return HolidayList;
-	}	
+	}
+
+	public String getHolidayName(LocalDate localDate) {
+		String sql = """
+                SELECT HOLIDAY_NAME FROM HOLIDAY
+                WHERE HOLIDAY_DATE = ?
+            """;
+	    try (Connection conn = ds.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
+	        ps.setDate(1, Date.valueOf(localDate));
+	        ResultSet rs = ps.executeQuery();
+	        if (rs.next()) {
+	            return rs.getString(1);
+	        }
+	    } catch (SQLException e) {
+	        throw new RuntimeException(e);
+	    }
+	    return null;
+	}
+	
+    public int insertHoliday(LocalDate localDate, String holidayName) {
+        String sql = """
+                    INSERT INTO HOLIDAY (HOLIDAY_DATE, HOLIDAY_NAME)
+                    VALUES (?, ?)
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, Date.valueOf(localDate));
+            ps.setString(2, holidayName);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public int updateHoliday(String holidayName, LocalDate holidayDate) {
+        String sql = """
+                   UPDATE HOLIDAY
+                   SET HOLIDAY_NAME = ?
+                   WHERE HOLIDAY_DATE = ?
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, holidayName);
+            ps.setDate(2, Date.valueOf(holidayDate));
+
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

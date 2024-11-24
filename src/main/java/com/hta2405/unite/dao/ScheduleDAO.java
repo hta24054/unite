@@ -325,8 +325,7 @@ public class ScheduleDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        
-        System.out.println("HolidayList " + HolidayList);
+
         return HolidayList;
 	}
 

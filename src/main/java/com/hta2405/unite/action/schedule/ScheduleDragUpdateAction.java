@@ -29,8 +29,6 @@ public class ScheduleDragUpdateAction implements Action {
 		schedule.setScheduleId(scheduleId);
 		schedule.setEmpId(empId);
 		
-		//LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(startAt);
-		//LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(endAt);
 		LocalDateTime startDateTime = CalendarDateTimeUtil.parseDateTimeWithoutT(startAt);
 		LocalDateTime endDateTime = CalendarDateTimeUtil.parseDateTimeWithoutT(endAt);
 		

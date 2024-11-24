@@ -461,10 +461,11 @@ JOIN reservation r ON e.emp_id = r.emp_id;
 
 
 
+SELECT * 
+FROM HOLIDAY
 
 
-
-TRUNCATE TABLE reservation;
+TRUNCATE TABLE HOLIDAY;
 
 
 

@@ -431,8 +431,7 @@ $(document).ready(function(){
 				    `);
 				    
 				    $("#allDay").prop("checked", false);
-				    $("#startAt").val(moment(info.date).format("YYYY-MM-DD HH:mm"));
-			        $("#endAt").val("");
+				    $("#startAt, #endAt").prop("type", "datetime-local").val("");
 			        $("#description").val("");
 				    $resourceType.val("");
 				    $resourceName.hide().empty().append('<option value="">자원명</option>'); 

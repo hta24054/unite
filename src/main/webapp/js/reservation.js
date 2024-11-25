@@ -112,7 +112,7 @@ $(document).ready(function(){
             success: function (data) {
 	            if (data === 0) {
 	                alert('이미 예약된 자원입니다.');
-	                return;  // 이미 예약된 자원이라면 예약을 진행하지 않음
+	                return;  // 이미 예약된 자원이면 예약을 진행하지 않음
 	            }
 
 	            getReservationList();
@@ -171,30 +171,36 @@ $(document).ready(function(){
 					  $("#reservationDetailModal").find(".modal-header").find("h5").text("예약 정보"); 
 					  
 					  let _html = "<ul class='deatail_list'>" +
-						    "<li>분류명: " + (events[0]?.extendedProps.resourceType) + "</li>" +
-						    "<li>자원명: " + (events[0]?.extendedProps.resourceName) + "</li>" +
-						    "<li>시작시간: " + moment(event.start).format("YYYY-MM-DD HH:mm") + "</li>" +
-						    "<li>종료시간: " + (event.allDay ? moment(event.start).format("YYYY-MM-DD") + " 00:00" : moment(event.end).format("YYYY-MM-DD HH:mm")) + "</li>" +
-						    "<li>예약자: " + (events[0]?.extendedProps.ename) + "</li>" +
-						    "<li>사용용도: " + (event.extendedProps.reservationInfo || "") + "</li>";
+								    "<li>분류명: " + (events[0]?.extendedProps.resourceType) + "</li>" +
+								    "<li>자원명: " + (events[0]?.extendedProps.resourceName) + "</li>" +
+								    "<li>시작시간: " + moment(event.start).format("YYYY-MM-DD HH:mm") + "</li>";
+						    
+						    // 종료시간 설정 (시작시간과 동일한 경우)
+							_html += "<li>종료시간: " + 
+										  moment(event.end && !moment(event.start).isSame(event.end) ? event.end : event.start).format("YYYY-MM-DD HH:mm") + 
+									 "</li>";
+							
+							_html += "<li>예약자: " + (events[0]?.extendedProps.ename) + "</li>" +
+							         "<li>사용용도: " + (event.extendedProps.reservationInfo || "") + "</li>";
+    
 						
-						// 자원정보 존재할 경우
-						if (events[0]?.extendedProps.resourceInfo) {
-						    _html += "<li>자원정보: " + events[0].extendedProps.resourceInfo + "</li>";
-						}
-						
-						_html += "</ul>" +
-						    "<div class='d-flex justify-content-center mt-3'>" +
-						    "<button type='button' id='btnCancel' class='btn btn-danger'>예약취소</button>" +
-						    "</div>";
+							// 자원정보 존재할 경우
+							if (events[0]?.extendedProps.resourceInfo) {
+							    _html += "<li>자원정보: " + events[0].extendedProps.resourceInfo + "</li>";
+							}
+							
+							_html += "</ul>" +
+							    "<div class='d-flex justify-content-center mt-3'>" +
+							    "<button type='button' id='btnCancel' class='btn btn-danger'>예약취소</button>" +
+							    "</div>";
 	       
-	                $("#reservationDetailModal").find(".modal-body").html(_html);
-	                $("#reservationDetailModal").modal("show");
-	                
-	                // 예약 취소
-	                $("#btnCancel").off("click").on("click", function() {
-				        cancelReservation(event); 
-				     });
+			                $("#reservationDetailModal").find(".modal-body").html(_html);
+			                $("#reservationDetailModal").modal("show");
+			                
+			                // 예약 취소
+			                $("#btnCancel").off("click").on("click", function() {
+						        cancelReservation(event); 
+						     });
 				     
 	            } else {
 	                alert("예약 정보를 찾을 수 없습니다.");
@@ -244,7 +250,7 @@ $(document).ready(function(){
 		}
 	}
 	
-	// 자원 예약 모달 등록 버튼 클릭 시 초기화
+	// 예약 하기 모달 등록 버튼 클릭 시 초기화
 	$(".btn.btn-info[data-target='#reservationModal']").on("click", function() {
 	    $(".modal-header").find("h5").text("예약 하기"); 
 	    $(".modal-body").find(".btn_wrap").html(`
@@ -253,7 +259,7 @@ $(document).ready(function(){
 	    `);
 	    
 	    $("#allDay").prop("checked", false);
-	    $("#startAt").val("");
+	    $("#startAt").prop("type", "datetime-local").val("");
 	    $("#endAt").val("");
 	    $resourceType.val("");
 	    $resourceName.hide().empty().append('<option value="">자원명</option>'); 
@@ -277,6 +283,19 @@ $(document).ready(function(){
 	    });
 	});
 	
+
+	$(".close").on("click", function () {
+	    $("form").each(function () {
+	        this.reset();
+	    });
+	});
+	
+	$("#reservationModal").on("hidden.bs.modal", function () {
+	    $(this).find("form").each(function () {
+	        this.reset(); 
+	    });
+	});
+
 	// form 유효성 검사
 	function validateForm() {
 	    const $start = $("#startAt");
@@ -412,8 +431,7 @@ $(document).ready(function(){
 				    `);
 				    
 				    $("#allDay").prop("checked", false);
-				    //$("#startAt, #endAt").prop("type", "datetime-local");
-				    $("#startAt").val(moment(info.date).format("YYYY-MM-DD"));
+				    $("#startAt").val(moment(info.date).format("YYYY-MM-DD HH:mm"));
 			        $("#endAt").val("");
 			        $("#description").val("");
 				    $resourceType.val("");
@@ -441,9 +459,6 @@ $(document).ready(function(){
                 }
 			},
             eventClick: function(info) {
-                console.log("eventClick info", info.event);
-                console.log("eventClick info", info.event.extendedProps);
-                
 				openInfoModal(info.event);
             },
 		});

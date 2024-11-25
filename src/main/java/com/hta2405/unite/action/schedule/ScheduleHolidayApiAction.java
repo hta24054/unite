@@ -19,9 +19,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-import com.google.gson.Gson;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
+import com.hta2405.unite.dao.ScheduleDAO;
 import com.hta2405.unite.util.ConfigUtil;
 
 import jakarta.servlet.ServletException;
@@ -34,19 +34,21 @@ public class ScheduleHolidayApiAction implements Action {
 	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 	    String apiKey = ConfigUtil.getProperty("apiKey");
 	    System.out.println("apiKey = " + apiKey);
+	    TreeMap<LocalDate, String> map = getYearlyHolidays(apiKey);
+	    
+	    ScheduleDAO scheduleDAO = new ScheduleDAO();
 
-	    // 공휴일 데이터를 가져옵니다 (TreeMap 형식).
-	    TreeMap<LocalDate, String> holidayMap = getYearlyHolidays(apiKey);
+	   //기존에 등록된 휴일은 추가 안함, 토/일요일로 등록된 휴일은 공휴일명으로 이름 업데이트함
+        for (LocalDate localDate : map.keySet()) {
+            String holidayName = scheduleDAO.getHolidayName(localDate); //날짜로 DB에 공휴일 정보 있는지 확인
+            if (holidayName == null) {
+            	scheduleDAO.insertHoliday(localDate, map.get(localDate));
+            }else if(!holidayName.equals(map.get(localDate))){
+            	scheduleDAO.updateHoliday(map.get(localDate), localDate);
+            }
+        }
 
-	    // TreeMap을 JSON 문자열로 변환합니다.
-	    String holidayDataJson = new Gson().toJson(holidayMap);
-
-	    // JSON 데이터를 응답 객체에 반환합니다.
-	    resp.setContentType("application/json");
-	    resp.setCharacterEncoding("UTF-8");
-	    resp.getWriter().write(holidayDataJson);
-
-	    return null; // 추가적인 페이지 이동이 없으므로 null 반환
+	    return null; 
 	}
 	
 	//순서 보장을 위해 TreeMap 선언

@@ -16,7 +16,7 @@
 		.container-xxl > div {
 		    flex: 1; 
 		    max-width: 100%;
-		    padding: 0 50px; 
+		    padding-left: 50px; 
 		}
 	</style> 
 </head>
@@ -35,8 +35,8 @@
 			                	<th>예약 번호</th>
 			                    <th>자원 유형</th>
 			                    <th>자원 이름</th>
-			                    <th>예약 시작 일시</th>
-			                    <th>예약 종료 일시</th>
+			                    <th>시작 일시</th>
+			                    <th>종료 일시</th>
 			                    <th>사용 용도</th>
 			                    <th>자원 정보</th>
 			                    <th>예약 취소</th>

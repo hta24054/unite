@@ -9,11 +9,9 @@ public class CalendarDateTimeUtil {
         if (dateTime != null && !dateTime.isEmpty()) {
         	
             dateTime = dateTime.replace("T", " "); // "T" 공백으로 교체
-            System.out.println("s =" + dateTime);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
            
             try {
-            	System.out.println("s2=" + LocalDateTime.parse(dateTime, formatter));
                 return LocalDateTime.parse(dateTime, formatter);
             } catch (Exception e) {
             	e.printStackTrace();

@@ -10,15 +10,13 @@ $(document).ready(function(){
 			fetchListData(), 
 			fetchSharedListData()
 		]).then(() => {
-			/*
 	        const startMonth = moment().startOf('month').format('YYYY-MM');
-	        const endMonth = moment().add(1, 'year').endOf('month').format('YYYY-MM'); 
+	        let endMonth = moment().add(1, 'year').endOf('month').format('YYYY-MM'); 
 	        
 	        fetchHolidayData({
 	            startStr: startMonth,
 	            endStr: endMonth
 	        });
-	        */
 	    });
 	}
 	
@@ -43,25 +41,18 @@ $(document).ready(function(){
 	        },
 	        dataType: "json",
 	        success: function (data) {
-	            // 기존 이벤트와 중복되지 않는 공휴일만 추가
 	            data.holidayList.forEach(function(holiday) {
-	                const isDuplicate = events.some(event => 
-	                    event.start === holiday.holidayDate && event.title === holiday.holidayName
-	                );
-	
-	                if (!isDuplicate) {
-	                    events.push({
-	                        title: holiday.holidayName,  
-	                        start: holiday.holidayDate,  
-	                        allDay: true,  
-	                        color: 'red',  
-	                        editable: false,  // 드래그 불가
-	                        droppable: false, // 다른 날짜로 드래그 불가
-	                        extendedProps: { 
-	                            isHoliday: true, 
-	                        }
-	                    });
-	                }
+					events.push({
+                        title: holiday.holidayName,  
+                        start: holiday.holidayDate,  
+                        allDay: true,  
+                        color: 'red',  
+                        editable: false,  // 드래그 불가
+                        droppable: false, // 다른 날짜로 드래그 불가
+                        extendedProps: { 
+                            isHoliday: true, 
+                        }
+                    });
 	            });
 	
 	            // 공휴일 데이터가 로드되었음을 플래그로 저장
@@ -75,57 +66,6 @@ $(document).ready(function(){
 	        }
 	    });
 	}
-
-	/*
-	// 공휴일 불러오기
-	function fetchHolidayData(data) {
-	    const startMonth = data.startStr.substring(0, 7);
-	    
-	    // 이미 공휴일 데이터가 로드되었는지 확인하기 위한 flag
-	    if (window.holidayDataLoaded) {
-	        return; // 이미 공휴일 데이터를 불러왔으면, 더 이상 실행하지 않음
-	    }
-
-	    $.ajax({
-	        url: "holiday",  
-	        type: "get",
-	        data: {
-	            year: startMonth.substring(0, 4), 
-	            month: startMonth.substring(5, 7) 
-	        },
-	        dataType: "json",
-	        success: function (response) {
-	            const holidayData = response.map(holiday => ({
-	                title: holiday.holidayName,  
-	                start: holiday.holidayDate,  
-	                allDay: true,                
-	                color: 'red',  // 이 값은 이벤트의 기본 색상만 설정
-	                editable: false,  // 공휴일은 드래그 불가
-    				droppable: false, // 다른 날짜로 드래그 불가
-				    extendedProps: { 
-				        isHoliday: true, // 공휴일
-				    }            
-	            }));
-	            
-	            console.log("holidayData", holidayData)
-	
-	            // 중복 공휴일 체크 후 추가
-	            holidayData.forEach(holiday => {
-				    if (!events.some(event => event.title === holiday.title && event.start === holiday.start)) {
-				        events.push(holiday);  // 이벤트 추가
-				    }
-				});
-				
-				// 공휴일 데이터가 로드되었음을 플래그로 저장
-            	window.holidayDataLoaded = true;
-		
-				initCalendar();
-	        },
-	        error: function (error) {
-	            console.log('공휴일 불러오기 오류', error);
-	        }
-	    });
-	}*/
 	
 	// 일정 리스트 불러오기
 	function fetchListData(){
@@ -344,8 +284,7 @@ $(document).ready(function(){
 	    if (!event) {			
 	        $("#schedule_id").val("");
 	        $("#schedule_name").val("");
-	        $("#startAt").val("");
-	        $("#endAt").val("");
+		    $("#startAt, #endAt").prop("type", "datetime-local").val("");
 	        $("#description").val("");
 	        $("#bgColor").val("#1e3a8a"); 
 	        $("#allDay").prop("checked", false); 
@@ -385,7 +324,10 @@ $(document).ready(function(){
 	    if (event.extendedProps.isShared === true) {
 	        $(".modal-header").find("h5").text("공유 일정");
 	        $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", true);
-	        $(".modal-body").find(".btn_wrap").remove();
+	        //$(".modal-body").find(".btn_wrap").remove();
+	         $(".modal-body").find(".btn_wrap").html(`
+	            <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
+	        `);
 	    } else {
 	        $(".modal-header").find("h5").text("상세 일정");
 	        $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);
@@ -426,6 +368,10 @@ $(document).ready(function(){
    
 	$(".btn.btn-lg[data-target='#scheduleModal']").on("click", function () {
 	    initializeModalForRegistration();
+	});
+	
+	$("#scheduleModal").on("hidden.bs.modal", function () {
+	    $("#startAt, #endAt").prop("type", "datetime-local").val("");
 	});
 
 	// 등록 버튼 클릭 시 모달 강제 초기화
@@ -583,8 +529,7 @@ $(document).ready(function(){
 		        `);
 		
 		        $("#schedule_name").val("");
-		        $("#startAt").val('YYYY-MM-DD HH:mm');
-		        $("#endAt").val('YYYY-MM-DD HH:mm');
+		        $("#startAt, #endAt").prop("type", "datetime-local").val("");
 		        $("#description").val("");
 		        $("#bgColor").val("#1e3a8a");
 		        $("#allDay").prop("checked", false);
@@ -630,16 +575,7 @@ $(document).ready(function(){
 			},
 			eventDrop: function(info) {
 	            updateDragEvent(info); 
-	        },
-			datesSet: function(info) {
-			     const startMonth = moment().startOf('month').format('YYYY-MM');
-		        const endMonth = moment().add(1, 'year').endOf('month').format('YYYY-MM'); 
-		        
-		        fetchHolidayData({
-		            startStr: startMonth,
-		            endStr: endMonth
-		        });
-			}
+	        }
 		});
 		
 		//선택 상태 해제

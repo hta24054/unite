@@ -22,6 +22,9 @@ public class ProjectDetail {
     private String taskDate;  //진행과정 - 작성일
     private String taskUpdateDate;  //진행과정 - 작성일
     
+    private String ProjectName;
+    private String Jobname;
+    
     private String role;
     private String name;
     

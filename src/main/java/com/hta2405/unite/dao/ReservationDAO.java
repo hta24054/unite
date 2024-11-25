@@ -201,7 +201,7 @@ public class ReservationDAO {
             	 
             	 resourceObj.addProperty("reservation_id", rs.getInt("reservation_id"));
             	 resourceObj.addProperty("resource_id", rs.getInt("resource_id"));
-            	 resourceObj.addProperty("emp_id", rs.getInt("emp_id"));
+            	 resourceObj.addProperty("emp_id", rs.getString("emp_id"));
             	 resourceObj.addProperty("reservation_start", rs.getString("reservation_start"));
             	 resourceObj.addProperty("reservation_end", rs.getString("reservation_end"));
             	 resourceObj.addProperty("reservation_info",rs.getString("reservation_info"));

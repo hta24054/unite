@@ -358,6 +358,22 @@ $(document).ready(function(){
         }
     });
     
+    // 사용용도 입력 시
+    $("#reservationInfo").on("input", function(){
+		const count = $(this).val().length; 
+        const max = parseInt($(this).attr("maxlength"), 10); 
+
+        // 문자 수 업데이트
+        $("#charCount").text(`${count}/${max}`);
+        
+        // 100자 초과 시 
+        if (count > max) {
+            alert("입력은 최대 100자까지만 가능합니다");
+            $(this).val($(this).val().substring(0, max)); 
+            $("#charCount").text(`${max}/${max}`); 
+        }
+	});
+    
 	// 캘린더 생성
 	function initCalendar(){
 		const calendarEl = document.getElementById('calendar'); 

@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath }/css/project.css" type="text/css">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="${pageContext.request.contextPath }/js/project_task_list.js"></script> 
     <script>
     	const contextPath = "${pageContext.request.contextPath}";

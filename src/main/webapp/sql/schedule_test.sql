@@ -42,48 +42,156 @@ WHERE s.emp_id = 241001 OR ss.share_emp = 241101
 GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
          s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay;
 
-
-SELECT *
+SELECT s.schedule_id,
+       s.emp_id,
+       s.schedule_name,
+       s.schedule_content,
+       s.schedule_start,
+       s.schedule_end,
+       s.schedule_color,
+       s.schedule_allDay,
+       -- 공유자들의 이름을 가져오는 부분
+       LISTAGG(e.ename, ', ') WITHIN GROUP (ORDER BY e.ename) AS share_emp_names
 FROM schedule s
 JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
-WHERE s.emp_id = 241001 OR ss.share_emp = 241102;
+-- schedule_share 테이블에서 share_emp를 emp 테이블의 emp_id와 조인하여 공유자의 이름을 가져옴
+JOIN emp e ON ss.share_emp = e.emp_id
+WHERE s.emp_id = '241001' OR ss.share_emp = '241103'
+GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
+         s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay;
+     
+         
+SELECT s.schedule_id,
+       s.emp_id,
+       s.schedule_name,
+       s.schedule_content,
+       s.schedule_start,
+       s.schedule_end,
+       s.schedule_color,
+       s.schedule_allDay,
+       (SELECT LISTAGG(ss.share_emp, ', ') WITHIN GROUP (ORDER BY ss.share_emp)
+        FROM schedule_share ss
+        WHERE ss.schedule_id = s.schedule_id) AS share_emp_names
+FROM schedule s
+WHERE s.schedule_id IN (
+    SELECT schedule_id 
+    FROM schedule_share 
+    WHERE share_emp = '241103'
+)
 
-SELECT *
+
+
+
+select * from schedule;
+
+select * from schedule_share;
+
+ 
+         
+         
+         
+SELECT s.schedule_id,
+       s.emp_id,
+       s.schedule_name,
+       s.schedule_content,
+       s.schedule_start,
+       s.schedule_end,
+       s.schedule_color,
+       s.schedule_allDay,
+       (SELECT LISTAGG(ss.share_emp, ', ') WITHIN GROUP (ORDER BY ss.share_emp)
+        FROM schedule_share ss
+        WHERE ss.schedule_id = s.schedule_id) AS share_emp_names
+FROM schedule s
+WHERE s.schedule_id = ?;
+ 
+         
+         
+         
+         
+         
+
+         
+SELECT s.schedule_id,
+       s.emp_id,
+       s.schedule_name,
+       s.schedule_content,
+       s.schedule_start,
+       s.schedule_end,
+       s.schedule_color,
+       s.schedule_allDay,
+       LISTAGG(e.ename, ', ') WITHIN GROUP (ORDER BY e.ename) AS share_emp_names
 FROM schedule s
 JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
-WHERE s.emp_id = 241001;
+JOIN emp e ON ss.share_emp = e.emp_id
+WHERE s.emp_id = ? OR ss.share_emp = ?
+GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
+         s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay
+ 
 
-
-SELECT *
+         
+SELECT s.schedule_id,
+       s.emp_id,
+       s.schedule_name,
+       s.schedule_content,
+       s.schedule_start,
+       s.schedule_end,
+       s.schedule_color,
+       s.schedule_allDay,
+       ss.share_emp
 FROM schedule s
-JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
-WHERE ss.share_emp = 241101;
+JOIN schedule_share ss
+  ON s.schedule_id = ss.schedule_share_id
+WHERE s.emp_id = ss.share_emp
+ORDER BY s.schedule_id;
+      
+         
 
-SELECT *
+
+
+SELECT s.schedule_id,
+       s.emp_id,
+       s.schedule_name,
+       s.schedule_content,
+       s.schedule_start,
+       s.schedule_end,
+       s.schedule_color,
+       s.schedule_allDay,
+       LISTAGG(ss.share_emp, ',') WITHIN GROUP (ORDER BY ss.share_emp) AS share_emp
 FROM schedule s
-JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
-WHERE ss.share_emp = 241102;
+LEFT JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
+WHERE s.emp_id = '241001' OR ss.share_emp IN ('241001', '241002', '241003')
+GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
+         s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay
+ORDER BY s.schedule_id;
 
-SELECT *
+
+
+
+SELECT s.schedule_id,
+       s.emp_id,
+       s.schedule_name,
+       s.schedule_content,
+       s.schedule_start,
+       s.schedule_end,
+       s.schedule_color,
+       s.schedule_allDay,
+       LISTAGG(ss.share_emp, ',') WITHIN GROUP (ORDER BY ss.share_emp) AS share_emp
 FROM schedule s
-JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
-WHERE s.emp_id = 241101 OR ss.share_emp = 241101;
-
-
-SELECT *
-FROM schedule s
-JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
-WHERE ss.share_emp = 241102;
-
-SELECT *
-FROM schedule s
-JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
-WHERE s.emp_id = 241102 OR ss.share_emp = 241102;
+LEFT JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
+WHERE s.emp_id = '241001'  -- 또는 로그인한 emp_id
+   OR ss.share_emp IN ('241001', '241002', '241003')  -- 공유된 일정에 대한 조건
+GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
+         s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay
+ORDER BY s.schedule_id;
 
 
 
-TRUNCATE TABLE schedule;
-TRUNCATE TABLE schedule_share;
+
+         
+
+select * from schedule;
+
+select * from schedule_share;
 
 
 select * from emp;
@@ -353,10 +461,11 @@ JOIN reservation r ON e.emp_id = r.emp_id;
 
 
 
+SELECT * 
+FROM HOLIDAY
 
 
-
-TRUNCATE TABLE reservation;
+TRUNCATE TABLE HOLIDAY;
 
 
 

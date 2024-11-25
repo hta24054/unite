@@ -22,8 +22,6 @@ $(document).ready(function(){
 	
 	// 공휴일 불러오기
 	function fetchHolidayData(data) {
-		console.log(data + "HolidayData" )
-		
 	    const startMonth = data.startStr.substring(0, 7);  
 	    let endMonth = data.endStr.substring(0, 7);  
 	    

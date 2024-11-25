@@ -10,20 +10,20 @@ $(document).ready(function(){
 			fetchListData(), 
 			fetchSharedListData()
 		]).then(() => {
-			/*
 	        const startMonth = moment().startOf('month').format('YYYY-MM');
-	        const endMonth = moment().add(1, 'year').endOf('month').format('YYYY-MM'); 
+	        let endMonth = moment().add(1, 'year').endOf('month').format('YYYY-MM'); 
 	        
 	        fetchHolidayData({
 	            startStr: startMonth,
 	            endStr: endMonth
 	        });
-	        */
 	    });
 	}
 	
 	// 공휴일 불러오기
 	function fetchHolidayData(data) {
+		console.log(data + "HolidayData" )
+		
 	    const startMonth = data.startStr.substring(0, 7);  
 	    let endMonth = data.endStr.substring(0, 7);  
 	    
@@ -43,25 +43,18 @@ $(document).ready(function(){
 	        },
 	        dataType: "json",
 	        success: function (data) {
-	            // 기존 이벤트와 중복되지 않는 공휴일만 추가
 	            data.holidayList.forEach(function(holiday) {
-	                const isDuplicate = events.some(event => 
-	                    event.start === holiday.holidayDate && event.title === holiday.holidayName
-	                );
-	
-	                if (!isDuplicate) {
-	                    events.push({
-	                        title: holiday.holidayName,  
-	                        start: holiday.holidayDate,  
-	                        allDay: true,  
-	                        color: 'red',  
-	                        editable: false,  // 드래그 불가
-	                        droppable: false, // 다른 날짜로 드래그 불가
-	                        extendedProps: { 
-	                            isHoliday: true, 
-	                        }
-	                    });
-	                }
+					events.push({
+                        title: holiday.holidayName,  
+                        start: holiday.holidayDate,  
+                        allDay: true,  
+                        color: 'red',  
+                        editable: false,  // 드래그 불가
+                        droppable: false, // 다른 날짜로 드래그 불가
+                        extendedProps: { 
+                            isHoliday: true, 
+                        }
+                    });
 	            });
 	
 	            // 공휴일 데이터가 로드되었음을 플래그로 저장
@@ -630,16 +623,7 @@ $(document).ready(function(){
 			},
 			eventDrop: function(info) {
 	            updateDragEvent(info); 
-	        },
-			datesSet: function(info) {
-			     const startMonth = moment().startOf('month').format('YYYY-MM');
-		        const endMonth = moment().add(1, 'year').endOf('month').format('YYYY-MM'); 
-		        
-		        fetchHolidayData({
-		            startStr: startMonth,
-		            endStr: endMonth
-		        });
-			}
+	        }
 		});
 		
 		//선택 상태 해제

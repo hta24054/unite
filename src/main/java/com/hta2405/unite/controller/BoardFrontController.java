@@ -15,6 +15,7 @@ import com.hta2405.unite.action.post.PostReplyProcessAction;
 import com.hta2405.unite.action.post.PostWriteAction;
 import com.hta2405.unite.action.postcomments.PostCommentsAddAction;
 import com.hta2405.unite.action.postcomments.PostCommentsDeleteAction;
+import com.hta2405.unite.action.postcomments.PostCommentsFileDownAction;
 import com.hta2405.unite.action.postcomments.PostCommentsListAction;
 import com.hta2405.unite.action.postcomments.PostCommentsReplyAction;
 import com.hta2405.unite.action.postcomments.PostCommentsUpdateAction;
@@ -51,6 +52,7 @@ public class BoardFrontController extends AbstractFrontController {
         actionMap.put("/comments/delete", PostCommentsDeleteAction::new);//게시글의 댓글 삭제 액션
         actionMap.put("/comments/update", PostCommentsUpdateAction::new);//게시글의 댓글 수정 액션
         actionMap.put("/comments/reply", PostCommentsReplyAction::new);//게시글의 댓글 답글 액션
+        actionMap.put("/comments/down", PostCommentsFileDownAction::new);//게시글의 댓글 첨부파일 다운 액션
         
         actionMap.put("/search", BoardSearchAction::new);//게시글 검색 액션
     }

@@ -77,11 +77,13 @@ sup {
 	display: none;
 }
 
+.boardViewCommentscontainer ,.comment-order-list{
+	padding-right: 40px;
+}
 .boardViewCommentscontainer{
-	padding: 0px 40px;
 	border-top: 1px solid #ccc;
 }
-
+	
 .viewIcon{
 	border: 1px solid gray;
 }
@@ -95,6 +97,24 @@ sup {
 .count{
 	color: #a9a9a9;
 }
+
+.layer-item{
+	padding: 0;
+}
+
+.LayerMore{
+	padding: 10px;
+}
+
+.layer-list{
+	display: flex;
+    justify-content: space-around;
+}
+
+#upfile{
+	display: none;
+}
+
 </style>
 </head>
 <body>
@@ -145,7 +165,8 @@ sup {
    			<c:if test="${postDataAndFile[2] != null}">
     			<c:forEach var="postFile" items="${postDataAndFile[2]}">
     				<tr>
-		    			<td colspan="3" style="padding: 0px 12px 0px 12px;"><img src="${pageContext.request.contextPath}/image/attach.png" style="width:13px; margin: 0px 5px 0px 20px;">
+		    			<td colspan="3" style="padding: 0px 12px 0px 12px;">
+		    				<img src="${pageContext.request.contextPath}/image/attach.png" style="width:13px; margin: 0px 5px 0px 20px;">
 		    				<a href="post/down?postFileId=${postFile.postFileId}">${postFile.postFileOriginal}</a>
 		    			</td>
    					</tr>
@@ -154,7 +175,7 @@ sup {
     		<tr>
     			<td colspan="3" style="padding-bottom:12px;">
 					<div class="file-meta">
-						<img src='/unite/image/comments.png' alt="프로필 이미지" class="icon" style="margin: -1px -4px 0px 15px; width: 30px;"/>
+						<img src='/unite/image/comments.png' alt="프로필 이미지" class="icon" style="margin: -1px -4px 0px 15px; width: 30px;height: 30px;"/>
 						<span class="comments">
 							댓글
 							<sup class="count" id="count" style="font-family: arial, sans-serif;"></sup>개</span>
@@ -201,19 +222,37 @@ sup {
 			</div><!-- comment-head end-->
 			<ul class="comment-list">
 			</ul>
-		 	<div class="comment-write">
-				<div class="comment-write-area">
-					<b class="comment-write-area-name">${empMap[postDataAndFile[0].postWriter]}</b> 
-					<span class="comment-write-area-count">0/200</span>
-					<textarea placeholder="댓글을 남겨보세요" rows="1" class="comment-write-area-text" maxlength="200"></textarea>
-						
-				</div>
-				<div class="register-box">
-					<div class="button btn-cancel">취소</div><%-- 댓글의 취소는 display:none, 등록만 보이도록 한다. --%>
-					<div class="button btn-register">등록</div>
-				</div>
-		 	</div><%-- comment-write end --%>
+			<div class="comment-write-container">
+				<span class="comment-photo">
+					<img src="${pageContext.request.contextPath}/emp/profile-image?UUID=${sessionScope.profileUUID}" class="profileImg" width=36 height=36>
+				</span>
+				
+			 	<div class="comment-write">
+					<div class="comment-write-area">
+						<b class="comment-write-area-name">${empMap[postDataAndFile[0].postWriter]}</b> 
+						<span class="comment-write-area-count">0/200</span>
+						<textarea placeholder="댓글을 남겨보세요" rows="1" class="comment-write-area-text" maxlength="200"></textarea>
+							
+					</div>
+					<div class="comment-attachFile"></div>
+					<div class="register-box">
+						<span class="emoji_btn" id="emoji_btn">
+							<img src="${pageContext.request.contextPath}/image/insert_emoticon.png" width=20 height=20 style="opacity: 0.5">
+						</span>
+						<label class="emoji_btn" id="emoji_btn" style="margin:0;">
+							<img src="${pageContext.request.contextPath}/image/attach.png" width=20 height=20 style="opacity: 0.5">
+							<input type="file" id="upfile"/>
+						</label>
+						<div class="button btn-cancel">취소</div><%-- 댓글의 취소는 display:none, 등록만 보이도록 한다. --%>
+						<div class="button btn-register">등록</div>
+					</div>
+			 	</div><%-- comment-write end --%>
+		 	</div>
 		</div><%-- comment-area end --%>
 	</div>
+	
+	<script >
+		
+	</script>
 </body>
 </html>

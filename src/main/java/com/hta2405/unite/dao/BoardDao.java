@@ -14,6 +14,7 @@ import javax.sql.DataSource;
 import com.hta2405.unite.dto.Board;
 import com.hta2405.unite.dto.Emp;
 import com.hta2405.unite.dto.Post;
+import com.hta2405.unite.dto.PostComment;
 import com.hta2405.unite.dto.PostFile;
 
 public class BoardDao {
@@ -458,7 +459,7 @@ public class BoardDao {
 		return null;
 	}
 
-	//첨부파일 다운로드
+	//게시글 첨부파일 다운로드
 	public PostFile getPostFile(Long postFileId) {
 		String sql = """
 				select *
@@ -484,6 +485,43 @@ public class BoardDao {
 		}catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("getPostFile() 에러: "+e);
+		}
+		return null;
+	}
+	
+	//게시글 댓글 조회
+	public PostComment getPostCommentByCommentId(Long commentId) {
+		String sql = """
+				select *
+				from post_comment
+				where comment_id = ?
+				""";
+		
+		try(	Connection con = ds.getConnection();
+				PreparedStatement pstmt = con.prepareStatement(sql);){
+			pstmt.setLong(1, commentId);
+			try (ResultSet rs = pstmt.executeQuery()){
+				if(rs.next()) {
+					PostComment postComment = new PostComment();
+					postComment.setCommentId(rs.getLong("comment_id"));
+					postComment.setPostId(rs.getLong("post_id"));
+					postComment.setPostCommentWriter(rs.getString("post_comment_writer"));
+					postComment.setPostCommentContent(rs.getString("post_comment_content"));
+					postComment.setPostCommentDate(rs.getTimestamp("post_comment_date").toLocalDateTime());
+					postComment.setPostCommentDate(rs.getTimestamp("post_comment_update_date").toLocalDateTime());
+					postComment.setPostCommentFilePath(rs.getString("post_comment_file_path"));
+					postComment.setPostCommentFileOriginal(rs.getString("post_comment_file_original"));
+					postComment.setPostCommentFileUUID(rs.getString("post_comment_file_uuid"));
+					postComment.setPostCommentFileType(rs.getString("post_comment_file_type"));
+					postComment.setPostCommentReRef(rs.getLong("post_comment_re_ref"));
+					postComment.setPostCommentReLev(rs.getLong("post_comment_re_lev"));
+					postComment.setPostCommentReSeq(rs.getLong("post_comment_re_seq"));
+					return postComment;
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("getPostCommentByCommentId() 에러: "+e);
 		}
 		return null;
 	}

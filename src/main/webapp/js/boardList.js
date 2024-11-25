@@ -13,7 +13,6 @@ function go(page){
 		ajax(data);
 	}
 	
-	
 }
 //총 2페이지 페이징 처리된 경우
 //이전 1 2 다음
@@ -109,6 +108,8 @@ function ajax(sdata){
 				$("tbody").remove();
 				updateBoardList(data);// 게시판 내용 업데이트
 				generatePagination(data);// 페이지네이션 생성
+				
+				updateDividerHeight();//구분선 길이 업데이트
 			}
 		},
 		error: function(){
@@ -140,6 +141,8 @@ function searchAjax(sdata){
 					updateBoardList(data);// 게시판 내용 업데이트
 					generatePagination(data);// 페이지네이션 생성
 					searchValue = true;
+					
+					updateDividerHeight();//구분선 길이 업데이트
 				}else{
 					$('tbody').html('<tr style="border-bottom:1px solid #dee2e6;"><td colspan="5" style="text-align: center;">검색 결과가 없습니다.</td></tr>');
 					$('.pagination').html('');

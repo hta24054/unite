@@ -1,3 +1,212 @@
+#upfile{display: none}
+.navbar {z-index:1; position:fixed; top:0; width: 100%;}
+.sidebar{
+	position: fixed; /* 화면에 고정 */
+	height: 100vh;
+	top: 105px;
+}
+.container {
+    max-width: 1200px;
+    background-color: #fff;
+    margin-left: 450px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-sizing: border-box;
+    margin-top: 105px;
+}
+
+/* 테이블 스타일 */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: #fdfdfd;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid black;
+}
+
+.table th {
+    color: black;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+    font-size: 20px;
+}
+
+.table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: top;
+}
+
+.table td div {
+    font-size: 14px;
+    color: #333;
+}
+
+textarea {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+    resize: none;
+    background-color: #f9f9f9;
+    color: #333;
+    line-height: 1.5;
+}
+
+/* 버튼 스타일 */
+.btn {
+    display: inline-block;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    margin-right: 5px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-danger{
+	background-color: red;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+}
+
+.btn-info:hover {
+    background-color: #117a8b;
+}
+
+
+.comment-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.comment-head h3 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.comment-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.comment-list li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.comment-list li:last-child {
+    border-bottom: none;
+}
+
+.comment-write {
+    margin-top: 20px;
+}
+
+.comment-write-area {
+    display: flex;
+    flex-direction: column;
+}
+
+.comment-write-area-name {
+    font-weight: bold;
+    color: #555;
+}
+
+.comment-write-area-text {
+    width: 100%;
+    height: 60px;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: none;
+}
+
+.comment-write-area-count {
+    font-size: 12px;
+    color: #999;
+    text-align: right;
+}
+
+.register-box {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.register-box .button {
+    color: #fff;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s;
+}
+
+
+/* 모달 스타일 */
+.modal-content {
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+button[data-dismiss="modal"]:hover {
+    background-color: #c82333;
+}
+
+
+
+
 .container {
 	width: 80%
 }
@@ -137,7 +346,6 @@ textarea.comment-write-area-text {
 
 .comment-area .comment-list .comment-list-item {
 	position: relative;
-	border-top: 1px solid #f2f2f2;
 }
 
 .comment-area .comment-list .comment-nick-box .comment-nickname {
@@ -206,6 +414,7 @@ textarea.comment-write-area-text {
 	background: transparent;
 	color: #000000;
 	outline: 0;
+	padding: 0;
 }
 
 button, textarea {

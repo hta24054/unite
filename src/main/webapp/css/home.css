@@ -22,19 +22,23 @@
         margin: 0 auto;
     }
 	.left{margin: 0}
-    
     /* 오른쪽 영역의 height를 두 행을 합친 높이로 설정 */
-    .right {
-        background-color: #f8f8f8;
+    .home_notice {
+        background-color: white;
         padding: 20px;
         border-radius: 10px;
+        border: 1px solid gray;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         display: flex;
         flex-direction: column;
         gap: 20px;
         grid-area: right; /* 오른쪽 영역 두 행을 합쳐서 사용 */
-        height: 80vh;
+        height: 79vh;
     }
+
+
+
+
     .styled-table {
 	    width: 100%; /* 테이블 너비를 100%로 설정 */
 	    border-collapse: collapse; /* 테두리 겹침을 방지 */

@@ -43,12 +43,13 @@
 				<td><div>내용</div></td>
 				<td style="padding-right: 0px"><textarea class="form-control" rows="5" readOnly>${task.projectContent}</textarea></td>
 			</tr>
+			
 			<tr>
 				<td><div>첨부파일</div></td>
 					<%--파일을 첨부한 경우 --%>
 					<c:if test="${!empty task.task_file_original}">
-						<td><img src="${pageContext.request.contextPath }/img/down.png" width="10px">
-							<a href="down?filename=${task.task_file_original }">${task.task_file_original }</a>
+						<td><a href="down?filename=${task.task_file_uuid}${task.task_file_type}&originalFilename=${task.task_file_original}" title="${task.task_file_original}">
+							<img src="${pageContext.request.contextPath }/image/down.png" width="10px">&nbsp;${task.task_file_original}</a>
 						</td>
 					</c:if>
 					<%--파일을 첨부하지 않은 경우 --%>

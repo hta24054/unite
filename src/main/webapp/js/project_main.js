@@ -14,6 +14,18 @@ $(document).ready(function() {
             saveButton.hide(); // 진행 중일 경우 저장 버튼 숨기기
         }
     });
+    
+	// tr 클릭 이벤트를 td 1~7번째만 적용
+	$(document).on('click', 'tr.project_main td', function() {
+	    // 클릭한 td의 인덱스 가져오기
+	    var tdIndex = $(this).index(); 
+	
+	    // td 1~7번째(0-based index는 0~6)인 경우에만 이벤트 발생
+	    if (tdIndex >= 0 && tdIndex <= 6) {
+	        var projectId = $(this).closest('tr').data('project-id');
+	        goToDetail(projectId);
+	    }
+	});
 
     // 저장 버튼 클릭 이벤트
     $(document).on('click', '.save-status', function() {
@@ -114,8 +126,8 @@ function updateBoardList(data) {
             : (viewerNames[0] || '없음');
         
         output += `
-            <tr style="height: 80px;" onclick="goToDetail(${item.projectId})" class="project_main">
-                <td>${item.projectId}</td>
+            <tr style="height: 80px;" class="project_main" data-project-id="${item.projectId}">
+                <td>#&nbsp;${item.projectId}</td>
                 <td>${item.projectName}</td>
                 <td>${item.empName}</td>
                 <td>${participants}</td>
@@ -130,13 +142,13 @@ function updateBoardList(data) {
                 <td>${item.endDate}</td>
                 ${item.isManager ? `
                     <td>
-                        <select class="form-control project-status" style="margin:0" data-project-id="${item.projectId}">
+                        <select class="form-control project-status" style="margin:0" data-project-id="${item.projectId}" onclick="event.stopPropagation();">
                             <option value="ongoing">진행 중</option>
                             <option value="completed">완료</option>
                             <option value="cancelled">취소</option>
                         </select>
+                        <button class="btn btn-success save-status" data-project-id="${item.projectId}" style="display:none;">저장</button>
                     </td>
-                    <td><button class="btn btn-success save-status" data-project-id="${item.projectId}" style="display:none;">저장</button></td>
                 ` : `
                     <td colspan="2">관리 권한 없음</td>
                 `}
@@ -148,36 +160,45 @@ function updateBoardList(data) {
     $('table').append(output);
 }
 
+
 // tr 클릭 시 상세 페이지로 이동
 function goToDetail(projectId) {
     window.location.href = `${contextPath}/project/detail?projectId=${projectId}`;
 }
 
 
-function setPaging(href, digit, isActive = false){
-	const gray = (href === "" && isNaN(digit)) ? "gray" : "";
-	const active = isActive ? "active" : "";
-	const anchor = `<a class="page-link ${gray}" ${href}>${digit}</a>`;
-	return `<li class="page-item ${active}">${anchor}</li>`;
+function setPaging(href, digit, isActive = false) {
+    const gray = (href === "" && isNaN(digit)) ? "gray" : "";
+    const active = isActive ? "active" : "";
+    const anchor = `<a class="page-link ${gray}" ${href}>${digit}</a>`;
+    return `<li class="page-item ${active}">${anchor}</li>`;
 }
 
-function generatePagination(data){
-	let output = "";	
-	
-	//이전버튼
-	let prevHref = data.page > 1 ? `href=javascript:go(${data.page - 1})` : "";  //jsp에서 list를 javascript:go로
-	output += setPaging(prevHref, '이전&nbsp;');
-	
-	//페이지 번호
-	for(let i = data.startpage; i <= data.endpage; i++){
-		const isActive = (i===data.page);
-		let pageHref = !isActive ? `href=javascript:go(${i})` : "";
-		output += setPaging(pageHref, i, isActive);
-	}
-	
-	//다음 버튼
-	let nextHref = (data.page < data.maxpage) ? `href=javascript:go(${data.page + 1})` : "";
-	output += setPaging(nextHref, '&nbsp;다음&nbsp;');
-	
-	$('.pagination').empty().append(output);
+function generatePagination(data) {
+    let output = "";
+
+    // 맨 처음 버튼
+    let firstHref = data.page > 1 ? `href=javascript:go(1)` : "";
+    output += setPaging(firstHref, '<<');
+
+    // 이전 버튼
+    let prevHref = data.page > 1 ? `href=javascript:go(${data.page - 1})` : "";
+    output += setPaging(prevHref, '<');
+
+    // 페이지 번호
+    for (let i = data.startpage; i <= data.endpage; i++) {
+        const isActive = (i === data.page);
+        let pageHref = !isActive ? `href=javascript:go(${i})` : "";
+        output += setPaging(pageHref, i, isActive);
+    }
+
+    // 다음 버튼
+    let nextHref = (data.page < data.maxpage) ? `href=javascript:go(${data.page + 1})` : "";
+    output += setPaging(nextHref, '>');
+
+    // 맨 마지막 버튼
+    let lastHref = data.page < data.maxpage ? `href=javascript:go(${data.maxpage})` : "";
+    output += setPaging(lastHref, '>>');
+
+    $('.pagination').empty().append(output);
 }

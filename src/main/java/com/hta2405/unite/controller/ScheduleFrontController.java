@@ -5,8 +5,6 @@ import com.hta2405.unite.action.schedule.ScheduleCalenderAction;
 import com.hta2405.unite.action.schedule.ScheduleDeleteAction;
 import com.hta2405.unite.action.schedule.ScheduleDragUpdateAction;
 import com.hta2405.unite.action.schedule.ScheduleGetHolidayAction;
-import com.hta2405.unite.action.schedule.ScheduleHolidayAction;
-import com.hta2405.unite.action.schedule.ScheduleHolidayApiAction;
 import com.hta2405.unite.action.schedule.ScheduleListAction;
 import com.hta2405.unite.action.schedule.ScheduleShareAction;
 import com.hta2405.unite.action.schedule.ScheduleShareAddAction;
@@ -34,8 +32,6 @@ public class ScheduleFrontController extends AbstractFrontController {
         actionMap.put("/scheduleShareAdd", ScheduleShareAddAction::new);
         
         // 공휴일
-        actionMap.put("/holidayApi", ScheduleHolidayApiAction::new);
-        actionMap.put("/holiday", ScheduleHolidayAction::new);
         actionMap.put("/getHoliday", ScheduleGetHolidayAction::new);
     }
 }

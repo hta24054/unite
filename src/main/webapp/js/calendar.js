@@ -325,7 +325,10 @@ $(document).ready(function(){
 	    if (event.extendedProps.isShared === true) {
 	        $(".modal-header").find("h5").text("공유 일정");
 	        $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", true);
-	        $(".modal-body").find(".btn_wrap").remove();
+	        //$(".modal-body").find(".btn_wrap").remove();
+	         $(".modal-body").find(".btn_wrap").html(`
+	            <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
+	        `);
 	    } else {
 	        $(".modal-header").find("h5").text("상세 일정");
 	        $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);

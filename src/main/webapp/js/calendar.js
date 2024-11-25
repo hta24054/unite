@@ -68,57 +68,6 @@ $(document).ready(function(){
 	        }
 	    });
 	}
-
-	/*
-	// 공휴일 불러오기
-	function fetchHolidayData(data) {
-	    const startMonth = data.startStr.substring(0, 7);
-	    
-	    // 이미 공휴일 데이터가 로드되었는지 확인하기 위한 flag
-	    if (window.holidayDataLoaded) {
-	        return; // 이미 공휴일 데이터를 불러왔으면, 더 이상 실행하지 않음
-	    }
-
-	    $.ajax({
-	        url: "holiday",  
-	        type: "get",
-	        data: {
-	            year: startMonth.substring(0, 4), 
-	            month: startMonth.substring(5, 7) 
-	        },
-	        dataType: "json",
-	        success: function (response) {
-	            const holidayData = response.map(holiday => ({
-	                title: holiday.holidayName,  
-	                start: holiday.holidayDate,  
-	                allDay: true,                
-	                color: 'red',  // 이 값은 이벤트의 기본 색상만 설정
-	                editable: false,  // 공휴일은 드래그 불가
-    				droppable: false, // 다른 날짜로 드래그 불가
-				    extendedProps: { 
-				        isHoliday: true, // 공휴일
-				    }            
-	            }));
-	            
-	            console.log("holidayData", holidayData)
-	
-	            // 중복 공휴일 체크 후 추가
-	            holidayData.forEach(holiday => {
-				    if (!events.some(event => event.title === holiday.title && event.start === holiday.start)) {
-				        events.push(holiday);  // 이벤트 추가
-				    }
-				});
-				
-				// 공휴일 데이터가 로드되었음을 플래그로 저장
-            	window.holidayDataLoaded = true;
-		
-				initCalendar();
-	        },
-	        error: function (error) {
-	            console.log('공휴일 불러오기 오류', error);
-	        }
-	    });
-	}*/
 	
 	// 일정 리스트 불러오기
 	function fetchListData(){

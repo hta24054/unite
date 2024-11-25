@@ -1,9 +1,19 @@
+var searchValue=false;
+
 function go(page){
 	const limit = $('#viewCount').val();
 	/*const data =`limit=${limit}&state=ajax&page=${page}`; */
 	const boardName2 = $('#boardName2').val();
-	const data = {boardName2:boardName2,limit:limit, state:"ajax", page:page}
-	ajax(data);
+	
+	if(searchValue){
+		const data = {limit:limit, page:page}
+		searchAjax(data);
+	}else{
+		const data = {boardName2:boardName2,limit:limit, state:"ajax", page:page}
+		ajax(data);
+	}
+	
+	
 }
 //총 2페이지 페이징 처리된 경우
 //이전 1 2 다음
@@ -107,21 +117,33 @@ function ajax(sdata){
 	});
 }
 
-$('#search-button').click(function() {
+
+function searchAjax(sdata){
 	const category = $('#search-category').val(); // 선택된 검색 범위
     const query = $('#search-input').val(); // 검색어
 	const boardName2 = $('.boardTitle').text();
 	
-	console.log(boardName2)
+	console.log("boardName2123=",boardName2)
 	if (query.trim()) {
 		// AJAX 요청을 통해 서버로 검색을 전송
   		$.ajax({
 	        url: 'search', // 서버의 검색 엔드포인트 (적절히 변경)
 	        method: 'GET',
-	        data: { boardName2: boardName2, category: category, query: query },
-	        success: function(response) {
-	          console.log(response); // 서버에서 받은 응답 처리
-	          // 예시: 검색 결과를 화면에 표시하는 코드 추가
+	        data: { boardName2: boardName2, category: category, query: query , state:"ajax", page:sdata.page,limit:sdata.limit},
+	        success: function(data) {
+		    	
+	          	$("#viewCount").val(data.limit);
+				$("thead").find("span").text("글 개수 : "+data.listCount);
+				
+				if(data.listCount>0){
+					$("tbody").remove();
+					updateBoardList(data);// 게시판 내용 업데이트
+					generatePagination(data);// 페이지네이션 생성
+					searchValue = true;
+				}else{
+					$('tbody').html('<tr style="border-bottom:1px solid #dee2e6;"><td colspan="5" style="text-align: center;">검색 결과가 없습니다.</td></tr>');
+					$('.pagination').html('');
+				}
 	        },
 	        error: function(error) {
 	          console.log(error);
@@ -130,12 +152,21 @@ $('#search-button').click(function() {
     } else {
 		alert('검색어를 입력해주세요.');
 	}
-});
-
+}
 $(function(){
 	
 	$("#viewCount").change(function(){
 		go(1);//보여줄 페이지를 1페이지로 설정합니다.
 	});//change end
 	
+	$('#search-input').on('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // 폼 제출 방지
+            $('#search-button').click(); // 버튼 클릭
+        }
+    });
+	
+	$('#search-button').click(function() {
+		searchAjax(1);
+	});
 })

@@ -41,17 +41,17 @@
 }
 
 .search-category {
-  padding: 5px;
-  margin-right: 10px;
+  padding: 5px 0px 5px 10px;
+  margin-right: 5px;
   border: none;
   border-radius: 3px;
 }
 
 .search-input {
-  padding: 5px;
+  padding: 5px 10px 5px;
   flex: 1;
   border: none;
-  border-radius: 3px;
+  border-left: 1px solid #ccc;
 }
 
 .search-button {
@@ -186,12 +186,12 @@
 		    
 		    <div class="search-container">
 				<div class="serach-main">
-					<select id="search-category" class="search-category">
-						<option value="title">제목</option>
-							<option value="content">내용</option>
-							<option value="author">작성자</option>
+					<select id="search-category" name="category" class="search-category">
+						<option value="제목">제목</option>
+							<option value="내용">내용</option>
+							<option value="작성자">작성자</option>
 					</select>
-					<input type="text" id="search-input" class="search-input" placeholder="검색">
+					<input type="text" id="search-input" name="query" class="search-input" placeholder="검색">
 					<button id="search-button" class="search-button">
 							<i class="fa fa-search"></i> 검색
 					</button>

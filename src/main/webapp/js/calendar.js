@@ -284,8 +284,7 @@ $(document).ready(function(){
 	    if (!event) {			
 	        $("#schedule_id").val("");
 	        $("#schedule_name").val("");
-	        $("#startAt").val("");
-	        $("#endAt").val("");
+		    $("#startAt, #endAt").prop("type", "datetime-local").val("");
 	        $("#description").val("");
 	        $("#bgColor").val("#1e3a8a"); 
 	        $("#allDay").prop("checked", false); 
@@ -369,6 +368,10 @@ $(document).ready(function(){
    
 	$(".btn.btn-lg[data-target='#scheduleModal']").on("click", function () {
 	    initializeModalForRegistration();
+	});
+	
+	$("#scheduleModal").on("hidden.bs.modal", function () {
+	    $("#startAt, #endAt").prop("type", "datetime-local").val("");
 	});
 
 	// 등록 버튼 클릭 시 모달 강제 초기화
@@ -526,8 +529,7 @@ $(document).ready(function(){
 		        `);
 		
 		        $("#schedule_name").val("");
-		        $("#startAt").val('YYYY-MM-DD HH:mm');
-		        $("#endAt").val('YYYY-MM-DD HH:mm');
+		        $("#startAt, #endAt").prop("type", "datetime-local").val("");
 		        $("#description").val("");
 		        $("#bgColor").val("#1e3a8a");
 		        $("#allDay").prop("checked", false);

@@ -26,12 +26,10 @@ public class PostModifyAction implements Action {
 		List<Object> list = boardDao.getDetail(postId);
 		
 		if(list == null) {//글 내용 불러오기 실패한 경우
-			System.out.println("(수정)상세보기 실패");
 			req.setAttribute("message", "게시판 수정 상세보기 실패입니다.");
 			forward.setPath("/WEB-INF/views/board/boardHome.jsp");
-		}else {
-			System.out.println("(수정)상세보기 성공");
 			
+		}else {
 			req.setAttribute("boardName2", req.getParameter("boardName2")); //게시판 메뉴 설정하기 위함
 			req.setAttribute("list", list); //list에는 post, emp, postFileList 존재
 			

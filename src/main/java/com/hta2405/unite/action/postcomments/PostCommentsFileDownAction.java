@@ -10,7 +10,6 @@ import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.BoardDao;
 import com.hta2405.unite.dto.PostComment;
-import com.hta2405.unite.dto.PostFile;
 import com.hta2405.unite.util.ConfigUtil;
 
 import jakarta.servlet.ServletContext;
@@ -27,7 +26,6 @@ public class PostCommentsFileDownAction implements Action {
 		BoardDao boardDao = new BoardDao();
 		
 		Long commentId = Long.parseLong(req.getParameter("commentId"));
-		System.out.println("commentId = "+commentId);
 		
 		PostComment postCommentData = boardDao.getPostCommentByCommentId(commentId);
 		
@@ -36,13 +34,11 @@ public class PostCommentsFileDownAction implements Action {
 		String sDownloadPath = context.getRealPath(UPLOAD_DIRECTORY);
 		
 		String sFilePath = sDownloadPath + File.separator + postCommentData.getPostCommentFileUUID() + postCommentData.getPostCommentFileType();
-		System.out.println(sFilePath);
 		
 		byte b[] = new byte[4096];
 		
 		// sFilePath에 있는 파일의 MimeType을 구해옵니다.
 		String sMimeType = context.getMimeType(sFilePath);
-		System.out.println("sMimeType>>>" + sMimeType);
 		
 		if(sMimeType == null) {
 			sMimeType = "application/octet-stream";
@@ -52,11 +48,8 @@ public class PostCommentsFileDownAction implements Action {
 		
 		//이 부분이 한글 파일명이 깨지는 것을 방지해 줍니다.
 		String sEncoding = new String(postCommentData.getPostCommentFileOriginal().getBytes("utf-8"), "ISO-8859-1");
-		System.out.println(sEncoding);
 		
-		/*
-		 * Content-Disposition: attachment: 브라우저에서 다운로드하기 위해 사용됩니다.
-		 */
+		//Content-Disposition: attachment: 브라우저에서 다운로드하기 위해 사용
 		resp.setHeader("Content-Disposition", "attachment; filename="+sEncoding);
 		
 		try(	//웹 브라우저로서의 출력 스트림 생성합니다.

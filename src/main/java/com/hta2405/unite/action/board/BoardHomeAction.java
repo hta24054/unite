@@ -22,7 +22,6 @@ public class BoardHomeAction implements Action {
 		Long DeptId = new EmpDao().getEmpById((String) req.getSession().getAttribute("id")).getDeptId();
 		List<Board> BoardList = new BoardDao().getBoardListByDeptId(DeptId);
 		
-		System.out.println("boardScope= "+BoardList);
 		req.getSession().setAttribute("boardScope", BoardList);
 		
 		ActionForward forward = new ActionForward();

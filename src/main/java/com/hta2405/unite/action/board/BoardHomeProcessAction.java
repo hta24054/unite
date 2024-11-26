@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
@@ -45,16 +44,11 @@ public class BoardHomeProcessAction implements Action {
 		
 		JsonObject object = null;
 		
-		if(list == null || list.isEmpty()) {
-			System.out.println("게시글이 없습니다.");
+		if(list == null || list.isEmpty()) {//게시글이 없습니다.
 			resp.setContentType("application/json;charset=utf-8");
 			resp.getWriter().print(object);
 			return null;
-		} else {
-			System.out.println("게시글 가져오기 성공");
-			
-			System.out.println("list="+list);
-			
+		} else {//게시글 가져오기 성공
 			object = new JsonObject();
 			Object boardList = list.get(0);
 			Object postsList = list.get(1);

@@ -216,17 +216,21 @@ function AddHtmlBoardAndPost(board, post, emp, data) {
     }
 	
 	const postContent = post.postContent;
-	const truncatedContent = postContent.length > 50 ? postContent.substring(0, 50) + '...' : postContent;
+	const truncatedContent = postContent.length > 500 ? postContent.substring(0, 500) + '...' : postContent;
+	
+	const postSubject = post.postSubject;
+	const truncatedSubject = postSubject.length > 50 ? postSubject.substring(0, 50) + '...' : postSubject;
+	
 	
 	
     html += `       </div>
 				    
 				    <div class="board-title">
-				    	<span>${post.postSubject}</span>
+				    	<span>`+truncatedSubject+`</span>
 				        <img src='/unite/image/comments.png' alt="댓글 이미지" class="icon"/> <span>${post.postCommentCnt}</span>
 				    </div>
 				    
-				    <div class="board-content">`+truncatedContent+`</div>
+				    <div class="board-content" style="word-break: break-all;">`+truncatedContent+`</div>
 				    
 				    <div class="board-footer">
 				        <img src="${contextPath}/emp/profile-image?UUID=${emp.imgUUID}" alt="Profile Image">

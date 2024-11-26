@@ -43,7 +43,6 @@ public class PostCommentsReplyAction implements Action {
             // 파일 이름과 타입
             fileOriginalName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
             fileType = filePart.getContentType();
-            System.out.println("File type: " + fileType);
 
             // UUID 생성하여 파일명에 적용
             fileUUID = UUID.randomUUID().toString();
@@ -51,7 +50,6 @@ public class PostCommentsReplyAction implements Action {
 
             // 저장 경로 설정 및 파일 저장
             String uploadPath = UPLOAD_DIRECTORY;
-            System.out.println("Upload path: " + uploadPath);
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists() && !uploadDir.mkdirs()) {
                 throw new IOException("업로드 폴더를 생성할 수 없습니다: " + uploadPath);

@@ -5,14 +5,11 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
 
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.BoardDao;
-import com.hta2405.unite.dto.PostComment;
 import com.hta2405.unite.dto.PostFile;
-import com.hta2405.unite.util.ConfigUtil;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -26,8 +23,7 @@ public class PostFileDownAction implements Action {
 			throws ServletException, IOException {
 		BoardDao boardDao = new BoardDao();
 		
-		Long postFileId = Long.parseLong(req.getParameter("commentId"));
-		System.out.println("postFileId = "+postFileId);
+		Long postFileId = Long.parseLong(req.getParameter("postFileId"));
 		
 		PostFile postFileData = boardDao.getPostFile(postFileId);
 		
@@ -38,13 +34,11 @@ public class PostFileDownAction implements Action {
 		String sDownloadPath = context.getRealPath(savePath);
 		
 		String sFilePath = sDownloadPath + File.separator + postFileData.getPostFileUUID() + postFileData.getPostFileType();
-		System.out.println(sFilePath);
 		
 		byte b[] = new byte[4096];
 		
 		// sFilePath에 있는 파일의 MimeType을 구해옵니다.
 		String sMimeType = context.getMimeType(sFilePath);
-		System.out.println("sMimeType>>>" + sMimeType);
 		
 		if(sMimeType == null) {
 			sMimeType = "application/octet-stream";
@@ -54,7 +48,6 @@ public class PostFileDownAction implements Action {
 		
 		//이 부분이 한글 파일명이 깨지는 것을 방지해 줍니다.
 		String sEncoding = new String(postFileData.getPostFileOriginal().getBytes("utf-8"), "ISO-8859-1");
-		System.out.println(sEncoding);
 		
 		/*
 		 * Content-Disposition: attachment: 브라우저에서 다운로드하기 위해 사용됩니다.

@@ -115,6 +115,9 @@ sup {
 	display: none;
 }
 
+.text-comment{
+	word-break: break-all;
+}
 </style>
 </head>
 <body>
@@ -123,7 +126,7 @@ sup {
 	    <table class="table">
     		<tr>
     			<td colspan="3" class="board_view_header" style="padding: 12px 25px 0px;">
-    				<span class="left_subeject">
+    				<span class="left_subeject" style="word-break: break-all;">
 	    				<c:out value="${postDataAndFile[0].postSubject}"/>
 	    				<span class="count" style="font-size: 25px;"><c:out value="[${postDataAndFile[0].postCommentCnt}]"/></span>
     				</span>
@@ -157,7 +160,7 @@ sup {
     		</tr>
     		<tr>
     			<td colspan="3">
-    				<div class="board_view_content">${postDataAndFile[0].postContent}</div>
+    				<div class="board_view_content" style="word-break: break-all;">${postDataAndFile[0].postContent}</div>
     			</td>
     		</tr>
     		
@@ -239,7 +242,7 @@ sup {
 						<span class="emoji_btn" id="emoji_btn">
 							<img src="${pageContext.request.contextPath}/image/insert_emoticon.png" width=20 height=20 style="opacity: 0.5">
 						</span>
-						<label class="emoji_btn" id="emoji_btn" style="margin:0;">
+						<label class="emoji_btn" id="emoji_btn2" style="margin:0;">
 							<img src="${pageContext.request.contextPath}/image/attach.png" width=20 height=20 style="opacity: 0.5">
 							<input type="file" id="upfile"/>
 						</label>
@@ -251,8 +254,5 @@ sup {
 		</div><%-- comment-area end --%>
 	</div>
 	
-	<script >
-		
-	</script>
 </body>
 </html>

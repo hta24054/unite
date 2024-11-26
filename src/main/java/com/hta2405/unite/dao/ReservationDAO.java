@@ -124,6 +124,137 @@ public class ReservationDAO {
         return list;
 	} // getRescIdByName end
 	
+
+	// 자원 예약 - allDay 조건 추가
+	public int insertReservation(Reservation reservation) {
+	    int result = 0;
+
+	    // allDay가 1일 경우: 예약 시작시간과 종료시간을 00:00부터 23:59로 설정
+	    if (reservation.getReservationAllDay() == 1) {
+	        reservation.setReservationStart(reservation.getReservationStart().withHour(0).withMinute(0).withSecond(0).withNano(0));
+	        reservation.setReservationEnd(reservation.getReservationEnd().withHour(23).withMinute(59).withSecond(59).withNano(0));
+	    }
+
+	    // 중복 확인 SQL
+	    String check_sql = """
+	        SELECT COUNT(*) FROM reservation
+	        WHERE resource_id = ?
+	        AND (
+	            -- allDay가 1인 경우 날짜 단위 중복 검사
+	            (reservation_allDay = 1 AND TRUNC(reservation_start) = TRUNC(?))
+	            OR
+	            -- allDay가 0인 경우 시간 범위 중복 검사
+	            (reservation_allDay = 0 AND reservation_start < ? AND reservation_end > ?)
+	        )
+	    """;
+
+	    String insert_sql = """
+	        INSERT INTO reservation
+	        (resource_id, emp_id, reservation_start, reservation_end, reservation_info, reservation_allDay)
+	        VALUES (?, ?, ?, ?, ?, ?)
+	    """;
+
+	    try (Connection conn = ds.getConnection();
+	         PreparedStatement checkStmt = conn.prepareStatement(check_sql);
+	         PreparedStatement insertStmt = conn.prepareStatement(insert_sql);) {
+
+	        // 중복 확인
+	        checkStmt.setInt(1, reservation.getResourceId());
+
+	        // allDay가 1일 경우: 날짜만 비교
+	        checkStmt.setTimestamp(2, Timestamp.valueOf(reservation.getReservationStart())); // 예약 시작 날짜
+
+	        // allDay가 0일 경우: 시간 범위 중복 확인
+	        checkStmt.setTimestamp(3, Timestamp.valueOf(reservation.getReservationEnd())); // 새 예약 종료 시간
+	        checkStmt.setTimestamp(4, Timestamp.valueOf(reservation.getReservationStart())); // 새 예약 시작 시간
+
+	        try (ResultSet rs = checkStmt.executeQuery()) {
+	            if (rs.next() && rs.getInt(1) > 0) {
+	                System.out.println("이미 예약된 자원입니다.");
+	                return 0;
+	            }
+	        }
+
+	        // 중복 없을 경우 데이터 삽입
+	        insertStmt.setInt(1, reservation.getResourceId());
+	        insertStmt.setString(2, reservation.getEmpId());
+	        insertStmt.setTimestamp(3, Timestamp.valueOf(reservation.getReservationStart()));
+	        insertStmt.setTimestamp(4, Timestamp.valueOf(reservation.getReservationEnd()));
+	        insertStmt.setString(5, reservation.getReservationInfo());
+	        insertStmt.setInt(6, reservation.getReservationAllDay());
+
+	        result = insertStmt.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        System.out.println("insertReservation() 에러: " + e);
+	    }
+	    return result;
+	}
+
+	/*
+	// 자원 예약 - allDay 조건 추가
+	public int insertReservation(Reservation reservation) {
+	    int result = 0;
+
+	    // 중복 확인 SQL
+	    String check_sql = """
+    	    SELECT COUNT(*) FROM reservation
+    	    WHERE resource_id = ?
+    	    AND (
+    	        -- allDay가 1인 경우 날짜 단위 중복 검사
+    	        (reservation_allDay = 1 AND TRUNC(reservation_start) = TRUNC(?))
+    	        OR
+    	        -- allDay가 0인 경우 시간 범위 중복 검사
+    	        (reservation_allDay = 0 AND reservation_start < ? AND reservation_end > ?)
+    	    )
+    	""";
+
+	    String insert_sql = """
+	        INSERT INTO reservation
+	        (resource_id, emp_id, reservation_start, reservation_end, reservation_info, reservation_allDay)
+	        VALUES (?, ?, ?, ?, ?, ?)
+	    """;
+
+	    try (Connection conn = ds.getConnection();
+	         PreparedStatement checkStmt = conn.prepareStatement(check_sql);
+	         PreparedStatement insertStmt = conn.prepareStatement(insert_sql);) {
+
+	        // 중복 확인
+	        checkStmt.setInt(1, reservation.getResourceId());
+	        
+	        // allDay가 1일 경우: 날짜만 비교
+	        checkStmt.setTimestamp(2, Timestamp.valueOf(reservation.getReservationStart())); // 예약 시작 날짜
+	        
+	        // allDay가 0일 경우: 시간 범위 중복 확인
+	        checkStmt.setTimestamp(3, Timestamp.valueOf(reservation.getReservationEnd())); // 새 예약 종료 시간
+	        checkStmt.setTimestamp(4, Timestamp.valueOf(reservation.getReservationStart())); // 새 예약 시작 시간
+	        
+	        try (ResultSet rs = checkStmt.executeQuery()) {
+	            if (rs.next() && rs.getInt(1) > 0) {
+	                System.out.println("이미 예약된 자원입니다.");
+	                return 0;
+	            }
+	        }
+
+	        // 중복 없을 경우 데이터 삽입
+	        insertStmt.setInt(1, reservation.getResourceId());
+	        insertStmt.setString(2, reservation.getEmpId());
+	        insertStmt.setTimestamp(3, Timestamp.valueOf(reservation.getReservationStart()));
+	        insertStmt.setTimestamp(4, Timestamp.valueOf(reservation.getReservationEnd()));
+	        insertStmt.setString(5, reservation.getReservationInfo());
+	        insertStmt.setInt(6, reservation.getReservationAllDay());
+
+	        result = insertStmt.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        System.out.println("insertReservation() 에러: " + e);
+	    }
+	    return result;
+	}*/
+
+	/*
 	// 자원 예약
 	public int insertReservation(Reservation reservation) {
 		 int result = 0;
@@ -182,7 +313,7 @@ public class ReservationDAO {
 	        System.out.println("insertResourceBooking() 에러: " + e);
 	    }
 	    return result;
-	} 
+	}*/
 	
 	// 자원 예약 목록 불러오기
 	public JsonArray getReservationList(String resourceId) {
@@ -201,7 +332,7 @@ public class ReservationDAO {
             	 
             	 resourceObj.addProperty("reservation_id", rs.getInt("reservation_id"));
             	 resourceObj.addProperty("resource_id", rs.getInt("resource_id"));
-            	 resourceObj.addProperty("emp_id", rs.getInt("emp_id"));
+            	 resourceObj.addProperty("emp_id", rs.getString("emp_id"));
             	 resourceObj.addProperty("reservation_start", rs.getString("reservation_start"));
             	 resourceObj.addProperty("reservation_end", rs.getString("reservation_end"));
             	 resourceObj.addProperty("reservation_info",rs.getString("reservation_info"));

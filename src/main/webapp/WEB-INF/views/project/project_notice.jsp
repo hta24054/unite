@@ -5,7 +5,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Insert title here</title>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <style>
 		.styled-table2 {
 		    width: 100%;  /* 테이블 크기가 부모에 맞게 확장 */

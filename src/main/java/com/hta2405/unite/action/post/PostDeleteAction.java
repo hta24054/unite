@@ -24,11 +24,8 @@ public class PostDeleteAction implements Action {
 		boolean result = boardDao.postDelete(postId);
 		
 		String message = "데이터를 삭제하지 못했습니다.";
-		// 삭제 처리 실패한 경우
-		if(!result) {
-			System.out.println("게시판 삭제 실패");
-		}else {
-			System.out.println("게시판 삭제 완료");
+		
+		if(result) {
 			message = "삭제 되었습니다.";
 		}
 		resp.setContentType("text/html;charset=utf-8");

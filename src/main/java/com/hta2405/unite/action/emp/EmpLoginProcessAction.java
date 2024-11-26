@@ -29,13 +29,6 @@ public class EmpLoginProcessAction implements Action {
         Emp emp = dao.getEmpById(id);
 
         if (emp != null) {
-            String dbPassword = emp.getPassword();
-            System.out.println("db에 저장된 pass 값은 " + dbPassword);
-            String salt = dbPassword.substring(64);
-            System.out.println("salt 값은 " + salt);
-            String savePass = dbPassword.substring(0, 64);//db에 저장되어 있는 해시 값
-            System.out.println("저장된 해쉬 값은 " + savePass);
-
             if (verifyPassword(emp, pass)) {//로그인 성공
                 HttpSession session = req.getSession();
                 session.setAttribute("id", id);
@@ -48,7 +41,6 @@ public class EmpLoginProcessAction implements Action {
                 if (IDStore != null && IDStore.equals("store")) {
                     cookie.setMaxAge(10 * 60);//쿠키의 유효시간을 10분으로 설정
                     //클라이언트로 쿠키값을 전송합니다.
-                    System.out.println("쿠키확인");
                 } else {
                     cookie.setMaxAge(0);
                 }

@@ -34,7 +34,7 @@ public class PostCommentsListAction implements Action {
 		
 		//{"postId" : $("#postId").val(), state:state}, //state값이 1=>등록순, 2=>최신순
 		Long postId = Long.parseLong(req.getParameter("postId"));
-		System.out.println(postId);
+		
 		int state = Integer.parseInt(req.getParameter("state"));
 		int listCount = commentDao.getListCount(postId);
 
@@ -52,7 +52,6 @@ public class PostCommentsListAction implements Action {
 		resp.setContentType("application/json;charset=utf-8");
 		PrintWriter out =resp.getWriter();
 		out.print(object.toString());
-		System.out.println(object.toString());
 		return null;
 	}
 

@@ -35,10 +35,8 @@ public class BoardListAction implements Action {
 		
 		String boardName2 = req.getParameter("boardName2");
 		req.setAttribute("boardName2", boardName2);
-		System.out.println("boardName2="+boardName2);
 		
 		Long boardId = boardDao.getBoardListByName2(boardName2).getBoardId();
-		System.out.println("boardId="+boardId);
 		
 		List<Post> postList = new ArrayList<>();
 		
@@ -48,13 +46,11 @@ public class BoardListAction implements Action {
 		if(req.getParameter("page") != null) {
 			page = Integer.parseInt(req.getParameter("page"));
 		}
-		System.out.println("넘어온 페이지 = " + page);
 		
 		
 		if(req.getParameter("limit") != null) {
 			limit = Integer.parseInt(req.getParameter("limit"));
 		}
-		System.out.println("넘어온 limit = " + limit);
 		
 		//총 리스트 수를 받아옵니다.
 		int listCount = boardDao.getListCountByBoardId(boardId);
@@ -73,7 +69,6 @@ public class BoardListAction implements Action {
 		 * 예4) DB에 저장된 총 리스트의 수가 (21~30)이면 총 페이지수는 3페이지
 		 */
 		int maxPage = (listCount + limit -1)/limit;
-		System.out.println("총 페이지수 = "+maxPage);
 		
 		/*
 		 * startpage : 현재 페이지 그룹에서 맨 처음에 표시될 페이지 수를 의미합니다.
@@ -86,7 +81,6 @@ public class BoardListAction implements Action {
 		 * 11~20페이지의 내용을 나타낼때는 페이지 그룹은 [11][12][13]..[20]까지 표시됩니다.
 		 */
 		int startPage = ((page - 1)/10) * 10 + 1;
-		System.out.println("현재 페이지에 보여줄 시작 페이지 수 : "+startPage);
 		
 		//endpage : 현재 페이지 그룹에서 보여줄 마지막 페이지 수([10], [20], [30] 등...)
 		int endPage = startPage + 10 -1;
@@ -101,12 +95,10 @@ public class BoardListAction implements Action {
 			endPage = maxPage;
 		}
 		
-		System.out.println("현재 페이지에 보여줄 마지막 페이지 수 : "+endPage);
 		String state = req.getParameter("state");
 
 		
 		if(state == null) {
-			System.out.println("state==null");
 			req.setAttribute("page", page); //현재 페이지 수
 			req.setAttribute("maxPage", maxPage);//최대 페이지 수
 			
@@ -133,8 +125,6 @@ public class BoardListAction implements Action {
 			forward.setPath("/WEB-INF/views/board/boardList.jsp");
 			return forward;
 		}else {
-			System.out.println("state=ajax");
-			
 			//위에서 request로 담았던 것을 JsonObject에 담습니다.
 			JsonObject object = new JsonObject();
 			object.addProperty("boardName2", boardName2);
@@ -151,18 +141,15 @@ public class BoardListAction implements Action {
 			
 			//List => JsonElement
 			JsonElement je = gson.toJsonTree(postList);
-			System.out.println("postList="+je.toString());
 			object.add("postList", je);
 
 			//emp의 ename을 구하기 위한 hashMap
 			JsonElement jeEmpMap = gson.toJsonTree(new EmpDao().getIdToENameMap());
-			System.out.println("empMap="+jeEmpMap.toString());
 			object.add("empMap", jeEmpMap);
 			
 			
 			resp.setContentType("application/json;charset=utf-8");
 			resp.getWriter().print(object);
-			System.out.println(object.toString());
 			return null;
 		}//else end
 		

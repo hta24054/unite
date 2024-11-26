@@ -22,7 +22,7 @@
         </div>
         <div class="emailVerification"><h2>이메일 인증</h2>(${email})</div>
         <p class="instruction">입력하신 이메일 주소와 같아야 이메일을 받을 수 있습니다.</p>
-        <form action='${pageContext.request.contextPath}/emailVerificationProcess' method='post'
+        <form action='${pageContext.request.contextPath}/emp/emailVerificationProcess' method='post'
 			name="emailVerificationProcess">
 			<div class="inputLine">
 	            <label for="name">이름</label>

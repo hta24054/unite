@@ -250,9 +250,9 @@ $(function(){
 	})//'keyup','.comment-write-area-text', function(){
 	
 	//댓글 등록을 클릭하면 데이터베이스에 저장 -> 저장 성공 후에 리스트를 불러옵니다
-	$('ul + .comment-write-container .comment-write .btn-register').click(function(){
+	$('.comment-list + .comment-write-container .comment-write .btn-register').click(function(){
 		const content=$('.comment-write-area-text').val();
-		if(!content){//내용없이 등록 클릭한 경우
+		if(!content.trim()){//내용없이 등록 클릭한 경우
 			alert("1자 이상, 200자 이하로 입력해야 합니다.")
 			return
 		}
@@ -286,6 +286,7 @@ $(function(){
 		$('.comment-write-area-text').val('')//textarea 초기화
 		$('.comment-write-area-count').text('0/200')//입력한 글 카운트 초기화
 		$('.comment-attachFile').html('');//첨부파일 초기화
+		$('#upfile').val("");
 		
 	})//$('ul + .comment-write .btn-register').click(function(){
 	

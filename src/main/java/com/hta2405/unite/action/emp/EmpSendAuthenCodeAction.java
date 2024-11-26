@@ -48,15 +48,13 @@ public class EmpSendAuthenCodeAction implements Action {
 		String authenCode = "empty";
 		
 		if(emp == null || !emp.getEmail().equals(receiverEmail) || !emp.getEname().equals(receiverName)) {
-			System.out.println("불일치");
 			// 회원 정보가 일치하지 않은 경우
 			object.addProperty("message", "회원 정보가 존재하지 않습니다.\n이름과 이메일을 다시 한번 확인해 주세요");
 			
 		} else {
-			System.out.println("일치");
+			// 회원 정보가 일치하는 경우
 			/* 메일 전송 */
 			authenCode = sendEmail(receiverEmail);
-			System.out.println(authenCode);
 			
 			//위에서 request로 담았던 것을 JsonObject에 담습니다.
 			object.addProperty("authenCode", authenCode);//{"page": 변수 page의 값} 형식으로 저장
@@ -65,14 +63,12 @@ public class EmpSendAuthenCodeAction implements Action {
 		}
 		resp.setContentType("application/json;charset=utf-8");
 		resp.getWriter().print(object);
-		System.out.println(object.toString());
 		return null;
 	}
 
 	//이메일 발송
 	public String sendEmail(String receiverEmail){
 		String authenCode = null;
-		System.out.println("sendEmail");
 		try {
 			// 인증번호 생성
        	    authenCode = makeAuthenticationCode();
@@ -93,7 +89,7 @@ public class EmpSendAuthenCodeAction implements Action {
 			
 			//받는 주소를 설정합니다.
 			Address receiverAddress = new InternetAddress(receiverEmail);
-			System.out.println(s!=null);
+			
 			//메일을 보내기 위한 정보를 입력하기 위해 Message객체를 생성합니다.
 			Message message = new MimeMessage(s);
 			
@@ -127,14 +123,12 @@ public class EmpSendAuthenCodeAction implements Action {
 			//연결을 종료합니다.
 			transport.close();
 			
-			System.out.println("메일 전송 완료");
 			//out.println("메일이 정상적으로 전송되었습니다.");
 		}catch (Exception e) {
 			System.out.println("메일 전송 오류 발생");
 			//out.println("SMTP 서버가 잘목 설정되었거나, 서비스에 문제가 있습니다.");
 			e.printStackTrace();
 		}
-		System.out.println("sendEmail end");
 		return authenCode;
 	}
 	

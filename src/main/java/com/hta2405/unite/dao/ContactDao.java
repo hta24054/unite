@@ -33,6 +33,7 @@ public class ContactDao {
 				    FROM emp e
 				    JOIN dept d ON e.dept_id = d.dept_id
 				    JOIN job j ON e.job_id = j.job_id
+				    WHERE e.emp_id != 'admin' AND e.etype != '퇴직'
 				    ORDER BY e.ename , j.job_rank
 				""";
 		try (Connection conn = ds.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -60,6 +61,7 @@ public class ContactDao {
 				    FROM emp e
 				    JOIN dept d ON e.dept_id = d.dept_id
 				    JOIN job j ON e.job_id = j.job_id
+				    WHERE e.emp_id != 'admin' AND e.etype != '퇴직'
 				    ORDER BY j.job_rank , e.ename
 				""";
 		try (Connection conn = ds.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -88,7 +90,9 @@ public class ContactDao {
 					ON e.JOB_ID = j.JOB_ID
 					JOIN DEPT d
 					ON e.DEPT_ID = d.DEPT_ID
-					WHERE e.DEPT_ID = ?
+					WHERE e.DEPT_ID = ? 
+					AND e.EMP_ID != 'admin'
+					AND e.ETYPE != '퇴직' 
 					ORDER BY j.JOB_RANK , e.ENAME
 				""";
 		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -119,6 +123,9 @@ public class ContactDao {
 				    JOIN dept d ON e.dept_id = d.dept_id
 				    JOIN job j ON e.job_id = j.job_id
 				    WHERE e.ename LIKE ?
+				    AND e.ename != 'admin'
+				    AND e.etype != '퇴직'
+				    ORDER BY job_rank
 				""";
 		try (Connection conn = ds.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, "%" + name + "%");

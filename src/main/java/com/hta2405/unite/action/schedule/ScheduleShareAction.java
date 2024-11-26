@@ -21,5 +21,4 @@ public class ScheduleShareAction implements Action {
 
         return forward;
 	}
-
 }

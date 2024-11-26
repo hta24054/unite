@@ -6,23 +6,21 @@
 	<jsp:include page="../common/header.jsp" />
 	<title>캘린더 - 공유 일정 등록</title> 
 	<jsp:include page="../common/fullcalendar.jsp" />
+	<jsp:include page="scheduleShare_leftbar.jsp"/>
 	<script src="${pageContext.request.contextPath}/js/calendar.js"></script>
-	<style>
-		.container {
-			max-width: 1900px;
+	<style>	
+		.container-xxl {
+		    display: flex;
+		    flex-wrap: wrap;
+		    margin: 0 auto;
 		}
 		
-		h3 {
-			margin-bottom: 20px;
-			color: rgb(51, 68, 102);
-			font-size: 30px;
-			font-weight: 600;
+		.container-xxl > div {
+		    flex: 1; 
+		    max-width: 100%;
+		    padding-left: 50px; 
 		}
-		
-		.modal-header p {
-			margin: 0;
-		}
-		
+			
 		textarea {
 			width: 100%;
 			height: 100px;
@@ -49,87 +47,77 @@
 	</style>
 </head>
 <body>
-	<div class="container">
-		<div class="row">
-			<div class="col-sm-2 px-5">
-				<aside>
-					<h3>캘린더</h3>
-					<div>
-						<p>&middot; 공유 일정 등록</p>
-					</div>
-				</aside>
-			</div>
-			<div class="col-sm-8 px-5">
-				<h3>공유 일정 등록</h3>
-				<div>
-					<input type="hidden" id="schedule_id" name="schedule_id" value="${schedule_id}">
-					<input type="hidden" id="emp_id" name="emp_id" value="${id}">
-					<input type="hidden" id="share_emp" name="share_emp" value="${share_emp.join(',')}"> 	
-					
-					<div class="form-group row">
-						<label for="schedule_name" class="col-sm-2 col-form-label">일정명</label>
-						<div class="col-sm-8">
-		                    <input type="text" class="form-control" placeholder="일정명을 입력하세요" name="schedule_name" id="schedule_name">
-		                </div>
-					</div>
-					
-					<div class="form-group row custom-control custom-checkbox">
-						<div class="col-sm-7">
-							<input type="checkbox" name="allDay" id="allDay" class="custom-control-input" value="">
-		             		<label for="allDay" class="custom-control-label">하루종일</label>
-						</div>
-					</div>
-			        
-					<div class="form-group row">
-						<label for="startAt" class="col-sm-2 col-form-label">시작날짜/시간</label>
-						<div class="col-sm-8">
-							<input type="datetime-local" name="startAt" id="startAt" class="form-control">
-						</div>
-					</div>
+	<div class="container-xxl mx-5">
+		<div>
+			<h3 class="mb-5">공유 일정 등록</h3>
+			<div>
+				<input type="hidden" id="schedule_id" name="schedule_id" value="${schedule_id}">
+				<input type="hidden" id="emp_id" name="emp_id" value="${id}">
+				<input type="hidden" id="share_emp" name="share_emp" value="${share_emp.join(',')}"> 	
 				
-					<div class="form-group row">
-			            <label for="endAt" class="col-sm-2 col-form-label">종료날짜/시간</label>
-			            <div class="col-sm-8">
-							<input type="datetime-local" name="endAt" id="endAt" class="form-control">
-						</div>
-			        </div>
-		        
-        			<div class="form-group row">
-        				<p class="col-sm-2">색상</p>
-        				<div class="col-sm-8">
-							<select name="bgColor" id="bgColor">
-								<option value="#1e3a8a" style="color: #1e3a8a;">Blue100</option>
-					            <option value="#1d4ed8" style="color: #1d4ed8;">Blue200</option>
-					            <option value="#22d3ee" style="color: #22d3ee;">Blue300</option>
-					            <option value="#16a34a" style="color: #16a34a;">Green100</option>
-					            <option value="#84cc16" style="color: #84cc16;">Green200</option>
-					            <option value="#dc2626" style="color: #dc2626;">Red100</option>
-					            <option value="#f43f5e" style="color: #f43f5e;">Red200</option>
-					            <option value="#facc15" style="color: #facc15;">Yellow</option>
-							</select>
-						</div>
-			        </div>
-		        
-			        <div class="form-group row">
-			        	<p class="col-sm-2">공유자</p>
-			        	<div class="col-sm-8">
-			        		<div id="scheduleShareEmp"></div>
-			        		<a href="javascript:void(0);" data-target="scheduleShareEmp" id="scheduleShareBtn">+ 공유자 선택</a>
-			        	</div>
-			        </div>
-		        
-			        <div class="form-group row">
-			        	<p class="col-sm-2">내용</p>
-			        	<div class="col-sm-8">
-			        		<textarea rows="10" name="description" id="description"></textarea>
-			        	</div>
-			        </div>
-		        
-        			<div class="btn_wrap">
-        				<button type="reset" class="btn btn-secondary">취소</button>
-						<button type="button" class="btn btn-info" id="btnShareRegister">등록</button>
-        			</div>
+				<div class="form-group row">
+					<label for="schedule_name" class="col-sm-2 col-form-label">일정명</label>
+					<div class="col-sm-8">
+	                    <input type="text" class="form-control" placeholder="일정명을 입력하세요" name="schedule_name" id="schedule_name">
+	                </div>
 				</div>
+				
+				<div class="form-group row custom-control custom-checkbox">
+					<div class="col-sm-7">
+						<input type="checkbox" name="allDay" id="allDay" class="custom-control-input" value="">
+	             		<label for="allDay" class="custom-control-label">하루종일</label>
+					</div>
+				</div>
+		        
+				<div class="form-group row">
+					<label for="startAt" class="col-sm-2 col-form-label">시작날짜/시간</label>
+					<div class="col-sm-8">
+						<input type="datetime-local" name="startAt" id="startAt" class="form-control">
+					</div>
+				</div>
+			
+				<div class="form-group row">
+		            <label for="endAt" class="col-sm-2 col-form-label">종료날짜/시간</label>
+		            <div class="col-sm-8">
+						<input type="datetime-local" name="endAt" id="endAt" class="form-control">
+					</div>
+		        </div>
+	        
+       			<div class="form-group row">
+       				<p class="col-sm-2">색상</p>
+       				<div class="col-sm-8">
+						<select name="bgColor" id="bgColor">
+							<option value="#1e3a8a" style="color: #1e3a8a;">Blue100</option>
+				            <option value="#1d4ed8" style="color: #1d4ed8;">Blue200</option>
+				            <option value="#22d3ee" style="color: #22d3ee;">Blue300</option>
+				            <option value="#16a34a" style="color: #16a34a;">Green100</option>
+				            <option value="#84cc16" style="color: #84cc16;">Green200</option>
+				            <option value="#dc2626" style="color: #dc2626;">Red100</option>
+				            <option value="#f43f5e" style="color: #f43f5e;">Red200</option>
+				            <option value="#facc15" style="color: #facc15;">Yellow</option>
+						</select>
+					</div>
+		        </div>
+	        
+		        <div class="form-group row">
+		        	<p class="col-sm-2">공유자</p>
+		        	<div class="col-sm-8">
+		        		<div id="scheduleShareEmp"></div>
+		        		<a href="javascript:void(0);" data-target="scheduleShareEmp" id="scheduleShareBtn">+ 공유자 선택</a>
+		        	</div>
+		        </div>
+	        
+		        <div class="form-group row">
+		        	<p class="col-sm-2">내용</p>
+		        	<div class="col-sm-8">
+		        		<textarea rows="10" name="description" id="description"></textarea>
+		        	</div>
+		        </div>
+	        
+       			<div class="btn_wrap">
+       				<button type="reset" class="btn btn-secondary">취소</button>
+					<button type="button" class="btn btn-info" id="btnShareRegister">등록</button>
+       			</div>
 			</div>
 		</div>
 	</div>
@@ -216,8 +204,6 @@
 	            dataType: 'json',
 	            data: shareData,
 	            success: function(data) {
-	            	console.log("공유 일정 등록 성공", data); 
-	            	
 	            	alert('공유 일정이 등록되었습니다.');
 	                addEventToCalendar(shareData);  
 	                

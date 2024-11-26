@@ -9,6 +9,7 @@ import com.hta2405.unite.action.project.ProjectDoCreateAction;
 import com.hta2405.unite.action.project.ProjectEmployAction;
 import com.hta2405.unite.action.project.ProjectGetOngoingAction;
 import com.hta2405.unite.action.project.ProjectMainAction;
+import com.hta2405.unite.action.project.ProjectNoticeAction;
 import com.hta2405.unite.action.project.ProjectProgressAction;
 import com.hta2405.unite.action.project.ProjectUpdateProgressAction;
 import com.hta2405.unite.action.project.ProjectUpdateTaskDesignAction;
@@ -36,6 +37,7 @@ public class ProjectFrontController extends AbstractFrontController {
         actionMap.put("/getOngoingProjects", ProjectGetOngoingAction::new);
         actionMap.put("/updateprogress", ProjectUpdateProgressAction::new);
         actionMap.put("/updatetaskdesign", ProjectUpdateTaskDesignAction::new);
+        actionMap.put("/notice", ProjectNoticeAction::new);
         
     }
 }

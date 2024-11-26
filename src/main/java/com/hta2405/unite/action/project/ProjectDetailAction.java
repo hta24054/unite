@@ -43,6 +43,11 @@ public class ProjectDetailAction implements Action {
         req.setAttribute("role", projectDetail3);
         System.out.println("정보 : " + projectDetail3);//값 확인
         
+        ProjectDAO projectDAO5 = new ProjectDAO();
+        List<ProjectDetail> projectDetail4 = projectDAO5.getNotice(userid); 
+        req.setAttribute("notice", projectDetail4);
+        System.out.println("알림 : " + projectDetail4);//값 확인
+        
         ActionForward forward = new ActionForward();
         forward.setPath("/WEB-INF/views/project/project_detail.jsp");
         forward.setRedirect(false); // JSP로 포워딩할 경우 false 설정

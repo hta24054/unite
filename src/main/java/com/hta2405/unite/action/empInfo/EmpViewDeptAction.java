@@ -1,5 +1,8 @@
 package com.hta2405.unite.action.empInfo;
 
+import static com.hta2405.unite.util.AttendUtil.checkAttendRole;
+import static com.hta2405.unite.util.EmpUtil.isHrDept;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -11,16 +14,18 @@ import com.hta2405.unite.dto.Dept;
 import com.hta2405.unite.dto.Emp;
 import com.hta2405.unite.dto.EmpDetails;
 import com.hta2405.unite.dto.Job;
+import com.hta2405.unite.util.CommonUtil;
 import com.hta2405.unite.dao.JobDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 public class EmpViewDeptAction implements Action {
 
 	@Override
-	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	public ActionForward execute(HttpServletRequest req,
+			HttpServletResponse resp) throws ServletException, IOException {
 
 		ActionForward forward = new ActionForward();
 
@@ -30,15 +35,25 @@ public class EmpViewDeptAction implements Action {
 		DeptDao deptDao = new DeptDao();
 		JobDao jobDao = new JobDao();
 
+		long jobRank = jobDao.getJobRankByEmpId(empId); // 데이터베이스에서 jobRank 조회
+
 		Emp emp = empDao.getEmpById(empId);
 		if (emp == null) {
 			throw new ServletException("No employee found with ID: " + empId);
 		}
 
+		checkAttendRole(emp, req);
+
+		if (!isHrDept(emp) && jobRank > 4) {
+			// 접근 권한이 없습니다.
+			return CommonUtil.alertAndGoBack(resp, "접근 권한이 없습니다.");
+		}
+
 		Long deptId = emp.getDeptId(); // 직원의 부서 ID를 가져옵니다.
 		List<Emp> empList = deptDao.getDeptEmps(empId);
 		if (empList == null || empList.isEmpty()) {
-			throw new ServletException("No employees found in department with ID: " + deptId);
+			throw new ServletException(
+					"No employees found in department with ID: " + deptId);
 		}
 
 		// 부서와 직무 정보 조회

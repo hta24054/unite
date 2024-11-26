@@ -31,6 +31,15 @@
             text-align: left;
             border: 1px solid #ddd;
         }
+        .container{
+        	background-color: white;
+        	border: 1px solid black;
+        	border-radius: 5%;
+        	padding: 35px 5px 5px;
+        	width: 600px;
+        	height: 800px;
+        	transition: background-color 0.3s ease;
+        }
     </style>
     <script>	
     	const contextPath = "${pageContext.request.contextPath}";  

@@ -24,8 +24,7 @@ public class SharedScheduleListAction implements Action {
 
         response.setContentType("application/json;charset=utf-8");
         response.getWriter().write(arr.toString());
-        
-        System.out.println("공유 리스트" + arr); 
+
         return null;
 	}
 }

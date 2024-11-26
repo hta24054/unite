@@ -35,8 +35,6 @@ public class ScheduleUpdateAction implements Action {
 			schedule.setScheduleName(scheduleName);
 			schedule.setScheduleContent(description);
 			
-			//LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(startAt);
-			//LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(endAt);
 			LocalDateTime startDateTime = CalendarDateTimeUtil.parseDateTimeWithoutT(startAt);
 			LocalDateTime endDateTime = CalendarDateTimeUtil.parseDateTimeWithoutT(endAt);
 			

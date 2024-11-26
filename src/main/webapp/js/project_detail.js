@@ -32,9 +32,9 @@ $(document).ready(function() {
 		    success: function(response) {
 		        if (response.success) {
 		            const taskContentElement = $(`.task-content[data-id='${currentProjectId}'][data-memberid='${memberId}']`);
-            taskContentElement.text(newTaskContent);  // 새로 입력된 내용으로 업데이트
-            taskContentElement.data("content", newTaskContent);  // data-content 업데이트
-            taskContentElement.removeClass('clickable');  // 클릭 가능 상태 제거 (수정 후 더 이상 수정 불가)
+		            taskContentElement.text(newTaskContent);  // 새로 입력된 내용으로 업데이트
+		            taskContentElement.data("content", newTaskContent);  // data-content 업데이트
+		            taskContentElement.removeClass('clickable');  // 클릭 가능 상태 제거 (수정 후 더 이상 수정 불가)
 		        } else {
 		            alert("업무 내용 업데이트에 실패했습니다.");
 		        }
@@ -155,7 +155,11 @@ $(document).ready(function() {
 	        }
 	    });
 	});
-	
+	// tr 클릭 시 submitForm 호출
+    $('.clickable-row').on('click', function() {
+        var memberId = $(this).data('member-id'); // data-member-id에서 memberId를 가져옵니다.
+        submitForm(memberId); // submitForm 함수 호출
+    });
 	// 게시물 리스트 업데이트
 	function updatePostList(posts) {
 	    const postListContainer = $("#postTable tbody");
@@ -177,6 +181,55 @@ $(document).ready(function() {
 	    } else {
 	        postListContainer.append("<tr><td colspan='3'>게시글이 없습니다.</td></tr>");
 	    }
+	}
+	notice();
+	function notice() {
+	    $.ajax({
+	        url: contextPath + "/project/notice",
+	        method: 'GET',
+	        success: function (notifications) {
+	            console.log("응답 데이터:", notifications);
+	            
+	            // 알림 데이터를 담을 컨테이너 요소
+	            const postListContainer = $(".notification-content tbody");
+	            
+	            // 기존 내용을 지우고 새로운 알림을 추가
+	            postListContainer.empty();
+	
+	            if (notifications && notifications.length > 0) {
+	                // 상위 4개의 데이터만 처리
+	                const topNotifications = notifications.slice(0, 4);
+	
+	                topNotifications.forEach(notice => {
+	                    const action = notice.taskUpdateDate 
+	                        ? "수정(변경)하였습니다" 
+	                        : "등록하였습니다";
+	                    
+	                    const actionDate = notice.taskUpdateDate 
+	                        ? notice.taskUpdateDate 
+	                        : notice.taskDate;
+	
+	                    const postRow = `
+	                        <tr>
+	                        	<td><img src="${contextPath}/emp/profile-image?UUID=${notice.task_file_uuid}"style="width:36px; height: 36px; border-radius:50%; border: 1px solid gray;"></td>
+	                            <td>${notice.taskWriter} ${notice.Jobname}님이<br>${notice.ProjectName}을(를)<br>${action}<br><br><small>${actionDate}</small></td>
+	                        </tr>
+	                    `;
+	                    postListContainer.append(postRow);
+	                });
+	            } else {
+	                // 알림이 없는 경우
+	                postListContainer.append(`
+	                    <tr>
+	                        <td colspan="2">게시글이 없습니다</td>
+	                    </tr>
+	                `);
+	            }
+	        },
+	        error: function (error) {
+	            console.error("알림 데이터를 가져오는 데 실패했습니다:", error);
+	        }
+	    });
 	}
 
 	

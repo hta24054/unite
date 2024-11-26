@@ -32,10 +32,13 @@ public class DeptDao {
 				    ORDER BY DEPT_ID
 				""";
 		List<Dept> list = new ArrayList<>();
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+		try (Connection conn = ds.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql)) {
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
-				list.add(new Dept(rs.getLong("dept_id"), rs.getString("dept_name"), rs.getString("dept_manager")));
+				list.add(new Dept(rs.getLong("dept_id"),
+						rs.getString("dept_name"),
+						rs.getString("dept_manager")));
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -48,7 +51,8 @@ public class DeptDao {
 				    SELECT DEPT_MANAGER FROM DEPT
 				    WHERE DEPT_ID = ?
 				""";
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+		try (Connection conn = ds.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setLong(1, deptId);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
@@ -65,7 +69,8 @@ public class DeptDao {
 				    SELECT DEPT_NAME FROM DEPT
 				    WHERE DEPT_ID = ?
 				""";
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+		try (Connection conn = ds.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setLong(1, deptId);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
@@ -82,7 +87,8 @@ public class DeptDao {
 		String sql = """
 				    SELECT dept_id, dept_name from DEPT
 				""";
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+		try (Connection conn = ds.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql)) {
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 				map.put(rs.getLong("dept_id"), rs.getString("dept_name"));
@@ -97,7 +103,8 @@ public class DeptDao {
 	public Dept getDeptByEmpId(String empId) {
 		Dept dept = null;
 		String sql = "SELECT * FROM dept WHERE dept_id = (SELECT dept_id FROM emp WHERE emp_id = ?)";
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+		try (Connection conn = ds.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, empId);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
@@ -114,14 +121,19 @@ public class DeptDao {
 
 	public List<Emp> getDeptEmps(String empId) {
 		String sql = """
-				SELECT emp_id, ename, dept_id, job_id, email, tel
-				FROM emp
-				WHERE dept_id = (SELECT dept_id
-								 FROM emp
-								 WHERE emp_id = ?)
+				SELECT e.emp_id, e.ename, e.dept_id, e.job_id, e.email, e.tel 
+				FROM emp e 
+				JOIN job j 
+				ON e.job_id = j.job_id 
+				WHERE e.dept_id = 
+				(SELECT dept_id 
+				FROM emp WHERE emp_id = ?) 
+				AND e.etype != '퇴직'
+				ORDER BY j.job_rank, e.ename
 				""";
 		List<Emp> empList = new ArrayList<>();
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+		try (Connection conn = ds.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, empId);
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next()) {
@@ -147,7 +159,8 @@ public class DeptDao {
 				select dept_id from dept
 				where dept_name = ?
 				""";
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+		try (Connection conn = ds.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, deptName);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
@@ -168,8 +181,11 @@ public class DeptDao {
 				JOIN DEPT d
 				ON e.DEPT_ID = d.DEPT_ID
 				WHERE e.DEPT_ID = ?
+				AND E.ETYPE != '퇴직'
+				ORDER BY j.JOB_RANK , e.ENAME
 				   		""";
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+		try (Connection conn = ds.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setLong(1, deptId);
 			ResultSet rs = ps.executeQuery();
 

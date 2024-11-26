@@ -39,6 +39,7 @@ $(function() {
 let option = 1; //선택한 등록순과 최신순을 수정, 삭제, 추가 후에도 유지되도록 하기 위한 변수로 사용
 
 function getList(state){
+	const tasknum = $('#comment_board_num').val(); 
 	console.log(state);
 	option = state;
 	$.ajax({
@@ -46,7 +47,8 @@ function getList(state){
 		url: contextPath + "/projectb/commentlist",
 		data: {
 			"comment_board_num" : $("#comment_board_num").val(),
-			state: state
+			state: state,
+			num: tasknum
 		},
 		dataType: "json",
 		success: function(rdata){
@@ -99,7 +101,7 @@ function getList(state){
 					output += `
 						<li id='${comment.task_comment_id}' class='comment-list-item ${replyClass}'>
 							<div class='comment-nick-area'>
-								<img src='${src}' alt='프로필 사진' width='36' height='36'>
+								<img src="${contextPath}/emp/profile-image?UUID=${rdata.emp[comment.task_comment_writer]}"style="width:30px; height: 30px;">
 								<div class='comment-box'>
 									<div class='comment-nick-box'>
 										<div class='comment-nick-info'>

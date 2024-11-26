@@ -25,6 +25,7 @@ public class ProjectTaskListAction implements Action {
 	@Override
 	public ActionForward execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		//String userid = (String) request.getSession().getAttribute("id");
 		String userid = request.getParameter("memberId");
         int projectid = (Integer) request.getSession().getAttribute("projectId");
         System.out.println("userid : " + userid + "projectid" + projectid);
@@ -61,12 +62,18 @@ public class ProjectTaskListAction implements Action {
 		System.out.println("넘어온 limit = " + limit);
 		
 		//총 리스트 수 받아옴
-		int listcount = taskdao.getListCount(userid, projectid);
-		System.out.println(listcount);
+		int listcount = 0;
 		
 		//리스트를 받아옴
 		tasklist = taskdao.getBoardList(page, limit, userid, projectid);
-		System.out.println(tasklist);
+		
+		for (ProjectTask task : tasklist) {
+			if(task.getProjectTitle() == null)
+				listcount = 0;
+			else
+				listcount = taskdao.getListCount(userid, projectid);
+		    System.out.println("Project Title: " + task.getProjectTitle());
+		}
 		/* 총 페이지 수 = (DB에 저장된 총 리스트의 수 + 한 페이지에서 보여주는 리스트의 수 - 1)/한 페이지에서 보여주는 리스트의 수 
 		 * 예를 들어 한 페이지에서 보여주는 리스트의 수가 10개인 경우
 		 * 예 1) DB에 저장된 총 리스트의 수가 0이면 총 페이지 수는 0페이지

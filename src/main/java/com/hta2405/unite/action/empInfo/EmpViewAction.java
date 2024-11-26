@@ -18,13 +18,14 @@ import com.hta2405.unite.dto.*;
 public class EmpViewAction implements Action {
 
 	@Override
-	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	public ActionForward execute(HttpServletRequest req,
+			HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession();
 
 		// 세션에서 empId와 deptId를 가져옵니다.
 		String empId = (String) session.getAttribute("id");
 		String deptId = (String) session.getAttribute("deptId");
+		
 
 		// 요청 파라미터에 id가 있으면 해당 값을 사용합니다.
 		if (req.getParameter("id") != null) {
@@ -61,6 +62,7 @@ public class EmpViewAction implements Action {
 		if (deptId == null && dept != null) {
 			deptId = dept.getDeptId().toString();
 			session.setAttribute("deptId", deptId);
+			
 		}
 
 		// EmpDetails 객체를 생성하고 필요한 정보를 설정합니다.

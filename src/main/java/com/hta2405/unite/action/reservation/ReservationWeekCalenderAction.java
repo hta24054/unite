@@ -16,7 +16,7 @@ public class ReservationWeekCalenderAction implements Action {
 		
 		ActionForward forward = new ActionForward();
 	    forward.setRedirect(false); 
-	    forward.setPath("/WEB-INF/views/reservation/weekCalendar.jsp");
+	    forward.setPath("/WEB-INF/views/reservation/reservationCalender.jsp");
 
 	    return forward;
 	}

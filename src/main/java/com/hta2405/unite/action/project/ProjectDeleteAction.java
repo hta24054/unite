@@ -28,6 +28,8 @@ public class ProjectDeleteAction implements Action {
         System.out.println("task_num : " + task_num);
         System.out.println("pass : " + pass);
         
+        req.getSession().setAttribute("memberId", userid);
+        
         // 직원 정보 조회
         EmpDao dao = new EmpDao();
         Emp emp = dao.getEmpById(userid);
@@ -45,7 +47,7 @@ public class ProjectDeleteAction implements Action {
                 forward.setRedirect(true);
                 // 파라미터 없이 'list' 페이지로 리다이렉트
                 req.setAttribute("message", "게시물이 성공적으로 삭제되었습니다.");
-                forward.setPath("list"); // URL에 파라미터 없이 'list'로 리다이렉트
+                forward.setPath("list?memberId=" + userid); // URL에 파라미터 없이 'list'로 리다이렉트
             } else {
                 System.out.println("게시물 삭제 실패");
                 req.setAttribute("error", "게시물 삭제에 실패했습니다.");

@@ -819,7 +819,7 @@ public class ProjectDAO {
 
 	public List<ProjectDetail> getNotice(String userid) {
 		List<ProjectDetail> project = new ArrayList<>(); 
-	    String sql = "SELECT p.project_name, t.task_date, t.task_update_date, e1.ename AS task_emp_name, e1.img_uuid AS pm_img_uuid, j.job_name "
+	    String sql = "SELECT p.project_name, t.task_date, t.task_subject, t.task_update_date, e1.ename AS task_emp_name, e1.img_uuid AS pm_img_uuid, j.job_name "
 	    		+ "FROM task t "
 	    		+ "JOIN project p ON t.project_id = p.project_id "
 	    		+ "JOIN project_member pm ON p.project_id = pm.project_id "
@@ -841,10 +841,11 @@ public class ProjectDAO {
                 ProjectDetail projectDetail = new ProjectDetail();
                 projectDetail.setProjectName(rs.getString(1));
                 projectDetail.setTaskDate(rs.getString(2));
-                projectDetail.setTaskUpdateDate(rs.getString(3));
-                projectDetail.setTaskWriter(rs.getString(4));
-                projectDetail.setTask_file_uuid(rs.getString(5));
-                projectDetail.setJobname(rs.getString(6));
+                projectDetail.setTaskTitle(rs.getString(3));
+                projectDetail.setTaskUpdateDate(rs.getString(4));
+                projectDetail.setTaskWriter(rs.getString(5));
+                projectDetail.setTask_file_uuid(rs.getString(6));
+                projectDetail.setJobname(rs.getString(7));
                 project.add(projectDetail);
             }
         } catch (SQLException e) {

@@ -77,4 +77,9 @@ public class EmpUtil {
         String deptName = new DeptDao().getDeptNameById(loginEmp.getDeptId());
         return deptName.equals("인사관리팀") || deptName.equals("관리자");
     }
+    
+    public static boolean isHrDept(String deptId) {
+        String deptName = new DeptDao().getDeptNameById(Long.parseLong(deptId));
+        return deptName.equals("인사관리팀") || deptName.equals("관리자");
+    }
 }

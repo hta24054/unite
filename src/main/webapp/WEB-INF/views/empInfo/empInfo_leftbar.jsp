@@ -16,14 +16,17 @@
 			style="list-style-type: disc; padding-left: 20px;">
 			<li class="left" style="border: none;"><a
 				href="${pageContext.request.contextPath}/empInfo/view">나의 인사정보</a></li>
+			<c:if test="${deptShow == true}">
+				<li class="left" style="border: none;"><a
+					href="${pageContext.request.contextPath}/empInfo/viewdept?empId=${sessionScope.id}">부서
+						인사정보</a></li>
+			</c:if>
+			<c:if test="${otherDeptShow == true}">
+				<li class="left" style="border: none;"><a
+					href="${pageContext.request.contextPath}/empInfo/viewotherdeptinfo">타부서
+						인사정보</a></li>
+			</c:if>
 
-			<li class="left" style="border: none;"><a
-				href="${pageContext.request.contextPath}/empInfo/viewdept?empId=${sessionScope.id}">부서
-					인사정보</a></li>
-
-			<li class="left" style="border: none;"><a
-				href="${pageContext.request.contextPath}/empInfo/viewotherdeptinfo">타부서
-					인사정보</a></li>
 		</ul>
 	</div>
 </body>

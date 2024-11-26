@@ -32,7 +32,7 @@ import jakarta.servlet.http.Part;
 	    maxRequestSize = 1024 * 1024 * 50     // 50MB
 	)
 public class ProjectWriteAction implements Action {
-    private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("projecttask.upload.directory");
+    private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("project.upload.directory");
 
     public ActionForward execute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

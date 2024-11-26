@@ -214,8 +214,6 @@ $(document).ready(function(){
 	
 	// 예약 취소
 	function cancelReservation(event){
-		console.log("예약자", event.extendedProps.empId)
-        console.log("현재 로그인한 emp_id", $("#emp_id").val())
 		const logInEmpId = $("#emp_id").val(); // 현재 로그인한 emp_id
 
 	    // 예약 정보의 emp_id와 로그인 사용자 emp_id가 일치하는지 확인
@@ -243,7 +241,6 @@ $(document).ready(function(){
 	                }
 				},
 				error: function(error) {
-		            console.log("예약 취소 오류:", error);
 		            alert("예약 취소 오류");
 		        }
 			});

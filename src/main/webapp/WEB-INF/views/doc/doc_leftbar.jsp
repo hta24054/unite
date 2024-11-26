@@ -6,7 +6,7 @@
 </head>
 <body>
 <div class="sidebar">
-    <h3 style="color:rgb(51, 68, 102)">관리자</h3><br>
+    <h3 style="color:rgb(51, 68, 102)">전자문서</h3><br>
     <ul class="list-group" style="list-style-type: disc; padding-left: 20px;">
         <li class="left" style="border: none;"><a href="${pageContext.request.contextPath}/doc/waiting">결재 대기 문서</a></li>
 

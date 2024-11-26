@@ -29,7 +29,7 @@ import jakarta.servlet.http.Part;
 	    maxRequestSize = 1024 * 1024 * 50    // 50MB
 	)
 	public class ProjectMainAction implements Action {
-		private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("projectdone.upload.directory");
+		private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("project.upload.directory");
 	    @Override
 	    public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 	        String action = req.getParameter("action");

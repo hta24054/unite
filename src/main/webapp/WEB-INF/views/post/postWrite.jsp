@@ -177,8 +177,8 @@ function deleteFile(deleteNo) {
 function updateFileListVisibility() {
 	console.log(filesArr.length)
     $('.file-list').toggleClass('hidden', filesArr.length !== 0);
+	updateDividerHeight();
 }
-
 
 /* 폼 전송 */
 function submitForm() {

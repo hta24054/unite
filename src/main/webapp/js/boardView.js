@@ -200,6 +200,7 @@ function replyform(commentId, lev, seq, ref) {
 	//댓글 폼 보이지 않습니다.
 	$('div > div.comment-area > div.comment-write-container').hide();
 	
+	updateDividerHeight();
 }//replyform end
 
 function commentAddFile(file) {
@@ -229,6 +230,7 @@ function commentAddFile(file) {
 
         // 파일 이름을 .comment-attachFile에 추가
         fileDiv.html(fileNameHtml);
+        updateDividerHeight();
     }
 }
 
@@ -388,7 +390,7 @@ $(function(){
 				}
 			}
 		})//ajax
-		
+		$('.comment-attachFile').empty(); // 첨부파일 정보 삭제
 		//답글 폼 보여줍니다.
 		$('div > div.comment-area > div.comment-write-container').show();
 	})//답글완료 클릭한 경우

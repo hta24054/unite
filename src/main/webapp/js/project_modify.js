@@ -28,8 +28,10 @@ $(document).ready(function(){
 		//파라미터 'check'라는 이름으로 form에 추가하여 전송
 		if(check == 0){
 			const value = $('#filevalue').text();
-			const html = `<input type='hidden' value='${value}' name='check'>`;
+			const task = $('#tasknum').val();
+			console.log(task);
 			console.log(html);
+			const html = `<input type='hidden' value='${value}' name='check'>`;
 			$(this).append(html);
 		}
 	});

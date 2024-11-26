@@ -19,7 +19,6 @@ public class ResourceReservationAction implements Action {
 			throws ServletException, IOException{
 		
 		Reservation reservation = new Reservation();
-		//Resource resource = new Resource();
 		
 		String empId = request.getParameter("emp_id"); // 예약자
 		int allDay = request.getParameter("allDay") == null ? 0 : Integer.parseInt(request.getParameter("allDay"));

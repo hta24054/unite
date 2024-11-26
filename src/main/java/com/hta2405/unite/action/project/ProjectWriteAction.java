@@ -15,7 +15,9 @@ import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.ProjectbDao;
 import com.hta2405.unite.dto.ProjectDetail;
+import com.hta2405.unite.dto.ProjectInfo;
 import com.hta2405.unite.dto.ProjectTask;
+import com.hta2405.unite.util.ConfigUtil;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -29,11 +31,11 @@ import jakarta.servlet.http.Part;
 	    maxFileSize = 1024 * 1024 * 10,       // 10MB
 	    maxRequestSize = 1024 * 1024 * 50     // 50MB
 	)
-	public class ProjectWriteAction implements Action {
+public class ProjectWriteAction implements Action {
+    private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("projecttask.upload.directory");
 
-	public ActionForward execute(HttpServletRequest request, HttpServletResponse response)
+    public ActionForward execute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         // 세션에서 사용자 ID와 프로젝트 ID 가져오기
         String userid = (String) request.getSession().getAttribute("id");
         int projectid = (Integer) request.getSession().getAttribute("projectId");
@@ -47,52 +49,13 @@ import jakarta.servlet.http.Part;
             return null;
         }
 
-        // 업로드 디렉토리 설정
-        ServletContext sc = request.getServletContext();
-        String realFolder = sc.getRealPath("projectupload");
-        File uploadDirectory = new File(realFolder);
-        
-        if (!uploadDirectory.exists()) {
-            uploadDirectory.mkdir(); // 디렉토리가 없으면 생성
-        }
-
-        List<ProjectDetail> taskFile = new ArrayList<>(); // 여러 파일을 저장할 리스트
-
         // 파일 업로드 처리
-        Collection<Part> fileParts = request.getParts();
-        for (Part filePart : fileParts) {
-            if (filePart.getContentType() != null) {
-                // 각 파일에 대해 ProjectDetail 객체 생성
-                ProjectDetail task = new ProjectDetail();
-
-                String fileName = UUID.randomUUID().toString(); // 고유한 파일 이름 생성
-                String originalFileName = filePart.getSubmittedFileName();
-                String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-                String savedFileName = fileName + fileExtension;
-                String filePath = realFolder + File.separator + savedFileName;
-
-                try {
-                    filePart.write(filePath); // 파일 저장
-                    System.out.println("파일 저장 성공: " + filePath); // 파일 저장 성공 로그
-                } catch (IOException e) {
-                    sendErrorResponse(response, "파일 저장에 실패했습니다.");
-                    e.printStackTrace(); // 예외 로그
-                    return null;
-                }
-
-                task.setTask_file_path(filePath);
-                task.setTask_file_original(originalFileName);
-                task.setTask_file_uuid(fileName);
-                task.setTask_file_type(fileExtension);
-
-                taskFile.add(task); // 리스트에 추가
-            }
-        }
+        List<ProjectDetail> uploadedFiles = processFileUpload(request, response);
 
         // DAO 호출하여 DB에 글과 파일 정보 저장
         ProjectbDao projectbDao = new ProjectbDao();
-        boolean isInserted = projectbDao.insertOrUpdatePost(title, content, taskFile, userid, projectid);
-        System.out.println("DB 삽입 결과: " + isInserted); // 삽입 성공 여부 로그
+        boolean isInserted = projectbDao.insertOrUpdatePost(title, content, uploadedFiles, userid, projectid);
+        System.out.println("DB 삽입 결과: " + isInserted);
 
         if (!isInserted) {
             sendErrorResponse(response, "글 작성에 실패했습니다.");
@@ -102,7 +65,7 @@ import jakarta.servlet.http.Part;
         // 글 작성 후 최신 게시글 목록 가져오기
         List<ProjectTask> recentPosts = projectbDao.getRecentPosts(userid, projectid);
         String jsonResponse = new Gson().toJson(Map.of("success", true, "posts", recentPosts));
-        System.out.println("글 작성 후 최신 게시글 (멤버)" + recentPosts);
+        System.out.println("글 작성 후 최신 게시글: " + recentPosts);
 
         // 성공적인 응답 반환
         response.setContentType("application/json; charset=utf-8");
@@ -114,13 +77,63 @@ import jakarta.servlet.http.Part;
         return null;
     }
 
+    private List<ProjectDetail> processFileUpload(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        List<ProjectDetail> taskFile = new ArrayList<>();
+        String uploadDir = UPLOAD_DIRECTORY;
 
-	    // 에러 응답을 JSON 형태로 반환하는 메서드
-	    private void sendErrorResponse(HttpServletResponse response, String errorMessage) throws IOException {
-	        response.setContentType("application/json; charset=utf-8");
-	        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-	        Map<String, String> errorResponse = new HashMap<>();
-	        errorResponse.put("error", errorMessage);
-	        response.getWriter().write(new Gson().toJson(errorResponse));
-	    }
-	}
+        // 디렉토리가 없으면 생성
+        File uploadDirectory = new File(uploadDir);
+        if (!uploadDirectory.exists()) {
+            boolean dirCreated = uploadDirectory.mkdirs();
+            if (!dirCreated) {
+                sendErrorResponse(resp, "디렉토리 생성에 실패했습니다.");
+                return taskFile;
+            }
+        }
+
+        // 파일 업로드 처리
+        Collection<Part> fileParts = req.getParts();
+        for (Part filePart : fileParts) {
+            if (filePart.getContentType() != null) {
+                // 파일 크기 체크 (0일 경우 업로드하지 않도록 처리)
+                if (filePart.getSize() == 0) {
+                    continue; // 파일 크기가 0인 경우 건너뛰기
+                }
+
+                ProjectDetail task = new ProjectDetail();
+                String fileName = UUID.randomUUID().toString(); // 고유한 파일 이름 생성
+                String originalFileName = filePart.getSubmittedFileName();
+                String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+                String savedFileName = fileName + fileExtension;
+                String filePath = uploadDir + File.separator + savedFileName;
+
+                try {
+                    filePart.write(filePath); // 파일 저장
+                    System.out.println("파일 저장 성공: " + filePath);
+                } catch (IOException e) {
+                    sendErrorResponse(resp, "파일 저장에 실패했습니다.");
+                    e.printStackTrace();
+                    return null;
+                }
+
+                task.setTask_file_path(filePath);
+                task.setTask_file_original(originalFileName);
+                task.setTask_file_uuid(fileName);
+                task.setTask_file_type(fileExtension);
+
+                taskFile.add(task);
+            }
+        }
+
+        return taskFile;
+    }
+
+    private void sendErrorResponse(HttpServletResponse response, String errorMessage) throws IOException {
+        response.setContentType("application/json; charset=utf-8");
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", errorMessage);
+        response.getWriter().write(new Gson().toJson(errorResponse));
+    }
+}
+

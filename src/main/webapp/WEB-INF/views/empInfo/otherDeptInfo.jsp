@@ -143,6 +143,7 @@ th {
 								source : [ {
 									title : "대표이사",
 									key : "1000",
+									expanded: true,
 									folder : true,
 									children : [ {
 										title : "부사장",

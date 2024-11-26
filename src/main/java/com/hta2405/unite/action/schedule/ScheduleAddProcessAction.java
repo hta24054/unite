@@ -24,8 +24,6 @@ public class ScheduleAddProcessAction implements Action {
 		String description = request.getParameter("description");
 		String startAt = request.getParameter("startAt");
 		String endAt = request.getParameter("endAt");
-		//System.out.println("startAt=" + startAt);
-		//System.out.println("endAt=" + endAt);
 		String bgColor = request.getParameter("bgColor");
 		int allDay = request.getParameter("allDay") == null ? 0 : Integer.parseInt(request.getParameter("allDay"));
 		
@@ -34,8 +32,6 @@ public class ScheduleAddProcessAction implements Action {
 		schedule.setEmpId(empId);
 		schedule.setScheduleName(scheduleName);
 		schedule.setScheduleContent(description);
-		//LocalDateTime startDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(startAt);
-		//LocalDateTime endDateTime = ScheduleDateTimeUtil.parseDateTimeWithoutT(endAt);
 		LocalDateTime startDateTime = CalendarDateTimeUtil.parseDateTimeWithoutT(startAt);
 		LocalDateTime endDateTime = CalendarDateTimeUtil.parseDateTimeWithoutT(endAt);
 		

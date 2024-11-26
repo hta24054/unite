@@ -1,9 +1,14 @@
 package com.hta2405.unite.dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -11,6 +16,7 @@ import javax.sql.DataSource;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.hta2405.unite.dto.Holiday;
 import com.hta2405.unite.dto.Schedule;
 import com.hta2405.unite.dto.ScheduleShare;
 
@@ -62,7 +68,6 @@ public class ScheduleDAO {
 				where emp_id = ?
 				""";
 		JsonArray array = new JsonArray();
-		System.out.println("getListSchedule id 값" + id);
 		
 		try (Connection con = ds.getConnection();
 			 PreparedStatement pstmt = con.prepareStatement(sql);) {
@@ -225,8 +230,6 @@ public class ScheduleDAO {
 	                    pstmtShare.setString(1, empId.trim());
 	                    pstmtShare.setInt(2, scheduleId); // 새로 생성된 schedule_id 사용
 	                    pstmtShare.executeUpdate();
-
-	                    System.out.println("schedule_share 테이블에 삽입: " + empId.trim() + ", schedule_id: " + scheduleId);
 	                }
 	            }
 	        }
@@ -267,8 +270,6 @@ public class ScheduleDAO {
 				""";
 		
 		JsonArray array = new JsonArray();
-		
-		System.out.println("share_sql" + share_sql);
 		 
 		try (Connection con = ds.getConnection();
 		     PreparedStatement pstmt = con.prepareStatement(share_sql);) {
@@ -296,10 +297,53 @@ public class ScheduleDAO {
 		        e.printStackTrace();
 		        System.out.println("getListSharedSchedule() 에러: " + e);
 		    }
-		 
-		    System.out.println("share_sql array " + array);
+
 		    return array;
 	}//getListSharedSchedule end
-	
-	
+
+	// 공휴일 리스트
+	public List<Holiday> getHoliday(LocalDate startDate, LocalDate endDate) {
+		ArrayList<Holiday> HolidayList = new ArrayList<>();
+        String sql = """
+                    SELECT * 
+					FROM HOLIDAY
+					WHERE HOLIDAY_DATE BETWEEN ? AND ?
+					AND holiday_name NOT IN ('토요일', '일요일')
+					ORDER BY HOLIDAY_DATE
+                """;
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, Date.valueOf(startDate));
+            ps.setDate(2, Date.valueOf(endDate));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Holiday holiday = new Holiday(rs.getLong("holiday_id"),
+                        rs.getDate("holiday_date").toLocalDate(),
+                        rs.getString("holiday_name"));
+                HolidayList.add(holiday);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return HolidayList;
+	}
+
+	public String getHolidayName(LocalDate localDate) {
+		String sql = """
+                SELECT HOLIDAY_NAME FROM HOLIDAY
+                WHERE HOLIDAY_DATE = ?
+            """;
+	    try (Connection conn = ds.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
+	        ps.setDate(1, Date.valueOf(localDate));
+	        ResultSet rs = ps.executeQuery();
+	        if (rs.next()) {
+	            return rs.getString(1);
+	        }
+	    } catch (SQLException e) {
+	        throw new RuntimeException(e);
+	    }
+	    return null;
+	}
 }

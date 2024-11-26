@@ -9,6 +9,11 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/leftbar.css">
 <script src="${pageContext.request.contextPath}/js/leftbar.js"></script>
 <style>
+    @import url('https://cdn.rawgit.com/moonspam/NanumSquare/master/nanumsquare.css');
+    body {
+        font-family: 'nanumsquare', sans-serif;
+    }
+
     body > nav.navbar {
         justify-content: center;
     }
@@ -114,8 +119,7 @@
             <a class="nav-link a1" href="${pageContext.request.contextPath}/project/main">&nbsp;프로젝트&nbsp;</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link a1"
-               href="${pageContext.request.contextPath}/reservation/weekCalendar">&nbsp;자원예약&nbsp;</a>
+            <a class="nav-link a1" href="${pageContext.request.contextPath}/reservation/reservationCalender">&nbsp;자원예약&nbsp;</a>
         </li>
         <li class="nav-item">
             <a class="nav-link a1" href="${pageContext.request.contextPath}/mypage/password">&nbsp;마이페이지&nbsp;</a>

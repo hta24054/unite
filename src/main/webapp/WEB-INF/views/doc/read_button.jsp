@@ -18,18 +18,20 @@
     <c:if test="${role == 'preSignedWriter'}">
         <button type="button" class="btn btn-danger" id="delete">삭제</button>
     </c:if>
-    <button id="printButton" class="btn btn-secondary" data-context-path="${pageContext.request.contextPath}">인쇄</button>
+    <button id="printButton" class="btn btn-secondary" data-context-path="${pageContext.request.contextPath}">인쇄
+    </button>
     <script src="${pageContext.request.contextPath}/js/print_doc.js"></script>
     <button type="button" class="btn btn-light" id="back">목록으로</button>
 </div>
 <script>
     $('#back').click(function () {
-        const previousUrl = document.referrer; //이전 페이지 URL
-        if (previousUrl) {
-            window.location.href = previousUrl;
-        } else {
+        const role = '${role}';
+        if (role === 'viewer') {
             history.back();
-            window.location.reload(); //새로고침
+        } else if (role === 'preSignedWriter' || role === 'preSigner' || role === 'postSigner') {
+            window.location.href = '${pageContext.request.contextPath}/doc/waiting';
+        } else if (role === 'postSignedWriter') {
+            window.location.href = '${pageContext.request.contextPath}/doc/in-progress';
         }
     });
 

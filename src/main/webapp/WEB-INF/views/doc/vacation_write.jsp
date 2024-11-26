@@ -10,7 +10,7 @@
     <title>휴가신청서 작성</title>
     <style>
         #rest_vac_count {
-            color: #334466;
+            color: red;
             font-weight: bold;
         }
     </style>

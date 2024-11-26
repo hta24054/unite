@@ -410,6 +410,23 @@ public class EmpDao {
         }
         return map;
     }
+    
+    public HashMap<String, String> getIdToENameUUIDMap() {
+        HashMap<String, String> map = new HashMap<>();
+        String sql = """
+                    SELECT emp_id, img_uuid from EMP
+                """;
+        try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                map.put(rs.getString("emp_id"), rs.getString("img_uuid"));
+            }
+        } catch (SQLException e) {
+            System.out.println("empMap 불러오기 에러");
+            e.printStackTrace();
+        }
+        return map;
+    }
 
     private static Emp makeEmp(ResultSet rs) throws SQLException {
         return new Emp(rs.getString("emp_id"),

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <html>
 <head>
@@ -93,6 +94,7 @@
         .table, .table th, .table td {
             border: 2px solid black;
         }
+
         td, th {
             border: 2px solid black;
             padding: 4px; /* 기존 15px에서 줄임 */
@@ -103,9 +105,11 @@
             width: 14%;
             height: 40px; /* 최소 높이 설정 */
         }
+
         .table, .table th, .table td {
             border: 2px solid black;
         }
+
         .button-container {
             width: 80%; /* 테이블과 동일한 너비로 설정 */
             margin: 10px auto 0; /* 위쪽 간격 추가, 중앙 정렬 */
@@ -161,10 +165,23 @@
                     <th>휴대폰번호</th>
                 </tr>
                 <tr>
+                    ${emp.deptId == dept.deptId ? 'selected' : ''}>${dept.deptName}</option>
                     <td><select name="deptId" data-name="부서" required>
                         <c:forEach var="dept" items="${deptList}">
-                            <option value="${dept.deptId}"
-                                ${emp.deptId == dept.deptId ? 'selected' : ''}>${dept.deptName}</option>
+                            <c:choose>
+                                <c:when test="${fn:endsWith(dept.deptName, '본부')}">
+                                    <option value="${dept.deptId}" ${emp.deptId == dept.deptId ? 'selected' : ''}>
+                                        &nbsp;&nbsp;${dept.deptName}</option>
+                                </c:when>
+                                <c:when test="${fn:endsWith(dept.deptName, '팀')}">
+                                    <option value="${dept.deptId}" ${emp.deptId == dept.deptId ? 'selected' : ''}>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;${dept.deptName}</option>
+                                </c:when>
+                                <c:otherwise>
+                                    <option value="${dept.deptId}" ${emp.deptId == dept.deptId ? 'selected' : ''}>
+                                            ${dept.deptName}</option>
+                                </c:otherwise>
+                            </c:choose>
                         </c:forEach>
                     </select></td>
                     <td><input type="text" name="empId" value="${emp.empId}" placeholder="사번" data-name="사번" readonly>

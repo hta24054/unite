@@ -29,8 +29,7 @@ public class ScheduleListAction implements Action {
         } else {
             response.getWriter().print("[]"); 
         }
-        
-        System.out.println("ScheduleListAction array" + array); 
+
 		return null;
     }
 }

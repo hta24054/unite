@@ -232,7 +232,7 @@ sup {
 				
 			 	<div class="comment-write">
 					<div class="comment-write-area">
-						<b class="comment-write-area-name">${empMap[postDataAndFile[0].postWriter]}</b> 
+						<b class="comment-write-area-name">${empMap[id]}</b> 
 						<span class="comment-write-area-count">0/200</span>
 						<textarea placeholder="댓글을 남겨보세요" rows="1" class="comment-write-area-text" maxlength="200"></textarea>
 							

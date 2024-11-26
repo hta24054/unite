@@ -3,6 +3,7 @@ package com.hta2405.unite.filter;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
 public class LoginCheckFilter implements Filter {
@@ -14,11 +15,12 @@ public class LoginCheckFilter implements Filter {
 
         //로그인, pw찾기 등 /emp 아래 URL은 예외처리함
         if (requestURI.startsWith(req.getContextPath() + "/css/") ||
-            requestURI.startsWith(req.getContextPath() + "/js/") ||
-            requestURI.startsWith(req.getContextPath() + "/image/") ||
-            requestURI.equals(req.getContextPath() + "/emp") ||
-            requestURI.startsWith(req.getContextPath() + "/emp/")
-            ) {
+                requestURI.startsWith(req.getContextPath() + "/js/") ||
+                requestURI.startsWith(req.getContextPath() + "/image/") ||
+                requestURI.equals(req.getContextPath() + "/emp") ||
+                requestURI.startsWith(req.getContextPath() + "/emp/") ||
+                requestURI.startsWith(req.getContextPath() + "/error/")
+        ) {
             chain.doFilter(servletRequest, servletResponse);
             return;
         }

@@ -40,7 +40,7 @@ public class PostDetailAction implements Action {
 		if(list == null) {
 			System.out.println("상세보기 실패");
 			req.setAttribute("message", "데이터를 읽지 못했습니다.");
-			forward.setPath("/WEB-INF/views/error/forbidden.jsp");
+			forward.setPath("/WEB-INF/views/error/errorPage.jsp");
 		}else {
 			System.out.println("상세보기 성공");
 			

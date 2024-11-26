@@ -33,6 +33,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 40px;
 }
 
 .serach-main{
@@ -71,7 +72,9 @@
   outline: none;
 }
 
- 
+ .container{
+ 	max-width : none;
+ }
  body > div > table > thead > tr:nth-child(2) > th:nth-child(1){width:8%}
  body > div > table > thead > tr:nth-child(2) > th:nth-child(2){width:50%}
  body > div > table > thead > tr:nth-child(2) > th:nth-child(3){width:14%}
@@ -85,30 +88,29 @@
 	<div class="container">
 		<%--게시글이 있는 경우 --%>
 		  <c:if test="${listCount > 0}">
-		    <div class="rows">
-		    	<span>줄보기</span>
-		    	<select class="form-control" id="viewCount">
-		    		<option value="1">1</option>
-		    		<option value="3">3</option>
-		    		<option value="5">5</option>
-		    		<option value="7">7</option>
-		    		<option value="10" selected>10</option>
-		    	</select>
-		    </div>
+		    
 		    <table class="table">
 		    	<thead>
 		    		<tr>
-		    			<th colspan="4"></th>
-		    			<th colspan="1">
-		    				<span>글 개수 : ${listCount}</span>
+		    			<th colspan="3" style="border-top: none;"></th>
+		    			<th colspan="1" style="border-top: none;line-height: 2rem;">
+		    				<span>총 ${listCount}건</span>
+		    			</th>
+		    			<th colspan="1" style="border-top: none;">
+		    				<select class="form-control" id="viewCount" style="margin:0">
+					    		<option value="1">1</option>
+					    		<option value="5">5</option>
+					    		<option value="10" selected>10</option>
+					    		<option value="20">20</option>
+					    	</select>
 		    			</th>
 		    		</tr>
 		    		<tr>
-		    			<th><div>번호</div></th>
-		    			<th><div>제목</div></th>
-		    			<th><div>작성자</div></th>
-		    			<th><div>날짜</div></th>
-		    			<th><div>조회수</div></th>
+		    			<th style="width: 100px;"><div>번호</div></th>
+		    			<th ><div>제목</div></th>
+		    			<th style="width: 250px;"><div>작성자</div></th>
+		    			<th style="width: 200px;"><div>날짜</div></th>
+		    			<th style="width: 100px;"><div>조회수</div></th>
 		    		</tr>
 		    	</thead>
 		    	<tbody>

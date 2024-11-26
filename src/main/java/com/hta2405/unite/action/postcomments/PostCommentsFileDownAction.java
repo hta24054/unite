@@ -1,11 +1,10 @@
-package com.hta2405.unite.action.post;
+package com.hta2405.unite.action.postcomments;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
 
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
@@ -19,25 +18,24 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class PostFileDownAction implements Action {
+public class PostCommentsFileDownAction implements Action {
+	private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("vacation.upload.directory");
 	
 	@Override
 	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		BoardDao boardDao = new BoardDao();
 		
-		Long postFileId = Long.parseLong(req.getParameter("commentId"));
-		System.out.println("postFileId = "+postFileId);
+		Long commentId = Long.parseLong(req.getParameter("commentId"));
+		System.out.println("commentId = "+commentId);
 		
-		PostFile postFileData = boardDao.getPostFile(postFileId);
-		
-		String savePath = "boardupload";
+		PostComment postCommentData = boardDao.getPostCommentByCommentId(commentId);
 		
 		//서블릿의 실행 환경 정보를 담고 있는 객체를 리턴합니다.
 		ServletContext context = req.getServletContext();
-		String sDownloadPath = context.getRealPath(savePath);
+		String sDownloadPath = context.getRealPath(UPLOAD_DIRECTORY);
 		
-		String sFilePath = sDownloadPath + File.separator + postFileData.getPostFileUUID() + postFileData.getPostFileType();
+		String sFilePath = sDownloadPath + File.separator + postCommentData.getPostCommentFileUUID() + postCommentData.getPostCommentFileType();
 		System.out.println(sFilePath);
 		
 		byte b[] = new byte[4096];
@@ -53,7 +51,7 @@ public class PostFileDownAction implements Action {
 		resp.setContentType(sMimeType);
 		
 		//이 부분이 한글 파일명이 깨지는 것을 방지해 줍니다.
-		String sEncoding = new String(postFileData.getPostFileOriginal().getBytes("utf-8"), "ISO-8859-1");
+		String sEncoding = new String(postCommentData.getPostCommentFileOriginal().getBytes("utf-8"), "ISO-8859-1");
 		System.out.println(sEncoding);
 		
 		/*
@@ -79,5 +77,4 @@ public class PostFileDownAction implements Action {
 		
 		return null;
 	}
-
 }

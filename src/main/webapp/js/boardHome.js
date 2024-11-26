@@ -110,7 +110,11 @@ $(function() {
 		loadBoardPost(boardName2, postPage);
 	});
     
-    
+    $(document).on('click', '.writeBtn, .boardName2, #boardHome, #registerBtn', function(event){
+		event.preventDefault();  // 기본 동작 방지 (링크 이동 방지)
+		
+		$('.boardContent').css('padding','0');
+	})
  	/* 
     window.addEventListener('popstate', function(event) {
         if (event.state && event.state.page) {

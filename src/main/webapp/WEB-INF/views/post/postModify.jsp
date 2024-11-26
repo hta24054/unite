@@ -188,12 +188,8 @@ function deleteFile(deleteNo, isExisting = false) {
 
 /* 파일 목록이 비어있으면 숨김 처리 */
 function updateFileListVisibility() {
-	console.log('update')
-	console.log('filesArr=',filesArr)
-	console.log('deletedFiles=',deletedFiles)
-	console.log(filesArr.length)
-	
     $('.file-list').toggleClass('hidden', filesArr.length !== 0);
+	updateDividerHeight();
 }
 
 /* 폼 전송 */
@@ -234,7 +230,7 @@ function submitForm() {
 					$(this).parent().parent().prev('a').addClass('menuActive');
 			    }
 			});
-            
+            $('.boardContent').css('padding','0');
 			loadBoardPost(data.boardName2,data.postId);
         },
         error: function (xhr, desc, err) {
@@ -405,7 +401,7 @@ document.addEventListener("drop", function (event) {
 		<textarea class="summernote form-control2" id="board_content" name="board_content" required>${list[0].postContent}</textarea>
 		<div class="form-group-btn">
 	 		<button type="submit" class="btn registerBtn">수정</button>
-	 		<button type="reset" class="btn registerBtn tr-post" data-page="${list[0].postId}" data-name="${boardName2}">돌아가기</button>
+	 		<button type="reset" id="registerBtn" class="btn registerBtn tr-post" data-page="${list[0].postId}" data-name="${boardName2}">돌아가기</button>
  		</div>
  	</form>
  	

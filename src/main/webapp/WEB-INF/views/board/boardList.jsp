@@ -75,6 +75,15 @@
  .container{
  	max-width : none;
  }
+ 
+ .page-link{
+ 	color:#334466;
+ }
+ 
+ .page-item.active .page-link{
+ 	background-color: #334466;
+    border-color: #334466;
+ }
  body > div > table > thead > tr:nth-child(2) > th:nth-child(1){width:8%}
  body > div > table > thead > tr:nth-child(2) > th:nth-child(2){width:50%}
  body > div > table > thead > tr:nth-child(2) > th:nth-child(3){width:14%}

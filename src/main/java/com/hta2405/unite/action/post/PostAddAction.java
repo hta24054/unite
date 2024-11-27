@@ -1,5 +1,18 @@
 package com.hta2405.unite.action.post;
 
+import com.google.gson.JsonObject;
+import com.hta2405.unite.action.Action;
+import com.hta2405.unite.action.ActionForward;
+import com.hta2405.unite.dao.BoardDao;
+import com.hta2405.unite.dto.Post;
+import com.hta2405.unite.dto.PostFile;
+import com.hta2405.unite.util.ConfigUtil;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -8,62 +21,46 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-import com.google.gson.JsonObject;
-import com.hta2405.unite.action.Action;
-import com.hta2405.unite.action.ActionForward;
-import com.hta2405.unite.dao.BoardDao;
-import com.hta2405.unite.dao.PostCommentDao;
-import com.hta2405.unite.dto.Post;
-import com.hta2405.unite.dto.PostFile;
-import com.hta2405.unite.util.ConfigUtil;
-
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.Part;
-
 public class PostAddAction implements Action {
-	private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("post.upload.directory");
-	
-	@Override
-	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		
-		BoardDao boardDao = new BoardDao();
-		
-		Post postData = new Post();
-		List<PostFile> postFiles = new ArrayList<>();
-		
-		HttpSession session = req.getSession();
+    private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("post.upload.directory");
 
-		//boardName2로 boardId 구하기
+    @Override
+    public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        BoardDao boardDao = new BoardDao();
+
+        Post postData = new Post();
+        List<PostFile> postFiles = new ArrayList<>();
+
+        HttpSession session = req.getSession();
+
+        //boardName2로 boardId 구하기
         String boardName2 = req.getParameter("boardName2");
-        
-        if(boardName2 != null) {
-        	Long boardId = (boardDao.getBoardListByName2(boardName2)).getBoardId();
-    		
-    		postData.setBoardId(boardId);
-    		postData.setPostWriter((String) session.getAttribute("id"));
-    		postData.setPostSubject(req.getParameter("board_subject"));
-    		postData.setPostContent(req.getParameter("board_content"));
+
+        if (boardName2 != null) {
+            Long boardId = (boardDao.getBoardListByName2(boardName2)).getBoardId();
+
+            postData.setBoardId(boardId);
+            postData.setPostWriter((String) session.getAttribute("id"));
+            postData.setPostSubject(req.getParameter("board_subject"));
+            postData.setPostContent(req.getParameter("board_content"));
         }
-        
+
         // 모든 파일 파트를 가져옴
         Collection<Part> fileParts = req.getParts();
 
         // 각 파일 처리
         for (Part filePart : fileParts) {
-        	String filePath = null;
+            String filePath = null;
             String fileOriginalName = null;
             String fileUUID = null;
             String fileType = null;
-            
+
             // 파일 파트인지 확인
             if (filePart.getContentType() != null && filePart.getSubmittedFileName().contains(".")) {
-                
-            	// 파일 이름과 타입
+
+                // 파일 이름과 타입
                 fileOriginalName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
                 fileType = filePart.getContentType();
                 System.out.println(fileType);
@@ -84,31 +81,31 @@ public class PostAddAction implements Action {
                 File file = new File(uploadPath, fileName);
                 filePart.write(file.getAbsolutePath());// 웹 경로 설정
                 filePath = UPLOAD_DIRECTORY;
-                
+
                 // 파일 저장 경로 설정
 
-        		PostFile postFileData = new PostFile();
-    			postFileData.setPostFilePath(filePath);
-    			postFileData.setPostFileOriginal(fileOriginalName);
-    			postFileData.setPostFileUUID(fileUUID);
-    			postFileData.setPostFileType(fileType);
-    			
-    			//리스트에 저장
-    			postFiles.add(postFileData);
+                PostFile postFileData = new PostFile();
+                postFileData.setPostFilePath(filePath);
+                postFileData.setPostFileOriginal(fileOriginalName);
+                postFileData.setPostFileUUID(fileUUID);
+                postFileData.setPostFileType(fileType);
+
+                //리스트에 저장
+                postFiles.add(postFileData);
             }
         }
         Boolean postAndFileCheck = boardDao.postAndFileInsert(postData, postFiles);
-		JsonObject jObject = new JsonObject();
-        
-        if(postAndFileCheck) {
-			jObject.addProperty("message", "게시판 등록 완료");
-		}else {
-			jObject.addProperty("message", "게시판 등록 실패");
-		}
+        JsonObject jObject = new JsonObject();
+
+        if (postAndFileCheck) {
+            jObject.addProperty("message", "게시판 등록 완료");
+        } else {
+            jObject.addProperty("message", "게시판 등록 실패");
+        }
         resp.setContentType("application/json;charset=utf-8");
-		resp.getWriter().print(jObject);
+        resp.getWriter().print(jObject);
         return null;
-        
-	}
+
+    }
 
 }

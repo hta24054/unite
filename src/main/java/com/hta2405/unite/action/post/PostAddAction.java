@@ -2,6 +2,7 @@ package com.hta2405.unite.action.post;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -49,41 +50,48 @@ public class PostAddAction implements Action {
     		postData.setPostContent(req.getParameter("board_content"));
         }
         
-        // 저장 경로 설정 및 파일 저장
-        String uploadPath = UPLOAD_DIRECTORY;
-        File uploadDir = new File(uploadPath);
-        if (!uploadDir.exists() && !uploadDir.mkdirs()) {
-            throw new IOException("업로드 폴더를 생성할 수 없습니다: " + uploadPath);
-        }
-        
         // 모든 파일 파트를 가져옴
         Collection<Part> fileParts = req.getParts();
 
         // 각 파일 처리
         for (Part filePart : fileParts) {
-        	
+        	String filePath = null;
+            String fileOriginalName = null;
+            String fileUUID = null;
+            String fileType = null;
+            
             // 파일 파트인지 확인
             if (filePart.getContentType() != null && filePart.getSubmittedFileName().contains(".")) {
-                // UUID로 고유한 파일명 생성
-                String fileName = UUID.randomUUID().toString();
                 
-                // 원래 파일의 확장자 가져오기
-                String originalFileName = filePart.getSubmittedFileName();
-                
-                String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-                
+            	// 파일 이름과 타입
+                fileOriginalName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+                fileType = filePart.getContentType();
+                System.out.println(fileType);
+
+                // UUID 생성하여 파일명에 적용
+                fileUUID = UUID.randomUUID().toString();
+                String fileName = fileUUID + "_" + fileOriginalName;
+
+                // 저장 경로 설정 및 파일 저장
+                String uploadPath = UPLOAD_DIRECTORY;
+                System.out.println(uploadPath);
+                File uploadDir = new File(uploadPath);
+                if (!uploadDir.exists() && !uploadDir.mkdirs()) {
+                    throw new IOException("업로드 폴더를 생성할 수 없습니다: " + uploadPath);
+                }
+
                 // 파일 저장
                 File file = new File(uploadPath, fileName);
-                filePart.write(file.getAbsolutePath()); // 파일을 디스크에 저장
-                String filePath = UPLOAD_DIRECTORY + "/" + fileName;
+                filePart.write(file.getAbsolutePath());// 웹 경로 설정
+                filePath = UPLOAD_DIRECTORY;
                 
                 // 파일 저장 경로 설정
 
         		PostFile postFileData = new PostFile();
     			postFileData.setPostFilePath(filePath);
-    			postFileData.setPostFileOriginal(originalFileName);
-    			postFileData.setPostFileUUID(fileName);
-    			postFileData.setPostFileType(fileExtension);
+    			postFileData.setPostFileOriginal(fileOriginalName);
+    			postFileData.setPostFileUUID(fileUUID);
+    			postFileData.setPostFileType(fileType);
     			
     			//리스트에 저장
     			postFiles.add(postFileData);

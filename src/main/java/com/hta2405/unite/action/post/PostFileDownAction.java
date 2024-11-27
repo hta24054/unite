@@ -10,6 +10,8 @@ import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.BoardDao;
 import com.hta2405.unite.dto.PostFile;
+import com.hta2405.unite.util.CommonUtil;
+import com.hta2405.unite.util.ConfigUtil;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -17,7 +19,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class PostFileDownAction implements Action {
-	
+	private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("post.upload.directory");
+	 
 	@Override
 	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -27,14 +30,15 @@ public class PostFileDownAction implements Action {
 		
 		PostFile postFileData = boardDao.getPostFile(postFileId);
 		
-		String savePath = "boardupload";
-		
-		//서블릿의 실행 환경 정보를 담고 있는 객체를 리턴합니다.
-		ServletContext context = req.getServletContext();
-		String sDownloadPath = context.getRealPath(savePath);
-		
-		String sFilePath = sDownloadPath + File.separator + postFileData.getPostFileUUID() + postFileData.getPostFileType();
-		
+		// 실제 파일 경로
+        String sFilePath = UPLOAD_DIRECTORY + File.separator + postFileData.getPostFileUUID() + "_" + postFileData.getPostFileOriginal();
+        ServletContext context = req.getServletContext();
+        
+        File downloadFile = new File(sFilePath);
+        if (!downloadFile.exists()) {
+            return CommonUtil.alertAndGoBack(resp, "파일을 찾을 수 없습니다.");
+        }
+        
 		byte b[] = new byte[4096];
 		
 		// sFilePath에 있는 파일의 MimeType을 구해옵니다.
@@ -52,7 +56,7 @@ public class PostFileDownAction implements Action {
 		/*
 		 * Content-Disposition: attachment: 브라우저에서 다운로드하기 위해 사용됩니다.
 		 */
-		resp.setHeader("Content-Disposition", "attachment; filename="+sEncoding);
+		resp.setHeader("Content-Disposition", "attachment; filename=\"" + sEncoding + "\"");
 		
 		try(	//웹 브라우저로서의 출력 스트림 생성합니다.
 				BufferedOutputStream out2 = new BufferedOutputStream(resp.getOutputStream());

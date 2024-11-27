@@ -18,13 +18,14 @@ import com.hta2405.unite.dto.ProjectTask;
 import com.hta2405.unite.util.ConfigUtil;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 
 //프로젝트 상세. main에서 누르고 들어오는 첫 창
 public class ProjectModifyProcessAction implements Action {
-	private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("projecttask.upload.directory");
+	private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("project.upload.directory");
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String userid = req.getParameter("userid");

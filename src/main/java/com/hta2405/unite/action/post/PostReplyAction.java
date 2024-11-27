@@ -28,12 +28,9 @@ public class PostReplyAction implements Action {
 		
 		//글 내용이 없는 경우
 		if(list == null) {
-			System.out.println("원본글이 존재하지 않습니다.");
 			req.setAttribute("message", "원본글이 존재하지 않습니다.");
 			forward.setPath("/WEB-INF/views/board/boardHome.jsp");
 		}else {
-			System.out.println("답변 페이지 이동 완료");
-			
 			//board의 boardName2를 가져오기 위함
 			req.setAttribute("boardMap", boardDao.getIdToboardName2Map());
 			

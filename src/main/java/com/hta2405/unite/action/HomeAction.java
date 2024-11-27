@@ -25,9 +25,9 @@ public class HomeAction implements Action {
 
     @Override
     public ActionForward execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    	
     	String userid = (String) req.getSession().getAttribute("id");
-
+    	Long deptId = new EmpDao().getEmpById((String) req.getSession().getAttribute("id")).getDeptId();
+    	
 		req.setAttribute("noticeList", noticeDao.getAliveNotice());
 		//유저 왼쪽 테이블
     	EmpDao empDao = new EmpDao();
@@ -39,12 +39,12 @@ public class HomeAction implements Action {
 		req.setAttribute("profile", userinfo);
 		req.setAttribute("job", job.getJobName());
 
-
+		
 		// 게시판 가운데 테이블 데이터 생성
 		if ("XMLHttpRequest".equals(req.getHeader("X-Requested-With"))) {
 	        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter()).create();
 	        BoardDao board = new BoardDao();
-	        ArrayList<Object> list = board.getBoardListAll();
+	        ArrayList<Object> list = board.getBoardListAll(deptId);
 	        
 	        
 	        JsonObject object = new JsonObject();

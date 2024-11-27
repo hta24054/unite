@@ -142,7 +142,7 @@
       border-bottom: 1px solid #ccc;
       padding: 15px 25px;
       width: 100%;
-      height: 200px;
+      min-height: 200px;
 	  display: flex;
 	  flex-direction: column;
 	  justify-content: space-between;
@@ -223,6 +223,7 @@
   .side-box-shadow-option2{
     box-shadow: inset 5px 0px 15px 0 rgba(0, 0, 0, 0.2);
   }
+  
 </style>
 <script src="${pageContext.request.contextPath}/js/jquery-3.7.1.js"></script>
 <script src="${pageContext.request.contextPath}/js/boardHome.js"></script>

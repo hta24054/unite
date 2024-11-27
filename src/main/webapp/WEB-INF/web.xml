@@ -27,5 +27,9 @@
         <filter-name>AdminFilter</filter-name>
         <url-pattern>/admin/*</url-pattern> <!-- 관리자 경로에만 관리자 확인 필터 적용 -->
     </filter-mapping>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/WEB-INF/views/error/errorPage.jsp</location>
+    </error-page>
 </web-app>
 

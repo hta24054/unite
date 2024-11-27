@@ -100,7 +100,6 @@ var deletedFiles = [];
 var maxFileCnt = 5;   // 첨부파일 최대 개수
 
 var companyBulletinBoards = ['공지사항', '주간식단표', 'FAQ'];
-var DepartmentBoards = ['솔루션영업팀'];
 
 /* 첨부파일 추가 */
 function addFiles(files) {
@@ -189,12 +188,8 @@ function deleteFile(deleteNo, isExisting = false) {
 
 /* 파일 목록이 비어있으면 숨김 처리 */
 function updateFileListVisibility() {
-	console.log('update')
-	console.log('filesArr=',filesArr)
-	console.log('deletedFiles=',deletedFiles)
-	console.log(filesArr.length)
-	
     $('.file-list').toggleClass('hidden', filesArr.length !== 0);
+	updateDividerHeight();
 }
 
 /* 폼 전송 */
@@ -235,7 +230,7 @@ function submitForm() {
 					$(this).parent().parent().prev('a').addClass('menuActive');
 			    }
 			});
-            
+            $('.boardContent').css('padding','0');
 			loadBoardPost(data.boardName2,data.postId);
         },
         error: function (xhr, desc, err) {
@@ -246,7 +241,7 @@ function submitForm() {
 }
 
 //boardName2를 boardName1에 맞게 바꿈
-function changeBoardName2(boardName1Value){
+function changeBoardName2(boardName1Value, departmentBoards){
 	let $boardName2 = $('#boardName2'); // 두 번째 select 초기화
     $boardName2.empty();
 
@@ -257,26 +252,47 @@ function changeBoardName2(boardName1Value){
 	}else if (boardName1Value === '일반게시판') {
 		$boardName2.append('<option value="' + '일반게시판' + '">' + '일반게시판' + '</option>');
 	}else if (boardName1Value === '부서게시판') {
-		$.each(DepartmentBoards, function(index, DepartmentBoard) {
-			$boardName2.append('<option value="' + DepartmentBoard + '">' + DepartmentBoard + '</option>');
+		$.each(departmentBoards, function(index, departmentBoard) {
+			$boardName2.append('<option value="' + departmentBoard + '">' + departmentBoard + '</option>');
 		});
 	}
 	
 }
 
+function filterBoardName2() {
+    const excludedValues = ['공지사항', '주간식단표', 'FAQ', '일반게시판']; // 제외할 값들
+    let filteredArray = []; // 결과를 담을 배열
+
+    $('.boardName2').each(function() {
+        const value = $(this).text(); // .boardName2 요소의 값 가져오기
+        if (!excludedValues.includes(value)) { // 제외할 값에 포함되지 않으면 추가
+            filteredArray.push(value);
+        }
+    });
+
+    return filteredArray; // 필터링된 배열 반환
+}
+
 $(function(){
-	var BoardName2Value = $('#boardName2Hidden').val();
+	var departmentBoards = filterBoardName2();
+	console.log(departmentBoards);
+	
+	var BoardName2Value = $('.boardName2').filter(function() {
+	    return $(this).css('font-weight') === 'bold' || $(this).css('font-weight') === '700';
+	}).text();
+	
+	let boardName1Value;
 	
 	// BoardName2Text의 따라 BoardName1 구하기
 	if (companyBulletinBoards.includes(BoardName2Value)) {
 		boardName1Value='전사게시판';
-	} else if(DepartmentBoards.includes(BoardName2Value)){
+	} else if(departmentBoards.includes(BoardName2Value)){
 		boardName1Value='부서게시판';
 	} else{
 		boardName1Value='일반게시판';
 	}
 	
-	changeBoardName2(boardName1Value);//boardName2를 boardName1에 맞게 바꿈
+	changeBoardName2(boardName1Value, departmentBoards);//boardName2를 boardName1에 맞게 바꿈
 	$('#boardName1').val(boardName1Value);
 	$('#boardName2').val(BoardName2Value);
 	
@@ -385,7 +401,7 @@ document.addEventListener("drop", function (event) {
 		<textarea class="summernote form-control2" id="board_content" name="board_content" required>${list[0].postContent}</textarea>
 		<div class="form-group-btn">
 	 		<button type="submit" class="btn registerBtn">수정</button>
-	 		<button type="reset" class="btn registerBtn tr-post" data-page="${list[0].postId}" data-name="${boardName2}">돌아가기</button>
+	 		<button type="reset" id="registerBtn" class="btn registerBtn tr-post" data-page="${list[0].postId}" data-name="${boardName2}">돌아가기</button>
  		</div>
  	</form>
  	

@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
+import com.hta2405.unite.util.ConfigUtil;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -18,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 //필터를 사용하면 막을 수 있다
 //필터가 없다면 그냥 접속 가능하기에 그렇게 하면 안된다
 public class ProjectDownAction implements Action {
-
+	private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("project.upload.directory");
 	@Override
 	public ActionForward execute(HttpServletRequest request, HttpServletResponse response)
 	        throws ServletException, IOException {
@@ -34,7 +35,7 @@ public class ProjectDownAction implements Action {
 	    ServletContext context = request.getServletContext();
 	    String sDownloadPath = context.getRealPath(savePath);
 
-	    String sFilePath = sDownloadPath + File.separator + fileName;
+	    String sFilePath = UPLOAD_DIRECTORY + File.separator + fileName;
 	    System.out.println("File path: " + sFilePath);
 
 	    byte[] b = new byte[4096];

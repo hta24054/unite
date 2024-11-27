@@ -61,9 +61,9 @@
       </div>
       <form action='${pageContext.request.contextPath}/emp/loginProcess' method='post' 
 			name="loginProcess">
-        <input type="text" placeholder="아이디를 입력해주세요" name='id' id="id" required>
+        <input type="text" placeholder="아이디를 입력해주세요" name='id' id="id" required autocomplete="username">
         <span class="idText"></span>
-        <input type="password" placeholder="비밀번호를 입력해주세요" name='pass' id="pass" required>
+        <input type="password" placeholder="비밀번호를 입력해주세요" name='pass' id="pass" required autocomplete="current-password">
         <span class="pwText"></span>
         <div class="options">
           <label class="checkbox-label">

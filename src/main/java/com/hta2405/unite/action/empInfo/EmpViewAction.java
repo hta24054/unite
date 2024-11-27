@@ -1,5 +1,8 @@
 package com.hta2405.unite.action.empInfo;
 
+import static com.hta2405.unite.util.AttendUtil.checkAttendRole;
+import static com.hta2405.unite.util.EmpUtil.isHrDept;
+
 import java.io.IOException;
 import java.util.List;
 import jakarta.servlet.ServletException;
@@ -25,8 +28,8 @@ public class EmpViewAction implements Action {
 		// 세션에서 empId와 deptId를 가져옵니다.
 		String empId = (String) session.getAttribute("id");
 		String deptId = (String) session.getAttribute("deptId");
-		
-
+		System.out.println("deptId" + deptId);
+		System.out.println("empId" + empId);
 		// 요청 파라미터에 id가 있으면 해당 값을 사용합니다.
 		if (req.getParameter("id") != null) {
 			empId = req.getParameter("id");
@@ -81,6 +84,16 @@ public class EmpViewAction implements Action {
 		forward.setRedirect(false);
 		forward.setPath("/WEB-INF/views/empInfo/empInfo.jsp");
 
+		checkAttendRole(emp, req);
+		long jobRank = jobDao.getJobRankByEmpId(empId);
+		boolean is = isHrDept(deptId); //참 이면 부서인사정보 메뉴 보이게
+									//부서인사정보는 인사관리팀 이거나 jobRank<=3
+									//타 부서 인사정보는 인사관리팀만 보여야 됨
+		System.out.println("is" + is);
+		System.out.println("jobRank" + jobRank);
+		session.setAttribute("deptShow",is || jobRank<=4);
+		session.setAttribute("otherDeptShow",is);
+		
 		return forward;
 	}
 }

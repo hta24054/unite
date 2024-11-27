@@ -399,6 +399,10 @@ public class ProjectbDao {
 	                task.setProjectContent(rs.getString("task_content"));
 	                task.setMemberId(rs.getString("emp_id"));
 	                task.setTaskNum(rs.getInt("task_id"));
+	                task.setTask_file_path(rs.getString("task_file_path"));
+	                task.setTask_file_original(rs.getString("task_file_original"));
+	                task.setTask_file_uuid(rs.getString("task_file_uuid"));
+	                task.setTask_file_type(rs.getString("task_file_type"));
 	                
 	                taskList.add(task);
 	            }
@@ -410,23 +414,51 @@ public class ProjectbDao {
 	}
 
 	public boolean modify(ProjectTask modify) {
-		String update_sql = "update task set task_subject = ?, task_content = ?, task_update_date = sysdate where task_id = ? and project_id = ?";
-		try(Connection con = ds.getConnection();
-				PreparedStatement pstmt = con.prepareStatement(update_sql);){
-			pstmt.setString(1, modify.getProjectTitle());
-			pstmt.setString(2, modify.getProjectContent());
-			pstmt.setInt(3, modify.getTaskNum());
-			pstmt.setInt(4, modify.getProjectId());
-			int result = pstmt.executeUpdate();
-			if(result == 1) {
-				System.out.println("성공 업데이트");
-				return true;
-			}
-		}catch(Exception ex) {
-			System.out.println("boardModify() 에러 : " + ex);
-		}
-		return false;
+	    String update_sql = "UPDATE task "
+	                      + "SET task_subject = ?, "
+	                      + "    task_content = ?, "
+	                      + "    task_update_date = SYSDATE, "
+	                      + "    task_file_original = ?, "
+	                      + "    task_file_uuid = ? "
+	                      + "WHERE task_id = ? AND project_id = ?";
+	    try (Connection con = ds.getConnection();
+	         PreparedStatement pstmt = con.prepareStatement(update_sql)) {
+	        pstmt.setString(1, modify.getProjectTitle());
+	        pstmt.setString(2, modify.getProjectContent());
+	        pstmt.setString(3, modify.getTask_file_original());
+	        pstmt.setString(4, modify.getTask_file_uuid());
+	        pstmt.setInt(5, modify.getTaskNum());
+	        pstmt.setInt(6, modify.getProjectId());
+
+	        int result = pstmt.executeUpdate();
+	        if (result == 1) {
+	            System.out.println("게시판 수정 성공");
+	            return true;
+	        }
+	    } catch (Exception ex) {
+	        System.out.println("modify() 에러 : " + ex);
+	    }
+	    return false;
 	}
+
+	// 기존 파일 경로 가져오기 메서드
+	public String getExistingFilePath(int taskNum, int projectId) {
+	    String query = "SELECT task_file_path FROM task WHERE task_id = ? AND project_id = ?";
+	    try (Connection con = ds.getConnection();
+	         PreparedStatement pstmt = con.prepareStatement(query)) {
+	        pstmt.setInt(1, taskNum);
+	        pstmt.setInt(2, projectId);
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            if (rs.next()) {
+	                return rs.getString("task_file_path");
+	            }
+	        }
+	    } catch (Exception ex) {
+	        System.out.println("getExistingFilePath() 에러 : " + ex);
+	    }
+	    return null;
+	}
+
 
 	public boolean boardDelete(int task_num) {
 	    String delete_sql = "DELETE FROM task WHERE task_id = ?";

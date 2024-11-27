@@ -33,6 +33,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 40px;
 }
 
 .serach-main{
@@ -41,17 +42,17 @@
 }
 
 .search-category {
-  padding: 5px;
-  margin-right: 10px;
+  padding: 5px 0px 5px 10px;
+  margin-right: 5px;
   border: none;
   border-radius: 3px;
 }
 
 .search-input {
-  padding: 5px;
+  padding: 5px 10px 5px;
   flex: 1;
   border: none;
-  border-radius: 3px;
+  border-left: 1px solid #ccc;
 }
 
 .search-button {
@@ -71,7 +72,18 @@
   outline: none;
 }
 
+ .container{
+ 	max-width : none;
+ }
  
+ .page-link{
+ 	color:#334466;
+ }
+ 
+ .page-item.active .page-link{
+ 	background-color: #334466;
+    border-color: #334466;
+ }
  body > div > table > thead > tr:nth-child(2) > th:nth-child(1){width:8%}
  body > div > table > thead > tr:nth-child(2) > th:nth-child(2){width:50%}
  body > div > table > thead > tr:nth-child(2) > th:nth-child(3){width:14%}
@@ -85,30 +97,29 @@
 	<div class="container">
 		<%--게시글이 있는 경우 --%>
 		  <c:if test="${listCount > 0}">
-		    <div class="rows">
-		    	<span>줄보기</span>
-		    	<select class="form-control" id="viewCount">
-		    		<option value="1">1</option>
-		    		<option value="3">3</option>
-		    		<option value="5">5</option>
-		    		<option value="7">7</option>
-		    		<option value="10" selected>10</option>
-		    	</select>
-		    </div>
+		    
 		    <table class="table">
 		    	<thead>
 		    		<tr>
-		    			<th colspan="4"></th>
-		    			<th colspan="1">
-		    				<span>글 개수 : ${listCount}</span>
+		    			<th colspan="3" style="border-top: none;"></th>
+		    			<th colspan="1" style="border-top: none;line-height: 2rem;">
+		    				<span>총 ${listCount}건</span>
+		    			</th>
+		    			<th colspan="1" style="border-top: none;">
+		    				<select class="form-control" id="viewCount" style="margin:0">
+					    		<option value="1">1</option>
+					    		<option value="5">5</option>
+					    		<option value="10" selected>10</option>
+					    		<option value="20">20</option>
+					    	</select>
 		    			</th>
 		    		</tr>
 		    		<tr>
-		    			<th><div>번호</div></th>
-		    			<th><div>제목</div></th>
-		    			<th><div>작성자</div></th>
-		    			<th><div>날짜</div></th>
-		    			<th><div>조회수</div></th>
+		    			<th style="width: 100px;"><div>번호</div></th>
+		    			<th ><div>제목</div></th>
+		    			<th style="width: 250px;"><div>작성자</div></th>
+		    			<th style="width: 200px;"><div>날짜</div></th>
+		    			<th style="width: 100px;"><div>조회수</div></th>
 		    		</tr>
 		    	</thead>
 		    	<tbody>
@@ -186,12 +197,12 @@
 		    
 		    <div class="search-container">
 				<div class="serach-main">
-					<select id="search-category" class="search-category">
-						<option value="title">제목</option>
-							<option value="content">내용</option>
-							<option value="author">작성자</option>
+					<select id="search-category" name="category" class="search-category">
+						<option value="제목">제목</option>
+							<option value="내용">내용</option>
+							<option value="작성자">작성자</option>
 					</select>
-					<input type="text" id="search-input" class="search-input" placeholder="검색">
+					<input type="text" id="search-input" name="query" class="search-input" placeholder="검색">
 					<button id="search-button" class="search-button">
 							<i class="fa fa-search"></i> 검색
 					</button>

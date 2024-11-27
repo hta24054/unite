@@ -177,8 +177,8 @@ function deleteFile(deleteNo) {
 function updateFileListVisibility() {
 	console.log(filesArr.length)
     $('.file-list').toggleClass('hidden', filesArr.length !== 0);
+	updateDividerHeight();
 }
-
 
 /* 폼 전송 */
 function submitForm() {
@@ -331,7 +331,7 @@ document.addEventListener("drop", function (event) {
  		<div class="form-group2">
  			<label for="board_subject" class="labelName">제목</label>
  			<input name="board_subject" id="board_subject" type="text" maxlength="100"
- 					class="form-control2" placeholder="Enter board_subject" required>
+ 					class="form-control2" placeholder="제목을 입력하세요" style="padding-left: 10px;" required>
  		</div>
  		<div class="form-group2-file">
  			<label for="board_attachFile" class="labelName">파일첨부</label>

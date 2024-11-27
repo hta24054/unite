@@ -103,8 +103,11 @@
 					            </div>
 					        </div>
 					        <div class="form-group">
-					            <label for="reservationInfo">사용용도</label>
-					            <input type="text" name="reservationInfo" id="reservationInfo" class="form-control">
+					            <label for="reservationInfo">
+					            	사용용도 <sub id="charCount">0/100</sub>
+					            </label>
+					            <input type="text" name="reservationInfo" id="reservationInfo" class="form-control" maxlength="100">
+					            
 					        </div>
 				        </div>
 				        

@@ -17,7 +17,7 @@ public class AdminFilter implements Filter {
 
         // 역할이 "admin"이 아닌 경우 접근 차단
         if (!id.trim().equals("admin")) {
-            resp.sendRedirect(req.getContextPath() + "/error/forbidden");
+            resp.sendRedirect(req.getContextPath()+"/home/error");
             return;
         }
 

@@ -165,7 +165,6 @@
                     <th>휴대폰번호</th>
                 </tr>
                 <tr>
-                    ${emp.deptId == dept.deptId ? 'selected' : ''}>${dept.deptName}</option>
                     <td><select name="deptId" data-name="부서" required>
                         <c:forEach var="dept" items="${deptList}">
                             <c:choose>

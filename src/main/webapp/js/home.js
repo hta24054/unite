@@ -115,4 +115,56 @@ $(document).ready(function () {
 	
 	loadBoardData();  // 페이지 로드 시 데이터 로드
     //setInterval(loadBoardData, 3000);  // 3초마다 데이터 갱신
+    
+    const targetElement2 = document.querySelector("body > div.container > div.col-md-4.notification");
+    targetElement2.classList.remove("col-md-4");
+    targetElement2.classList.remove("notification");
+    notice();
+	function notice() {
+	    $.ajax({
+	        url: contextPath + "/project/notice",
+	        method: 'GET',
+	        success: function (notifications) {
+	            console.log("응답 데이터:", notifications);
+	            
+	            // 알림 데이터를 담을 컨테이너 요소
+	            const postListContainer = $(".notification-content tbody");
+	            
+	            // 기존 내용을 지우고 새로운 알림을 추가
+	            postListContainer.empty();
+	
+	            if (notifications && notifications.length > 0) {
+	                const topNotifications = notifications.slice(0, 4);
+	
+	                topNotifications.forEach(notice => {
+	                    const action = notice.taskUpdateDate 
+	                        ? "수정(변경)하였습니다" 
+	                        : "등록하였습니다";
+	                    
+	                    const actionDate = notice.taskUpdateDate 
+	                        ? notice.taskUpdateDate 
+	                        : notice.taskDate;
+	
+	                    const postRow = `
+	                        <tr>
+	                        	<td><img src="${contextPath}/emp/profile-image?UUID=${notice.task_file_uuid}"style="width:36px; height: 36px; border-radius:50%; border: 1px solid gray;"></td>
+	                            <td>${notice.taskWriter} ${notice.Jobname}님이<br>${notice.ProjectName} - ${notice.taskTitle}을(를)<br>${action}<br><br><small>${actionDate}</small></td>
+	                        </tr>
+	                    `;
+	                    postListContainer.append(postRow);
+	                });
+	            } else {
+	                // 알림이 없는 경우
+	                postListContainer.append(`
+	                    <tr>
+	                        <td colspan="2">게시글이 없습니다</td>
+	                    </tr>
+	                `);
+	            }
+	        },
+	        error: function (error) {
+	            console.error("알림 데이터를 가져오는 데 실패했습니다:", error);
+	        }
+	    });
+	}
 });

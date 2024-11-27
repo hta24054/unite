@@ -817,6 +817,43 @@ public class ProjectDAO {
 	    return false;
 	}
 
+	public List<ProjectDetail> getNotice(String userid) {
+		List<ProjectDetail> project = new ArrayList<>(); 
+	    String sql = "SELECT p.project_name, t.task_date, t.task_subject, t.task_update_date, e1.ename AS task_emp_name, e1.img_uuid AS pm_img_uuid, j.job_name "
+	    		+ "FROM task t "
+	    		+ "JOIN project p ON t.project_id = p.project_id "
+	    		+ "JOIN project_member pm ON p.project_id = pm.project_id "
+	    		+ "JOIN emp e1 ON t.emp_id = e1.emp_id "
+	    		+ "JOIN emp e2 ON pm.member_id = e2.emp_id "
+	    		+ "JOIN job j ON e2.job_id = j.job_id "
+	    		+ "WHERE p.project_finished = 0 "
+	    		+ "  AND p.project_canceled = 0 "
+	    		+ "  AND pm.member_id = ? "
+	    		+ "  AND t.emp_id != pm.member_id "
+	    		+ "  AND e2.emp_id != t.emp_id "
+	    		+ "ORDER BY NVL(t.task_update_date, t.task_date) DESC NULLS LAST";
+
+	    try (Connection conn = ds.getConnection();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	    	pstmt.setString(1, userid);
+	    	ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) { 
+                ProjectDetail projectDetail = new ProjectDetail();
+                projectDetail.setProjectName(rs.getString(1));
+                projectDetail.setTaskDate(rs.getString(2));
+                projectDetail.setTaskTitle(rs.getString(3));
+                projectDetail.setTaskUpdateDate(rs.getString(4));
+                projectDetail.setTaskWriter(rs.getString(5));
+                projectDetail.setTask_file_uuid(rs.getString(6));
+                projectDetail.setJobname(rs.getString(7));
+                project.add(projectDetail);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return project; // 프로젝트 정보 반환
+	}
+
 
 
     

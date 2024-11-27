@@ -156,17 +156,10 @@ button#saveButton:disabled:hover {
 
 					let isValid = true;
 
-					if ($email.val().trim() == "") {
-						alert("이메일을 입력하세요");
+					if(!validateEmail($email.val())) {
+						alert("유효한 이메일을 입력하세요.");
 						$email.focus();
-						return false;
-					} else {
-						const pattern = /^\w+@\w+[.]\w{2,}$/;
-						if (!pattern.test($email.val())) {
-							alert("이메일 형식이 맞지 않습니다.");
-							$email.focus();
-							return false;
-						}
+						isValid = false;
 					}
 
 					if (!validatePhoneNumber($phoneNumber.val())) {

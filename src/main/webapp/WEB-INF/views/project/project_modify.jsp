@@ -6,7 +6,7 @@
 	<jsp:include page="../common/header.jsp"/>
 	<jsp:include page="project_leftbar.jsp"/>
 	<link rel="stylesheet" href="${pageContext.request.contextPath }/css/view.css" type="text/css">
-	<script src="${pageContext.request.contextPath }/js/modifyform.js"></script>
+	<script src="${pageContext.request.contextPath }/js/project_modify.js"></script>
 </head>
 <body>
 	<div class="container">
@@ -26,16 +26,14 @@
 				<label for="board_name">내용</label>
 				<textarea name="board_content" id="board_content" class="form-control" rows="10"  >${task.projectContent}</textarea>
 			</div>
-			
 				<div class="form-group">
 					<label>파일 첨부
 						<img src="${pageContext.request.contextPath }/image/attach.png" alt="파일첨부" width="10px">
 						<input type="file" id="upfile" name="board_file">
 					</label>
 					<span id="filevalue">${task.task_file_original}</span>
-					<img src="${pageContext.request.contextPath }/image/remove.png" alt="파일삭제" width="10px" class="remove">
+					<img src="${pageContext.request.contextPath }/image/delete.png" alt="파일삭제" width="10px" class="remove">
 				</div>
-			
 			<div class="form-group">
 				<button type=submit class="btn btn-primary">수정</button>
 				<button type=reset class="btn btn-danger" onClick="history.go(-1)">취소</button>

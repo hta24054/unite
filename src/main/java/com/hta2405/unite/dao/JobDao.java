@@ -26,20 +26,18 @@ public class JobDao {
 		}
 	}
 
-
 	public List<Job> getAllJob() {
 		String sql = """
-                    SELECT * FROM JOB
-                    WHERE JOB_NAME!='관리자' OR JOB_RANK!=99
-                    ORDER BY JOB_RANK
-                """;
+				    SELECT * FROM JOB
+				    WHERE JOB_NAME!='관리자' OR JOB_RANK!=99
+				    ORDER BY JOB_RANK
+				""";
 		List<Job> list = new ArrayList<>();
 		try (Connection conn = ds.getConnection();
-			 PreparedStatement ps = conn.prepareStatement(sql)) {
+				PreparedStatement ps = conn.prepareStatement(sql)) {
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
-				list.add(new Job(rs.getInt("job_id"),
-						rs.getString("job_name"),
+				list.add(new Job(rs.getInt("job_id"), rs.getString("job_name"),
 						rs.getInt("job_rank")));
 			}
 		} catch (SQLException e) {
@@ -54,7 +52,8 @@ public class JobDao {
 				    SELECT job_id, job_name from job
 				    order by JOB_ID
 				""";
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+		try (Connection conn = ds.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql)) {
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 				map.put(rs.getLong("job_id"), rs.getString("job_name"));
@@ -69,7 +68,8 @@ public class JobDao {
 	public Job getJobByEmpId(String empId) {
 		Job job = null;
 		String sql = "SELECT * FROM job WHERE job_id = (SELECT job_id FROM emp WHERE emp_id = ?)";
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+		try (Connection conn = ds.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, empId);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
@@ -84,4 +84,21 @@ public class JobDao {
 		return job;
 	}
 
+	public long getJobRankByEmpId(String empId) {
+		long jobRank = 0;
+		String sql = "SELECT j.job_rank FROM emp e JOIN job j ON e.job_id = j.job_id WHERE e.emp_id = ?";
+
+		try (Connection conn = ds.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql)) {
+			ps.setString(1, empId);
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					jobRank = rs.getLong("job_rank");
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return jobRank;
+	}
 }

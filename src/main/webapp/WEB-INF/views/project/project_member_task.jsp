@@ -6,34 +6,16 @@
 <head>
     <meta charset="UTF-8">
     <title>진행과정</title>
+    <jsp:include page="../common/header.jsp"/>
+	<jsp:include page="project_leftbar.jsp"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath }/css/project.css" type="text/css">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="${pageContext.request.contextPath }/js/project_task_list.js"></script> 
     <script>
     	const contextPath = "${pageContext.request.contextPath}";
     </script>
-    <jsp:include page="../common/header.jsp"/>
-	<jsp:include page="project_leftbar.jsp"/>
-    <style>
-        .table { width: 70%; margin: auto; }
-        table, td, th { border-collapse: collapse; text-align: center;}
-        h2 { text-align: left; color: black; margin: 0; }
-        caption { caption-side: top; margin-bottom: 30px; }
-        select.form-control{
-			width: auto;
-			margin-bottom: 2em;
-			display: inline-block;
-		}
-		.rows{text-align: right; margin-right: 130px;}
-		.gray{color: gray;}
-		th:nth-child(1), td:nth-child(1) {width: 60px;}
-		th:nth-child(2), td:nth-child(2) {width: 160px;}
-		<%--th:nth-child(3), td:nth-child(3) {width: 360px;}--%>
-		th:nth-child(4), td:nth-child(4) {width: 175px;}
-		th:nth-child(5), td:nth-child(5) {width: 175px;}
-		th:nth-child(6), td:nth-child(6) {width: 100px;}
-    </style>
     
 </head>
 <body>
@@ -41,7 +23,7 @@
    <c:if test="${listcount > 0}">  
 		<jsp:include page="limit.jsp"/>
 	    <input type="hidden" class="memberId" value="${memberId}">
-	    <table class="table">
+	    <table class="table member">
 	        <caption><h2><c:out value="${left}"/> - <c:out value="${user}"/></h2></caption>
 		    <thead>
 		        <tr>

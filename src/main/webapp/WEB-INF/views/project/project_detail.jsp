@@ -1,15 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
-
 <html>
 <head>
 	<meta charset="UTF-8">
 	<title>Insert title here</title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+	
 	<script>
 	    var contextPath = "${pageContext.request.contextPath}";
 	    var projectName = "${left}";
@@ -22,12 +22,13 @@
 	        // 폼을 제출
 	        document.getElementById('postForm').submit();
 	    }
-	 
-
 	</script>
 	<jsp:include page="../common/header.jsp"/>
 	<jsp:include page="project_leftbar.jsp"/>
 	<style>
+	html, body{
+	 overflow: hidden;  
+}
 		.notification { height: 100%; }
 		caption { caption-side: top; }
 		.notification-content { border: 1px solid #ccc; border-radius: 8px; padding: 10px; height: 480px;}
@@ -43,6 +44,7 @@
 	    th:nth-child(1), td:nth-child(1) {width: 20%; }
 	    th:nth-child(2), td:nth-child(2) {width: 60%; }
 	    th:nth-child(3), td:nth-child(3) {width: 20%; }
+	    
 	    /* tr 요소 클릭 가능 스타일 추가 */
 .clickable-row {
     cursor: pointer; /* 마우스를 올렸을 때 커서가 클릭 가능한 모양으로 변경 */
@@ -52,8 +54,61 @@
 .clickable-row:hover {
     background-color: lightgray; /* 회색 배경 */
 }
-	    
-	</style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            margin-top: 30px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #ffffff;
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .progress {
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+        }
+        .progress-bar {
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+        th {
+            background-color: #f1f1f1;
+            font-weight: bold;
+        }
+        tr:hover {
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+        .notification-content {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background-color: #4e73df;
+            border-color: #4e73df;
+        }
+        .btn-primary:hover {
+            background-color: #3757c6;
+            border-color: #3757c6;
+        }
+    </style>
 </head>
 <body>
 	<div class="container">
@@ -139,12 +194,7 @@
 				    <input type="hidden" name="memberId" id="memberId">
 				</form>
 			</div>
-			<div class="col-md-4 notification">
-				<h5>알림</h5>
-				<div class="notification-content">
-					<p>알림 내용이 여기에 표시됩니다.</p>
-				</div>
-			</div>
+			<jsp:include page="project_notice.jsp"/>
 		</div>
 	</div>
 	
@@ -192,37 +242,37 @@
 	
 	<!-- 글 작성 모달 -->
 	<div class="modal fade" id="writeModal" tabindex="-1" role="dialog" aria-labelledby="writeModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="writeModalLabel">글 작성</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="writeForm" action="${pageContext.request.contextPath}/projectb/write" method="post" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label for="postTitle">제목</label>
-                        <input type="text" class="form-control" id="postTitle" name="title" placeholder="제목을 입력하세요" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="postContent">내용</label>
-                        <textarea class="form-control" id="postContent" name="content" rows="4" placeholder="내용을 입력하세요" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="postFile">첨부파일</label>
-                        <input type="file" class="form-control-file" id="postFile" name="file">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                        <button type="submit" class="btn btn-primary">저장</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+	    <div class="modal-dialog" role="document">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="writeModalLabel">글 작성</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+	            <div class="modal-body">
+	                <form id="writeForm" action="${pageContext.request.contextPath}/projectb/write" method="post" enctype="multipart/form-data">
+	                    <div class="form-group">
+	                        <label for="postTitle">제목</label>
+	                        <input type="text" class="form-control" id="postTitle" name="title" placeholder="제목을 입력하세요" required>
+	                    </div>
+	                    <div class="form-group">
+	                        <label for="postContent">내용</label>
+	                        <textarea class="form-control" id="postContent" name="content" rows="4" placeholder="내용을 입력하세요" required></textarea>
+	                    </div>
+	                    <div class="form-group">
+	                        <label for="postFile">첨부파일</label>
+	                        <input type="file" class="form-control-file" id="postFile" name="file">
+	                    </div>
+	                    <div class="modal-footer">
+	                        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+	                        <button type="submit" class="btn btn-primary">저장</button>
+	                    </div>
+	                </form>
+	            </div>
+	        </div>
+	    </div>
+	</div>
 
 </body>
 </html>

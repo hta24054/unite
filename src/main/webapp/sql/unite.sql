@@ -1,3 +1,61 @@
+select post.*, board.*, nvl(cnt,0) as cnt, img_path, img_original, img_uuid, img_type
+					from post left outer join (select post_id, count(*) as cnt
+											from post_comment
+											group by post_id) pc
+						on post.post_id = pc.post_id
+					join board
+						on board.board_id = post.board_id
+					join emp
+						on emp.emp_id = post.post_writer
+					where board.dept_id IS NULL OR '241103' IN (0000, 1000, 1001)
+					    OR ('241103' = 1100 AND board.dept_id between 1100 and 1199)
+					    OR ('241103' = 1200 AND board.dept_id between 1200 and 1299)
+					    OR ('241103' = 1300 AND board.dept_id between 1300 and 1399)
+					    OR ('241103' = 1400 AND board.dept_id between 1400 and 1499)
+					    OR (board.dept_id = '241103')
+					order by post_date desc
+					
+SELECT p.project_name, t.task_date, t.task_update_date, t.emp_id, e.img_uuid, j.job_name
+FROM task t
+JOIN project p ON t.project_id = p.project_id
+JOIN project_member pm ON p.project_id = pm.project_id
+JOIN emp e on pm.member_id = e.emp_id
+JOIN job j on e.job_id = j.job_id
+WHERE p.project_finished = 0
+  AND p.project_canceled = 0
+  AND pm.member_id = '241103'
+ORDER BY NVL(t.task_update_date, t.task_date) DESC;
+
+SELECT p.project_name, t.task_date, t.task_update_date, e1.ename AS task_emp_name, e2.img_uuid AS pm_img_uuid, j.job_name
+FROM task t JOIN project p ON t.project_id = p.project_id
+JOIN project_member pm ON p.project_id = pm.project_id
+JOIN emp e1 ON t.emp_id = e1.emp_id 
+JOIN emp e2 ON pm.member_id = e2.emp_id 
+JOIN job j ON e2.job_id = j.job_id
+WHERE p.project_finished = 0 AND p.project_canceled = 0 AND pm.member_id = '241103'
+ORDER BY NVL(t.task_update_date, t.task_date) DESC NULLS LAST;
+
+SELECT p.project_name, 
+       t.task_date, 
+       t.task_update_date, 
+       e1.ename AS task_emp_name, 
+       e1.img_uuid AS pm_img_uuid, 
+       j.job_name
+FROM task t 
+JOIN project p ON t.project_id = p.project_id
+JOIN project_member pm ON p.project_id = pm.project_id	
+JOIN emp e1 ON t.emp_id = e1.emp_id  -- 작업을 수행한 직원 (e1)
+JOIN emp e2 ON pm.member_id = e2.emp_id  -- 프로젝트 멤버 (e2)
+JOIN job j ON e2.job_id = j.job_id
+WHERE p.project_finished = 0 
+  AND p.project_canceled = 0 
+  AND pm.member_id = '241103'  -- 특정 프로젝트 멤버
+  AND t.emp_id != pm.member_id  -- 자기 자신은 제외
+  AND e2.emp_id != t.emp_id    -- 작업을 수행한 직원의 emp_id와 프로젝트 멤버의 emp_id가 다르도록 추가
+ORDER BY NVL(t.task_update_date, t.task_date) DESC NULLS LAST;
+
+select img_uuid from emp where emp_id = '241103' or emp_id = '241105';
+
 alter table DOC_VACATION modify(VACATION_FILE_TYPE varchar2(100))
 --게시판 제약조건 수정
 ALTER TABLE board MODIFY dept_id null;

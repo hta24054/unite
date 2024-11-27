@@ -31,6 +31,17 @@
             text-align: left;
             border: 1px solid #ddd;
         }
+        .container {
+            background-color: #fff;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;
+            margin: 40px auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
     </style>
     <script>	
     	const contextPath = "${pageContext.request.contextPath}";  

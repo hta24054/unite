@@ -92,7 +92,6 @@ public class AttendUtil {
         for (Attend attend : attendList) {
             attendMap.put(attend.getAttendDate(), attend);
         }
-        System.out.println(attendMap);
         // allDate를 순회하며 매칭
         for (Attend date : allDate) {
             Attend matchedAttend = attendMap.get(date.getAttendDate());

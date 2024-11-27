@@ -792,16 +792,6 @@ public class BoardDao {
 	
 	//게시글 답글 추가
 	public Long reply_post_insert(Connection con, Post postData) throws SQLException{
-		Long postId = 0L;
-		String board_max_sql = "SELECT MAX(POST_ID)+1 FROM POST";
-		try (PreparedStatement pstmt = con.prepareStatement(board_max_sql);){
-			try (ResultSet rs = pstmt.executeQuery()){
-				if(rs.next()) {
-					postId=rs.getLong(1);
-				}
-			}
-		}
-		
 		String sql = """
 				insert into POST(BOARD_ID,POST_WRITER,POST_SUBJECT,POST_CONTENT,
 				POST_DATE,POST_UPDATE_DATE,POST_RE_REF,POST_RE_LEV,POST_RE_SEQ)
@@ -818,6 +808,17 @@ public class BoardDao {
 			pstmt.setLong(7, postData.getPostReSeq() + 1);
 			pstmt.executeUpdate();
 		}
+
+		Long postId = 0L;
+		String board_max_sql = "SELECT MAX(POST_ID) FROM POST";
+		try (PreparedStatement pstmt = con.prepareStatement(board_max_sql);){
+			try (ResultSet rs = pstmt.executeQuery()){
+				if(rs.next()) {
+					postId=rs.getLong(1);
+				}
+			}
+		}
+		
 		return postId;
 	}
 

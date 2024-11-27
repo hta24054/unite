@@ -204,7 +204,7 @@ function submitForm() {
         cache: false,
         success: function (data) {
             alert(data.message);
-            
+            console.log($('#boardName2').val()+" 와 "+data.url)
             $('.boardContent').css('padding','0');
             loadBoardPost($('#boardName2').val(), data.url);
         },

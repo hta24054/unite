@@ -11,8 +11,10 @@ import com.google.gson.JsonObject;
 import com.hta2405.unite.action.Action;
 import com.hta2405.unite.action.ActionForward;
 import com.hta2405.unite.dao.BoardDao;
+import com.hta2405.unite.dao.PostCommentDao;
 import com.hta2405.unite.dto.Post;
 import com.hta2405.unite.dto.PostFile;
+import com.hta2405.unite.util.ConfigUtil;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -22,7 +24,8 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 
 public class PostAddAction implements Action {
-
+	private static final String UPLOAD_DIRECTORY = ConfigUtil.getProperty("post.upload.directory");
+	
 	@Override
 	public ActionForward execute(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -45,15 +48,12 @@ public class PostAddAction implements Action {
     		postData.setPostSubject(req.getParameter("board_subject"));
     		postData.setPostContent(req.getParameter("board_content"));
         }
-		
-		// 실제 저장 경로를 지정합니다.
-		ServletContext sc = req.getServletContext();
-		String realFolder = sc.getRealPath("boardupload");
-		
-		File uploadDirectory = new File(realFolder);
-        // 디렉터리가 없으면 생성
-        if (!uploadDirectory.exists()) {
-            uploadDirectory.mkdir();
+        
+        // 저장 경로 설정 및 파일 저장
+        String uploadPath = UPLOAD_DIRECTORY;
+        File uploadDir = new File(uploadPath);
+        if (!uploadDir.exists() && !uploadDir.mkdirs()) {
+            throw new IOException("업로드 폴더를 생성할 수 없습니다: " + uploadPath);
         }
         
         // 모든 파일 파트를 가져옴
@@ -72,15 +72,15 @@ public class PostAddAction implements Action {
                 
                 String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
                 
-                // 최종 저장 파일명 생성
-                String savedFileName = fileName + fileExtension;
+                // 파일 저장
+                File file = new File(uploadPath, fileName);
+                filePart.write(file.getAbsolutePath()); // 파일을 디스크에 저장
+                String filePath = UPLOAD_DIRECTORY + "/" + fileName;
                 
                 // 파일 저장 경로 설정
-                String filePath = realFolder + File.separator + savedFileName;
-                filePart.write(filePath);//지정된 경로에 저장
 
         		PostFile postFileData = new PostFile();
-    			postFileData.setPostFilePath(realFolder);
+    			postFileData.setPostFilePath(filePath);
     			postFileData.setPostFileOriginal(originalFileName);
     			postFileData.setPostFileUUID(fileName);
     			postFileData.setPostFileType(fileExtension);

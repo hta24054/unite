@@ -64,7 +64,7 @@ public class DocReadAction implements Action {
     }
 
     /*
-        1. 내가 작성자 2. 같은 부서원이 기안 1. 내가 결재자에 포함된 경우
+        1. 내가 작성자 2. 같은 부서원이 기안 3. 내가 결재자에 포함된 경우
         조회가능(2번이 중족되면 1번은 자동충족이므로 2번, 3번만 확인)
      */
     private boolean isValidToAccessDoc(String loginEmpId, Long docId) {

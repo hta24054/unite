@@ -205,8 +205,8 @@ sup {
     						 <div class="form-group">
     						 	<label>정말 삭제하시겠습니까? <br> 복구가 불가능합니다.</label>
     						 </div>
-    						 <button type="submit" class="btn btn-primary">삭제</button>
-    						 <button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>
+    						 <button type="submit" class="btn btn-primary" style="background-color: #334466; border-color: #334466;">삭제</button>
+    						 <button type="button" class="btn btn-danger" data-dismiss="modal" style="background-color: #33446699; border-color: #33446644;">취소</button>
     					</form>
     				</div>
     			</div>

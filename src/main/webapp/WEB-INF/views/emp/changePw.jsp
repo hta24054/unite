@@ -21,7 +21,7 @@
         </div>
         <h2>비밀번호 재설정</h2>
         <label class="id">아이디:&nbsp;${checkId}</label>
-        <form action="${pageContext.request.contextPath}/changePwProcess" method="post" name="changePwProcess">
+        <form action="${pageContext.request.contextPath}/emp/changePwProcess" method="post" name="changePwProcess">
             <input type="password" name="newPassword" id="newPassword" placeholder="새 비밀번호">
             <span class="newPwText"></span>
             <input type="password" name="confirmPassword" id="confirmPassword" placeholder="새 비밀번호 확인">

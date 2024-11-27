@@ -102,7 +102,7 @@ function ajax(sdata){
 		cache: false,
 		success: function(data){
 			$("#viewCount").val(data.limit);
-			$("thead").find("span").text("글 개수 : "+data.listCount);
+			$("thead").find("span").text("총 "+data.listCount+"건");
 			
 			if(data.listCount>0){
 				$("tbody").remove();

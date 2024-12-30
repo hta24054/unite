@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unite Login</title>
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <script th:src="@{/js/jquery-3.7.1.js}"></script>
+    <script th:inline="javascript">
+        $(function () {
+            $('#loginForm').on('submit', function (event) {
+                event.preventDefault();
+
+                const username = $('#username').val();
+                console.log(username);
+                const password = $('#password').val();
+                console.log(password);
+
+                $.ajax({
+                    url: '/login',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({username: username, password: password}),
+                    success: function (data) {
+                        // JWT 저장
+                        const token = data.token;
+                        localStorage.setItem('jwtToken', token);
+                        console.log(token);
+                        // 홈으로 리다이렉트
+                        redirectToHome(token);
+                    },
+                    error: function () {
+                        alert('Login failed');
+                    }
+                });
+            });
+
+            function redirectToHome(token) {
+                console.log(token)
+                $.ajax({
+                    url: '/home', // 홈 페이지 요청
+                    method: 'GET',
+                    headers: {
+                        'Authorization': token // JWT를 헤더에 포함
+                    },
+                    success: function (response) {
+                        // 홈 페이지로 리다이렉트
+                        window.location.href = '/home';
+                    },
+                    error: function () {
+                        alert('Failed to access home page');
+                    }
+                });
+            }
+        });
+
+        const id = '[(${cookieId})]';
+        if (id) {
+            $("#id").val(id);
+            $("#remember").prop('checked', true);
+        }
+
+        $("button").click(function () {
+            $(".idText").text("");
+            $(".pwText").text("");
+            let check = true;
+
+            const $id = $("#id");
+            if ($id.val().trim() == "") {
+                $(".idText").text("아이디를 입력해 주세요");
+                $id.focus();
+                check = false;
+            }
+
+            const $pass = $("#pass");
+            if ($pass.val().trim() == "") {
+                $(".pwText").text("비밀번호를 입력해 주세요");
+                $pass.focus();
+                check = false;
+            }
+
+            if (!check) {
+                $("input").css("margin", "10px 0 5px");
+                return false;
+            }
+
+            $("input").css("margin-top", "25px");
+        });
+    </script>
+</head>
+<body>
+<div class="login-container">
+    <div class="login-box">
+        <div class="logo">
+            <h1>Unite</h1>
+            <img th:src="@{/image/logo_black.png}" alt="logo">
+        </div>
+        <form name="loginForm" id="loginForm">
+            <input type="text" placeholder="아이디를 입력해주세요" name='username' id="username" required autocomplete="username">
+            <span class="idText"></span>
+            <input type="password" placeholder="비밀번호를 입력해주세요" name='password' id="password" required
+                   autocomplete="current-password">
+            <span class="pwText"></span>
+            <div class="options">
+                <label class="checkbox-label">
+                    <input type="checkbox" name='remember' id="remember" value="store">
+                    아이디 저장
+                </label>
+                <a th:href="@{/emp/pwInquiry}">비밀번호 찾기</a>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+
+

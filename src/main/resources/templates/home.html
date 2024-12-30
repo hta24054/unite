@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Unite</title>
+</head>
+<body>
+<div>메인(홈)화면</div>
+<nav class="navbar navbar-expand-sm right-block navbar-dark">
+    <ul class="navbar-nav">
+        <li class="nav-item1">
+            <a class="nav-link" th:href="@{/home}"><img th:src="@{/image/logo_header.png}" style="width:100px;"></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link a1" th:href="@{/attend/my}">&nbsp;근태관리&nbsp;</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link a1" th:href="@{/empInfo/view}">&nbsp;인사정보&nbsp;</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link a1" th:href="@{/contact/addressbook}">&nbsp;주소록&nbsp;</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link a1" th:href="@{/schedule/calender}">&nbsp;캘린더&nbsp;</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link a1" th:href="@{/board/home}">&nbsp;게시판&nbsp;</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link a1" th:href="@{/doc/waiting}"> 전자문서 </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link a1" th:href="@{/project/main}">&nbsp;프로젝트&nbsp;</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link a1" th:href="@{/reservation/reservationCalender}">&nbsp;자원예약&nbsp;</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link a1" th:href="@{/mypage/password}">&nbsp;마이페이지&nbsp;</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link a1" th:href="@{/admin/emp-manage}">&nbsp;관리자&nbsp;</a>
+        </li>
+    </ul>
+</nav>
+</body>
+</html>
+
+

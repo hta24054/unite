@@ -1,8 +1,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hta2405.unite.mybatis.mapper.EmpMapper">
-    <select id="getEmpById" parameterType="String" resultType="Emp">
+    <select id="getEmpById" parameterType="String">
         SELECT * FROM emp
-        WHERE EMP_ID = #{username}
+        WHERE EMP_ID = #{empId}
     </select>
 </mapper>
+

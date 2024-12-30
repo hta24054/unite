@@ -17,74 +17,18 @@
                 console.log(password);
 
                 $.ajax({
-                    url: '/login',
+                    url: '/auth/login',
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({username: username, password: password}),
-                    success: function (data) {
-                        // JWT 저장
-                        const token = data.token;
-                        localStorage.setItem('jwtToken', token);
-                        console.log(token);
-                        // 홈으로 리다이렉트
-                        redirectToHome(token);
+                    success: function () {
+                        window.location.href = '/home';
                     },
                     error: function () {
                         alert('Login failed');
                     }
                 });
             });
-
-            function redirectToHome(token) {
-                console.log(token)
-                $.ajax({
-                    url: '/home', // 홈 페이지 요청
-                    method: 'GET',
-                    headers: {
-                        'Authorization': token // JWT를 헤더에 포함
-                    },
-                    success: function (response) {
-                        // 홈 페이지로 리다이렉트
-                        window.location.href = '/home';
-                    },
-                    error: function () {
-                        alert('Failed to access home page');
-                    }
-                });
-            }
-        });
-
-        const id = '[(${cookieId})]';
-        if (id) {
-            $("#id").val(id);
-            $("#remember").prop('checked', true);
-        }
-
-        $("button").click(function () {
-            $(".idText").text("");
-            $(".pwText").text("");
-            let check = true;
-
-            const $id = $("#id");
-            if ($id.val().trim() == "") {
-                $(".idText").text("아이디를 입력해 주세요");
-                $id.focus();
-                check = false;
-            }
-
-            const $pass = $("#pass");
-            if ($pass.val().trim() == "") {
-                $(".pwText").text("비밀번호를 입력해 주세요");
-                $pass.focus();
-                check = false;
-            }
-
-            if (!check) {
-                $("input").css("margin", "10px 0 5px");
-                return false;
-            }
-
-            $("input").css("margin-top", "25px");
         });
     </script>
 </head>
@@ -106,7 +50,7 @@
                     <input type="checkbox" name='remember' id="remember" value="store">
                     아이디 저장
                 </label>
-                <a th:href="@{/emp/pwInquiry}">비밀번호 찾기</a>
+                <a th:href="@{/auth/pwInquiry}">비밀번호 찾기</a>
             </div>
             <button type="submit">Login</button>
         </form>

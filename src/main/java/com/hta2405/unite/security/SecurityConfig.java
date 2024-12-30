@@ -6,7 +6,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -15,12 +17,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
-    private final AuthenticationConfiguration authenticationConfiguration;
+    private final AuthenticationConfiguration configuration;
     private final JwtUtil jwtUtil;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final JwtAccessDenyHandler jwtAccessDenyHandler;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JwtUtil jwtUtil) {
-        this.authenticationConfiguration = authenticationConfiguration;
+    public SecurityConfig(AuthenticationConfiguration configuration, JwtUtil jwtUtil, CustomAuthenticationEntryPoint customAuthenticationEntryPoint, JwtAccessDenyHandler jwtAccessDenyHandler) {
+        this.configuration = configuration;
         this.jwtUtil = jwtUtil;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+        this.jwtAccessDenyHandler = jwtAccessDenyHandler;
     }
 
     @Bean
@@ -30,34 +36,24 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable);
+        http.csrf(CsrfConfigurer::disable)
+                .formLogin(FormLoginConfigurer::disable)
+                .httpBasic(HttpBasicConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(new JwtAuthenticationFilter("/login", authenticationManager(configuration), jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthorizationFilter(jwtUtil), JwtAuthenticationFilter.class);
 
-        // 세션 관리 비활성화 (JWT 사용 시 Stateless)
-        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        // 권한 및 인증 요청 설정
-//        http.authorizeHttpRequests(
-//                au -> au.requestMatchers("/login", "/css/**", "/js/**", "/image/**").permitAll()
-//                        .requestMatchers("/home").hasAnyRole("ADMIN", "MEMBER")
-//                        .anyRequest().authenticated()
-//        );
-
-        //개발용 임시 권한 모두 부여
-                http.authorizeHttpRequests(
-                au -> au.anyRequest().permitAll()
+        http.authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth/**", "/css/**", "/js/**", "/image/**", "/error").permitAll()
+                .anyRequest().authenticated()
         );
 
-        // JWT 필터 추가
-        http.addFilterBefore(new JwtFilter(jwtUtil), JwtAuthenticationFilter.class)
-                .addFilterAt(new JwtAuthenticationFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        // 개발용 임시 권한 부여
+        // http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
 
-//        http.exceptionHandling(exception -> exception
-//                .authenticationEntryPoint((request, response, authException) -> {
-//                    response.sendRedirect("/login");
-//                })
-//        );
+        http.exceptionHandling(ex -> ex
+                .authenticationEntryPoint(customAuthenticationEntryPoint) //401(로그인안됨)
+                .accessDeniedHandler(jwtAccessDenyHandler)); //403(권한없음)
         return http.build();
     }
 

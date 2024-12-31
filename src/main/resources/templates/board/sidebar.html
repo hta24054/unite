@@ -1,0 +1,56 @@
+<th:block th:fragment="boardSidebarFragment">
+    <div class="sidebar">
+        <section class="title">
+            <h2>
+                <a href="http://localhost:8088/board/home" id="boardHome" style="text-decoration: none;color: rgb(51, 68, 102);">게시판</a>
+            </h2>
+        </section>
+
+        <section class="boardWrite">
+            <a th:href="'post/postWrite' + ( ${boardName2 != null} ? '?boardName2=' + ${boardName2} : '')">
+                <button class="writeBtn">글쓰기</button>
+            </a>
+        </section>
+
+        <ul class="list-group" style="list-style-type: disc; padding-left: 20px;">
+            <!-- 전사게시판 메뉴 -->
+            <li class="left" style="border: none;">
+                <a  href="#" class="boardName1" onclick="toggleSubMenu('#submenu-doc-draft')">전사게시판</a>
+                <ul class="submenu" id="submenu-doc-draft">
+                    <li class="left" style="border: none;">
+                        <a href="#" class="boardName2">공지사항</a>
+                    </li>
+                    <li class="left" style="border: none;">
+                        <a href="#" class="boardName2">주간식단표</a>
+                    </li>
+                    <li class="left" style="border: none;">
+                        <a href="#" class="boardName2">FAQ</a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- 일반게시판 메뉴 -->
+            <li class="left" style="border: none;"><a href="#" class="boardName1 boardName2">일반게시판</a></li>
+
+            <!-- 부서게시판 메뉴 -->
+            <!-- 세션에서 받은 부서리스트 처리 -->
+            <li class="left deptBoard-list" style="border: none;">
+                <a href="#" class="boardName1" onclick="toggleSubMenu('#submenu-doc-list')">부서게시판</a>
+
+                <th:block th:if="${boardScope != null}"> <!-- 부서가 존재할 경우 -->
+                    <ul class="submenu" id="submenu-doc-list">
+
+                        <th:block th:each="board : ${boardScope}">
+                            <li class="left" style="border: none;">
+                                <th:block th:if="${board.deptId != null}">
+                                    <a href="#" class="boardName2">${board.boardName2}</a>
+                                </th:block>
+                            </li>
+                        </th:block>
+
+                    </ul>
+                </th:block>
+            </li>
+        </ul>
+    </div>
+</th:block>

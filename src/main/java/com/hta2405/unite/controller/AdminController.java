@@ -1,12 +1,15 @@
 package com.hta2405.unite.controller;
 
 import com.hta2405.unite.domain.Holiday;
+import com.hta2405.unite.domain.Notice;
 import com.hta2405.unite.domain.Resource;
 import com.hta2405.unite.service.HolidayService;
+import com.hta2405.unite.service.NoticeService;
 import com.hta2405.unite.service.ResourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -19,10 +22,12 @@ import java.util.List;
 public class AdminController {
     private final HolidayService holidayService;
     private final ResourceService resourceService;
+    private final NoticeService noticeService;
 
-    public AdminController(HolidayService holidayService, ResourceService resourceService) {
+    public AdminController(HolidayService holidayService, ResourceService resourceService, NoticeService noticeService) {
         this.holidayService = holidayService;
         this.resourceService = resourceService;
+        this.noticeService = noticeService;
     }
 
     @GetMapping("/holiday")
@@ -113,5 +118,43 @@ public class AdminController {
             return "자원 삭제 실패";
         }
         return "자원 삭제 성공";
+    }
+
+    @GetMapping("/notice")
+    public ModelAndView showNoticePage(ModelAndView mv) {
+        mv.addObject("noticeList", noticeService.getAllNotice());
+        mv.setViewName("/admin/notice");
+        return mv;
+    }
+
+    @PostMapping("/notice")
+    @ResponseBody
+    public String addNotice(Notice notice) {
+        System.out.println("123123121111111111111");
+        int result = noticeService.addNotice(notice);
+        if (result != 1) {
+            return "공지사항 등록 실패";
+        }
+        return "공지사항 등록 성공";
+    }
+
+    @PatchMapping("/notice")
+    @ResponseBody
+    public String updateNotice(Notice notice) {
+        int result = noticeService.updateNotice(notice);
+        if (result != 1) {
+            return "공지사항 수정 실패";
+        }
+        return "공지사항 수정 성공";
+    }
+
+    @DeleteMapping("/notice")
+    @ResponseBody
+    public String deleteResource(Long noticeId) {
+        int result = noticeService.deleteNotice(noticeId);
+        if (result < 1) {
+            return "공지사항 삭제 실패";
+        }
+        return "공지사항 삭제 성공";
     }
 }

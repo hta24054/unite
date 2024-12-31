@@ -1,0 +1,40 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hta2405.unite.mybatis.mapper.ProjectMapper">
+    <select id="getHiredEmpByDeptId" resultType="Emp">
+        SELECT e.emp_id, e.ename, e.dept_id, e.tel, e.job_id, j.job_name
+        FROM emp e
+        JOIN job j ON e.job_id = j.job_id
+        WHERE e.dept_id = #{deptId} AND e.hired = 1
+        ORDER BY j.job_rank, e.emp_id
+    </select>
+    <select id="getIdToJobNameMap" resultType="map">
+        SELECT job_id, job_name
+        FROM job
+        ORDER BY job_id
+    </select>
+    <!-- 프로젝트 생성 -->
+    <insert id="createProject" useGeneratedKeys="true" keyProperty="projectId" parameterType="Project">
+        INSERT INTO project (manager_id, project_name, project_start_date, project_end_date, project_content)
+        VALUES (#{manager_id}, #{project_name}, #{project_start_date}, #{project_end_date}, #{project_content})
+    </insert>
+
+    <!-- 프로젝트 멤버 추가 (책임자 추가) -->
+    <insert id="addProjectMember">
+        INSERT INTO project_member (member_id, project_id, member_role, member_date, member_name)
+        VALUES (#{memberId}, #{projectId}, #{role}, NOW(), #{memberName})
+    </insert>
+
+    <!-- 여러 프로젝트 멤버 추가 -->
+    <insert id="addProjectMembers">
+        INSERT INTO project_member (member_id, project_id, member_role, member_date, member_name)
+        VALUES
+            (#{memberId}, #{projectId}, #{role}, NOW(), #{memberName})
+    </insert>
+
+    <!-- 작업 생성 -->
+    <insert id="createTask">
+        INSERT INTO task (emp_id, project_id, member_name)
+        VALUES (#{empId}, #{projectId}, #{memberName})
+    </insert>
+</mapper>

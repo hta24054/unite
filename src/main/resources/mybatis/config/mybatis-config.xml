@@ -9,5 +9,7 @@
         <!--NULL-->
         <setting name="jdbcTypeForNull" value="NULL"/>
     </settings>
-
+    <typeHandlers>
+        <typeHandler handler="com.hta2405.unite.mybatis.handler.LocalDateTypeHandler"/>
+    </typeHandlers>
 </configuration>

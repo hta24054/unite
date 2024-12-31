@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>자원 관리</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/resource.js}"></script>
+    <!--    <jsp:include page="../common/header.jsp"/>-->
+    <!--    <jsp:include page="admin_leftbar.jsp"/>-->
+    <style>
+        .container {
+            max-width: 800px;
+            margin-top: 20px;
+        }
+
+        #main_title {
+            color: #334466;
+            margin-left: 500px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        #resource_table {
+            margin-top: 20px;
+        }
+
+        #resource_table th, td {
+            text-align: center;
+            vertical-align: middle;
+            padding: 5px;
+            line-height: 1.2;
+        }
+    </style>
+</head>
+<body>
+<h2 id="main_title">자원 관리</h2>
+<div class="container text-center">
+    <div class="text-right mb-2">
+        <button type="button" class="btn btn-success mr-2" data-toggle="modal" data-target="#addResourceModal">등록
+        </button>
+        <button type="button" class="btn btn-secondary mr-2" onclick="openEditModal()">수정</button>
+        <button type="button" class="btn btn-danger" id="deleteButton">삭제</button>
+    </div>
+
+    <table class="table table-striped table-bordered" id="resource_table">
+        <thead>
+        <tr>
+            <th style="width: 80px; text-align: center;">
+                선택<br>
+                <input type="checkbox" onclick="$('input[name=resourceId]').prop('checked', this.checked);">
+            </th>
+            <th>분류명</th>
+            <th>자원명</th>
+            <th>자원정보</th>
+            <th>가용상태</th>
+        </tr>
+        </thead>
+        <tbody>
+        <th:block th:each="resource:${resourceList}">
+            <tr>
+                <td>
+                    <input type="checkbox" class="checkbox" name="resourceId" th:value="${resource.resourceId}">
+                </td>
+                <td style="text-align: left;">[[${resource.resourceType}]]</td>
+                <td style="text-align: left;">[[${resource.resourceName}]]</td>
+                <td style="text-align: left;">[[${resource.resourceInfo}]]</td>
+                <td th:if="${resource.resourceUsable == true}">가능</td>
+                <td th:if="${resource.resourceUsable == false}">불가</td>
+            </tr>
+        </th:block>
+        </tbody>
+    </table>
+</div>
+
+<!-- 자원 등록 모달 -->
+<div class="modal fade" id="addResourceModal" tabindex="-1" aria-labelledby="addResourceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addResourceModalLabel">자원 등록</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="insertResource">
+                    <div class="form-group">
+                        <label for="resourceType">분류명</label>
+                        <input type="text" class="form-control" id="resourceType" name="resourceType" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="resourceName">자원명</label>
+                        <input type="text" class="form-control" id="resourceName" name="resourceName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="resourceInfo">자원정보</label>
+                        <textarea class="form-control" id="resourceInfo" name="resourceInfo" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="resourceUsable">가용상태</label>
+                        <select class="form-control" id="resourceUsable" name="resourceUsable" required>
+                            <option value="true">가능</option>
+                            <option value="false">불가</option>
+                        </select>
+                    </div>
+                    <button>저장</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--자원 수정모달-->
+<div class="modal fade" id="editResourceModal" tabindex="-1" aria-labelledby="editResourceModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editResourceModalLabel">자원 수정</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="updateResource">
+                    <input type="hidden" id="editResourceId" name="resourceId">
+                    <div class="form-group">
+                        <label for="editResourceType">분류명</label>
+                        <input type="text" class="form-control" id="editResourceType" name="resourceType" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editResourceName">자원명</label>
+                        <input type="text" class="form-control" id="editResourceName" name="resourceName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editResourceInfo">자원정보</label>
+                        <textarea class="form-control" id="editResourceInfo" name="resourceInfo" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editResourceUsable">가용상태</label>
+                        <select class="form-control" id="editResourceUsable" name="resourceUsable" required>
+                            <option value="true">가능</option>
+                            <option value="false">불가</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">저장</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

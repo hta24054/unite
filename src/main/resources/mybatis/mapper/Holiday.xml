@@ -1,0 +1,27 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hta2405.unite.mybatis.mapper.HolidayMapper">
+    <select id="getHolidayList" resultType="Holiday">
+        SELECT *
+        FROM holiday
+        <where>
+            HOLIDAY_DATE BETWEEN #{startDate} AND #{endDate}
+        </where>
+        ORDER BY HOLIDAY_DATE
+    </select>
+    <insert id="insertHoliday" parameterType="Holiday">
+        INSERT INTO holiday (HOLIDAY_DATE, HOLIDAY_NAME)
+        VALUES (#{holidayDate}, #{holidayName})
+    </insert>
+    <select id="getHolidayName" resultType="String">
+        SELECT HOLIDAY_NAME
+        FROM holiday
+        WHERE HOLIDAY_DATE = #{date}
+    </select>
+    <delete id="deleteHoliday">
+        DELETE
+        FROM holiday
+        WHERE HOLIDAY_DATE = #{date}
+    </delete>
+</mapper>
+

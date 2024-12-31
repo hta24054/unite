@@ -130,7 +130,6 @@ public class AdminController {
     @PostMapping("/notice")
     @ResponseBody
     public String addNotice(Notice notice) {
-        System.out.println("123123121111111111111");
         int result = noticeService.addNotice(notice);
         if (result != 1) {
             return "공지사항 등록 실패";

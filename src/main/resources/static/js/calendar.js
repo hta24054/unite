@@ -583,5 +583,5 @@ $(document).ready(function(){
         calendar.render();
 	}
 	
-	fetchAllData();
+	//fetchAllData();
 });

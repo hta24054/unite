@@ -1,0 +1,60 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hta2405.unite.mybatis.mapper.BoardPostMapper">
+    <!-- SQL 쿼리 -->
+    <select id="getBoardListAll" parameterType="Long">
+        select post.*, board.*, ifnull(cnt, 0) as cnt, emp.ename, emp.img_path, emp.img_original, emp.img_uuid, emp.img_type
+        from post
+                 left join (
+            select post_id, count(*) as cnt
+            from post_comment
+            group by post_id
+        ) pc on post.post_id = pc.post_id
+                 join board on board.board_id = post.board_id
+                 join emp on emp.emp_id = post.post_writer
+        where board.dept_id is null
+           or #{deptId} in (0000, 1000, 1001)
+           or (#{deptId} = 1100 and board.dept_id between 1100 and 1199)
+           or (#{deptId} = 1200 and board.dept_id between 1200 and 1299)
+           or (#{deptId} = 1300 and board.dept_id between 1300 and 1399)
+           or (#{deptId} = 1400 and board.dept_id between 1400 and 1499)
+           or board.dept_id = #{deptId}
+        order by post_date desc
+    </select>
+
+    <!-- ResultMap 정의: Board, Post, Emp를 각각 매핑 -->
+<!--    <resultMap id="BoardPostResultMap" type="map">-->
+<!--        &lt;!&ndash; Board 매핑 &ndash;&gt;-->
+<!--        <association property="board" javaType="com.example.domain.Board">-->
+<!--            <id property="boardId" column="board_id" />-->
+<!--            <result property="boardName1" column="board_name1" />-->
+<!--            <result property="boardName2" column="board_name2" />-->
+<!--            <result property="deptId" column="dept_id" />-->
+<!--        </association>-->
+
+<!--        &lt;!&ndash; Post 매핑 &ndash;&gt;-->
+<!--        <association property="post" javaType="com.example.domain.Post">-->
+<!--            <id property="postId" column="post_id" />-->
+<!--            <result property="boardId" column="board_id" />-->
+<!--            <result property="postWriter" column="post_writer" />-->
+<!--            <result property="postSubject" column="post_subject" />-->
+<!--            <result property="postContent" column="post_content" />-->
+<!--            <result property="postDate" column="post_date" />-->
+<!--            <result property="postUpdateDate" column="post_update_date" />-->
+<!--            <result property="postReRef" column="post_re_ref" />-->
+<!--            <result property="postReLev" column="post_re_lev" />-->
+<!--            <result property="postReSeq" column="post_re_seq" />-->
+<!--            <result property="postView" column="post_view" />-->
+<!--            <result property="postCommentCnt" column="cnt" />-->
+<!--        </association>-->
+
+<!--        &lt;!&ndash; Emp 매핑 &ndash;&gt;-->
+<!--        <association property="emp" javaType="com.example.domain.Emp">-->
+<!--            <result property="imgPath" column="img_path" />-->
+<!--            <result property="imgOriginal" column="img_original" />-->
+<!--            <result property="imgUUID" column="img_uuid" />-->
+<!--            <result property="imgType" column="img_type" />-->
+<!--        </association>-->
+<!--    </resultMap>-->
+</mapper>
+

@@ -1,6 +1,8 @@
 package com.hta2405.unite.security;
 
-import com.hta2405.unite.service.CustomUserDetailsService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,12 +17,11 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final SecretKey secretKey;
-    private final Long expiredMs = 60 * 60 * 1000L;
+    private final SecretKey SECRET_KEY;
 
-    public JwtUtil(@Value("${spring.jwt.secret}") String secret) {
-        this.secretKey = new SecretKeySpec(
-                secret.getBytes(StandardCharsets.UTF_8),
+    public JwtUtil(@Value("${spring.jwt.secret}") String secretKey) {
+        this.SECRET_KEY = new SecretKeySpec(
+                secretKey.getBytes(StandardCharsets.UTF_8),
                 Jwts.SIG.HS256.key().build().getAlgorithm()
         );
     }
@@ -28,31 +29,43 @@ public class JwtUtil {
     // JWT 생성
     public String generateToken(String username, String role) {
         log.info("generateToken username = {}", username);
+        long EXPIRED_MS = 60 * 60 * 1000L;
         String generatedToken = Jwts.builder()
                 .claim("username", username)
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiredMs))
-                .signWith(secretKey)
+                .expiration(new Date(System.currentTimeMillis() + EXPIRED_MS))
+                .signWith(SECRET_KEY)
                 .compact();
         log.info("TOKEN = {}", generatedToken);
         return generatedToken;
     }
 
-    // 토큰에서 사용자 이름 추출
-    public String getUsernameFromToken(String token) {
-        return Jwts.parser().verifyWith(secretKey).build()
-                .parseSignedClaims(token).getPayload().get("username", String.class);
-    }
-
-    //토큰에서 권한 추출
-    public String getRoleFromToken(String token) {
-        return Jwts.parser().verifyWith(secretKey).build()
-                .parseSignedClaims(token).getPayload().get("role", String.class);
+    public Claims validateToken(String token) {
+        try {
+            Claims claims = getJwtParser().parseSignedClaims(token).getPayload();
+            if (claims.getExpiration().before(new Date())) {
+                throw new JwtException("토큰 만료");
+            }
+            return claims;
+        } catch (JwtException e) {
+            log.error("토큰 오류: {}", e.getMessage());
+            throw new JwtException("토큰 오류", e);
+        }
     }
 
     public boolean isExpired(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
-                .getPayload().getExpiration().before(new Date());
+        try {
+            Claims claims = getJwtParser().parseSignedClaims(token).getPayload();
+            return claims.getExpiration().before(new Date());
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            return true;
+        } catch (JwtException e) {
+            throw new IllegalArgumentException("Invalid token", e);
+        }
+    }
+
+    private JwtParser getJwtParser() {
+        return Jwts.parser().verifyWith(SECRET_KEY).build();
     }
 }

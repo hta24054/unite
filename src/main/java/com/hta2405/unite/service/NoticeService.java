@@ -1,7 +1,6 @@
 package com.hta2405.unite.service;
 
 import com.hta2405.unite.domain.Notice;
-import com.hta2405.unite.domain.Resource;
 import com.hta2405.unite.mybatis.mapper.NoticeMapper;
 import org.springframework.stereotype.Service;
 

@@ -70,6 +70,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private String resolveToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return null;
+        }
         return Arrays.stream(cookies)
                 .filter(cookie -> "jwtToken".equals(cookie.getName()))
                 .map(Cookie::getValue)

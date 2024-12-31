@@ -18,11 +18,6 @@
         FROM holiday
         WHERE HOLIDAY_DATE = #{date}
     </select>
-    <update id="updateHoliday" parameterType="Holiday">
-        UPDATE holiday
-        SET HOLIDAY_NAME = #{holidayName}
-        WHERE HOLIDAY_DATE = #{holidayDate}
-    </update>
     <delete id="deleteHoliday">
         DELETE
         FROM holiday

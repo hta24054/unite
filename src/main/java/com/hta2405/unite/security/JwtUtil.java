@@ -1,9 +1,6 @@
 package com.hta2405.unite.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.JwtParser;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -26,7 +23,6 @@ public class JwtUtil {
         );
     }
 
-    // JWT 생성
     public String generateToken(String username, String role) {
         log.info("generateToken username = {}", username);
         long EXPIRED_MS = 60 * 60 * 1000L;
@@ -58,7 +54,7 @@ public class JwtUtil {
         try {
             Claims claims = getJwtParser().parseSignedClaims(token).getPayload();
             return claims.getExpiration().before(new Date());
-        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+        } catch (ExpiredJwtException e) {
             return true;
         } catch (JwtException e) {
             throw new IllegalArgumentException("Invalid token", e);

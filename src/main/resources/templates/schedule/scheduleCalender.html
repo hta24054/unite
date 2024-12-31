@@ -86,7 +86,7 @@
                 <button type="button" class="btn btn-lg" data-toggle="modal" data-target="#scheduleModal" style="margin-left: -20px; background-color: #334466; color: #fff;">일정 등록</button>
             </li>
             <li class="left" style="border: none;">
-                <a href="${pageContext.request.contextPath}/schedule/scheduleShare">공유 일정 등록</a>
+                <a th:href="@{'/schedule/scheduleShare'}">공유 일정 등록</a>
             </li>
         </ul>
     </div>
@@ -108,10 +108,10 @@
             </div>
             <div class="modal-body">
                 <form name="scheduleEvent" method="post">
-                    <input type="hidden" id="schedule_id" name="schedule_id" value="${schedule_id}">
-                    <!-- <input type="hidden" id="emp_id" name="emp_id" value="${id}"> -->
-                    <input type="hidden" id="emp_id" name="emp_id" value="241001">
-                    <input type="hidden" id="share_emp" name="share_emp" value="${share_emp.join(',')}">
+                    <input type="hidden" id="schedule_id" name="schedule_id" th:value="${schedule_id}">
+                    <input type="hidden" id="emp_id" name="emp_id" th:value="${id}">
+                    <!-- <input type="hidden" id="share_emp" name="share_emp" th:value="${share_emp.join(',')}"> -->
+                    <input type="hidden" id="share_emp" name="share_emp" th:value="${share_emp}">
 
                     <div class="form-group">
                         <label for="schedule_name">일정명</label>
@@ -120,7 +120,7 @@
                                name="schedule_name" id="schedule_name">
                     </div>
                     <div class="form-group custom-control custom-checkbox">
-                        <input type="checkbox" name="allDay" id="allDay" class="custom-control-input" value="">
+                        <input type="checkbox" name="allDay" id="allDay" class="custom-control-input" th:value="${allDay}">
                         <label for="allDay" class="custom-control-label">하루종일</label>
                     </div>
                     <div class="form-group">

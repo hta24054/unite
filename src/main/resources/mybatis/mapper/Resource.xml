@@ -1,0 +1,37 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hta2405.unite.mybatis.mapper.ResourceMapper">
+    <!--
+        List<Resource> getAllResource();
+
+        int insertResource(Resource resource);
+
+        int deleteResources(List<Long> resourceIds);
+
+        int updateResource(Resource resource);
+        -->
+    <select id="getAllResource" resultType="Resource">
+        select *
+        from resc
+    </select>
+    <insert id="insertResource" parameterType="Resource">
+        INSERT INTO resc (RESC_TYPE, RESC_NAME, RESC_INFO, RESC_USABLE)
+        VALUES (#{resourceType}, #{resourceName}, #{resourceInfo}, #{resourceUsable})
+    </insert>
+    <delete id="deleteResources">
+        DELETE FROM resc
+        WHERE resc_id IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <update id="updateResource">
+        UPDATE resc
+        SET RESC_TYPE = #{resourceType},
+            RESC_NAME =#{resourceName},
+            RESC_INFO =#{resourceInfo},
+            RESC_USABLE =#{resourceUsable}
+        WHERE RESC_ID= #{resourceId}
+    </update>
+</mapper>
+

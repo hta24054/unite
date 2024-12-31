@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<th:block th:fragment="leftbar">
+	<div class="sidebar">
+		<br><br>
+		<h3 style="color:rgb(51, 68, 102)">프로젝트</h3><br>
+		<ul class="list-group" style="list-style-type: disc; padding-left: 20px;">
+			<li class="left" style="border: none;">
+				<a th:href="@{/project/main}">진행 중 프로젝트</a>
+			</li>
+			<th:block th:if="${not #lists.isEmpty(left)}"> <!-- 진행 중 프로젝트 밑에 프로젝트 이름 표시 -->
+				<p id="currentProjectName" style="font-weight: bold; color: rgb(51, 68, 102);">
+					<a th:href="@{/project/detail(projectId=${projectId})}"
+					   style="color: rgb(51, 68, 102)"
+					   th:text="${left}"></a>
+				</p>
+			</th:block>
+			<li class="left" style="border: none;">
+				<a th:href="@{/project/complete}">완료 프로젝트</a>
+			</li>
+			<li class="left" style="border: none;">
+				<a th:href="@{/project/cancel}">취소 프로젝트</a>
+			</li>
+			<li class="left" style="border: none;">
+				<a th:href="@{/project/create}">프로젝트 추가</a>
+			</li>
+		</ul>
+	</div>
+</th:block>

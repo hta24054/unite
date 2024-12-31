@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<th:block th:fragment="page">
+	<div class="center-block">
+		<ul class="pagination justify-content-center">
+			<li class="page-item">
+				<a th:if="${page > 1}"
+				   th:href="@{/list(page=${page - 1}, memberId=${memberId})}"
+				   class="page-link">이전&nbsp;</a>
+				<a th:unless="${page > 1}"
+				   class="page-link gray">이전&nbsp;</a>
+			</li>
+
+			<li th:each="a : ${#numbers.sequence(startpage, endpage)}"
+				th:classappend="${a == page} ? 'active'">
+				<a th:if="${a != page}"
+				   th:href="@{/list(page=${a}, memberId=${memberId})}"
+				   class="page-link"
+				   th:text="${a}"></a>
+				<a th:unless="${a != page}"
+				   class="page-link"
+				   th:text="${a}"></a>
+			</li>
+
+			<li class="page-item">
+				<a th:if="${page < maxpage}"
+				   th:href="@{/list(page=${page + 1}, memberId=${memberId})}"
+				   class="page-link">다음&nbsp;</a>
+				<a th:unless="${page < maxpage}"
+				   class="page-link gray">다음&nbsp;</a>
+			</li>
+		</ul>
+	</div>
+</th:block>

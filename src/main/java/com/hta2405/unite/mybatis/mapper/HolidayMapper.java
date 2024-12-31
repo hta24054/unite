@@ -13,8 +13,6 @@ public interface HolidayMapper {
 
     String getHolidayName(LocalDate date);
 
-    int updateHoliday(Holiday holiday);
-
     List<Holiday> getHolidayList(@Param("startDate") LocalDate statDate, @Param("endDate") LocalDate endDate);
 
     int deleteHoliday(LocalDate date);

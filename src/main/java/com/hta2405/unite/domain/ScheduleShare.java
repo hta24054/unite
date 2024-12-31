@@ -1,12 +1,8 @@
 package com.hta2405.unite.domain;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
-@Getter
-@Setter
-@ToString
+@Data
 public class ScheduleShare {
     private int scheduleShareId;	//일정공유ID
     private String shareEmp;		//공유직원

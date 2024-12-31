@@ -40,8 +40,16 @@
         <li class="nav-item">
             <a class="nav-link a1" th:href="@{/mypage/password}">&nbsp;마이페이지&nbsp;</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link a1" th:href="@{/admin/emp-manage}">&nbsp;관리자&nbsp;</a>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle a1" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                &nbsp;관리자&nbsp;
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                <li><a class="dropdown-item" th:href="@{/admin/emp-manage}">직원 관리</a></li>
+                <li><a class="dropdown-item" th:href="@{/admin/holiday}">휴일 설정</a></li>
+                <li><a class="dropdown-item" th:href="@{/admin/notice}">공지사항 관리</a></li>
+                <li><a class="dropdown-item" th:href="@{/admin/resource}">자원 관리</a></li>
+            </ul>
         </li>
     </ul>
 </nav>

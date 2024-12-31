@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,18 +30,24 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain)
             throws IOException, ServletException {
         String token = resolveToken(request);
 
         if (token != null) {
+            log.error("쿠키발견!~!!!");
+            log.error("token = {}, isExpired ={}", token, jwtUtil.isExpired(token));
+
+            if (jwtUtil.isExpired(token)) {
+                removeToken(response);
+            }
             try {
                 Claims claims = jwtUtil.validateToken(token);
 
                 String username = claims.get("username", String.class);
                 String role = claims.get("role", String.class);
-                System.out.println(username);
-                System.out.println(role);
                 if (username != null) {
                     UserDetails userDetails = User.builder()
                             .username(username)
@@ -68,5 +75,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 .map(Cookie::getValue)
                 .findFirst()
                 .orElse(null);
+    }
+
+    private void removeToken(HttpServletResponse response) {
+        Cookie jwtCookie = new Cookie("jwtToken", null);
+        jwtCookie.setPath("/");
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setMaxAge(0);
+        response.addCookie(jwtCookie);
     }
 }

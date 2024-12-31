@@ -27,6 +27,6 @@ public class ResourceService {
     }
 
     public int deleteResource(List<Long> list) {
-        return resourceMapper.deleteResources(list);
+        return resourceMapper.deleteResource(list);
     }
 }

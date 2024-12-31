@@ -1,15 +1,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hta2405.unite.mybatis.mapper.ResourceMapper">
-    <!--
-        List<Resource> getAllResource();
-
-        int insertResource(Resource resource);
-
-        int deleteResources(List<Long> resourceIds);
-
-        int updateResource(Resource resource);
-        -->
     <select id="getAllResource" resultType="Resource">
         select *
         from resc

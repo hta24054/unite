@@ -165,13 +165,13 @@
 
             $("#holidayImport").on("click", function () {
                 if (confirm("모든 주말이 휴일로 등록됩니다. 진행하시겠습니까?")) {
-                    window.location.href = "${pageContext.request.contextPath}/admin/holiday/weekend";
+                    window.location.href = "../admin/holiday/weekend";
                 }
             });
 
             $("#publicHolidayImport").on("click", function () {
                 if (confirm("모든 공휴일이 휴일로 등록됩니다. 진행하시겠습니까?")) {
-                    window.location.href = "${pageContext.request.contextPath}/admin/holiday/api";
+                    window.location.href = "../admin/holiday/api";
                 }
             });
 
@@ -182,14 +182,14 @@
                 }
 
                 $.ajax({
-                    url: "/admin/holiday/insert",
-                    type: "post",
+                    url: "/admin/holiday",
+                    type: "POST",
                     data: {
                         date: $holidayDate.val(),
                         holidayName: $holidayReason.val()
                     },
                     success: function (data) {
-                        alert(data.message);
+                        alert(data);
                         $scheduleModal.modal("hide");
                         calendar.refetchEvents();
                     },
@@ -202,13 +202,13 @@
             $("#deleteHoliday").on("click", function () {
                 if (confirm("정말 삭제하시겠습니까?")) {
                     $.ajax({
-                        url: "${pageContext.request.contextPath}/admin/holiday/delete",
-                        type: "post",
+                        url: "../admin/holiday",
+                        type: "DELETE",
                         data: {
                             date: $holidayDate.val()
                         },
                         success: function (data) {
-                            alert(data.message);
+                            alert(data);
                             $scheduleModal.modal("hide");
                             calendar.refetchEvents();
                         },

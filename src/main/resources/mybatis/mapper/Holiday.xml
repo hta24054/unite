@@ -4,7 +4,9 @@
     <select id="getHolidayList" resultType="Holiday">
         SELECT *
         FROM holiday
-        WHERE HOLIDAY_DATE BETWEEN #{startDate} AND #{endDate}
+        <where>
+            HOLIDAY_DATE BETWEEN #{startDate} AND #{endDate}
+        </where>
         ORDER BY HOLIDAY_DATE
     </select>
     <insert id="insertHoliday" parameterType="Holiday">

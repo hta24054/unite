@@ -11,7 +11,7 @@
         INSERT INTO holiday (HOLIDAY_DATE, HOLIDAY_NAME)
         VALUES (#{holidayDate}, #{holidayName})
     </insert>
-    <select id="getHolidayName" resultType="Holiday">
+    <select id="getHolidayName" resultType="String">
         SELECT HOLIDAY_NAME
         FROM holiday
         WHERE HOLIDAY_DATE = #{date}
@@ -22,7 +22,8 @@
         WHERE HOLIDAY_DATE = #{holidayDate}
     </update>
     <delete id="deleteHoliday">
-        DELETE FROM holiday
+        DELETE
+        FROM holiday
         WHERE HOLIDAY_DATE = #{date}
     </delete>
 </mapper>

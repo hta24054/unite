@@ -12,7 +12,7 @@ public interface ResourceMapper {
 
     int insertResource(Resource resource);
 
-    int deleteResources(@Param("list") List<Long> list);
+    int deleteResource(@Param("list") List<Long> list);
 
     int updateResource(Resource resource);
 }

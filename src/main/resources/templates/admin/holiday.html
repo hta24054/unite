@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>휴일 설정</title>
@@ -165,13 +165,31 @@
 
             $("#holidayImport").on("click", function () {
                 if (confirm("모든 주말이 휴일로 등록됩니다. 진행하시겠습니까?")) {
-                    window.location.href = "../admin/holiday/weekend";
+                    $.ajax({
+                        url: "../admin/holiday/weekend",
+                        type: "POST",
+                        success: function (data) {
+                            alert(data);
+                        },
+                        error: function () {
+                            alert("주말 등록을 실패했습니다.");
+                        }
+                    });
                 }
             });
 
             $("#publicHolidayImport").on("click", function () {
                 if (confirm("모든 공휴일이 휴일로 등록됩니다. 진행하시겠습니까?")) {
-                    window.location.href = "../admin/holiday/api";
+                    $.ajax({
+                        url: "../admin/holiday/api",
+                        type: "POST",
+                        success: function (data) {
+                            alert(data);
+                        },
+                        error: function () {
+                            alert("공휴일 등록을 실패했습니다.");
+                        }
+                    });
                 }
             });
 

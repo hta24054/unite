@@ -1,7 +1,6 @@
 package com.hta2405.unite.controller;
 
 import com.hta2405.unite.domain.Holiday;
-import com.hta2405.unite.mybatis.mapper.HolidayMapper;
 import com.hta2405.unite.service.HolidayService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -17,11 +16,9 @@ import java.util.List;
 @Slf4j
 public class AdminController {
     private final HolidayService holidayService;
-    private final HolidayMapper holidayMapper;
 
-    public AdminController(HolidayService holidayService, HolidayMapper holidayMapper) {
+    public AdminController(HolidayService holidayService) {
         this.holidayService = holidayService;
-        this.holidayMapper = holidayMapper;
     }
 
     @GetMapping("/holiday")
@@ -31,7 +28,7 @@ public class AdminController {
 
     @PostMapping("/holiday")
     @ResponseBody
-    public String addHoliday(LocalDate date, String holidayName) {
+    public String addCustomHoliday(LocalDate date, String holidayName) {
         Holiday holiday = Holiday.builder().holidayDate(date).holidayName(holidayName).build();
         return holidayService.addHoliday(holiday);
     }
@@ -41,7 +38,6 @@ public class AdminController {
     public String deleteHoliday(LocalDate date) {
         return holidayService.deleteHoliday(date);
     }
-
 
     @GetMapping("/holiday/list")
     @ResponseBody
@@ -56,5 +52,19 @@ public class AdminController {
         return holidayService.getHolidayList(startDate, endDate);
     }
 
+    @PostMapping("/holiday/weekend")
+    @ResponseBody
+    public String addWeekend() {
+        LocalDate nowDate = LocalDate.now();
+        LocalDate endDate = nowDate.plusYears(1);
+        holidayService.addWeekend(nowDate.minusYears(1), endDate);
+        return "주말을 등록하였습니다.";
+    }
 
+    @PostMapping("/holiday/api")
+    @ResponseBody
+    public String addHolidayWithApi() {
+        holidayService.insertYearlyHoliday();
+        return "공휴일을 등록하였습니다.";
+    }
 }

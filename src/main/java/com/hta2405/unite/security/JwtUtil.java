@@ -18,7 +18,6 @@ import java.util.Date;
 public class JwtUtil {
 
     private final SecretKey SECRET_KEY;
-    private final Long EXPIRED_MS = 60 * 60 * 1000L; //1시간
 
     public JwtUtil(@Value("${spring.jwt.secret}") String secretKey) {
         this.SECRET_KEY = new SecretKeySpec(
@@ -30,6 +29,7 @@ public class JwtUtil {
     // JWT 생성
     public String generateToken(String username, String role) {
         log.info("generateToken username = {}", username);
+        long EXPIRED_MS = 60 * 60 * 1000L;
         String generatedToken = Jwts.builder()
                 .claim("username", username)
                 .claim("role", role)
@@ -51,6 +51,17 @@ public class JwtUtil {
         } catch (JwtException e) {
             log.error("토큰 오류: {}", e.getMessage());
             throw new JwtException("토큰 오류", e);
+        }
+    }
+
+    public boolean isExpired(String token) {
+        try {
+            Claims claims = getJwtParser().parseSignedClaims(token).getPayload();
+            return claims.getExpiration().before(new Date());
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            return true;
+        } catch (JwtException e) {
+            throw new IllegalArgumentException("Invalid token", e);
         }
     }
 

@@ -1,14 +1,10 @@
 package com.hta2405.unite.domain;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@ToString
+@Data
 public class Schedule {
     private int scheduleId; 		//일정코드
     private String empId;			//일정등록자
@@ -17,5 +13,5 @@ public class Schedule {
     private LocalDateTime scheduleStart;//시작일시
     private LocalDateTime scheduleEnd;//종료일시
     private String scheduleColor;    //일정색상
-    private int scheduleAllDay;		//종일
+    private boolean scheduleAllDay;		//종일
 }

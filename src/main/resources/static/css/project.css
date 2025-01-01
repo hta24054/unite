@@ -1,0 +1,156 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa; /* 밝은 배경색 */
+    color: #333; /* 기본 텍스트 색상 */
+    margin: 0;
+    padding: 0;
+    
+}
+html, body{
+	 overflow: hidden;  
+}
+/* 헤더 및 왼쪽 메뉴 */
+.header {
+    background-color: #343a40; /* 어두운 헤더 */
+    color: white;
+    padding: 20px;
+    font-size: 1.5rem;
+    text-align: center;
+    font-weight: bold;
+}
+
+.leftbar {
+    background-color: rgb(51, 68, 102);
+    color: white;
+    height: 100vh;
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 220px;
+    overflow-y: auto;
+}
+
+.leftbar a {
+    color: #f8f9fa;
+    display: block;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.leftbar a:hover {
+    background-color: #0056b3;
+}
+
+/* 완료 프로젝트 테이블 스타일 */
+table {
+    margin: 30px auto;
+    width: 90%;
+    background: white;
+    border-collapse: collapse;
+    border-spacing: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+}
+
+table caption {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #007bff;
+    padding: 20px 0;
+}
+
+table thead {
+    background-color: rgb(51, 68, 102);
+    color: white;
+}
+
+table thead th {
+    text-align: center;
+    padding: 15px;
+    font-size: 1rem;
+    border-bottom: 2px solid #0056b3;
+}
+
+table tbody tr {
+    background-color: white;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+table tbody tr:hover {
+    background-color: #f1f1f1;
+    transform: scale(1.01);
+}
+
+table tbody td {
+    padding: 10px 15px;
+    font-size: 0.95rem;
+}
+
+table tbody .btn-file {
+    background-color: #28a745; /* 초록색 버튼 */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+table tbody .btn-file:hover {
+    background-color: #218838;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .leftbar {
+        width: 100%;
+        position: relative;
+        height: auto;
+        padding: 10px;
+    }
+
+    table {
+        width: 100%;
+    }
+
+    table caption {
+        font-size: 1.5rem;
+    }
+}
+
+table.member th:nth-child(1), table.member td:nth-child(1) { width: 60px; }
+table.member th:nth-child(2), table.member td:nth-child(2) { width: 160px; }
+table.member th:nth-child(4), table.member td:nth-child(4) { width: 175px; }
+table.member th:nth-child(5), table.member td:nth-child(5) { width: 175px; }
+table.member th:nth-child(6), table.member td:nth-child(6) { width: 100px; }
+
+	/* 페이지네이션 스타일링 */
+.pagination .page-item a {
+	margin-top: 10px;
+    color: rgb(51, 68, 102);
+    background-color: #f8f9fa; /* 배경색 */
+    border: 1px solid #dee2e6; /* 테두리 */
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.pagination .page-item a:hover {
+    color: #495057; /* hover시 진한 회색 */
+    background-color: #e9ecef; /* hover시 밝은 배경 */
+    text-decoration: none;
+}
+
+.pagination .page-item.active a {
+    color: white; /* 활성화된 버튼의 텍스트 색상 */
+    background-color: rgb(51, 68, 102);
+    border-color: rgb(51, 68, 102);
+}
+	

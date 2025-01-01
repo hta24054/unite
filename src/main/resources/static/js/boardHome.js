@@ -6,7 +6,8 @@ $(function() {
 	
 	
     // 현재 페이지 URL을 확인하여 게시판 홈이면 피드형 레이아웃으로 표시
-    if (pathName === '/unite/board/home') {
+    if (pathName === '/board/home') {
+		console.log("home")
         loadBoardHome(); // 게시판 홈 데이터를 로드
     }
     
@@ -15,10 +16,10 @@ $(function() {
 	})
     
     // 왼쪽 메뉴의 boardNamw1 클릭 이벤트
-    $('.boardName1').click(function(e) {
-		e.preventDefault();
-		updateDividerHeight();
-    });
+    // $('.boardName1').click(function(e) {
+	// 	e.preventDefault();
+	// 	updateDividerHeight();
+    // });
     
     // 왼쪽 메뉴 클릭 이벤트 - 리스트형 레이아웃으로 게시글 표시
     $('.boardName2').click(function(e) {
@@ -42,99 +43,78 @@ $(function() {
 		if($(this).text() == key){
 			$(this).trigger('click'); //트리거로 click이벤트 발생
 		}
-		
 	})
 
  	// 왼쪽 글쓰기 클릭 이벤트 or 게시글 수정 버튼 클릭 이벤트
-    $(document).on('click', '.writeBtn, .postModify-link', function (e) {
-		
-		//html 초기화
-		$('.boardContent').html('');
-		
-        e.preventDefault();
-        var postPage = 'post/postWrite';//글쓰기 url
-        var title = '글쓰기';
-        var boardName2 = $('.boardTitle').text();
-        
-        if($(this).data('page') != null){//수정 버튼 누를시 data-page를 보냄 
-			postPage = $(this).data('page');
-			title = '글쓰기 수정';
-		}
-        loardBoardWrite(postPage,title,boardName2); // 글쓰기 메서드 호출
-        
-        updateDividerHeight();
-    });
+    // $(document).on('click', '.writeBtn, .postModify-link', function (e) {
+	//
+	// 	//html 초기화
+	// 	$('.boardContent').html('');
+	//
+    //     e.preventDefault();
+    //     var postPage = 'post/postWrite';//글쓰기 url
+    //     var title = '글쓰기';
+    //     var boardName2 = $('.boardTitle').text();
+    //
+    //     if($(this).data('page') != null){//수정 버튼 누를시 data-page를 보냄
+	// 		postPage = $(this).data('page');
+	// 		title = '글쓰기 수정';
+	// 	}
+    //     loardBoardWrite(postPage,title,boardName2); // 글쓰기 메서드 호출
+    //
+    //     updateDividerHeight();
+    // });
     
     // 왼쪽 글쓰기 클릭 이벤트 or 게시글 수정 버튼 클릭 이벤트
-    $(document).on('click', '.postReply-link', function (e) {
-		
-		//html 초기화
-		$('.boardContent').html('');
-		
-        e.preventDefault();
-        var postPage = $(this).data('page');
-        var title = '게시글 답글';
-        var boardName2 = $('.boardTitle').text();
-        
-		
-        loardBoardWrite(postPage,title,boardName2); // 글쓰기 메서드 호출
-        updateDividerHeight();
-    });
+    // $(document).on('click', '.postReply-link', function (e) {
+	//
+	// 	//html 초기화
+	// 	$('.boardContent').html('');
+	//
+    //     e.preventDefault();
+    //     var postPage = $(this).data('page');
+    //     var title = '게시글 답글';
+    //     var boardName2 = $('.boardTitle').text();
+	//
+	//
+    //     loardBoardWrite(postPage,title,boardName2); // 글쓰기 메서드 호출
+    //     updateDividerHeight();
+    // });
     
     
     
-    $(document).on('click', '.page-link', function(event) {
-		var nextPage = $(this).data('page');  // data-page에서 페이지 번호 가져오기
-		
-		if(boardName2 == null){
-			boardName2 = $(this).data('name');
-		}
-		
-		if(nextPage != null ){
-		    event.preventDefault();  // 기본 동작 방지 (링크 이동 방지)
-		
-			if(nextPage != ''){
-				loadBoardList(boardName2, nextPage);
-			}
-		}
-	});
+    // $(document).on('click', '.page-link', function(event) {
+	// 	var nextPage = $(this).data('page');  // data-page에서 페이지 번호 가져오기
+	//
+	// 	if(boardName2 == null){
+	// 		boardName2 = $(this).data('name');
+	// 	}
+	//
+	// 	if(nextPage != null ){
+	// 	    event.preventDefault();  // 기본 동작 방지 (링크 이동 방지)
+	//
+	// 		if(nextPage != ''){
+	// 			loadBoardList(boardName2, nextPage);
+	// 		}
+	// 	}
+	// });
     
-    $(document).on('click', '.tr-post', function(event) {
-	    event.preventDefault();  // 기본 동작 방지 (링크 이동 방지)
-	
-	    var postPage = $(this).data('page');  // data-page에서 페이지 번호 가져오기
-		var boardName2 = $(this).data('name');
-		
-		console.log("HboardName2=",boardName2)
-		
-		loadBoardPost(boardName2, postPage);
-	});
+    // $(document).on('click', '.tr-post', function(event) {
+	//     event.preventDefault();  // 기본 동작 방지 (링크 이동 방지)
+	//
+	//     var postPage = $(this).data('page');  // data-page에서 페이지 번호 가져오기
+	// 	var boardName2 = $(this).data('name');
+	//
+	// 	console.log("HboardName2=",boardName2)
+	//
+	// 	loadBoardPost(boardName2, postPage);
+	// });
     
-    $(document).on('click', '.writeBtn, .boardName2, #boardHome, #registerBtn', function(event){
-		event.preventDefault();  // 기본 동작 방지 (링크 이동 방지)
-		
-		$('.boardContent').css('padding','0');
-	})
- 	/* 
-    window.addEventListener('popstate', function(event) {
-        if (event.state && event.state.page) {
-            var page = event.state.page;
-            console.log(page);
-
-            $.ajax({
-                url: '${pageContext.request.contextPath}/board/boardWrite',
-                type: 'GET',
-                data: {"boardId":boardId},
-                success: function(response) {
-                	$(".boardTitle").text('글쓰기');
-                    $('.content').append(response);
-                },
-                error: function(xhr, status, error) {
-                    $('.content').append('<p>글쓰기 폼을 불러오는 데 실패했습니다.</p>');
-                }
-            });
-        }
-    }); */
+    // $(document).on('click', '.writeBtn, .boardName2, #boardHome, #registerBtn', function(event){
+	// 	event.preventDefault();  // 기본 동작 방지 (링크 이동 방지)
+	//
+	// 	$('.boardContent').css('padding','0');
+	// })
 
 });
 
@@ -181,26 +161,19 @@ function loadBoardHome() {
         dataType: 'json',
         success: function(data) {
         	var html = "";
-        	console.log(data)
-            if(data=={}||data==null){
+            if(data.length===0){
             	html += '<div style="margin-top: 80px; font-size:23px; font-weight:bold; margin-left: 20px;">등록된 게시글이 없습니다.</div>';
             }else{
                 html += '<div class="feed-container">';
-            	const boardList = data.boardList; // boardList 데이터
-                const postList = data.postList;  // postList 데이터
-                const empList = data.empList;   // empList 데이터
 
-                for (let i = 0; i < boardList.length; i++) {
-                    const board = boardList[i];
-                    const post = postList[i];
-					const emp = empList[i];
-                    html += AddHtmlBoardAndPost(board, post, emp, data); // 각 board, post, emp를 렌더링
+                for (let i = 0; i < data.length; i++) {
+                    html += AddHtmlBoardAndPost(data[i]);
                 }
             	
 	            html += '</div>';
             }
             $('.boardContent').html(html); // 피드형 레이아웃에 게시글 표시
-	updateDividerHeight();
+			//updateDividerHeight();
         },
         error: function() {
             alert('게시판 홈 데이터를 불러오는 데 실패했습니다.');
@@ -209,20 +182,20 @@ function loadBoardHome() {
 }
 
 //board와 post를 가져와 boardHome html 출력
-function AddHtmlBoardAndPost(board, post, emp, data) {
+function AddHtmlBoardAndPost(data) {
 	
-	let html = `<div class="board-container tr-post" data-page=${post.postId} data-name='${board.boardName2}'>
+	let html = `<div class="board-container tr-post" data-page=${data.postId} data-name='${data.boardName2}'>
 				    <div class="board-header">
-				    	${board.boardName1}`;
+				    	${data.boardName1}`;
     
-    if (board.boardName2 !== '일반게시판') {
-        html += ` > ${board.boardName2}`;
+    if (data.boardName2 !== '일반게시판') {
+        html += ` > ${data.boardName2}`;
     }
 	
-	const postContent = post.postContent;
+	const postContent = data.postContent;
 	const truncatedContent = postContent.length > 500 ? postContent.substring(0, 500) + '...' : postContent;
 	
-	const postSubject = post.postSubject;
+	const postSubject = data.postSubject;
 	const truncatedSubject = postSubject.length > 50 ? postSubject.substring(0, 50) + '...' : postSubject;
 	
 	
@@ -231,15 +204,15 @@ function AddHtmlBoardAndPost(board, post, emp, data) {
 				    
 				    <div class="board-title">
 				    	<span>`+truncatedSubject+`</span>
-				        <img src='/unite/image/comments.png' alt="댓글 이미지" class="icon"/> <span>${post.postCommentCnt}</span>
+				        <img src='/unite/image/comments.png' alt="댓글 이미지" class="icon"/> <span>${data.postCommentCnt}</span>
 				    </div>
 				    
 				    <div class="board-content" style="word-break: break-all;">`+truncatedContent+`</div>
 				    
 				    <div class="board-footer">
-				        <img src="${contextPath}/emp/profile-image?UUID=${emp.imgUUID}" alt="Profile Image">
-				        <div class="username">${data.empMap[post.postWriter]}</div>
-				        <div class="date">${post.postDate}</div>
+				        <img src="${contextPath}/emp/profile-image?UUID=${data.imgUUID}" alt="Profile Image">
+				        <div class="username">${data.ename}</div>
+				        <div class="date">${data.postDate}</div>
 				    </div>
 				</div>
 				 `;

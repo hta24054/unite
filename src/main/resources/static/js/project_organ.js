@@ -115,6 +115,7 @@ $(document).ready(function () {
                 const empLine = `
                     <div class="emp-line" data-name="${empName}" data-emp-id="${empId}" style="display: flex; align-items: center; margin-bottom: 5px;">
                         <span style="flex-grow: 1;">${empName}</span>
+                        <input type="text" id="empid" name="empid" value="${empId}">
                         <img src="${contextPath}/image/delete.png" class="remove-icon" 
                              style="cursor: pointer; width: 16px; height: 16px;" alt="삭제">
                     </div>
@@ -165,33 +166,46 @@ $(document).ready(function () {
             return;
         }
 
-        const selectedEmpNames = $('#selectedEmployees .emp-line')
-            .map(function () {
-                return $(this).data('name');
-            })
-            .get()
-            .join(', ');
+        const selectedEmployees = $('#selectedEmployees .emp-line');
+        const selectedEmpNames = [];
+        const selectedEmpIds = [];
 
-        if (selectedEmpNames === '') {
+        selectedEmployees.each(function () {
+            const empName = $(this).data('name');
+            const empId = $(this).data('emp-id');
+            selectedEmpNames.push(empName);
+            selectedEmpIds.push(empId);
+        });
+
+        if (selectedEmpNames.length === 0) {
             $('#' + targetInputId).val('');
             $('#orgChartModal').modal('hide');
         }
-		if (targetInputId === 'manager') {
-	        const empNamesArray = selectedEmpNames.split(',').filter(name => name.trim() !== '');
-	        if (empNamesArray.length > 1) {
-	            alert('책임자는 한 명만 지정할 수 있습니다.');
-	            return;
-	        }
-	    }
+
+        if (targetInputId === 'manager_id') {
+            const empNamesArray = selectedEmpNames.filter(name => name.trim() !== '');
+            if (empNamesArray.length > 1) {
+                alert('책임자는 한 명만 지정할 수 있습니다.');
+                return;
+            }
+        }
+
         const targetInput = $('#' + targetInputId);
         targetInput.prop('readonly', false);
-        targetInput.val(selectedEmpNames);
+
+        // 직원들의 이름과 ID를 '이름 (ID)' 형식으로 설정
+        const formattedNamesAndIds = selectedEmpNames.map((name, index) => {
+            return `${name} (${selectedEmpIds[index]})`;
+        }).join(', ');
+
+        targetInput.val(formattedNamesAndIds);
         targetInput.prop('readonly', true);
 
-        alert('등록된 직원: ' + selectedEmpNames);
+        alert('등록된 직원: ' + formattedNamesAndIds);
         $('#orgChartModal').modal('hide');
     });
-    
+
+
     $('#projectForm').on('submit', function(e) {
         const manager = $('#manager').val().trim();
         if (!manager) {

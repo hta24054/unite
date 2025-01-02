@@ -1,9 +1,11 @@
 package com.hta2405.unite.service;
 
+import com.hta2405.unite.command.UpdateEmpCommand;
 import com.hta2405.unite.domain.Cert;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Lang;
 import com.hta2405.unite.dto.EmpInfoDTO;
+import com.hta2405.unite.dto.EmpUpdateDTO;
 import com.hta2405.unite.mybatis.mapper.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,5 +42,13 @@ public class EmpService {
                 .jobName(jobName)
                 .langList(langList)
                 .certList(certList).build();
+    }
+
+    public int updateEmp(String empId, EmpUpdateDTO dto) {
+        Emp emp = empMapper.getEmpById(empId)
+                .orElseThrow(() -> new UsernameNotFoundException("유저 정보 없음"));
+        UpdateEmpCommand command = dto.createCommand();
+        emp = command.apply(emp);
+        return empMapper.update(emp);
     }
 }

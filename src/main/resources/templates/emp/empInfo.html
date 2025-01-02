@@ -194,10 +194,8 @@
                         if ($(this).text() === "수정") {
                             saveOriginalValues();
                             $(".editable").removeAttr("readonly")
-                                .removeAttr("disabled").css("border",
-                                "1px solid #000");
-                            $(this).text("취소").css("background-color",
-                                "red").attr("id", "cancelButton");
+                                .removeAttr("disabled").css("border", "1px solid #000");
+                            $(this).text("취소").css("background-color", "red").attr("id", "cancelButton");
                             $("#saveButton").removeAttr("disabled"); // 저장 버튼 활성화
                         } else if ($(this).text() === "취소") {
                             $(".editable").each(
@@ -220,19 +218,45 @@
                     });
 
                 // 저장 버튼 클릭 시 유효성 검사
-                $("#saveButton").click(function () {
-                    return validateForm();
+                $("#infoForm").submit(function (event) {
+                    event.preventDefault();
+                    if (!validateForm()) {
+                        return false;
+                    }
+                    if (confirm("정말로 수정하시겠습니까?")) {
+                        let formData = $(this).serialize();
+                        let empId = $("input[name='empId']").val();
+                        $.ajax({
+                            url: `../emp/${empId}`,
+                            method: 'PATCH',
+                            data: {
+                                email: $('input[name="email"]').val(),
+                                tel: $('input[name="tel"]').val(),
+                                mobile: $('input[name="mobile"]').val(),
+                                hireDate: $('input[name="hiredate"]').val(),
+                                mobile2: $('input[name="mobile2"]').val(),
+                                birthday: $('input[name="birthday"]').val(),
+                                address: $('input[name="address"]').val(),
+                                married: $('select[name="married"]').val()
+                            },
+                            success: function (data) {
+                                alert(data);
+                                location.reload();
+                            },
+                            error: function () {
+                                alert("수정 중 오류가 발생했습니다.");
+                            }
+                        });
+                    }
                 });
             });
     </script>
-
-
 </head>
 <body>
 <div class="main-container">
     <div class="content">
-        <form th:action="@{/empInfo/update}" method="post">
-            <input type="hidden" name="id" th:value="${empInfoDTO.emp.empId}">
+        <form id="infoForm">
+            <input type="hidden" name="empId" th:value="${empInfoDTO.emp.empId}">
             <table class="table">
                 <caption>
                     <h2>인사정보</h2>
@@ -354,8 +378,8 @@
                     <td>
                         <label>
                             <select name="married" class="editable" disabled>
-                                <option value="Y" th:selected="${empInfoDTO.emp.married}=='1'">Y</option>
-                                <option value="N" th:selected="${empInfoDTO.emp.married}=='0'">N</option>
+                                <option value="true" th:selected="${empInfoDTO.emp.married}==true">Y</option>
+                                <option value="false" th:selected="${empInfoDTO.emp.married}==false">N</option>
                             </select>
                         </label>
                     </td>
@@ -379,8 +403,8 @@
                 </tr>
             </table>
             <th:block th:if="${empInfoDTO.emp.empId == #authentication.name}">
-                <button type="button" id="editButton">수정</button>
-                <button type="submit" id="saveButton" disabled>저장</button>
+                <button type="button" id="editButton" class="btn btn-success">수정</button>
+                <button type="submit" id="saveButton" class="btn btn-secondary" disabled>저장</button>
             </th:block>
         </form>
     </div>

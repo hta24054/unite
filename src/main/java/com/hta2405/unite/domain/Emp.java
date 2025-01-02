@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 @ToString
-@Builder
+@Builder(toBuilder = true)
 public class Emp {
     private String empId;
     private String password;

@@ -1,6 +1,7 @@
 package com.hta2405.unite.controller;
 
 import com.hta2405.unite.domain.Emp;
+import com.hta2405.unite.domain.PaginationResult;
 import com.hta2405.unite.domain.Project;
 import com.hta2405.unite.mybatis.mapper.ProjectMapper;
 import com.hta2405.unite.service.ProjectService;
@@ -8,9 +9,12 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -60,17 +64,17 @@ public class ProjectController {
         logger.info("projectId = ", projectId);
         String name;
         try {
-            name = project.getManager_name().replace("("+project.getManager_id()+")", "").trim();
+            name = project.getManagerName().replace("("+project.getManagerId()+")", "").trim();
         } catch (StringIndexOutOfBoundsException e) {
-            logger.error("manager_id 형식이 올바르지 않습니다. 값: {}", project.getManager_id(), e);
-            throw new IllegalArgumentException("manager_id 형식이 올바르지 않습니다. 값: " + project.getManager_id());
+            logger.error("manager_id 형식이 올바르지 않습니다. 값: {}", project.getManagerId(), e);
+            throw new IllegalArgumentException("manager_id 형식이 올바르지 않습니다. 값: " + project.getManagerId());
         }
 
         if (projectId > 0) {
             //String[] manager = project.getManager_id().split(","); // 매니저 ID 분리
             //if (manager.length > 0) {
-            projectService.addProjectMember(projectId, name, project.getManager_id(), "MANAGER");
-            projectService.createTask(projectId, project.getManager_id(), name);
+            projectService.addProjectMember(projectId, name, project.getManagerId(), "MANAGER");
+            projectService.createTask(projectId, project.getManagerId(), name);
             //}
 
             // 참여자 처리
@@ -118,5 +122,53 @@ public class ProjectController {
         return "redirect:/project/main";
     }
 
+    @GetMapping("/getProjects")
+    @ResponseBody
+    public Map<String, Object> getProjects(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int favorite) {  // 0: 진행 중, 1: 즐겨찾기
+        // 현재 인증된 사용자의 ID 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userid = authentication.getName();
 
+        int limit = 5; // 페이지 당 표시할 데이터 개수
+        int listcount = projectService.mainCountList(userid, favorite); // 총 프로젝트 개수 (favorite 파라미터를 넘겨서 처리)
+        List<Project> mainList = projectService.getmainList(userid, favorite, page, limit); // 프로젝트 목록 가져오기
+
+        PaginationResult result = new PaginationResult(page, limit, listcount); // 페이지네이션 결과 계산
+        logger.info("mainList size = {}", mainList.size());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("page", page);
+        response.put("maxpage", result.getMaxpage());
+        response.put("startpage", result.getStartpage());
+        response.put("endpage", result.getEndpage());
+        response.put("listcount", listcount);
+        response.put("boardlist", mainList);
+        response.put("limit", limit);
+
+        return response;
+    }
+
+    @PostMapping("/toggleFavorite")
+    @ResponseBody
+    public Map<String, Object> toggleFavorite(@RequestParam int projectId) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            projectService.projectFavorite(projectId);
+            response.put("success", true); // 성공 상태 전달
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false); // 실패 상태 전달
+            response.put("message", "즐겨찾기 상태를 업데이트할 수 없습니다.");
+        }
+        return response; // JSON 형태로 반환
+    }
+    @PostMapping("/saveProjectColorSettings")
+    public void saveColorSettings(
+            @RequestParam int projectId,
+            @RequestParam String bgColor,
+            @RequestParam String textColor) {
+        projectService.projectColor(projectId, bgColor, textColor);
+    }
 }

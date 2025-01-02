@@ -181,6 +181,8 @@
                 console.log(data);
                 console.log(data.empList);
                 updateEmployeeTable(data.empList, data.jobName);
+            },error(){
+                console.log('error');
             }
         });
     }

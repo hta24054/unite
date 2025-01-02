@@ -1,15 +1,16 @@
 package com.hta2405.unite.domain;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 @ToString
 @Builder
 public class Job {
-    private int job_id;
-    private String job_name;
-    private int job_rank;
-
+    private int jobId;
+    private String jobName;
+    private int jobRank;
 }

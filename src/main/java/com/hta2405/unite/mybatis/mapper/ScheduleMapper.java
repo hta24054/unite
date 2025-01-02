@@ -12,7 +12,6 @@ import java.util.List;
 public interface ScheduleMapper {
 
     // 일정 리스트
-    //public JsonArray getListSchedule(String id);
     public List<Schedule> getListSchedule(String id);
 
     // 일정 등록
@@ -31,7 +30,6 @@ public interface ScheduleMapper {
     public int insertScheduleShare(Schedule schedule, ScheduleShare scheduleShare);
 
     // 공유 일정 리스트
-    //public JsonArray getListScheduleShare(String empId);
     public List<ScheduleShare> getListScheduleShare(String empId);
 
     // 공휴일 리스트

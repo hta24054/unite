@@ -77,6 +77,9 @@ $(document).ready(function(){
 				emp_id: $("#emp_id").val(),
 			},
 	        success: function(data) {
+
+
+
 	            if (data != null) {
 			        for (let i = 0; i < data.length; i++) {
 
@@ -94,6 +97,7 @@ $(document).ready(function(){
 							        isShared: false, // 공유 일정
 							    },
 	                        });
+
 	                    }
 			        }
 			    }

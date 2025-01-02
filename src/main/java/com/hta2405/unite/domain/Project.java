@@ -14,14 +14,16 @@ import java.util.Date;
 public class Project {
     private int projectId;
 
-    private String project_name;
-    private String project_start_date;
-    private String project_end_date;
-    private String manager_id;
-    private String manager_name;
-    private String project_content;
+    private String projectName;
+    private String projectStartDate;
+    private String projectEndDate;
+    private String managerId;
+    private String managerName;
+    private String projectContent;
     private String participants;
     private String viewers;
+    private String bgColor;
+    private String textColor;
 
 
     private String project_file_path;

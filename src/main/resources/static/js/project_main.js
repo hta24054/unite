@@ -80,86 +80,262 @@ $(document).ready(function() {
 	});
 
 });
+$(document).on('click', '#toggle-projects', function () {
+	const container = $('#project-container');
+	const icon = $('#toggle-icon-p');
+	const isVisible = container.is(':visible'); // 현재 열림 상태 확인
 
-function go(page){
+	if (isVisible) {
+		container.slideUp(); // 닫기
+		icon.text('∧');
+	} else {
+		container.slideDown(); // 열기
+		icon.text('∨');
+	}
+});
+$(document).on('click', '#toggle-favorite', function () {
+	const container = $('#project-favorite');
+	const icon = $('#toggle-icon-f');
+	const isVisible = container.is(':visible'); // 현재 열림 상태 확인
+
+	if (isVisible) {
+		container.slideUp(); // 닫기
+		icon.text('∧');
+	} else {
+		container.slideDown(); // 열기
+		icon.text('∨');
+	}
+});
+
+function go(page) {
 	const limit = $('#viewcount').val();
 	const data = {limit:limit, state:"ajax", page: page}
-	ajax(data);
+	//ajax(data);
+	loadProjects(1);
+	loadProjects(0);
 }
-function ajax(sdata){
-	console.log(sdata);
+// function ajax(sdata){
+// 	console.log(sdata);
+// 	$.ajax({
+// 		data: sdata,
+// 		url: "/project/getProjects",
+// 		dataType: "json",
+// 		cache: false,
+// 		success: function(data){
+// 			console.log(data);
+// 			$("#viewcount").val(data.limit);
+// 			$("thead").find("span").text("글 개수 : " + data.listcount);
+// 			if(data.listcount > 0){
+// 				$("tbody").remove();
+// 				updateBoardList(data); //게시판 내용 업데이트
+// 				generatePagination(data);
+// 			}else {
+//                 // 데이터가 없을 경우, "등록된 글이 없습니다" 메시지를 표시
+//                 $("tbody").html("<tr><td colspan='7' style='text-align:center;'>등록된 글이 없습니다</td></tr>");
+//             }
+// 		},
+// 		error: function(xhr, status, error) { // error 콜백 함수
+// 			console.error("에러 발생:", error); // 에러 메시지 출력
+// 			console.error("상태 코드:", status); // 상태 코드 출력
+// 			console.error("xhr 객체:", xhr); // xhr 객체 출력
+// 		}
+// 	});
+// }
+
+function updateBoardList(data) {
+	let ongoingProjectsHtml = '';
+	let favoriteProjectsHtml = '';
+
+	$(data.boardlist).each(function(index, project) {
+		const projectCard = `
+            <div class="project-card" data-project-id="${project.projectId}">
+				 <span><img src="../image/gear.png" style="width:30px; height: 30px; float:right;"></span>
+                 <h5 style="padding-bottom: 15px">
+                    <span style="float: left;">No.${project.projectId}</span>
+                    <span>&nbsp;${project.projectName}</span>
+                    <span 
+						class="favorite-icon ${project.projectFavorite == 1 ? 'favorite' : 'unfavorite'}" 
+						style="float: right; cursor: pointer; font-size: 1.5rem;" 
+						data-project-id="${project.projectId}" 
+						onclick="toggleFavorite(${project.projectId}, this)"
+					>
+						${project.projectFavorite == 1 ? '★' : '☆'}
+					</span>
+                </h5>
+                <p><strong>책임자:</strong> ${project.managerName}</p>
+                <p><strong>참여자:</strong> ${project.participants}</p>
+                <p><strong>열람자:</strong> ${project.viewers}</p>
+                <div class="progress">
+                    <div class="progress-bar" style="width: ${project.avgProgress}%">${project.avgProgress}%</div>
+                </div>
+                <p><strong>마감일:</strong> ${project.projectEndDate}</p>
+            </div>
+        `;
+
+		if (project.projectFavorite === 1) {
+			favoriteProjectsHtml += projectCard;
+			$('#project-favorite').html(favoriteProjectsHtml);
+		} else {
+			ongoingProjectsHtml += projectCard;
+			$('#project-container').html(ongoingProjectsHtml);
+		}
+	});
+
+}
+$(document).on('click', '.project-card img', function() {
+	var card = $(this).closest('.project-card');
+
+	// 기존 배경색과 글자색을 가져오기
+	var currentBgColor = card.css('background-color');
+	var currentTextColor = card.css('color');
+
+	// 모달에서 색상 선택기 값 초기화
+	$('#bgColorPicker').val(rgbToHex(currentBgColor));  // RGB를 HEX로 변환
+	$('#textColorPicker').val(rgbToHex(currentTextColor));  // RGB를 HEX로 변환
+
+	// 색상 변경 버튼 클릭 이벤트
+	$('#changeColorButton').off('click').on('click', function() {
+		// 선택된 색상 값을 가져오기
+		var selectedBgColor = $('#bgColorPicker').val();
+		var selectedTextColor = $('#textColorPicker').val();
+
+		// 프로젝트 카드 배경색과 글자색 변경
+		card.css('background-color', selectedBgColor);
+		card.css('color', selectedTextColor);
+
+		// 변경된 색상을 서버에 저장
+		saveColorSettings(card.data('project-id'), selectedBgColor, selectedTextColor);
+
+		// 모달 닫기
+		$('#colorModal').modal('hide');
+	});
+
+	// 모달 열기
+	$('#colorModal').modal('show');
+});
+
+// RGB 값을 HEX로 변환하는 함수
+function rgbToHex(rgb) {
+	var result = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,.*)?\)$/);
+	if (result) {
+		return "#" +
+			("0" + parseInt(result[1], 10).toString(16)).slice(-2) +
+			("0" + parseInt(result[2], 10).toString(16)).slice(-2) +
+			("0" + parseInt(result[3], 10).toString(16)).slice(-2);
+	}
+	return rgb; // 이미 HEX 형식이면 그대로 반환
+}
+
+// 서버에 색상 설정을 저장하는 함수
+function saveColorSettings(projectId, bgColor, textColor) {
 	$.ajax({
-		data: sdata,
-		url:  contextPath + "/project/getOngoingProjects",
-		dataType: "json",
-		cache: false,
-		success: function(data){
-			$("#viewcount").val(data.limit);
-			$("thead").find("span").text("글 개수 : " + data.listcount);
-			if(data.listcount > 0){
-				$("tbody").remove();
-				updateBoardList(data); //게시판 내용 업데이트
-				generatePagination(data);
-			}else {
-                // 데이터가 없을 경우, "등록된 글이 없습니다" 메시지를 표시
-                $("tbody").html("<tr><td colspan='7' style='text-align:center;'>등록된 글이 없습니다</td></tr>");
-            }
+		url: '/project/saveProjectColorSettings',  // 서버에서 색상을 저장할 URL
+		method: 'POST',
+		data: {
+			projectId: projectId,
+			bgColor: bgColor,
+			textColor: textColor
 		},
-		error: function(){
-			console.log('에러');
+		success: function(response) {
+			console.log('색상 설정이 저장되었습니다.');
+		},
+		error: function(error) {
+			console.log('색상 저장 실패:', error);
 		}
 	});
 }
 
-// 진행 중인 프로젝트 데이터 로드 함수
-function updateBoardList(data) {
-    let output = "<tbody>";
-    
-    $(data.boardlist).each(function(index, item) {
-        var participantNames = item.participantNames || [];
-        var viewerNames = item.viewers || [];
-        var participants = participantNames.length > 1 
-            ? "<span title='" + participantNames.slice(1).join(', ') + "'>" + participantNames[0] + " 외 " + (participantNames.length - 1) + "명</span>"
-            : (participantNames[0] || '없음');
-        var viewers = viewerNames.length > 1 
-            ? "<span title='" + viewerNames.slice(1).join(', ') + "'>" + viewerNames[0] + " 외 " + (viewerNames.length - 1) + "명</span>"
-            : (viewerNames[0] || '없음');
-        
-        output += `
-            <tr style="height: 80px;" class="project_main" data-project-id="${item.projectId}">
-                <td>#&nbsp;${item.projectId}</td>
-                <td>${item.projectName}</td>
-                <td>${item.empName}</td>
-                <td>${participants}</td>
-                <td>${viewers}</td>
-                <td>
-                    <div class="progress">
-                        <div class="progress-bar" role="progressbar" style="width: ${item.progressRate}%; color: white;">
-                            ${item.progressRate}%
-                        </div>
-                    </div>
-                </td>
-                <td>${item.endDate}</td>
-                ${item.isManager ? `
-                    <td>
-                        <select class="form-control project-status" style="margin:0" data-project-id="${item.projectId}" onclick="event.stopPropagation();">
-                            <option value="ongoing">진행 중</option>
-                            <option value="completed">완료</option>
-                            <option value="cancelled">취소</option>
-                        </select>
-                        <button class="btn btn-success save-status" data-project-id="${item.projectId}" style="display:none;">저장</button>
-                    </td>
-                ` : `
-                    <td colspan="2">관리 권한 없음</td>
-                `}
-            </tr>
-        `;
-    });
-    
-    output += "</tbody>";
-    $('table').append(output);
+// 즐겨찾기 토글 함수
+function toggleFavorite(projectId, element) {
+	$.ajax({
+		url: '/project/toggleFavorite',
+		type: 'POST',
+		data: { projectId: projectId },
+		success: function (response) {
+			if (response.success) {
+				// 즐겨찾기 상태 변경
+				const isFavorite = $(element).hasClass('unfavorite');
+				$(element).toggleClass('favorite unfavorite').text(isFavorite ? '★' : '☆');
+				// 프로젝트 목록 새로고침
+				loadProjects(0); // 진행 중 프로젝트
+				loadProjects(1); // 즐겨찾기 프로젝트
+			} else {
+				alert('즐겨찾기 상태를 업데이트할 수 없습니다.');
+			}
+		},
+		error: function () {
+			alert('오류가 발생했습니다.');
+		}
+	});
 }
 
+function loadProjects(favorite) {
+	$.ajax({
+		url: '/project/getProjects',
+		data: { page: 1, favorite: favorite },
+		type: 'GET',
+		dataType: 'json',
+		async: false,
+		success: function(data) {
+		//	프로젝트 데이터를 받아온 후 화면에 업데이트
+			if (favorite === 0) {
+				updateBoardList(data); // 진행 중 프로젝트
+			} else {
+				updateFavoriteProjects(data); // 즐겨찾기 프로젝트
+			}
+		},
+		error: function(xhr, status, error) {
+			console.error("Error loading projects:", error);
+		}
+	});
+}
+
+function updateFavoriteProjects(data) {
+	let favoriteProjectsHtml = '';
+	$(data.boardlist).each(function(index, project) {
+		const projectCard = `
+            <div class="project-card" data-project-id="${project.projectId}">
+                 <span><img src="../image/gear.png" style="width:30px; height: 30px; float:right;"></span>
+                 <h5 style="padding-bottom: 15px">
+                    <span style="float: left;">No.${project.projectId}</span>
+                    <span>&nbsp;${project.projectName}</span>
+                    <span 
+						class="favorite-icon ${project.projectFavorite == 1 ? 'favorite' : 'unfavorite'}" 
+						style="float: right; cursor: pointer; font-size: 1.5rem;" 
+						data-project-id="${project.projectId}" 
+						onclick="toggleFavorite(${project.projectId}, this)"
+					>
+						${project.projectFavorite == 1 ? '★' : '☆'}
+					</span>
+                </h5>
+                <p><strong>책임자:</strong> ${project.managerName}</p>
+                <p><strong>참여자:</strong> ${project.participants}</p>
+                <p><strong>열람자:</strong> ${project.viewers}</p>
+                <div class="progress">
+                    <div class="progress-bar" style="width: ${project.avgProgress}%">${project.avgProgress}%</div>
+                </div>
+                <p><strong>마감일:</strong> ${project.projectEndDate}</p>
+            </div>
+        `;
+		favoriteProjectsHtml += projectCard;
+	});
+	$('#project-favorite').html(favoriteProjectsHtml); // 즐겨찾기 목록 업데이트
+	updateProjectColors(data.boardlist);
+}
+
+function updateProjectColors(projects) {
+	projects.forEach(function(project) {
+		var projectCard = $('.project-card[data-project-id="' + project.projectId + '"]');
+
+		// 서버에서 가져온 색상 정보를 적용
+		if (project.bgColor) {
+			projectCard.css('background-color', project.bgColor);
+		}
+		if (project.textColor) {
+			projectCard.css('color', project.textColor);
+		}
+	});
+}
 
 // tr 클릭 시 상세 페이지로 이동
 function goToDetail(projectId) {
@@ -202,3 +378,4 @@ function generatePagination(data) {
 
     $('.pagination').empty().append(output);
 }
+

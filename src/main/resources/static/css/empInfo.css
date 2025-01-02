@@ -1,0 +1,118 @@
+.main-container {
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+}
+
+/* 중앙 콘텐츠 스타일 */
+.content {
+	border-radius: 50px;
+	padding: 30px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	box-sizing: border-box;
+	border-radius: 50px;
+}
+
+/* 버튼 스타일 */
+form {
+	text-align: right;
+	color: #4CAF50;
+	padding: 10px 20px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 16px;
+	margin-top: 20px;
+	text-align: right;
+}
+
+button:hover {
+	background-color: #45a049;
+}
+
+/* 테이블 스타일 */
+table  {
+	width: 90%; /* 너비 설정 */
+	border-collapse: collapse;
+	margin: 0 5%;
+	border-radius: 10px;
+}
+
+td, th {
+	border: 2px solid black;
+	padding: 5px; /* 줄여진 패딩 */
+	color: black;
+	text-align: center;
+	vertical-align: middle; /* 상하 중앙 정렬 */
+	height: 15px; /* 줄여진 높이 */
+	width: 14%;
+}
+
+th {
+	background-color: #f2f2f2;
+	font-weight: bold;
+}
+
+#tr {
+	border-top: 2px solid black;
+}
+
+h2 {
+	text-align: left;
+	color: rgb(51, 68, 102);
+	margin: 0;
+}
+
+caption {
+	caption-side: top;
+	margin-bottom: 30px;
+}
+
+input[readonly] {
+	border: none;
+	text-align: center;
+}
+
+select[disabled] {
+	border: none;
+	outline: none;
+	background-color: transparent;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	color: black;
+	text-align: center;
+}
+
+button#editButton {
+	background-color: green;
+	color: white;
+}
+
+button#cancelButton {
+	background-color: red;
+	color: white;
+}
+
+button#saveButton {
+	margin-right: 5%;
+}
+
+/* 입력 필드 스타일 */
+input[type=text], input[type=email], input[type=date], input[type=number],
+	select {
+	width: 100%;
+	padding: 10px;
+	margin: 8px 0;
+	display: inline-block;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
+}
+
+/* inline-group 스타일 추가 */
+.inline-group input, .inline-group select {
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 5px; /* 요소 간 여백 추가 */
+}

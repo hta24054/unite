@@ -1,8 +1,6 @@
 package com.hta2405.unite.service;
 
 import com.hta2405.unite.domain.Emp;
-import com.hta2405.unite.domain.Post;
-import com.hta2405.unite.domain.PostFile;
 import com.hta2405.unite.dto.*;
 import com.hta2405.unite.mybatis.mapper.BoardPostMapper;
 import com.hta2405.unite.util.ConfigUtil;
@@ -14,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
 import java.util.*;
 
 @Service

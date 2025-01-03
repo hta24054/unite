@@ -29,7 +29,7 @@ public class ProfileImgService {
     }
 
     @Transactional
-    public FileDTO changeImg(MultipartFile file, String beforeFileName, Emp emp) {
+    public FileDTO changeProfileImg(MultipartFile file, String beforeFileName, Emp emp) {
 
         //기존 파일명이 파라미터로 옴 -> 파일이 변경되지 않음.
         if (beforeFileName != null) {
@@ -48,7 +48,8 @@ public class ProfileImgService {
     }
 
     @Transactional
-    public void getProfileImage(String fileUUID, HttpServletResponse response) {
+    public void getProfileImage(Emp emp, HttpServletResponse response) {
+        String fileUUID = emp.getImgUUID();
         if (fileUUID == null || fileUUID.isEmpty()) {
             fileService.downloadFile(FILE_DIR, fileUUID, DEFAULT_PROFILE_IMAGE, response);
         } else {

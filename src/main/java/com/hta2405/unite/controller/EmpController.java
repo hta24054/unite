@@ -3,11 +3,14 @@ package com.hta2405.unite.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.dto.EmpAdminUpdateDTO;
 import com.hta2405.unite.dto.EmpInfoDTO;
 import com.hta2405.unite.dto.EmpSelfUpdateDTO;
 import com.hta2405.unite.dto.EmpTreeDTO;
 import com.hta2405.unite.service.EmpService;
+import com.hta2405.unite.service.ProfileImgService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -15,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +37,7 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public class EmpController {
     private final EmpService empService;
+    private final ProfileImgService profileImgService;
 
     @GetMapping("/info")
     public ModelAndView showEmpInfoPage(ModelAndView mv, @RequestParam(required = false) String empId) {
@@ -121,5 +126,12 @@ public class EmpController {
     public List<EmpTreeDTO> getEmpListByName(String query) {
         query = "%" + query + "%";
         return empService.getEmpListByName(query);
+    }
+
+    @GetMapping("/profile-image")
+    @ResponseBody
+    public void getProfileImage(String empId, HttpServletResponse response) {
+        Emp emp = empService.getEmpById(empId);
+        profileImgService.getProfileImage(emp, response);
     }
 }

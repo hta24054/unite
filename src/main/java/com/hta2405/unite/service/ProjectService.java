@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public interface ProjectService {
@@ -17,7 +18,10 @@ public interface ProjectService {
     void addProjectMembers(int projectId, String memberName, String memberId, String role);
     void createTask(int projectId, String empId, String memberName);
     int mainCountList(String userid, int favorite);
+    int doneCountList(String userid, int finish, int cancel);
     List<Project> getmainList(String userid, int favorite, int page, int limit);
+    List<Project> getDoneList(String userid, int page, int limit);
     void projectFavorite(int projectId);
-    void projectColor(int projectId,String bgColor,String textColor);
+    void projectColor(String userid, int projectId,String bgColor,String textColor);
+    boolean updateProjectStatus(int projectId, String status);
 }

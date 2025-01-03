@@ -24,6 +24,8 @@ public class Project {
     private String viewers;
     private String bgColor;
     private String textColor;
+    private String projectFavorite;
+    private float avgProgress;
 
 
     private String project_file_path;

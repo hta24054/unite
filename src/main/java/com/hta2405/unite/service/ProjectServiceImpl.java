@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -65,7 +66,9 @@ public class ProjectServiceImpl implements ProjectService {
     public int mainCountList(String userid, int favorite){
         return dao.mainCountList(userid, favorite);
     }
-
+    public int doneCountList(String userid, int finish, int cancel){
+        return dao.doneCountList(userid, finish, cancel);
+    }
     @Override
     public List<Project> getmainList(String userid, int favorite, int page, int limit) {
         HashMap<String, Object> map = new HashMap<>();
@@ -81,7 +84,27 @@ public class ProjectServiceImpl implements ProjectService {
     public void projectFavorite(int projectId){
         dao.projectFavorite(projectId);
     }
-    public void projectColor(int projectId,String bgColor,String textColor){
-        dao.projectColor(projectId, bgColor, textColor);
+    public void projectColor(String userid, int projectId,String bgColor,String textColor){
+        dao.projectColor(userid, projectId, bgColor, textColor);
+    }
+
+    @Override
+    public boolean updateProjectStatus(int projectId, String status) {
+        if ("completed".equals(status)) {
+            return dao.projectStatus(projectId, 1, 0);
+        } else if ("canceled".equals(status)) {
+            return dao.projectStatus(projectId, 0, 1);
+        }
+        return false;
+    }
+
+    public List<Project> getDoneList(String userid, int page, int limit){
+        HashMap<String, Object> map = new HashMap<>();
+        int startrow = (page - 1) * limit;
+        int endrow = startrow + limit;
+        map.put("userid", userid);
+        map.put("start", startrow);
+        map.put("end", endrow);
+        return dao.getDoneList(map);
     }
 }

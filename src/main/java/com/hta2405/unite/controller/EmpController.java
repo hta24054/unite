@@ -6,9 +6,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hta2405.unite.dto.EmpAdminUpdateDTO;
 import com.hta2405.unite.dto.EmpInfoDTO;
 import com.hta2405.unite.dto.EmpSelfUpdateDTO;
+import com.hta2405.unite.dto.EmpTreeDTO;
 import com.hta2405.unite.service.EmpService;
-import com.hta2405.unite.service.ProfileImgService;
-import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,15 +30,9 @@ import java.util.stream.Stream;
 @Controller
 @RequestMapping("/emp")
 @Slf4j
+@AllArgsConstructor
 public class EmpController {
-
     private final EmpService empService;
-    private final ProfileImgService profileImgService;
-
-    public EmpController(EmpService empService, ProfileImgService profileImgService) {
-        this.empService = empService;
-        this.profileImgService = profileImgService;
-    }
 
     @GetMapping("/info")
     public ModelAndView showEmpInfoPage(ModelAndView mv, @RequestParam(required = false) String empId) {
@@ -49,8 +43,6 @@ public class EmpController {
 
         //관리자 -> 부서원 조회 아닐 시 거부하는 로직 구현 필요
         EmpInfoDTO empInfoDTO = empService.getEmpInfoDTO(targetEmpId);
-        System.out.println(empInfoDTO.getJobList());
-        System.out.println(empInfoDTO.getDeptList());
         mv.addObject("empInfoDTO", empInfoDTO);
         mv.setViewName("emp/empInfo");
         return mv;
@@ -118,9 +110,16 @@ public class EmpController {
         return "인사정보 수정 성공";
     }
 
-    @GetMapping("/profile-image")
+    @GetMapping("/empTree")
     @ResponseBody
-    public void getProfileImage(String fileUUID, HttpServletResponse response) {
-        profileImgService.getProfileImage(fileUUID, response);
+    public List<EmpTreeDTO> getEmpListByDeptId(Long deptId) {
+        return empService.getEmpListByDeptId(deptId);
+    }
+
+    @GetMapping("/empTree-search")
+    @ResponseBody
+    public List<EmpTreeDTO> getEmpListByName(String query) {
+        query = "%" + query + "%";
+        return empService.getEmpListByName(query);
     }
 }

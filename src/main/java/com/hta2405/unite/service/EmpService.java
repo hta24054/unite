@@ -3,10 +3,7 @@ package com.hta2405.unite.service;
 import com.hta2405.unite.domain.Cert;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Lang;
-import com.hta2405.unite.dto.EmpAdminUpdateDTO;
-import com.hta2405.unite.dto.EmpInfoDTO;
-import com.hta2405.unite.dto.EmpSelfUpdateDTO;
-import com.hta2405.unite.dto.FileDTO;
+import com.hta2405.unite.dto.*;
 import com.hta2405.unite.mybatis.mapper.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -77,4 +74,13 @@ public class EmpService {
             certMapper.insertCert(certList);
         }
     }
+
+    public List<EmpTreeDTO> getEmpListByDeptId(Long deptId) {
+        return empMapper.getEmpListByDeptId(deptId);
+    }
+
+    public List<EmpTreeDTO> getEmpListByName(String ename) {
+        return empMapper.getEmpListByName(ename);
+    }
+
 }

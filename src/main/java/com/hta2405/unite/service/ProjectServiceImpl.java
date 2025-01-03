@@ -1,7 +1,6 @@
 package com.hta2405.unite.service;
 
 import com.hta2405.unite.domain.Emp;
-import com.hta2405.unite.domain.Job;
 import com.hta2405.unite.domain.Project;
 import com.hta2405.unite.mybatis.mapper.ProjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +14,16 @@ import java.util.Optional;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
-    private ProjectMapper dao;
+    private final ProjectMapper dao;
 
     @Autowired
     public ProjectServiceImpl(ProjectMapper dao) {
         this.dao = dao;
     }
-    public List<Emp> getHiredEmpByDeptId(long deptId){
+
+    public List<Emp> getHiredEmpByDeptId(long deptId) {
         return dao.getHiredEmpByDeptId(deptId);
-    };
+    }
 
     @Override
     public List<Map<Long, String>> getIdToJobNameMap() {
@@ -44,7 +44,6 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
 
-
     @Override
     @Transactional
     public void addProjectMember(int projectId, String memberName, String memberId, String role) {
@@ -63,7 +62,7 @@ public class ProjectServiceImpl implements ProjectService {
         dao.createTask(projectId, empId, memberName);
     }
 
-    public int mainCountList(String userid, int favorite){
+    public int mainCountList(String userid, int favorite) {
         return dao.mainCountList(userid, favorite);
     }
     public int doneCountList(String userid, int finish, int cancel){
@@ -81,7 +80,7 @@ public class ProjectServiceImpl implements ProjectService {
         return dao.getmainList(map);
     }
 
-    public void projectFavorite(int projectId){
+    public void projectFavorite(int projectId) {
         dao.projectFavorite(projectId);
     }
     public void projectColor(String userid, int projectId,String bgColor,String textColor){

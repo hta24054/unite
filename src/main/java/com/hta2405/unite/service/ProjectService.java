@@ -1,7 +1,6 @@
 package com.hta2405.unite.service;
 
 import com.hta2405.unite.domain.Emp;
-import com.hta2405.unite.domain.Job;
 import com.hta2405.unite.domain.Project;
 import org.springframework.stereotype.Service;
 

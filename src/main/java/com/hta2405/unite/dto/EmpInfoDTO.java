@@ -1,8 +1,6 @@
 package com.hta2405.unite.dto;
 
-import com.hta2405.unite.domain.Cert;
-import com.hta2405.unite.domain.Emp;
-import com.hta2405.unite.domain.Lang;
+import com.hta2405.unite.domain.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +17,6 @@ public class EmpInfoDTO {
     private Emp emp;
     private List<Lang> langList;
     private List<Cert> certList;
-    private String deptName;
-    private String jobName;
+    private List<Job> jobList;
+    private List<Dept> deptList;
 }

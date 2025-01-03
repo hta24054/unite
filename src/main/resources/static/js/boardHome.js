@@ -167,6 +167,7 @@ function loadBoardHome() {
                 html += '<div class="feed-container">';
 
                 for (let i = 0; i < data.length; i++) {
+					console.log("data ~ : ",data[i])
                     html += AddHtmlBoardAndPost(data[i]);
                 }
             	
@@ -204,14 +205,14 @@ function AddHtmlBoardAndPost(data) {
 				    
 				    <div class="board-title">
 				    	<span>`+truncatedSubject+`</span>
-				        <img src='/unite/image/comments.png' alt="댓글 이미지" class="icon"/> <span>${data.postCommentCnt}</span>
+				        <img src='/image/comments.png' alt="댓글 이미지" class="icon"/> <span>${data.postCommentCnt}</span>
 				    </div>
 				    
 				    <div class="board-content" style="word-break: break-all;">`+truncatedContent+`</div>
 				    
 				    <div class="board-footer">
-				        <img src="${contextPath}/emp/profile-image?UUID=${data.imgUUID}" alt="Profile Image">
-				        <div class="username">${data.ename}</div>
+				        <img src="/emp/profile-image?UUID=${data.imgUUID}" alt="Profile Image">
+				        <div class="username">${data.postWriter}</div>
 				        <div class="date">${data.postDate}</div>
 				    </div>
 				</div>

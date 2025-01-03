@@ -2,7 +2,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hta2405.unite.mybatis.mapper.ProjectMapper">
     <select id="getHiredEmpByDeptId" resultType="Emp">
-        SELECT e.emp_id, e.ename, e.dept_id, e.tel, e.job_id, j.job_name
+        SELECT *
         FROM emp e
         JOIN job j ON e.job_id = j.job_id
         WHERE e.dept_id = #{deptId} AND e.hired = 1
@@ -16,7 +16,7 @@
     <!-- 프로젝트 생성 -->
     <insert id="createProject" useGeneratedKeys="true" keyProperty="projectId" parameterType="Project">
         INSERT INTO project (manager_id, project_name, project_start_date, project_end_date, project_content)
-        VALUES (#{manager_id}, #{project_name}, #{project_start_date}, #{project_end_date}, #{project_content})
+        VALUES (#{managerId}, #{projectName}, #{projectStartDate}, #{projectEndDate}, #{projectContent})
     </insert>
 
     <!-- 프로젝트 멤버 추가 (책임자 추가) -->
@@ -37,4 +37,64 @@
         INSERT INTO task (emp_id, project_id, member_name)
         VALUES (#{empId}, #{projectId}, #{memberName})
     </insert>
+
+    <select id="mainCountList" resultType="int">
+        select count(*) from project p join project_member m on p.project_id = m.project_id  where m.member_id = #{userid} and p.project_favorite = #{favorite} and project_canceled = 0 and project_finished = 0 order by p.project_id
+    </select>
+
+    <select id="getmainList" resultType="Project">
+        SELECT * FROM (
+                          SELECT
+                              p.project_id,
+                              p.project_name,
+                              p.project_end_date,
+                              p.bgColor,
+                              p.textColor,
+                              COUNT(pm.project_member_id) AS member_count,
+                              SUM(pm.MEMBER_PROGRESS_RATE) / COUNT(pm.project_member_id) AS avg_progress,
+                              (SELECT e.ename
+                               FROM emp e
+                               WHERE e.emp_id = (
+                                   SELECT m.member_id
+                                   FROM project_member m
+                                   WHERE m.project_id = p.project_id
+                                     AND m.member_role = 'MANAGER'
+                                  LIMIT 1
+                      )) AS managerName,
+            (SELECT m.member_id
+             FROM project_member m
+             WHERE m.project_id = p.project_id
+             AND m.member_role = 'MANAGER') AS manager_id,
+            GROUP_CONCAT(CASE WHEN pm.member_role = 'PARTICIPANT' THEN e.ename END ORDER BY e.ename SEPARATOR ', ') AS participants,
+            GROUP_CONCAT(CASE WHEN pm.member_role = 'VIEWER' THEN e.ename END ORDER BY e.ename SEPARATOR ', ') AS viewers
+        FROM
+            project p
+            JOIN project_member pm ON p.project_id = pm.project_id
+            LEFT JOIN emp e ON pm.member_id = e.emp_id
+        WHERE
+            p.project_id IN (
+            SELECT project_id
+            FROM project_member
+            WHERE member_id = #{userid}
+            )
+          AND p.project_finished = 0
+          AND p.project_canceled = 0
+        <if test="favorite != null">
+            AND p.project_favorite = #{favorite}
+        </if>
+        GROUP BY
+            p.project_id, p.project_name, p.project_end_date
+        ORDER BY
+            p.project_id
+            LIMIT #{start}, #{end}
+            ) AS t
+    </select>
+
+    <update id="projectFavorite">
+        update project set project_favorite = case when project_favorite = 0 then 1 else 0 end where project_id = #{projectId}
+    </update>
+
+    <update id="projectColor">
+        update project set bgColor = #{bgColor}, textColor = #{textColor} where project_id = projectId
+    </update>
 </mapper>

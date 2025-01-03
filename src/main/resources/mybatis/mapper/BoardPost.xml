@@ -2,17 +2,17 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hta2405.unite.mybatis.mapper.BoardPostMapper">
     <!-- SQL 쿼리 -->
-    <select id="getBoardListAll" parameterType="Long">
-        select post.*, board.*, ifnull(cnt, 0) as cnt, emp.ename, emp.img_path, emp.img_original, emp.img_uuid, emp.img_type
+    <select id="getBoardListAll" parameterType="Long" resultType="com.hta2405.unite.dto.BoardPostEmpDTO">
+        select post.*, board.*, IFNULL(postCommentCnt, 0) as postCommentCnt, emp.ename, emp.img_path, emp.img_original, emp.img_uuid, emp.img_type
         from post
                  left join (
-            select post_id, count(*) as cnt
+            select post_id, count(*) as postCommentCnt
             from post_comment
             group by post_id
         ) pc on post.post_id = pc.post_id
                  join board on board.board_id = post.board_id
                  join emp on emp.emp_id = post.post_writer
-        where board.dept_id is null
+        where board.dept_id = 0
            or #{deptId} in (0000, 1000, 1001)
            or (#{deptId} = 1100 and board.dept_id between 1100 and 1199)
            or (#{deptId} = 1200 and board.dept_id between 1200 and 1299)
@@ -23,38 +23,79 @@
     </select>
 
     <!-- ResultMap 정의: Board, Post, Emp를 각각 매핑 -->
-<!--    <resultMap id="BoardPostResultMap" type="map">-->
-<!--        &lt;!&ndash; Board 매핑 &ndash;&gt;-->
-<!--        <association property="board" javaType="com.example.domain.Board">-->
-<!--            <id property="boardId" column="board_id" />-->
-<!--            <result property="boardName1" column="board_name1" />-->
-<!--            <result property="boardName2" column="board_name2" />-->
-<!--            <result property="deptId" column="dept_id" />-->
-<!--        </association>-->
+    <resultMap id="BoardPostEmpResultMap" type="map">
+        <!-- Board 매핑 -->
+        <association property="board" javaType="Board">
+            <id property="boardId" column="board_id" />
+            <result property="boardName1" column="board_name1" />
+            <result property="boardName2" column="board_name2" />
+            <result property="deptId" column="dept_id" />
+        </association>
 
-<!--        &lt;!&ndash; Post 매핑 &ndash;&gt;-->
-<!--        <association property="post" javaType="com.example.domain.Post">-->
-<!--            <id property="postId" column="post_id" />-->
-<!--            <result property="boardId" column="board_id" />-->
-<!--            <result property="postWriter" column="post_writer" />-->
-<!--            <result property="postSubject" column="post_subject" />-->
-<!--            <result property="postContent" column="post_content" />-->
-<!--            <result property="postDate" column="post_date" />-->
-<!--            <result property="postUpdateDate" column="post_update_date" />-->
-<!--            <result property="postReRef" column="post_re_ref" />-->
-<!--            <result property="postReLev" column="post_re_lev" />-->
-<!--            <result property="postReSeq" column="post_re_seq" />-->
-<!--            <result property="postView" column="post_view" />-->
-<!--            <result property="postCommentCnt" column="cnt" />-->
-<!--        </association>-->
+        <!-- Post 매핑 -->
+        <association property="post" javaType="Post">
+            <id property="postId" column="post_id" />
+            <result property="boardId" column="board_id" />
+            <result property="postWriter" column="post_writer" />
+            <result property="postSubject" column="post_subject" />
+            <result property="postContent" column="post_content" javaType="string"/>
+            <result property="postDate" column="post_date" />
+            <result property="postUpdateDate" column="post_update_date" />
+            <result property="postReRef" column="post_re_ref" />
+            <result property="postReLev" column="post_re_lev" />
+            <result property="postReSeq" column="post_re_seq" />
+            <result property="postView" column="post_view" />
+            <result property="postCommentCnt" column="cnt" />
+        </association>
 
-<!--        &lt;!&ndash; Emp 매핑 &ndash;&gt;-->
-<!--        <association property="emp" javaType="com.example.domain.Emp">-->
-<!--            <result property="imgPath" column="img_path" />-->
-<!--            <result property="imgOriginal" column="img_original" />-->
-<!--            <result property="imgUUID" column="img_uuid" />-->
-<!--            <result property="imgType" column="img_type" />-->
-<!--        </association>-->
-<!--    </resultMap>-->
+        <!-- Emp 매핑 -->
+        <association property="emp" javaType="com.hta2405.unite.dto.BoardPostEmpDTO">
+            <result property="imgPath" column="img_path" />
+            <result property="imgOriginal" column="img_original" />
+            <result property="imgUUID" column="img_uuid" />
+            <result property="imgType" column="img_type" />
+        </association>
+    </resultMap>
+
+    <select id="findBoardIdByName1Name2" resultType="long">
+        SELECT BOARD_ID
+        FROM board
+        WHERE BOARD_NAME1 = #{boardName1}
+        And BOARD_NAME2 = #{boardName2}
+    </select>
+
+    <insert id="insertPost">
+        INSERT INTO post (
+            BOARD_ID, POST_WRITER, POST_SUBJECT, POST_CONTENT,
+            POST_DATE, POST_UPDATE_DATE, POST_RE_REF, POST_RE_LEV, POST_RE_SEQ
+        )
+        VALUES (
+                   #{boardId}, #{postWriter}, #{postSubject}, #{postContent},
+                   NOW(), NOW(),
+                   (SELECT MAX_POST_ID FROM (SELECT IFNULL(MAX(POST_ID), 0) + 1 AS MAX_POST_ID FROM post) AS temp),
+                   0, 0
+               )
+    </insert>
+
+    <insert id="insertPostFile">
+        INSERT INTO post_file (
+        POST_FILE_PATH,
+        POST_FILE_ORIGINAL,
+        POST_FILE_UUID,
+        POST_FILE_TYPE,
+        POST_ID
+        )
+        VALUES
+        <foreach collection="postFileDTOList" item="postFile" separator=",">
+            <choose>
+                <when test="postIdCheck">
+                    (#{postFile.postFilePath}, #{postFile.postFileOriginal}, #{postFile.postFileUUID}, #{postFile.postFileType}, #{postFile.postId})
+                </when>
+                <otherwise>
+                    (#{postFile.postFilePath}, #{postFile.postFileOriginal}, #{postFile.postFileUUID}, #{postFile.postFileType}, (SELECT MAX(POST_ID) FROM post))
+                </otherwise>
+            </choose>
+        </foreach>
+    </insert>
 </mapper>
 

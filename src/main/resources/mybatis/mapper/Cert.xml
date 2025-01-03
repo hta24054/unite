@@ -6,5 +6,17 @@
         FROM cert
         WHERE emp_id = #{empId};
     </select>
+    <delete id="deleteAllCertByEmpId" parameterType="String">
+        delete
+        from cert
+        where emp_id = #{empId};
+    </delete>
+    <insert id="insertCert">
+        INSERT INTO cert (emp_id, cert_name)
+        VALUES
+        <foreach collection="list" item="cert" separator=",">
+            (#{cert.empId}, #{cert.certName})
+        </foreach>
+    </insert>
 </mapper>
 

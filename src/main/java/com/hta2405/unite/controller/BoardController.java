@@ -11,17 +11,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.*;
+
+import java.util.Collections;
+import java.util.List;
 
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024 * 5,   // 메모리 내 파일 크기 제한 (5MB)
-    maxFileSize = 1024 * 1024 * 10,        // 파일 하나의 최대 크기 (10MB)
-    maxRequestSize = 1024 * 1024 * 50      // 요청 전체 크기 (50MB)
+        fileSizeThreshold = 1024 * 1024 * 5,   // 메모리 내 파일 크기 제한 (5MB)
+        maxFileSize = 1024 * 1024 * 10,        // 파일 하나의 최대 크기 (10MB)
+        maxRequestSize = 1024 * 1024 * 50      // 요청 전체 크기 (50MB)
 )
 @Controller
 @RequestMapping("/board")
 @Slf4j
-public class BoardController{
+public class BoardController {
     private final BoardPostService boardPostService;
 
     public BoardController(BoardPostService boardPostService) {
@@ -41,7 +43,7 @@ public class BoardController{
 
         List<BoardPostEmpDTO> boardPostEmpDTOList = boardPostService.getBoardListAll(empId);
 
-        if(boardPostEmpDTOList.isEmpty()){
+        if (boardPostEmpDTOList.isEmpty()) {
             return Collections.emptyList();
         }
         return boardPostEmpDTOList;

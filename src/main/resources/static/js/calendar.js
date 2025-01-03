@@ -201,14 +201,14 @@ $(document).ready(function(){
 	        type: "post",
 	        dataType: "json",
 	        data: {
-				emp_id: $("#emp_id").val(),
-	            schedule_id: eventData.schedule_id,  // schedule_id 값 전달
-	            schedule_name: eventData.schedule_name,
-	            startAt: moment($("#startAt").val()).format('YYYY-MM-DD HH:mm'),
-    			endAt: moment($("#endAt").val()).format('YYYY-MM-DD HH:mm'),
-	            bgColor: eventData.bgColor,
-	            description: eventData.description,
-	            allDay: eventData.allDay ? 1 : 0
+				empId: $("#emp_id").val(),
+	            scheduleId: eventData.schedule_id,
+	            scheduleName: eventData.schedule_name,
+				scheduleStart: moment($("#startAt").val()).format('YYYY-MM-DD HH:mm'),
+				scheduleEnd: moment($("#endAt").val()).format('YYYY-MM-DD HH:mm'),
+				scheduleColor: eventData.bgColor,
+				scheduleContent: eventData.description,
+				scheduleAllDay: eventData.allDay ? 1 : 0
 	        },
 	        success: function(data) {
 	            fetchAllData();

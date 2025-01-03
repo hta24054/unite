@@ -23,4 +23,11 @@ public class ScheduleServiceImpl implements ScheduleService {
     public int insertSchedule(Schedule schedule) {
         return dao.insertSchedule(schedule);
     }
+
+    @Override
+    public int updateSchedule(Schedule schedule) {
+        return dao.updateSchedule(schedule);
+    }
+
+
 }

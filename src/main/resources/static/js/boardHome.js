@@ -134,23 +134,21 @@ function updateDividerHeight() {
 	}
 }
 
-function loardBoardWrite(url, title, boardName2){
-	console.log('boardName2=',boardName2)
-	$.ajax({
-		data:{"boardName2":boardName2},
-	    url: url,
-	    type: 'GET'
-	})
-	.done(function(response) {
-	    $(".boardTitle").text(title);
-	    $('.boardContent').html(response).css('padding', '20px 60px');
-	})
-	.fail(function() {
-	    alert('글쓰기 폼을 불러오는 데 실패했습니다.');
-	});
-
-
-}
+// function loardBoardWrite(url, title, boardName2){
+// 	console.log('boardName2=',boardName2)
+// 	$.ajax({
+// 		data:{"boardName2":boardName2},
+// 	    url: url,
+// 	    type: 'GET'
+// 	})
+// 	.done(function(response) {
+// 	    $(".boardTitle").text(title);
+// 	    $('.boardContent').html(response).css('padding', '20px 60px');
+// 	})
+// 	.fail(function() {
+// 	    alert('글쓰기 폼을 불러오는 데 실패했습니다.');
+// 	});
+// }
 
 // 게시판 홈(피드형) 데이터 로드 함수
 function loadBoardHome() {
@@ -165,12 +163,9 @@ function loadBoardHome() {
             	html += '<div style="margin-top: 80px; font-size:23px; font-weight:bold; margin-left: 20px;">등록된 게시글이 없습니다.</div>';
             }else{
                 html += '<div class="feed-container">';
-
                 for (let i = 0; i < data.length; i++) {
-					console.log("data ~ : ",data[i])
                     html += AddHtmlBoardAndPost(data[i]);
                 }
-            	
 	            html += '</div>';
             }
             $('.boardContent').html(html); // 피드형 레이아웃에 게시글 표시
@@ -198,7 +193,9 @@ function AddHtmlBoardAndPost(data) {
 	
 	const postSubject = data.postSubject;
 	const truncatedSubject = postSubject.length > 50 ? postSubject.substring(0, 50) + '...' : postSubject;
-	
+
+	// JavaScript에서 Date 객체로 변환하여 포맷
+	let formattedDate = new Date(data.postDate).toLocaleString();
 	
 	
     html += `       </div>
@@ -213,7 +210,7 @@ function AddHtmlBoardAndPost(data) {
 				    <div class="board-footer">
 				        <img src="/emp/profile-image?UUID=${data.imgUUID}" alt="Profile Image">
 				        <div class="username">${data.postWriter}</div>
-				        <div class="date">${data.postDate}</div>
+				        <div class="date">${formattedDate}</div>
 				    </div>
 				</div>
 				 `;

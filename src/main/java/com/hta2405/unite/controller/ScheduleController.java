@@ -69,7 +69,15 @@ public class ScheduleController {
     @PostMapping("/scheduleUpdate")
     public int updateSchedule(Schedule schedule) {
         int result =  scheduleService.updateSchedule(schedule);
-        System.out.println("schedule 수정 " + schedule);
+        //System.out.println("schedule 수정 " + schedule);
+        return result;
+    }
+
+    @ResponseBody
+    @PostMapping("/scheduleDragUpdate")
+    public int dragUpdateSchedule(Schedule schedule) {
+        int result =  scheduleService.dragUpdateSchedule(schedule);
+        System.out.println("schedule 드래그로 수정 " + schedule);
         return result;
     }
 

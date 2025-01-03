@@ -235,11 +235,11 @@ $(document).ready(function(){
 	        type: "post",
 	        dataType: "json",
 	        data: {
-	            emp_id: $("#emp_id").val(),
-	            schedule_id: info.event.id,
-	            startAt: startAt,
-	            endAt: endAt,
-	            allDay: info.event.allDay ? 1 : 0
+	            empId: $("#emp_id").val(),
+	            scheduleId: info.event.id,
+				scheduleStart: startAt,
+				scheduleEnd: endAt,
+				scheduleAllDay: info.event.allDay ? 1 : 0
 	        },
 	        success: function() {
 	            fetchAllData();

@@ -64,18 +64,17 @@
         And BOARD_NAME2 = #{boardName2}
     </select>
 
-    <insert id="insertPost">
-        INSERT INTO post (
-            BOARD_ID, POST_WRITER, POST_SUBJECT, POST_CONTENT,
-            POST_DATE, POST_UPDATE_DATE, POST_RE_REF, POST_RE_LEV, POST_RE_SEQ
-        )
-        VALUES (
-                   #{boardId}, #{postWriter}, #{postSubject}, #{postContent},
-                   NOW(), NOW(),
-                   (SELECT MAX_POST_ID FROM (SELECT IFNULL(MAX(POST_ID), 0) + 1 AS MAX_POST_ID FROM post) AS temp),
-                   0, 0
-               )
+    <insert id="insertPost" parameterType="Post" useGeneratedKeys="true" keyProperty="postId">
+        INSERT INTO post (BOARD_ID, POST_WRITER, POST_SUBJECT, POST_CONTENT,
+                          POST_DATE, POST_UPDATE_DATE, POST_RE_REF, POST_RE_LEV, POST_RE_SEQ)
+        VALUES (#{boardId}, #{postWriter}, #{postSubject}, #{postContent},
+                sysdate(), sysdate(), -1, 0, 0)
     </insert>
+    <update id="refUpdate" parameterType="Long">
+        UPDATE post
+        SET post_re_ref = #{postId}
+        WHERE post_id = #{postId}
+    </update>
 
     <insert id="insertPostFile">
         INSERT INTO post_file (
@@ -86,16 +85,12 @@
         POST_ID
         )
         VALUES
-        <foreach collection="postFileDTOList" item="postFile" separator=",">
-            <choose>
-                <when test="postIdCheck">
-                    (#{postFile.postFilePath}, #{postFile.postFileOriginal}, #{postFile.postFileUUID}, #{postFile.postFileType}, #{postFile.postId})
-                </when>
-                <otherwise>
-                    (#{postFile.postFilePath}, #{postFile.postFileOriginal}, #{postFile.postFileUUID}, #{postFile.postFileType}, (SELECT MAX(POST_ID) FROM post))
-                </otherwise>
-            </choose>
+        <foreach collection="list" item="postFile" separator=",">
+            (#{postFile.filePath},
+            #{postFile.fileOriginal},
+            #{postFile.fileUUID},
+            #{postFile.fileType},
+            #{postId})
         </foreach>
     </insert>
 </mapper>
-

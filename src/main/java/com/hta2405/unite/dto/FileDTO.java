@@ -9,7 +9,7 @@ import lombok.*;
 @ToString
 @Builder
 public class FileDTO {
-    private String originalFileName;
+    private String fileOriginal;
     private String filePath;
     private String fileType;
     private String fileUUID;

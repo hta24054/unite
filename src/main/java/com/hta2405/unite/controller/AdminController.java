@@ -83,7 +83,7 @@ public class AdminController {
 
     @GetMapping("/resource")
     public String showResourcePage() {
-        return "/admin/resource";
+        return "admin/resource";
     }
 
     @GetMapping("/resource/list")

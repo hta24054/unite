@@ -99,9 +99,6 @@ $(document).ready(function(){
 			    }
 
 			    initCalendar();
-
-			    //calendar.unselect();
-       			//calendar.render();
 	        },
 	        error: function(error) {
 	            console.log('개인 일정 리스트 불러오기 오류', error);
@@ -122,31 +119,27 @@ $(document).ready(function(){
 	            if (data != null) {
 	                // 공유 일정 데이터를 기존 이벤트 배열에 추가
 	                for (let i = 0; i < data.length; i++) {
-
 	                    // 중복 체크: schedule_id로 중복 여부 확인
-	                    if (!events.some(event => event.id === data[i].schedule_id)) {
+	                    if (!events.some(event => event.id === data[i].scheduleId)) {
 	                        events.push({
-	                            title: data[i].schedule_name,
-	                            start: data[i].schedule_start,
-	                            end: data[i].schedule_end,
-	                            backgroundColor: data[i].schedule_color,
-	                            description: data[i].schedule_content,
-	                            allDay: data[i].schedule_allDay,
-	                            id: data[i].schedule_id,
+								id: data[i].scheduleId,
+	                            title: data[i].scheduleName,
+	                            start: data[i].scheduleStart,
+	                            end: data[i].scheduleEnd,
+	                            backgroundColor: data[i].scheduleColor,
+	                            description: data[i].scheduleContent,
+	                            allDay: data[i].scheduleAllDay,
 	                            editable: false, // 수정 불가
                             	droppable: false, // 드래그 불가
 	                            extendedProps: {
 							        isShared: true, // 공유 일정
 							    },
-	                        });
+	                        })
 	                    }
 	                }
 	            }
 
 	            initCalendar();
-
-	            //calendar.unselect();
-       			//calendar.render();
 	        },
 	        error: function(error) {
 	            console.log("공유 일정 리스트 불러오기 오류", error);
@@ -213,7 +206,6 @@ $(document).ready(function(){
 	        success: function(data) {
 	            fetchAllData();
 	            $("#scheduleModal").modal("hide");
-
 	        },
 	        error: function(error) {
 	            console.log("일정 수정 오류", error);

@@ -39,5 +39,10 @@ public class ScheduleServiceImpl implements ScheduleService {
         return dao.deleteSchedule(scheduleId);
     }
 
+    @Override
+    public List<Schedule> getListSharedSchedule(String empId) {
+        return dao.getListSharedSchedule(empId);
+    }
+
 
 }

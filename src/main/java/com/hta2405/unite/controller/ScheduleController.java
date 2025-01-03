@@ -87,5 +87,22 @@ public class ScheduleController {
         return result;
     }
 
+    @GetMapping("/scheduleShare")
+    public String shareSchedule(Schedule schedule) {
+        return "schedule/scheduleShare";
+    }
+
+    @ResponseBody
+    @PostMapping("/sharedScheduleList")
+    public List<Schedule> sharedScheduleList() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return new ArrayList<>();
+        }
+        String empId = authentication.getName();
+        List<Schedule> sharedSchedules = scheduleService.getListSharedSchedule(empId);
+        return sharedSchedules;
+    }
+
 
 }

@@ -13,4 +13,6 @@ public interface ScheduleService {
     public int updateSchedule(Schedule schedule);
 
     public int dragUpdateSchedule(Schedule schedule);
+
+    public int deleteSchedule(int scheduleId);
 }

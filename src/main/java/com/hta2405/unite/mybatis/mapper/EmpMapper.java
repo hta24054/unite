@@ -10,4 +10,6 @@ public interface EmpMapper {
     Optional<Emp> getEmpById(String empId);
 
     int update(Emp emp);
+
+    String getImgOriginal(String fileUUID);
 }

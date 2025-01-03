@@ -2,6 +2,7 @@ package com.hta2405.unite.service;
 
 import com.hta2405.unite.domain.Holiday;
 import com.hta2405.unite.mybatis.mapper.HolidayMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -26,6 +27,7 @@ import java.util.TreeMap;
 import static java.time.format.DateTimeFormatter.ofPattern;
 
 @Service
+@Slf4j
 public class HolidayService {
     private final HolidayMapper holidayMapper;
     private final String apiKey;
@@ -173,7 +175,7 @@ public class HolidayService {
                 holidays.put(date, name);
             }
         } catch (Exception e) {
-            System.err.println("Error parsing XML response: " + e.getMessage());
+            log.info("Error parsing XML response = {}", e.getMessage());
         }
     }
 }

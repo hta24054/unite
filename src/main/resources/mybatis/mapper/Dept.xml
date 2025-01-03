@@ -6,5 +6,12 @@
         FROM dept
         WHERE dept_id = (SELECT dept_id FROM emp WHERE emp_id = #{empId})
     </select>
+    <select id="getAllDept" parameterType="String">
+        SELECT *
+        FROM dept
+        WHERE DEPT_ID != 0
+           OR DEPT_NAME != '관리자'
+        ORDER BY DEPT_ID
+    </select>
 </mapper>
 

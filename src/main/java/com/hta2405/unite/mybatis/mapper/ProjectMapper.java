@@ -1,10 +1,7 @@
 package com.hta2405.unite.mybatis.mapper;
 
-import com.hta2405.unite.domain.Board;
 import com.hta2405.unite.domain.Emp;
-import com.hta2405.unite.domain.Job;
 import com.hta2405.unite.domain.Project;
-import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;

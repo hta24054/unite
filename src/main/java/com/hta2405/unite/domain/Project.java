@@ -2,9 +2,6 @@ package com.hta2405.unite.domain;
 
 import lombok.*;
 
-import java.time.LocalDate;
-import java.util.Date;
-
 @Getter
 @Setter
 @NoArgsConstructor

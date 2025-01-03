@@ -1,12 +1,16 @@
 package com.hta2405.unite.controller;
 
 import com.hta2405.unite.domain.Schedule;
+import com.hta2405.unite.domain.ScheduleShare;
 import com.hta2405.unite.service.ScheduleService;
+import com.hta2405.unite.service.ScheduleShareService;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,9 +33,12 @@ public class ScheduleController {
     private static final Logger logger = LoggerFactory.getLogger(ScheduleController.class);
 
     private ScheduleService scheduleService;
+    private ScheduleShareService scheduleShareService;
 
-    public ScheduleController(ScheduleService scheduleService) {
+    @Autowired
+    public ScheduleController(ScheduleService scheduleService, ScheduleShareService scheduleShareService) {
         this.scheduleService = scheduleService;
+        this.scheduleShareService = scheduleShareService;
     }
 
     @GetMapping("/calender")
@@ -93,15 +100,22 @@ public class ScheduleController {
     }
 
     @ResponseBody
-    @PostMapping("/sharedScheduleList")
+    @GetMapping("/sharedScheduleList")
     public List<Schedule> sharedScheduleList() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return new ArrayList<>();
         }
         String empId = authentication.getName();
-        List<Schedule> sharedSchedules = scheduleService.getListSharedSchedule(empId);
+        List<Schedule> sharedSchedules = scheduleShareService.getListSharedSchedule(empId);
         return sharedSchedules;
+    }
+
+    @ResponseBody
+    @PostMapping("/scheduleShareAdd")
+    public int insertScheduleShare(Schedule schedule, ScheduleShare scheduleShare) {
+        int result = scheduleShareService.insertScheduleShare(schedule, scheduleShare);
+        return result;
     }
 
 

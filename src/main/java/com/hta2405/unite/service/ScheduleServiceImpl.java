@@ -9,40 +9,34 @@ import java.util.List;
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
 
-    private ScheduleMapper dao;
-    public ScheduleServiceImpl(ScheduleMapper schedule) {
-        this.dao = schedule;
+    private ScheduleMapper scheduleDAO;
+
+    public ScheduleServiceImpl(ScheduleMapper scheduleDAO) {
+        this.scheduleDAO = scheduleDAO;
     }
 
     @Override
     public List<Schedule> getListSchedule(String id) {
-        return dao.getListSchedule(id);
+        return scheduleDAO.getListSchedule(id);
     }
 
     @Override
     public int insertSchedule(Schedule schedule) {
-        return dao.insertSchedule(schedule);
+        return scheduleDAO.insertSchedule(schedule);
     }
 
     @Override
     public int updateSchedule(Schedule schedule) {
-        return dao.updateSchedule(schedule);
+        return scheduleDAO.updateSchedule(schedule);
     }
 
     @Override
     public int dragUpdateSchedule(Schedule schedule) {
-        return dao.dragUpdateSchedule(schedule);
+        return scheduleDAO.dragUpdateSchedule(schedule);
     }
 
     @Override
     public int deleteSchedule(int scheduleId) {
-        return dao.deleteSchedule(scheduleId);
+        return scheduleDAO.deleteSchedule(scheduleId);
     }
-
-    @Override
-    public List<Schedule> getListSharedSchedule(String empId) {
-        return dao.getListSharedSchedule(empId);
-    }
-
-
 }

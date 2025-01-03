@@ -109,7 +109,6 @@
                 <form th:action="@{/scheduleAdd}" name="scheduleEvent" method="post">
                     <input type="hidden" id="schedule_id" name="schedule_id" th:value="${schedule_id}">
                     <input type="hidden" id="emp_id" name="emp_id" th:value="${#authentication.name}">
-                    <!-- <input type="hidden" id="share_emp" name="share_emp" th:value="${share_emp.join(',')}"> -->
                     <input type="hidden" id="share_emp" name="share_emp" th:value="${share_emp}">
 
                     <div class="form-group">

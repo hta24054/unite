@@ -112,7 +112,6 @@ public class AdminController {
     @ResponseBody
     public String deleteResource(@RequestParam("selectedIds[]") long[] selectedIds) {
         List<Long> list = Arrays.stream(selectedIds).boxed().toList();
-        System.out.println(list);
         int result = resourceService.deleteResource(list);
         if (result < 1) {
             return "자원 삭제 실패";

@@ -207,7 +207,7 @@ $(document).ready(function () {
 
 
     $('#projectForm').on('submit', function(e) {
-        const manager = $('#manager').val().trim();
+        const manager = $('#managerId').val().trim();
         if (!manager) {
             alert('책임자를 지정해 주세요.');
             e.preventDefault();  // 제출 취소

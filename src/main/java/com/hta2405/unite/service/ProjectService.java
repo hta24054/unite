@@ -2,6 +2,7 @@ package com.hta2405.unite.service;
 
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Project;
+import com.hta2405.unite.dto.ProjectDetailDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,4 +24,6 @@ public interface ProjectService {
     void projectFavorite(int projectId);
     void projectColor(String userid, int projectId,String bgColor,String textColor);
     boolean updateProjectStatus(int projectId, String status);
+    String getProjectName(int projectId);
+    List<ProjectDetailDTO> getProjectDetail1(int projectId, String userid);
 }

@@ -3,6 +3,7 @@ package com.hta2405.unite.controller;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.PaginationResult;
 import com.hta2405.unite.domain.Project;
+import com.hta2405.unite.dto.ProjectDetailDTO;
 import com.hta2405.unite.mybatis.mapper.ProjectMapper;
 import com.hta2405.unite.service.ProjectService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -225,4 +227,22 @@ public class ProjectController {
     }
     @GetMapping("/complete")
     public String complete() {return "project/project_complete";}
+
+    @GetMapping("/detail")
+    public ModelAndView detail(int projectId, ModelAndView mv) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userid = authentication.getName();
+
+        String left = projectService.getProjectName(projectId);
+        List<ProjectDetailDTO> detail_Progress = projectService.getProjectDetail1(projectId, userid);
+
+
+
+        mv.setViewName("project/project_detail");
+        mv.addObject("left", left);
+        mv.addObject("project", detail_Progress);
+
+        return mv;
+    }
+
 }

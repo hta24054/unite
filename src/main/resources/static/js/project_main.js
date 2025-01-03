@@ -352,13 +352,15 @@ function updateFavoriteProjects(data) {
                         ${project.projectFavorite == 1 ? '★' : '☆'}
                     </span>
                 </h5>
-                <p><strong>책임자:</strong> ${project.managerName}</p>
-                <p><strong>참여자:</strong> ${participantsText}</p>
-                <p><strong>열람자:</strong> ${viewersText}</p>
-                <p><strong>마감일:</strong> ${project.projectEndDate}</p>
-                <div class="progress">
-                    <div class="progress-bar" style="width: ${project.avgProgress}%">${project.avgProgress}%</div>
-                </div>
+                <span class="project-detail-link" onclick="goToProjectDetail(${project.projectId})">
+					<p><strong>책임자:</strong> ${project.managerName}</p>
+					<p><strong>참여자:</strong> ${participantsText}</p>
+					<p><strong>열람자:</strong> ${viewersText}</p>
+					<p><strong>마감일:</strong> ${project.projectEndDate}</p>
+					<div class="progress">
+						<div class="progress-bar" style="width: ${project.avgProgress}%">${project.avgProgress}%</div>
+					</div>
+				</span>
             </div>
         `;
 		favoriteProjectsHtml += projectCard;
@@ -366,7 +368,9 @@ function updateFavoriteProjects(data) {
 	$('#project-favorite').html(favoriteProjectsHtml); // 즐겨찾기 목록 업데이트
 	updateProjectColors(data.boardlist);
 }
-
+function goToProjectDetail(projectId) {
+	window.location.href = `/project/detail?projectId=${projectId}`;
+}
 function updateProjectColors(projects) {
 	projects.forEach(function(project) {
 		var projectCard = $('.project-card[data-project-id="' + project.projectId + '"]');
@@ -379,11 +383,6 @@ function updateProjectColors(projects) {
 			projectCard.css('color', project.textColor);
 		}
 	});
-}
-
-// tr 클릭 시 상세 페이지로 이동
-function goToDetail(projectId) {
-	window.location.href = `${contextPath}/project/detail?projectId=${projectId}`;
 }
 
 

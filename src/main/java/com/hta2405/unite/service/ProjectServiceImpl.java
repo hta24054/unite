@@ -2,6 +2,7 @@ package com.hta2405.unite.service;
 
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Project;
+import com.hta2405.unite.dto.ProjectDetailDTO;
 import com.hta2405.unite.mybatis.mapper.ProjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -105,5 +106,12 @@ public class ProjectServiceImpl implements ProjectService {
         map.put("start", startrow);
         map.put("end", endrow);
         return dao.getDoneList(map);
+    }
+
+    public String getProjectName(int projectId) {
+        return dao.getProjectName(projectId);
+    }
+    public List<ProjectDetailDTO> getProjectDetail1(int projectId, String userid) {
+        return dao.getProjectDetail1(projectId, userid);
     }
 }

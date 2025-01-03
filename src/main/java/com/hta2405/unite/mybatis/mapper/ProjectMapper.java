@@ -2,6 +2,7 @@ package com.hta2405.unite.mybatis.mapper;
 
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Project;
+import com.hta2405.unite.dto.ProjectDetailDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
@@ -23,4 +24,6 @@ public interface ProjectMapper {
     void projectFavorite(int projectId);
     void projectColor(String userid, int projectId, String bgColor,String textColor);
     boolean projectStatus(int projectId, int complete, int cancel);
+    String getProjectName(int projectId);
+    List<ProjectDetailDTO> getProjectDetail1(int projectId, String userid);
 }

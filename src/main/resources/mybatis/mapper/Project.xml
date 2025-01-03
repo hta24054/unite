@@ -80,6 +80,7 @@
             )
           AND p.project_finished = 0
           AND p.project_canceled = 0
+          AND pm.member_id = #{userid}
         <if test="favorite != null">
             AND p.project_favorite = #{favorite}
         </if>
@@ -128,7 +129,7 @@
                           WHERE m.project_id = p.project_id
                             AND m.member_role = 'MANAGER'
                          LIMIT 1
-             )) AS emp_name,
+             )) AS managerName,
         (SELECT m.member_id
          FROM project_member m
          WHERE m.project_id = p.project_id
@@ -156,4 +157,19 @@
             ) AS t;
     </select>
 
+    <select id="getProjectName" resultType="String">
+        select project_name from project where project_id = #{projectId}
+    </select>
+    <select id="getProjectDetail1">
+        select e.ename, m.member_id, m.member_designated, m.member_progress_rate, p.project_id,
+               (select m2.member_id
+                from project_member m2
+                where m2.project_id = p.project_id
+                  and m2.member_role = 'MANAGER') as manager_id
+        from project p
+                 join project_member m on p.project_id = m.project_id
+                 join emp e on m.member_id = e.emp_id
+        where p.project_id = #{projectId} and m.member_role != 'VIEWER'
+        order by e.ename
+    </select>
 </mapper>

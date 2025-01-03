@@ -51,7 +51,7 @@ public class ScheduleController {
         String id = authentication.getName(); // 로그인한 사용자의 ID (username)
 
         List<Schedule> schedules = scheduleService.getListSchedule(id);
-        System.out.println("schedules " + schedules);
+        //System.out.println("schedules " + schedules);
 
         return schedules;
     }
@@ -59,9 +59,11 @@ public class ScheduleController {
 
     @ResponseBody
     @PostMapping("/scheduleAdd")
-    public String scheduleAdd(Schedule schedule) {
-        scheduleService.insertSchedule(schedule);
-        return "redirect:calender";
+    public int insertSchedule(Schedule schedule) {
+        int result = scheduleService.insertSchedule(schedule);
+
+        System.out.println("schedule 등록 " + schedule);
+        return result;
     }
 
 

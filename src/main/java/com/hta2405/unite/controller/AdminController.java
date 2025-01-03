@@ -11,6 +11,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Arrays;
@@ -154,5 +158,10 @@ public class AdminController {
             return "공지사항 삭제 실패";
         }
         return "공지사항 삭제 성공";
+    }
+
+    @GetMapping("/emp-manage")
+    public String showEmpManage(){
+        return "/admin/empManage";
     }
 }

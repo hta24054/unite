@@ -5,7 +5,6 @@ import com.hta2405.unite.domain.PaginationResult;
 import com.hta2405.unite.domain.Project;
 import com.hta2405.unite.mybatis.mapper.ProjectMapper;
 import com.hta2405.unite.service.ProjectService;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,20 +25,20 @@ public class ProjectController {
     private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
     private final ProjectMapper projectMapper;
 
-    private ProjectService projectService;
+    private final ProjectService projectService;
 
     public ProjectController(ProjectService projectService, ProjectMapper projectMapper) {
         this.projectService = projectService;
         this.projectMapper = projectMapper;
     }
 
-    @GetMapping(value="/main")
-    public String main(){
+    @GetMapping(value = "/main")
+    public String main() {
         return "project/project_main";
     }
 
     @GetMapping(value = "/create")
-    public String create(){
+    public String create() {
         return "project/project_create";
     }
 
@@ -64,7 +62,7 @@ public class ProjectController {
         logger.info("projectId = ", projectId);
         String name;
         try {
-            name = project.getManagerName().replace("("+project.getManagerId()+")", "").trim();
+            name = project.getManagerName().replace("(" + project.getManagerId() + ")", "").trim();
         } catch (StringIndexOutOfBoundsException e) {
             logger.error("manager_id 형식이 올바르지 않습니다. 값: {}", project.getManagerId(), e);
             throw new IllegalArgumentException("manager_id 형식이 올바르지 않습니다. 값: " + project.getManagerId());
@@ -164,6 +162,7 @@ public class ProjectController {
         }
         return response; // JSON 형태로 반환
     }
+
     @PostMapping("/saveProjectColorSettings")
     public void saveColorSettings(
             @RequestParam int projectId,

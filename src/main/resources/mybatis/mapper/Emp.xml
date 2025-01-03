@@ -38,5 +38,9 @@
             hired          = #{hired}
         where emp_id = #{empId}
     </update>
+    <select id="getImgOriginal" resultType="String">
+        SELECT IMG_ORIGINAL FROM emp
+        WHERE IMG_UUID = #{fileUUID}
+    </select>
 </mapper>
 

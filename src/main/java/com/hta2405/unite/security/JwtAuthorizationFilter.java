@@ -37,7 +37,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String token = resolveToken(request);
 
         if (token != null) {
-            log.error("쿠키발견!~!!!");
             log.error("token = {}, isExpired ={}", token, jwtUtil.isExpired(token));
 
             if (jwtUtil.isExpired(token)) {

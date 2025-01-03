@@ -74,31 +74,26 @@ $(document).ready(function(){
 	        type: "get",
 	        dataType: "json",
 	        data: {
-				emp_id: $("#emp_id").val(),
+				emp_id: $("#emp_id").val()
 			},
 	        success: function(data) {
-
-
-
 	            if (data != null) {
 			        for (let i = 0; i < data.length; i++) {
-
-			            // 중복 체크: schedule_id로 중복 여부 확인
-	                    if (!events.some(event => event.id === data[i].schedule_id)) {
-	                        events.push({
-	                            title: data[i].schedule_name,
-	                            start: data[i].schedule_start,
-	                            end: data[i].schedule_end,
-	                            backgroundColor: data[i].schedule_color,
-	                            description: data[i].schedule_content,
-	                            allDay: data[i].schedule_allDay,
-	                            id: data[i].schedule_id,
-	                            extendedProps: {
-							        isShared: false, // 공유 일정
-							    },
-	                        });
-
-	                    }
+						// 중복 체크: schedule_id로 중복 여부 확인
+						if (!events.some(event => event.id === data[i].scheduleId)) {
+							events.push({
+								title: data[i].scheduleName,
+								start: data[i].scheduleStart,
+								end: data[i].scheduleEnd,
+								backgroundColor: data[i].scheduleColor,
+								description: data[i].scheduleContent,
+								allDay: data[i].scheduleAllDay,
+								id: data[i].scheduleId,
+								extendedProps: {
+									isShared: false, // 공유 일정
+								},
+							});
+						}
 			        }
 			    }
 

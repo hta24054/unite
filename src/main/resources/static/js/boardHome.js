@@ -22,28 +22,28 @@ $(function() {
     // });
     
     // 왼쪽 메뉴 클릭 이벤트 - 리스트형 레이아웃으로 게시글 표시
-    $('.boardName2').click(function(e) {
-		
-		$('.boardName2,.left a').removeClass('menuActive');
-		$(this).addClass('menuActive');
-		$(this).parent().parent().prev('a').addClass('menuActive');
-		
-		//html 초기화
-		$('.boardContent').html('');
-		
-        e.preventDefault();
-        boardName2 = $(this).text(); // 클릭된 메뉴 항목의 URL
-
-        loadBoardList(boardName2, 1); // 클릭한 메뉴에 맞는 게시판 데이터를 로드
-        
-		updateDividerHeight();
-    });
-
-	$('.boardName2').each(function(){ //홈에서 클릭한 boardName2 실행
-		if($(this).text() == key){
-			$(this).trigger('click'); //트리거로 click이벤트 발생
-		}
-	})
+    // $('.boardName2').click(function(e) {
+	//
+	// 	$('.boardName2,.left a').removeClass('menuActive');
+	// 	$(this).addClass('menuActive');
+	// 	$(this).parent().parent().prev('a').addClass('menuActive');
+	//
+	// 	//html 초기화
+	// 	$('.boardContent').html('');
+	//
+    //     e.preventDefault();
+    //     boardName2 = $(this).text(); // 클릭된 메뉴 항목의 URL
+	//
+    //     loadBoardList(boardName2, 1); // 클릭한 메뉴에 맞는 게시판 데이터를 로드
+    //
+	// 	updateDividerHeight();
+    // });
+	//
+	// $('.boardName2').each(function(){ //홈에서 클릭한 boardName2 실행
+	// 	if($(this).text() == key){
+	// 		$(this).trigger('click'); //트리거로 click이벤트 발생
+	// 	}
+	// })
 
  	// 왼쪽 글쓰기 클릭 이벤트 or 게시글 수정 버튼 클릭 이벤트
     // $(document).on('click', '.writeBtn, .postModify-link', function (e) {
@@ -125,8 +125,8 @@ function updateDividerHeight() {
     const sidebarHeight = sidebar.offsetHeight;
 	const contentHeight = content.offsetHeight;
 	
-	var scrollT = $(document).scrollTop();	//스크롤바의 상단위치        
-	var scrollH = $(document).height(); 	//스크롤바를 갖는 div의 높이       
+	var scrollT = $(document).scrollTop();	//스크롤바의 상단위치        
+	var scrollH = $(document).height(); 	//스크롤바를 갖는 div의 높이       
 	if(scrollT + scrollH > sidebarHeight) { //스크롤바가 아래 쪽에 위치할 때 
 		sidebar.style.minHeight = contentHeight + "px";  
 	}else{

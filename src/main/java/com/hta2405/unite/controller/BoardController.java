@@ -1,11 +1,15 @@
 package com.hta2405.unite.controller;
 
+import com.hta2405.unite.domain.Board;
+import com.hta2405.unite.domain.PaginationResult;
 import com.hta2405.unite.dto.BoardDTO;
 import com.hta2405.unite.dto.BoardHomeDeptDTO;
 import com.hta2405.unite.dto.BoardPostEmpDTO;
 import com.hta2405.unite.dto.PostDTO;
 import com.hta2405.unite.service.BoardPostService;
 import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,8 +17,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 @MultipartConfig(
@@ -63,10 +69,35 @@ public class BoardController {
         return boardPostEmpDTOList;
     }
 
+    @GetMapping("/boardList")
+    public String boardList(
+                        @RequestParam(defaultValue = "1") int page,
+                        @RequestParam(defaultValue = "10") int limit,
+                        BoardDTO boardDTO,
+                        Model model,
+                        HttpSession session) {
+        boardSidebar_dept(model);
+        session.setAttribute("referer", "list");
+
+
+        HashMap<String, Object> map =  boardPostService.getBoardListAndListCount(page, limit, boardDTO);
+
+        PaginationResult result = new PaginationResult(page, limit, (int) map.get("listCount"));
+
+        model.addAttribute("page", page);
+        model.addAttribute("maxPage", result.getMaxpage());
+        model.addAttribute("startPage", result.getStartpage());
+        model.addAttribute("endPage", result.getEndpage());
+        model.addAttribute("listCount", map.get("listCount"));
+        model.addAttribute("postList", map.get("postList"));
+        model.addAttribute("limit", limit);
+        model.addAttribute("boardName2", boardDTO.getBoardName2());
+        return "board/boardList";
+    }
+
     @GetMapping(value = "/post/postWrite")
     public String boardPostWrite(Model model) {
         boardSidebar_dept(model);
-
         return "post/postWrite";
     }
 
@@ -75,7 +106,7 @@ public class BoardController {
     public boolean boardPostAdd(
             PostDTO postDTO,
             BoardDTO boardDTO,
-            @RequestParam(value = "files", required = false) List<MultipartFile> files) {
+            @RequestParam(value = "attachFiles", required = false) List<MultipartFile> files) {
 
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

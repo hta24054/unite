@@ -413,21 +413,27 @@ function submitForm() {
         formData.append("attach_file" + j++, file);
     });
 
+	console.log(formData)
+
     $.ajax({
         method: 'POST',
-        url: '../board/post/add',
+        url: 'add',
         dataType: 'json',
         data: formData,
         processData: false,
         contentType: false,
         cache: false,
         success: function (data) {
-            alert(data.message);
-            location.href = "home";
+			if(data){
+				alert('게시글이 작성되었습니다.');
+				return location.href = "../home";
+			}
+			alert('게시글이 작성 중 오류가 발생하였습니다.');
+            location.href = "../home";
         },
         error: function (xhr, desc, err) {
             alert('에러가 발생하였습니다.');
-            location.href = "home";
+            location.href = "../home";
         }
     });
 }
@@ -560,7 +566,7 @@ document.addEventListener("drop", function (event) {
 					</div>
 					<div class="form-group2">
 						<label for="board_subject" class="labelName">제목</label>
-						<input name="board_subject" id="board_subject" type="text" maxlength="100"
+						<input name="postSubject" id="board_subject" type="text" maxlength="100"
 							   class="form-control2" placeholder="제목을 입력하세요" style="padding-left: 10px;" required>
 					</div>
 					<div class="form-group2-file">
@@ -570,12 +576,12 @@ document.addEventListener("drop", function (event) {
 							이 곳에 파일을 드래그 하세요. 또는
 							<label class="fileLabel">
 								파일선택
-								<input type="file" id="upfile" onchange="addFile(this);" multiple />
+								<input type="file" name="files" id="upfile" onchange="addFile(this);" multiple />
 							</label>
 						</div>
 					</div>
 					<div class="file-list"></div>
-					<textarea class="summernote form-control2" id="board_content" name="board_content" required></textarea>
+					<textarea class="summernote form-control2" id="board_content" name="postContent" required></textarea>
 					<div class="form-group-btn">
 						<button type="submit" class="btn registerBtn">등록</button>
 					</div>

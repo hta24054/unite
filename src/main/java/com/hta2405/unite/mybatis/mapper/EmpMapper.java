@@ -8,4 +8,6 @@ import java.util.Optional;
 @Mapper
 public interface EmpMapper {
     Optional<Emp> getEmpById(String empId);
+
+    int update(Emp emp);
 }

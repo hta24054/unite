@@ -1,7 +1,6 @@
 package com.hta2405.unite.service;
 
 import com.hta2405.unite.domain.Schedule;
-
 import java.util.List;
 
 public interface ScheduleService {
@@ -15,6 +14,4 @@ public interface ScheduleService {
     public int dragUpdateSchedule(Schedule schedule);
 
     public int deleteSchedule(int scheduleId);
-
-    public List<Schedule> getListSharedSchedule(String empId);
 }

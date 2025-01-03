@@ -57,9 +57,8 @@
 			<div>
 				<input type="hidden" id="schedule_id" name="schedule_id" th:value="${schedule_id}">
 				<input type="hidden" id="emp_id" name="emp_id" th:value="${#authentication.name}">
-				<!-- <input type="hidden" id="share_emp" name="share_emp" th:value="${share_emp.join(',')}"> -->
 				<input type="hidden" id="share_emp" name="share_emp" th:value="${share_emp}">
-				
+
 				<div class="form-group row">
 					<label for="schedule_name" class="col-sm-2 col-form-label">일정명</label>
 					<div class="col-sm-8">
@@ -108,8 +107,8 @@
 		        	<p class="col-sm-2">공유자</p>
 		        	<div class="col-sm-8">
 		        		<div id="scheduleShareEmp"></div>
-		        		<a th:href="@{javascript:void(0)}" data-target="scheduleShareEmp" id="scheduleShareBtn">+ 공유자 선택</a>
-		        	</div>
+						<a href="javascript:void(0);" th:attr="data-target='scheduleShareModal'" id="scheduleShareBtn">+ 공유자 선택</a>
+					</div>
 		        </div>
 	        
 		        <div class="form-group row">
@@ -149,13 +148,16 @@
 		</div>
 	</div>
 
-    <script>
+    <script th:inline="javascript">
+
+		sharedEmployees();
+
 	    $("#scheduleShareBtn").on("click", function(e) {
 			e.preventDefault();
 			
 	        const targetId = $(this).data('target');
 	        localStorage.setItem('selectedEmpId', targetId);
-	        
+
 	        $('#scheduleShareModal').modal('show');
 	    });
 		
@@ -180,9 +182,9 @@
 	    });
 	
 	    // 저장 버튼 클릭 시 직원 정보 등록
-	    $('#btnSave').on('click', function() {
-	        insertEmp();  // 직원 등록 함수 호출
-	    });
+		$('#btnSave').on('click', function() {
+			insertEmp();
+		});
 
 		$('#btnShareRegister').on('click', function(e) {
 			e.preventDefault();
@@ -204,7 +206,7 @@
 			}
 
 			$.ajax({
-				url: '/schedule/scheduleShareAdd',
+				url: /*[[@{/schedule/scheduleShareAdd}]]*/, // 타임리프 URL 적용
 				method: 'post',
 				dataType: 'json',
 				data: shareData,
@@ -241,18 +243,19 @@
 			});
 		});
 
-
 	    function addEventToCalendar(eventData) {
 	        const event = {
 	            title: eventData.schedule_name,
 	            start: eventData.startAt,
 	            end: eventData.endAt,
 	            backgroundColor: eventData.bgColor,
-	            //description: eventData.description,
+	            description: eventData.description,
 	            allDay: eventData.allDay === 1,
+				/*
 				extendedProps: {
 					description: eventData.description
 				}
+				*/
 	        };
 
 			// 캘린더 객체 가져오기
@@ -303,9 +306,22 @@
 	    $('#scheduleShareModal').on('hidden.bs.modal', function() {
 	        $('input[name="selectedEmp"]').prop('checked', false); 
 	    });
-        
-        function insertEmp() {
+
+		function sharedEmployees() {
+			const shareEmpVal = $('#share_emp').val();
+			const shareEmpArr = shareEmpVal.split(',');
+			const targetEmp = $('#scheduleShareEmp');
+
+			targetEmp.empty();
+			shareEmpArr.forEach(empId => {
+				const employeeSpan = $('<span class="selected-emp mr-2">').text(empId);
+				targetEmp.append(employeeSpan);
+			});
+		}
+
+		function insertEmp() {
             const targetEmpId = localStorage.getItem('selectedEmpId');
+
             if (!targetEmpId) {
                 alert('유효한 입력 필드가 선택되지 않았습니다.');
                 return;
@@ -325,9 +341,11 @@
             }
 
             $('#share_emp').val(selectedEmpData.map(emp => emp.id).join(','));
+			sharedEmployees();
+
 
             // 선택된 직원 이름
-            const targetEmp = $('#' + targetEmpId);
+			const targetEmp = $('#scheduleShareEmp');
             targetEmp.empty(); // 이전 선택 직원들을 제거
             selectedEmpData.forEach(emp => {
                 const empEl = $('<span class="selected_emp mr-2">').text(emp.name);

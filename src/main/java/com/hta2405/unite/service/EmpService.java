@@ -7,13 +7,11 @@ import com.hta2405.unite.dto.*;
 import com.hta2405.unite.mybatis.mapper.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -26,15 +24,13 @@ public class EmpService {
     private final JobMapper jobMapper;
     private final DeptMapper deptMapper;
 
-    public Optional<Emp> getEmpById(String empId) {
+    public Emp getEmpById(String empId) {
         return empMapper.getEmpById(empId);
     }
 
     @Transactional
     public EmpInfoDTO getEmpInfoDTO(String empId) {
-        Emp emp = getEmpById(empId).orElseThrow(
-                () -> new UsernameNotFoundException("유저를 찾을 수 없습니다."));
-
+        Emp emp = getEmpById(empId);
         return EmpInfoDTO.builder()
                 .emp(emp)
                 .deptList(deptMapper.getAllDept())
@@ -45,9 +41,8 @@ public class EmpService {
 
     @Transactional
     public int updateEmpByAdmin(String empId, MultipartFile file, EmpAdminUpdateDTO dto) {
-        Emp emp = empMapper.getEmpById(empId)
-                .orElseThrow(() -> new UsernameNotFoundException("유저 정보 없음"));
-        FileDTO fileDTO = profileImgService.changeImg(file, dto.getBeforeFileName(), emp);
+        Emp emp = empMapper.getEmpById(empId);
+        FileDTO fileDTO = profileImgService.changeProfileImg(file, dto.getBeforeFileName(), emp);
         emp.updateByAdmin(dto, fileDTO);
         updateLangAndCert(dto);
         return empMapper.update(emp);
@@ -55,9 +50,8 @@ public class EmpService {
 
     @Transactional
     public int updateEmpBySelf(String empId, MultipartFile file, EmpSelfUpdateDTO dto) {
-        Emp emp = empMapper.getEmpById(empId)
-                .orElseThrow(() -> new UsernameNotFoundException("유저 정보 없음"));
-        FileDTO fileDTO = profileImgService.changeImg(file, dto.getBeforeFileName(), emp);
+        Emp emp = empMapper.getEmpById(empId);
+        FileDTO fileDTO = profileImgService.changeProfileImg(file, dto.getBeforeFileName(), emp);
         emp.updateBySelf(dto, fileDTO);
         return empMapper.update(emp);
     }
@@ -82,5 +76,4 @@ public class EmpService {
     public List<EmpTreeDTO> getEmpListByName(String ename) {
         return empMapper.getEmpListByName(ename);
     }
-
 }

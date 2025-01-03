@@ -5,5 +5,38 @@
         SELECT * FROM emp
         WHERE EMP_ID = #{empId}
     </select>
+
+    <update id="update" parameterType="Emp">
+        update emp
+        set password       = #{password},
+            ename          = #{ename},
+            role           = #{role},
+            dept_id        = #{deptId},
+            job_id         = #{jobId},
+            gender         = #{gender},
+            email          = #{email},
+            tel            = #{tel},
+            mobile         = #{mobile},
+            mobile2        = #{mobile2},
+            img_path       = #{imgPath},
+            img_original   = #{imgOriginal},
+            img_uuid       = #{imgUUID},
+            img_type       = #{imgType},
+            hiredate       = #{hireDate},
+            hiretype       = #{hireType},
+            birthday       = #{birthday},
+            birthday_type  = #{birthdayType},
+            school         = #{school},
+            major          = #{major},
+            bank           = #{bank},
+            account        = #{account},
+            address        = #{address},
+            married        = #{married},
+            child          = #{child},
+            etype          = #{etype},
+            vacation_count = #{vacationCount},
+            hired          = #{hired}
+        where emp_id = #{empId}
+    </update>
 </mapper>
 

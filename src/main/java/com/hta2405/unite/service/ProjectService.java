@@ -16,4 +16,8 @@ public interface ProjectService {
     void addProjectMember(int projectId, String memberName, String memberId, String role);
     void addProjectMembers(int projectId, String memberName, String memberId, String role);
     void createTask(int projectId, String empId, String memberName);
+    int mainCountList(String userid, int favorite);
+    List<Project> getmainList(String userid, int favorite, int page, int limit);
+    void projectFavorite(int projectId);
+    void projectColor(int projectId,String bgColor,String textColor);
 }

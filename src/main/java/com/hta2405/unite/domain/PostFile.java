@@ -8,10 +8,10 @@ import lombok.*;
 @ToString
 @Builder
 public class PostFile {
-	private Long postFileId;
-	private Long postId;
-	private String postFilePath;
-	private String postFileOriginal;
-	private String postFileUUID;
-	private String postFileType;
+    private Long postFileId;
+    private Long postId;
+    private String postFilePath;
+    private String postFileOriginal;
+    private String postFileUUID;
+    private String postFileType;
 }

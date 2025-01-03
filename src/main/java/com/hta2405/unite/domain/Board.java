@@ -8,8 +8,8 @@ import lombok.*;
 @ToString
 @Builder
 public class Board {
-	private Long boardId;
-	private String boardName1;
-	private String boardName2;
-	private Long deptId;
+    private Long boardId;
+    private String boardName1;
+    private String boardName2;
+    private Long deptId;
 }

@@ -1,31 +1,20 @@
 package com.hta2405.unite.dto;
 
-import com.hta2405.unite.command.UpdateEmpCommand;
-import com.hta2405.unite.command.UpdateEmpSelfEmpCommand;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
-import java.time.LocalDate;
-
-@AllArgsConstructor
 @Getter
 @Setter
 @ToString
-public class EmpSelfUpdateDTO implements EmpUpdateDTO{
-    private String id;
+@NoArgsConstructor
+@AllArgsConstructor
+public class EmpSelfUpdateDTO {
     private String email;
     private String tel;
     private String mobile;
     private String mobile2;
-    private LocalDate hireDate;
-    private LocalDate birthday;
+    private String bank;
+    private String account;
     private String address;
     private boolean married;
-
-    @Override
-    public UpdateEmpCommand createCommand() {
-        return new UpdateEmpSelfEmpCommand(this);
-    }
+    private String beforeFileName;       // 이전 파일 이름
 }

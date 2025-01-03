@@ -22,6 +22,13 @@ public class BoardPostService {
     private final BoardPostMapper boardPostMapper;
     private final EmpService empService;
 
+    public List<BoardHomeDeptDTO> getBoardListByEmpId(String empId) {
+        Emp emp = empService.getEmpById(empId).orElseThrow(() -> new RuntimeException("Emp not found"));
+        Long deptId = emp.getDeptId();
+
+        return boardPostMapper.getBoardListByDeptId(deptId);
+    }
+
     public List<BoardPostEmpDTO> getBoardListAll(String empId) {
         Emp emp = empService.getEmpById(empId).orElseThrow(() -> new RuntimeException("Emp not found"));
         Long deptId = emp.getDeptId();
@@ -42,6 +49,7 @@ public class BoardPostService {
     public boolean addPost(BoardDTO boardDTO, PostDTO postDTO, List<MultipartFile> files) {
         try {
             log.info("boardDTO: "+ boardDTO.toString());
+            log.info("files: "+ files.toString());
 
             // 1. 게시판 ID 가져오기
             Long boardId = boardPostMapper.findBoardIdByName1Name2(boardDTO);
@@ -57,11 +65,14 @@ public class BoardPostService {
             }
 
             // 3. 첨부파일 처리
-            if (files != null && !files.isEmpty()) {
+            if (!files.isEmpty()) {
                 List<PostFileDTO> postFileDTOList = new ArrayList<>();
 
                 for (MultipartFile file : files) {
                     String originalFilename = file.getOriginalFilename();
+                    if(originalFilename == null|| originalFilename.isEmpty()) {
+                        continue;
+                    }
                     String uuid = UUID.randomUUID().toString();
                     String fileName = uuid + "_" + originalFilename;
 
@@ -81,16 +92,18 @@ public class BoardPostService {
                     postFileDTO.setPostFileUUID(uuid);
                     postFileDTO.setPostFileType(file.getContentType());
 
+                    log.info("file0: "+ postFileDTO.toString());
                     postFileDTOList.add(postFileDTO);
                 }
 
                 // 첨부파일 삽입
-                int filesInserted = postFile_insert(postFileDTOList, false);
-                if (filesInserted != postFileDTOList.size()) {
-                    throw new RuntimeException("첨부파일 삽입 실패");
+                if(!postFileDTOList.isEmpty()) {
+                    int filesInserted = postFile_insert(postFileDTOList, false);
+                    if (filesInserted != postFileDTOList.size()) {
+                        throw new RuntimeException("첨부파일 삽입 실패");
+                    }
                 }
             }
-
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -103,4 +116,5 @@ public class BoardPostService {
         num += boardPostMapper.insertPostFile(postFileDTOList, postIdCheck);
         return num;
     }
+
 }

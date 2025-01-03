@@ -1,6 +1,7 @@
 package com.hta2405.unite.controller;
 
 import com.hta2405.unite.dto.BoardDTO;
+import com.hta2405.unite.dto.BoardHomeDeptDTO;
 import com.hta2405.unite.dto.BoardPostEmpDTO;
 import com.hta2405.unite.dto.PostDTO;
 import com.hta2405.unite.service.BoardPostService;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
@@ -29,8 +31,20 @@ public class BoardController{
     }
 
     @GetMapping(value = "/home")//board/write
-    public String boardHome() {
+    public String boardHome(Model model) {
+        //sidebar 부서게시판 설정
+        boardSidebar_dept(model);
+
         return "board/boardHome";
+    }
+
+    //sidebar 부서게시판 설정
+    private void boardSidebar_dept(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String empId = authentication.getName();
+
+        List<BoardHomeDeptDTO> BoardDeptList = boardPostService.getBoardListByEmpId(empId);
+        model.addAttribute("boardScope", BoardDeptList);
     }
 
     @ResponseBody
@@ -48,7 +62,9 @@ public class BoardController{
     }
 
     @GetMapping(value = "/post/postWrite")
-    public String boardPostWrite() {
+    public String boardPostWrite(Model model) {
+        boardSidebar_dept(model);
+
         return "post/postWrite";
     }
 

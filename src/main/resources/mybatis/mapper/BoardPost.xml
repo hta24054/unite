@@ -1,7 +1,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hta2405.unite.mybatis.mapper.BoardPostMapper">
-    <!-- SQL 쿼리 -->
+    <select id="getBoardListByDeptId" parameterType="Long" resultType="com.hta2405.unite.dto.BoardHomeDeptDTO">
+        SELECT *
+        FROM board
+        WHERE
+            #{deptId} IN (0000, 1000, 1001) AND dept_id != 0
+           OR (#{deptId} = 1100 AND dept_id between 1100 and 1199)
+           OR (#{deptId} = 1200 AND dept_id between 1200 and 1299)
+           OR (#{deptId} = 1300 AND dept_id between 1300 and 1399)
+           OR (#{deptId} = 1400 AND dept_id between 1400 and 1499)
+           OR dept_id = #{deptId}
+    </select>
+
     <select id="getBoardListAll" parameterType="Long" resultType="com.hta2405.unite.dto.BoardPostEmpDTO">
         select post.*, board.*, IFNULL(postCommentCnt, 0) as postCommentCnt, emp.ename, emp.img_path, emp.img_original, emp.img_uuid, emp.img_type
         from post

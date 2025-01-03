@@ -258,7 +258,7 @@ $(document).ready(function(){
 				type: "post",
 		        dataType: "json",
 		        data: {
-		            schedule_id: eventData.schedule_id,  // schedule_id 값 전달
+		            scheduleId: eventData.schedule_id,
 		        },
 		        success: function(data) {
 		            fetchAllData();

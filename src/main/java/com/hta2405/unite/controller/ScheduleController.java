@@ -49,7 +49,6 @@ public class ScheduleController {
         }
 
         String id = authentication.getName(); // 로그인한 사용자의 ID (username)
-
         List<Schedule> schedules = scheduleService.getListSchedule(id);
         //System.out.println("schedules " + schedules);
 
@@ -60,7 +59,6 @@ public class ScheduleController {
     @PostMapping("/scheduleAdd")
     public int insertSchedule(Schedule schedule) {
         int result = scheduleService.insertSchedule(schedule);
-
         //System.out.println("schedule 등록 " + schedule);
         return result;
     }
@@ -68,7 +66,7 @@ public class ScheduleController {
     @ResponseBody
     @PostMapping("/scheduleUpdate")
     public int updateSchedule(Schedule schedule) {
-        int result =  scheduleService.updateSchedule(schedule);
+        int result = scheduleService.updateSchedule(schedule);
         //System.out.println("schedule 수정 " + schedule);
         return result;
     }
@@ -76,8 +74,16 @@ public class ScheduleController {
     @ResponseBody
     @PostMapping("/scheduleDragUpdate")
     public int dragUpdateSchedule(Schedule schedule) {
-        int result =  scheduleService.dragUpdateSchedule(schedule);
-        System.out.println("schedule 드래그로 수정 " + schedule);
+        int result = scheduleService.dragUpdateSchedule(schedule);
+        //System.out.println("schedule 드래그로 수정 " + schedule);
+        return result;
+    }
+
+    @ResponseBody
+    @PostMapping("/scheduleDelete")
+    public int deleteSchedule(int scheduleId) {
+        int result = scheduleService.deleteSchedule(scheduleId);
+        //System.out.println("schedule 삭제 " + result);
         return result;
     }
 

@@ -16,5 +16,12 @@
         VALUES (#{empId}, #{scheduleName}, #{scheduleContent}, #{scheduleStart}, #{scheduleEnd}, #{scheduleColor}, #{scheduleAllDay})
     </insert>
 
+    <update id="updateSchedule">
+        UPDATE schedule
+        SET    schedule_name = #{scheduleName}, schedule_start = #{scheduleStart}, schedule_end = #{scheduleEnd},
+               schedule_color = #{scheduleColor}, schedule_content = #{scheduleContent}, schedule_allDay = #{scheduleAllDay}
+        WHERE  schedule_id = #{scheduleId} AND emp_id = #{empId}
+    </update>
+
 
 </mapper>

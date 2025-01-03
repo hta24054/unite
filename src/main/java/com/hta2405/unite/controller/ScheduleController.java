@@ -56,13 +56,20 @@ public class ScheduleController {
         return schedules;
     }
 
-
     @ResponseBody
     @PostMapping("/scheduleAdd")
     public int insertSchedule(Schedule schedule) {
         int result = scheduleService.insertSchedule(schedule);
 
-        System.out.println("schedule 등록 " + schedule);
+        //System.out.println("schedule 등록 " + schedule);
+        return result;
+    }
+
+    @ResponseBody
+    @PostMapping("/scheduleUpdate")
+    public int updateSchedule(Schedule schedule) {
+        int result =  scheduleService.updateSchedule(schedule);
+        System.out.println("schedule 수정 " + schedule);
         return result;
     }
 

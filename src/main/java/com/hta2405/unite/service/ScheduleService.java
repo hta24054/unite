@@ -10,4 +10,5 @@ public interface ScheduleService {
 
     public int insertSchedule(Schedule schedule);
 
+    public int updateSchedule(Schedule schedule);
 }

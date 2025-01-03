@@ -23,5 +23,12 @@
         WHERE  schedule_id = #{scheduleId} AND emp_id = #{empId}
     </update>
 
+    <update id="dragUpdateSchedule">
+        UPDATE schedule
+        SET    schedule_start = #{scheduleStart}, schedule_end = #{scheduleEnd},
+               schedule_allDay = #{scheduleAllDay}
+        WHERE  schedule_id = #{scheduleId} AND emp_id = #{empId}
+    </update>
+
 
 </mapper>

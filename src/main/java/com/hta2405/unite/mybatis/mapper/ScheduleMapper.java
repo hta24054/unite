@@ -30,7 +30,7 @@ public interface ScheduleMapper {
     public int insertScheduleShare(Schedule schedule, ScheduleShare scheduleShare);
 
     // 공유 일정 리스트
-    public List<ScheduleShare> getListScheduleShare(String empId);
+    public List<Schedule> getListSharedSchedule(String empId);
 
     // 공휴일 리스트
     // public List<Holiday> getHoliday(LocalDate startDate, LocalDate endDate);

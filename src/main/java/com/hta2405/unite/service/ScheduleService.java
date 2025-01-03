@@ -15,4 +15,6 @@ public interface ScheduleService {
     public int dragUpdateSchedule(Schedule schedule);
 
     public int deleteSchedule(int scheduleId);
+
+    public List<Schedule> getListSharedSchedule(String empId);
 }

@@ -1,22 +1,18 @@
 package com.hta2405.unite.dto;
 
-import com.hta2405.unite.command.UpdateEmpAdminCommand;
-import com.hta2405.unite.command.UpdateEmpCommand;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.hta2405.unite.domain.Cert;
+import com.hta2405.unite.domain.Lang;
+import lombok.*;
 
-import java.io.File;
 import java.time.LocalDate;
 import java.util.List;
 
-@AllArgsConstructor
 @Getter
 @Setter
 @ToString
-public class EmpAdminUpdateDTO implements EmpUpdateDTO {
-    private File file;                   // 바이너리 파일
+@AllArgsConstructor
+@NoArgsConstructor
+public class EmpAdminUpdateDTO {
     private String ename;                // 이름
     private String gender;               // 성별 (남/여)
     private String email;                // 이메일
@@ -34,16 +30,11 @@ public class EmpAdminUpdateDTO implements EmpUpdateDTO {
     private LocalDate birthday;          // 생일
     private String birthdayType;         // 생일 유형 (양력/음력)
     private String address;              // 주소
-    private List<String> cert;           // 자격증 (중복 가능)
+    private List<Cert> cert;           // 자격증 (중복 가능)
     private String school;               // 학교명
     private boolean married;             // 결혼 여부 (1/0)
-    private List<String> lang;           // 언어 능력 (중복 가능)
+    private List<Lang> lang;           // 언어 능력 (중복 가능)
     private String major;                // 전공
     private boolean child;               // 자녀 여부 (1/0)
     private String beforeFileName;       // 이전 파일 이름
-
-    @Override
-    public UpdateEmpCommand createCommand() {
-        return new UpdateEmpAdminCommand(this);
-    }
 }

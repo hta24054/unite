@@ -7,28 +7,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/empInfo.js}"></script>
     <!--<jsp:include page="../common/header.jsp"/>-->
     <!--<jsp:include page="empInfo_leftbar.jsp"/>-->
     <style>
         table, .table {
-            width: 90%;
+            width: 80%;
             border-collapse: collapse;
-            margin: 0 5%;
-            border-radius: 10px;
-        }
-
-        /* 이미지 크기를 고정 */
-        #photo img {
-            width: 170px; /* 원하는 너비로 설정 */
-            height: 200px; /* 원하는 높이로 설정 */
-            object-fit: cover; /* 이미지가 셀 크기에 맞게 잘리더라도 유지 */
-        }
-
-        /* 테이블 셀 크기를 고정 */
-        #photo {
-            width: 7%; /* 셀 너비 고정 */
-            height: 7%; /* 셀 높이 고정 */
-            vertical-align: middle; /* 수직 정렬 설정 */
+            margin: auto;
         }
 
         th {
@@ -37,13 +23,12 @@
         }
 
         table {
-            border-radius: 10px;
             margin-top: 10px;
         }
 
         td, th {
             border: 2px solid black;
-            padding: 10px;
+            padding: 15px;
             color: black;
             vertical-align: middle;
             text-align: center;
@@ -52,15 +37,6 @@
 
         #tr {
             border-top: 2px solid black;
-        }
-
-        .table th {
-            padding: 10px;
-        }
-
-        .table td {
-            vertical-align: middle;
-            padding: 5px;
         }
 
         h2 {
@@ -72,185 +48,84 @@
         /* h2의 기본 여백 제거 */
         caption {
             caption-side: top;
-            margin-bottom: 15px;
+            margin-bottom: 30px;
         }
 
         /* 캡션과 테이블 간격 설정 */
-        input[readonly] {
-            border: none;
-            text-align: center;
+        #main_title {
+            color: #334466;
+            margin-left: 500px;
+            /*margin-bottom: 20px;*/
+            font-weight: bold;
         }
 
-        /* 테두리 제거 */
-        select[disabled] {
-            border: none; /* 기본 테두리 제거 */
-            outline: none; /* 포커스 테두리 제거 */
-            background-color: transparent; /* 배경색 제거 */
-            -webkit-appearance: none; /* 웹킷 브라우저 (Chrome, Safari 등) 기본 스타일 제거 */
-            -moz-appearance: none; /* Firefox 브라우저 기본 스타일 제거 */
-            appearance: none; /* 기타 브라우저 기본 스타일 제거 */
+        .main-container {
+            padding-top: 0;
+        }
+
+        .cert-item, .lang-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px; /* 각 행 간격 추가 */
+        }
+
+        .cert-input, .lang-input {
+            flex: 1;
+        }
+
+        .cert-add, .lang-add {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+        }
+
+        #certifications, #languages {
+            position: relative;
+            padding-bottom: 40px; /* 추가 버튼과 입력 필드 간 간격 확보 */
+        }
+
+        button {
+            margin-left: 10px;
+        }
+
+        .cert-item button, .lang-item button {
+            margin-left: 5px;
+        }
+
+        .table, .table th, .table td {
+            border: 2px solid black;
+        }
+
+        td, th {
+            border: 2px solid black;
+            padding: 4px; /* 기존 15px에서 줄임 */
+            line-height: 1.5; /* 텍스트 줄 간격 설정 */
             color: black;
+            vertical-align: middle; /* 텍스트 수직 중앙 정렬 */
             text-align: center;
+            width: 14%;
+            height: 40px; /* 최소 높이 설정 */
         }
 
-        button#editButton {
-            background-color: green;
-            border: 0px;
-            margin-top: 1%;
-            border-radius: 10px;
-            color: white;
-            border-radius: 10px;
+        .table, .table th, .table td {
+            border: 2px solid black;
         }
 
-        button#cancelButton {
-            background-color: red;
-            border: 0px;
-            border-radius: 10px;
-            color: white;
+        .button-container {
+            width: 80%; /* 테이블과 동일한 너비로 설정 */
+            margin: 10px auto 0; /* 위쪽 간격 추가, 중앙 정렬 */
+            text-align: right; /* 버튼을 오른쪽 정렬 */
         }
 
-        button#saveButton {
-            margin-right: 5%;
-            margin-top: 1%;
-            border: 0px;
-            border-radius: 10px;
+        .lang-add {
+            display: none;
         }
 
-        button#saveButton:disabled:hover {
-            background-color: white; /* 비활성화 상태에서도 원래 배경색 유지 */
-            cursor: not-allowed;
+        .cert-add {
+            display: none;
         }
-
-        /* 비활성화 상태임을 나타내는 커서 */
     </style>
 
-    <script>
-        $(document).ready(
-            function () {
-                var originalValues = {};
-
-                // 원래 값을 저장하는 함수
-                function saveOriginalValues() {
-                    $(".editable").each(function () {
-                        var inputName = $(this).attr("name");
-                        originalValues[inputName] = $(this).val();
-                    });
-                }
-
-                // 유효성 검사 함수
-                function validateEmail(email) {
-                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    return emailRegex.test(email);
-                }
-
-                function validatePhoneNumber(phoneNumber) {
-                    const phoneNumberRegex = /^\d{2,4}-\d{3,4}-\d{4}$/;
-                    return phoneNumberRegex.test(phoneNumber);
-                }
-
-                function validateTelNumber(telNumber) {
-                    const telNumberRegex = /^\d{2,3}-\d{4}-\d{4}$/;
-                    return telNumberRegex.test(telNumber);
-                }
-
-                function validateForm() {
-                    const $email = $("#email");
-                    const $phoneNumber = $("#mobile");
-                    const $telNumber = $("#tel");
-                    const $emergencyNumber = $("#mobile2");
-
-                    let isValid = true;
-
-                    if (!validateEmail($email.val())) {
-                        alert("유효한 이메일을 입력하세요.");
-                        $email.focus();
-                        isValid = false;
-                    }
-
-                    if (!validatePhoneNumber($phoneNumber.val())) {
-                        alert("유효한 휴대폰 번호를 입력하세요. 예: 010-1234-5678");
-                        $phoneNumber.focus();
-                        isValid = false;
-                    }
-
-                    if (!validateTelNumber($telNumber.val())) {
-                        alert("유효한 내선 번호를 입력하세요. 예: 123-4567-8910");
-                        $telNumber.focus();
-                        isValid = false;
-                    }
-
-                    if (!validatePhoneNumber($emergencyNumber.val())) {
-                        alert("유효한 긴급 연락처를 입력하세요. 예: 010-1234-5678");
-                        $emergencyNumber.focus();
-                        isValid = false;
-                    }
-
-                    return isValid;
-                }
-
-                // 수정 버튼 클릭 시
-                $("#editButton").click(
-                    function () {
-                        if ($(this).text() === "수정") {
-                            saveOriginalValues();
-                            $(".editable").removeAttr("readonly")
-                                .removeAttr("disabled").css("border", "1px solid #000");
-                            $(this).text("취소").css("background-color", "red").attr("id", "cancelButton");
-                            $("#saveButton").removeAttr("disabled"); // 저장 버튼 활성화
-                        } else if ($(this).text() === "취소") {
-                            $(".editable").each(
-                                function () {
-                                    var inputName = $(this)
-                                        .attr("name");
-                                    $(this).val(
-                                        originalValues[inputName]);
-                                    $(this)
-                                        .attr("readonly",
-                                            "readonly").attr(
-                                        "disabled",
-                                        "disabled").css(
-                                        "border", "none");
-                                });
-                            $(this).text("수정").css("background-color",
-                                "green").attr("id", "editButton");
-                            $("#saveButton").attr("disabled", "disabled"); // 저장 버튼 비활성화
-                        }
-                    });
-
-                // 저장 버튼 클릭 시 유효성 검사
-                $("#infoForm").submit(function (event) {
-                    event.preventDefault();
-                    if (!validateForm()) {
-                        return false;
-                    }
-                    if (confirm("정말로 수정하시겠습니까?")) {
-                        let formData = $(this).serialize();
-                        let empId = $("input[name='empId']").val();
-                        $.ajax({
-                            url: `../emp/${empId}`,
-                            method: 'PATCH',
-                            data: {
-                                email: $('input[name="email"]').val(),
-                                tel: $('input[name="tel"]').val(),
-                                mobile: $('input[name="mobile"]').val(),
-                                hireDate: $('input[name="hiredate"]').val(),
-                                mobile2: $('input[name="mobile2"]').val(),
-                                birthday: $('input[name="birthday"]').val(),
-                                address: $('input[name="address"]').val(),
-                                married: $('select[name="married"]').val()
-                            },
-                            success: function (data) {
-                                alert(data);
-                                location.reload();
-                            },
-                            error: function () {
-                                alert("수정 중 오류가 발생했습니다.");
-                            }
-                        });
-                    }
-                });
-            });
-    </script>
 </head>
 <body>
 <div class="main-container">
@@ -261,9 +136,24 @@
                 <caption>
                     <h2>인사정보</h2>
                 </caption>
-                <tr id="tr">
+                <tr>
                     <th rowspan="4" id="photo">
-                        <!--                        <img th:src="@{/emp/profile-image?UUID=${empInfoDTO.emp.imgUUID}}">-->
+                        <span id="showImage">
+                            <img th:src="@{/emp/profile-image(fileUUID=${empInfoDTO.emp.imgUUID})}"
+                                 width="200px" alt="profile" id="over_view"/>
+                                <th:block th:if="${empInfoDTO.emp.getImgUUID()!=null}">
+                                <img th:src="@{/image/cancel.png}" alt="파일삭제" width="20px" class="remove_img"
+                                     style="display: none"/>
+                                </th:block>
+                        </span>
+                        <div id="fileUploadSection" style="display: none;">
+                            <br>
+                            현재 파일 :
+                            <span id="fileName"
+                                  th:text="${empInfoDTO.emp.imgOriginal != null ? empInfoDTO.emp.imgOriginal : '파일 없음'}"></span>
+                            <br>
+                            <input type="file" name="file" id="file" accept="image/*">
+                        </div>
                     </th>
                     <th>이름</th>
                     <th>성별</th>
@@ -271,10 +161,10 @@
                     <th>내선번호</th>
                 </tr>
                 <tr>
-                    <td th:text="${empInfoDTO.emp.ename}">직원이름</td>
+                    <td><input name="ename" th:value="${empInfoDTO.emp.ename}" required readonly></td>
                     <td>
                         <label>
-                            <select name="gender" disabled>
+                            <select name="gender" disabled required>
                                 <option value="남" th:selected="${empInfoDTO.emp.gender == '남'}">남성</option>
                                 <option value="여" th:selected="${empInfoDTO.emp.gender == '여'}">여성</option>
                             </select>
@@ -282,14 +172,13 @@
                     </td>
                     <td>
                         <label for="email">
-                            <input type="text" name="email" class="editable" id="email"
-                                   th:value="${empInfoDTO.emp.email}" readonly>
+                            <input type="text" name="email" id="email" th:value="${empInfoDTO.emp.email}" required
+                                   readonly>
                         </label>
                     </td>
                     <td>
                         <label for="tel">
-                            <input type="text" name="tel" class="editable" id="tel"
-                                   th:value="${empInfoDTO.emp.tel}" readonly>
+                            <input type="text" name="tel" id="tel" th:value="${empInfoDTO.emp.tel}" required readonly>
                         </label>
                     </td>
                 </tr>
@@ -300,12 +189,42 @@
                     <th>휴대폰번호</th>
                 </tr>
                 <tr>
-                    <td th:text="${empInfoDTO.deptName}">부서명</td>
+                    <td>
+                        <th:block th:if="${#authentication.name=='admin'}">
+                            관리자
+                        </th:block>
+                        <th:block th:if="${#authentication.name!='admin'}">
+                            <select name="deptId" data-name="부서" disabled required>
+                                <th:block th:each="dept : ${empInfoDTO.deptList}">
+                                    <option
+                                            th:value="${dept.deptId}"
+                                            th:selected="${empInfoDTO.emp.deptId == dept.deptId}"
+                                            th:text="${#strings.endsWith(dept.deptName, '본부') ? '  '
+                                                    + dept.deptName : (#strings.endsWith(dept.deptName, '팀') ? '    '
+                                                    + dept.deptName : dept.deptName)}">
+                                    </option>
+                                </th:block>
+                            </select>
+                        </th:block>
+                    </td>
                     <td th:text="${empInfoDTO.emp.empId}">사번</td>
-                    <td th:text="${empInfoDTO.jobName}">직책</td>
+                    <td>
+                        <th:block th:if="${#authentication.name=='admin'}">
+                            관리자
+                        </th:block>
+                        <th:block th:if="${#authentication.name!='admin'}">
+                            <select name="jobId" data-name="직책" disabled required>
+                                <th:block th:each="job : ${empInfoDTO.jobList}">
+                                    <option th:value="${job.jobId}" th:selected="${empInfoDTO.emp.jobId== job.jobId}"
+                                            th:text="${job.jobName}">직위명
+                                    </option>
+                                </th:block>
+                            </select>
+                        </th:block>
+                    </td>
                     <td>
                         <input type="text" name="mobile" class="editable"
-                               id="mobile" th:value="${empInfoDTO.emp.mobile}" readonly>
+                               id="mobile" th:value="${empInfoDTO.emp.mobile}" required readonly>
                     </td>
                 </tr>
             </table>
@@ -314,28 +233,31 @@
                     <th>입사일</th>
                     <td>
                         <label>
-                            <input type="text" name="hiredate"
-                                   placeholder="YYYY/MM/DD" th:value="${empInfoDTO.emp.hireDate}" readonly>
+                            <input type="date" name="hireDate"
+                                   placeholder="YYYY/MM/DD" th:value="${empInfoDTO.emp.hireDate}" required readonly>
                         </label>
                     </td>
-
-                    <th rowspan="2">계좌번호</th>
-                    <td rowspan="2">[[${empInfoDTO.emp.bank}]]<br>[[${empInfoDTO.emp.account}]]</td>
-                    <th>긴급연락처</th>
-                    <td><input type="text" name="mobile2" class="editable"
-                               id="mobile2" th:value="${empInfoDTO.emp.mobile2}" readonly></td>
+                    <th>은행</th>
+                    <td><input type="text" name="bank" th:value="${empInfoDTO.emp.bank}" required readonly></td>
+                    <th>계좌번호</th>
+                    <td><input type="text" name="account" th:value="${empInfoDTO.emp.account}" required readonly></td>
                 </tr>
                 <tr>
+                    <th>긴급연락처</th>
+                    <td><input type="text" name="mobile2" class="editable"
+                               id="mobile2" th:value="${empInfoDTO.emp.mobile2}" required readonly></td>
                     <th>채용구분</th>
-                    <td><select name="hiretype" disabled>
-                        <option value="경력" th:selected="${empInfoDTO.emp.hireType}=='경력'">경력</option>
-                        <option value="신입" th:selected="${empInfoDTO.emp.hireType}=='신입'">신입</option>
-                        <option value="인턴" th:selected="${empInfoDTO.emp.hireType}=='인턴'">인턴</option>
-                    </select></td>
+                    <td>
+                        <select name="hireType" required disabled>
+                            <option value="경력" th:selected="${empInfoDTO.emp.hireType}=='경력'">경력</option>
+                            <option value="신입" th:selected="${empInfoDTO.emp.hireType}=='신입'">신입</option>
+                            <option value="인턴" th:selected="${empInfoDTO.emp.hireType}=='인턴'">인턴</option>
+                        </select>
+                    </td>
                     <th>직원구분</th>
                     <td>
                         <label>
-                            <select name="etype" disabled>
+                            <select name="etype" required disabled>
                                 <option value="정규직" th:selected="${empInfoDTO.emp.etype}=='정규직'">정규직</option>
                                 <option value="계약직" th:selected="${empInfoDTO.emp.etype}=='계약직'">계약직</option>
                                 <option value="퇴직" th:selected="${empInfoDTO.emp.etype}=='퇴직'">퇴직</option>
@@ -348,10 +270,10 @@
                     <td>
                         <label>
                             <input type="text" name="birthday"
-                                   placeholder="YYYY/MM/DD" th:value="${empInfoDTO.emp.birthday}" readonly>
+                                   placeholder="YYYY/MM/DD" th:value="${empInfoDTO.emp.birthday}" required readonly>
                         </label>
                         <label>
-                            <select name="birthday_type" disabled>
+                            <select name="birthdayType" disabled>
                                 <option value="양력" th:selected="${empInfoDTO.emp.birthdayType}=='양력'">양력</option>
                                 <option value="음력" th:selected="${empInfoDTO.emp.birthdayType}=='음력'">음력</option>
                             </select>
@@ -360,52 +282,72 @@
                     <th>주소</th>
                     <td>
                         <label>
-                            <input type="text" name="address" class="editable" th:value="${empInfoDTO.emp.address}"
-                                   readonly>
+                            <input type="text" name="address" th:value="${empInfoDTO.emp.address}"
+                                   required readonly>
                         </label>
                     </td>
-                    <th>자격증</th>
+                    <th>자녀</th>
                     <td>
-                        <div th:each="cert:${empInfoDTO.certList}">
-                            <p>[[${cert.certName}]]</p>
-                        </div>
+                        <select name="child" required disabled>
+                            <option th:value="true" th:selected="${empInfoDTO.emp.child}=='1'">Y</option>
+                            <option th:value="false" th:selected="${empInfoDTO.emp.child}=='0'">N</option>
+                        </select>
                     </td>
                 </tr>
                 <tr>
-                    <th>최종학력</th>
-                    <td th:text="${empInfoDTO.emp.school}">최종학력학교</td>
                     <th>결혼여부</th>
                     <td>
                         <label>
-                            <select name="married" class="editable" disabled>
-                                <option value="true" th:selected="${empInfoDTO.emp.married}==true">Y</option>
-                                <option value="false" th:selected="${empInfoDTO.emp.married}==false">N</option>
+                            <select name="married" required disabled>
+                                <option th:value="true" th:selected="${empInfoDTO.emp.married}==true">Y</option>
+                                <option th:value="false" th:selected="${empInfoDTO.emp.married}==false">N</option>
                             </select>
                         </label>
                     </td>
-                    <th rowspan="2">외국어능력</th>
-                    <td rowspan="2">
-                        <th:block th:each="lang:${empInfoDTO.langList}">
-                            <span>${lang.langName}</span>
-                            <br/>
-                        </th:block>
-                    </td>
+                    <th>최종학력</th>
+                    <td><input type="text" name="school" th:value="${empInfoDTO.emp.school}" required readonly></td>
+                    <th>전공</th>
+                    <td><input type="text" name="major" th:value="${empInfoDTO.emp.major}" required readonly></td>
                 </tr>
                 <tr>
-                    <th>전공</th>
-                    <td th:value="${empInfoDTO.emp.major}">전공</td>
-                    <th>자녀</th>
-                    <td>
-                        <select name="child" disabled>
-                            <option value="1" th:selected="${empInfoDTO.emp.child}=='1'">Y</option>
-                            <option value="0" th:selected="${empInfoDTO.emp.child}=='0'">N</option>
-                        </select></td>
+                    <th>자격증</th>
+                    <td colspan="2" id="certifications" style="position: relative;">
+                        <th:block th:each="cert : ${empInfoDTO.certList}">
+                            <div class="cert-item">
+                                <input type="text" name="cert" th:value="${cert.certName}"
+                                       data-name="자격증" placeholder="자격증명" readonly
+                                       required>
+                                <button type="button" style="display: none" class="btn btn-sm btn-light remove-cert">-
+                                </button>
+                            </div>
+                        </th:block>
+                        <!-- 추가 버튼 -->
+                        <div class="cert-add">
+                            <button type="button" class="btn btn-sm btn-light add-cert">추가</button>
+                        </div>
+                    </td>
+                    <th rowspan="2">외국어</th>
+                    <td colspan="2" id="languages" rowspan="2" style="position: relative;">
+                        <th:block th:each="lang : ${empInfoDTO.langList}">
+                            <div class="lang-item">
+                                <input type="text" name="lang" th:value="${lang.langName}"
+                                       class="lang-input" data-name="외국어" placeholder="외국어능력" readonly
+                                       required>
+                                <button type="button" style="display: none" class="btn btn-sm btn-light remove-lang">-
+                                </button>
+                            </div>
+                        </th:block>
+                        <!-- 추가 버튼 -->
+                        <div class="lang-add">
+                            <button type="button" class="btn btn-sm btn-light add-lang">추가</button>
+                        </div>
+                    </td>
                 </tr>
             </table>
-            <th:block th:if="${empInfoDTO.emp.empId == #authentication.name}">
-                <button type="button" id="editButton" class="btn btn-success">수정</button>
+            <div class="button-container">
+                <button type="button" id="editButton" class="btn btn-primary">수정</button>
                 <button type="submit" id="saveButton" class="btn btn-secondary" disabled>저장</button>
-            </th:block>
+            </div>
         </form>
     </div>
 </div>

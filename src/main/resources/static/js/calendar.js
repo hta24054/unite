@@ -79,16 +79,17 @@ $(document).ready(function(){
 	        success: function(data) {
 	            if (data != null) {
 			        for (let i = 0; i < data.length; i++) {
+						const schedule = data[i];
 						// 중복 체크: schedule_id로 중복 여부 확인
-						if (!events.some(event => event.id === data[i].scheduleId)) {
+						if (!events.some(event => event.id === schedule.scheduleId)) {
 							events.push({
-								title: data[i].scheduleName,
-								start: data[i].scheduleStart,
-								end: data[i].scheduleEnd,
-								backgroundColor: data[i].scheduleColor,
-								description: data[i].scheduleContent,
-								allDay: data[i].scheduleAllDay,
-								id: data[i].scheduleId,
+								title: schedule.scheduleName,
+								start: schedule.scheduleStart,
+								end: schedule.scheduleEnd,
+								backgroundColor: schedule.scheduleColor,
+								description: schedule.scheduleContent,
+								allDay: schedule.scheduleAllDay,
+								id: schedule.scheduleId,
 								extendedProps: {
 									isShared: false, // 공유 일정
 								},
@@ -160,25 +161,25 @@ $(document).ready(function(){
             type: "post",
             dataType: "json",
             data: {
-                emp_id: $("#emp_id").val(),
-                schedule_name: eventData.schedule_name,
-                startAt: moment(eventData.startAt).format('YYYY-MM-DD HH:mm'),
-                endAt: moment(eventData.endAt).format('YYYY-MM-DD HH:mm'),
-                bgColor: eventData.bgColor,
-                description: eventData.description,
-                allDay: eventData.allDay ? 1 : 0 // true이면 1, false이면 0
+                empId: $("#emp_id").val(),
+                scheduleName: eventData.schedule_name,
+				scheduleStart: moment(eventData.startAt).format('YYYY-MM-DD HH:mm'),
+				scheduleEnd: moment(eventData.endAt).format('YYYY-MM-DD HH:mm'),
+				scheduleColor: eventData.bgColor,
+				scheduleContent: eventData.description,
+				scheduleAllDay: eventData.allDay ? 1 : 0 // true이면 1, false이면 0
             },
             success: function (data) {
                 if (data != null && data.length > 0) {
 			        for (let i = 0; i < data.length; i++) {
 						const isAllDay = data[i].schedule_allDay === 1;
 						events.push({
-							id: data[i].schedule_id,
-			                title: data[i].schedule_name,
-			                start: data[i].schedule_start,
-			                end: data[i].schedule_end,
-			                backgroundColor: data[i].schedule_color,
-			                description: data[i].schedule_content,
+							id: data[i].scheduleId,
+			                title: data[i].scheduleName,
+			                start: data[i].scheduleStart,
+			                end: data[i].scheduleEnd,
+			                backgroundColor: data[i].scheduleColor,
+			                description: data[i].scheduleContent,
 			                allDay: isAllDay
 			            });
 			        }
@@ -394,6 +395,7 @@ $(document).ready(function(){
 		// 등록 버튼에 이벤트 바인딩
 	    $("#btnRegister").off("click").on("click", function (e) {
 	        e.preventDefault();
+
 	        const eventData = {
 	            schedule_name: $("#schedule_name").val(),
 	            startAt: $("#startAt").val(),
@@ -402,6 +404,8 @@ $(document).ready(function(){
 	            description: $("#description").val(),
 	            allDay: $("#allDay").prop("checked"),
 	        };
+
+			console.log('eventData', eventData)
 
 	        if (validateForm()) {
 	            addEvent(eventData);

@@ -1,5 +1,6 @@
 package com.hta2405.unite.mybatis.mapper;
 
+import com.hta2405.unite.domain.Board;
 import com.hta2405.unite.domain.Post;
 import com.hta2405.unite.dto.BoardDTO;
 import com.hta2405.unite.dto.BoardHomeDeptDTO;
@@ -22,4 +23,8 @@ public interface BoardPostMapper {
     int refUpdate(Long postId);
 
     Long findBoardIdByName1Name2(BoardDTO boardDTO);
+
+    int getListCountByBoardId(Long boardId);
+
+    List<Post> getPostListByBoardId(int startRow, int endRow, Long boardId);
 }

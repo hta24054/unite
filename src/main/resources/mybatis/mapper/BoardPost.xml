@@ -5,12 +5,14 @@
         SELECT *
         FROM board
         WHERE
-            #{deptId} IN (0000, 1000, 1001) AND dept_id != 0
-           OR (#{deptId} = 1100 AND dept_id between 1100 and 1199)
-           OR (#{deptId} = 1200 AND dept_id between 1200 and 1299)
-           OR (#{deptId} = 1300 AND dept_id between 1300 and 1399)
-           OR (#{deptId} = 1400 AND dept_id between 1400 and 1499)
-           OR dept_id = #{deptId}
+            (dept_id != 0) AND (
+            #{deptId} IN (0000, 1000, 1001)
+                OR (#{deptId} = 1100 AND dept_id BETWEEN 1100 AND 1199)
+                OR (#{deptId} = 1200 AND dept_id BETWEEN 1200 AND 1299)
+                OR (#{deptId} = 1300 AND dept_id BETWEEN 1300 AND 1399)
+                OR (#{deptId} = 1400 AND dept_id BETWEEN 1400 AND 1499)
+                OR (dept_id = #{deptId})
+            )
     </select>
 
     <select id="getBoardListAll" parameterType="Long" resultType="com.hta2405.unite.dto.BoardPostEmpDTO">
@@ -104,4 +106,28 @@
             #{postId})
         </foreach>
     </insert>
+
+    <select id="getListCountByBoardId" parameterType="Long" resultType="int">
+        SELECT COUNT(*)
+        FROM post
+        WHERE board_id = #{boardId}
+    </select>
+
+    <select id="getPostListByBoardId" parameterType="map" resultType="Post">
+        <![CDATA[
+            SELECT *
+            FROM (
+                 SELECT post.*, IFNULL(post_comment_cnt, 0) AS post_comment_cnt
+                 FROM post
+                          LEFT OUTER JOIN (
+                     SELECT post_id, COUNT(*) AS post_comment_cnt
+                     FROM post_comment
+                     GROUP BY post_id
+                 ) pc ON post.post_id = pc.post_id
+                 WHERE board_id = #{boardId}
+                 ORDER BY post_re_ref DESC, post_re_seq ASC
+                     LIMIT #{startRow}, #{endRow}  -- OFFSET, LIMIT 방식으로 수정
+             ) j;
+        ]]>
+    </select>
 </mapper>

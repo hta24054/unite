@@ -409,8 +409,16 @@ function submitForm() {
 
     // 삭제되지 않은 파일만 폼데이터에 담기
     filesArr.forEach(file => {
-        formData.append("files", file);
+        formData.append("attachFiles", file);
     });
+
+	for(let [key, value] of formData.entries()) {
+		if(key === 'files'){
+			formData.delete(key);
+			console.log("delete = ",key)
+		}
+		console.log(key, value);
+	}
 
     $.ajax({
         method: 'POST',

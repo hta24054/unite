@@ -10,7 +10,6 @@
 	padding: 30px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 	box-sizing: border-box;
-	border-radius: 50px;
 }
 
 /* 버튼 스타일 */
@@ -23,11 +22,6 @@ form {
 	cursor: pointer;
 	font-size: 16px;
 	margin-top: 20px;
-	text-align: right;
-}
-
-button:hover {
-	background-color: #45a049;
 }
 
 /* 테이블 스타일 */
@@ -84,31 +78,23 @@ select[disabled] {
 	text-align: center;
 }
 
-button#editButton {
-	background-color: green;
-	color: white;
-}
-
-button#cancelButton {
-	background-color: red;
-	color: white;
-}
-
 button#saveButton {
 	margin-right: 5%;
 }
-
-/* 입력 필드 스타일 */
-input[type=text], input[type=email], input[type=date], input[type=number],
-	select {
-	width: 100%;
-	padding: 10px;
-	margin: 8px 0;
-	display: inline-block;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	box-sizing: border-box;
+table{
+	color: black;
 }
+/*!* 입력 필드 스타일 *!*/
+/*input[type=text], input[type=email], input[type=date], input[type=number],*/
+/*	select {*/
+/*	width: 100%;*/
+/*	padding: 10px;*/
+/*	margin: 8px 0;*/
+/*	display: inline-block;*/
+/*	border: 1px solid #ccc;*/
+/*	border-radius: 4px;*/
+/*	box-sizing: border-box;*/
+/*}*/
 
 /* inline-group 스타일 추가 */
 .inline-group input, .inline-group select {

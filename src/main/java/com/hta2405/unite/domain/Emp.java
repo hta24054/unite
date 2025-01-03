@@ -63,7 +63,7 @@ public class Emp {
         this.major = dto.getMajor();
         this.child = dto.isChild();
         this.school = dto.getSchool();
-        this.imgOriginal = fileDTO.getOriginalFileName();
+        this.imgOriginal = fileDTO.getFileOriginal();
         this.imgPath = fileDTO.getFilePath();
         this.imgType = fileDTO.getFileType();
         this.imgUUID = fileDTO.getFileUUID();
@@ -79,7 +79,7 @@ public class Emp {
         this.account = dto.getAccount();
         this.address = dto.getAddress();
         this.married = dto.isMarried();
-        this.imgOriginal = fileDTO.getOriginalFileName();
+        this.imgOriginal = fileDTO.getFileOriginal();
         this.imgPath = fileDTO.getFilePath();
         this.imgType = fileDTO.getFileType();
         this.imgUUID = fileDTO.getFileUUID();

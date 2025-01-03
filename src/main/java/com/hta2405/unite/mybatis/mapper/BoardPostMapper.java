@@ -1,9 +1,9 @@
 package com.hta2405.unite.mybatis.mapper;
 
+import com.hta2405.unite.domain.Post;
 import com.hta2405.unite.dto.BoardDTO;
 import com.hta2405.unite.dto.BoardPostEmpDTO;
-import com.hta2405.unite.dto.PostDTO;
-import com.hta2405.unite.dto.PostFileDTO;
+import com.hta2405.unite.dto.FileDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -12,9 +12,11 @@ import java.util.List;
 public interface BoardPostMapper {
     List<BoardPostEmpDTO> getBoardListAll(Long deptId);
 
-    int insertPost(PostDTO postDTO);
+    int insertPost(Post post);
 
-    int insertPostFile(List<PostFileDTO> postFileDTOList, boolean postIdCheck);
+    int insertPostFile(Long postId, List<FileDTO> list);
+
+    int refUpdate(Long postId);
 
     Long findBoardIdByName1Name2(BoardDTO boardDTO);
 }

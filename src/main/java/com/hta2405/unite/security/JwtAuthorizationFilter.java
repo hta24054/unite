@@ -37,7 +37,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String token = resolveToken(request);
 
         if (token != null) {
-            log.error("token = {}, isExpired ={}", token, jwtUtil.isExpired(token));
+            log.info("token = {}, isExpired ={}", token, jwtUtil.isExpired(token));
 
             if (jwtUtil.isExpired(token)) {
                 removeToken(response);

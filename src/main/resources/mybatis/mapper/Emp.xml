@@ -5,7 +5,40 @@
         SELECT * FROM emp
         WHERE EMP_ID = #{empId}
     </select>
-    <update id="update" parameterType="Emp">
+
+    <insert id="insertEmp" parameterType="Emp">
+        INSERT INTO emp
+        VALUES (#{empId},
+                #{password},
+                #{ename},
+                #{role},
+                #{deptId},
+                #{jobId},
+                #{gender},
+                #{email},
+                #{tel},
+                #{mobile},
+                #{mobile2},
+                #{imgPath},
+                #{imgOriginal},
+                #{imgUUID},
+                #{imgType},
+                #{hireDate},
+                #{hireType},
+                #{birthday},
+                #{birthdayType},
+                #{school},
+                #{major},
+                #{bank},
+                #{account},
+                #{address},
+                #{married},
+                #{child},
+                #{etype},
+                #{vacationCount},
+                #{hired})
+    </insert>
+    <update id="updateEmp" parameterType="Emp">
         update emp
         set password       = #{password},
             ename          = #{ename},
@@ -37,23 +70,30 @@
             hired          = #{hired}
         where emp_id = #{empId}
     </update>
+    <update id="resignEmp">
+        update emp set hired = 0
+        where emp_id = #{empId}
+    </update>
     <select id="getImgOriginal" resultType="String">
         SELECT IMG_ORIGINAL FROM emp
         WHERE IMG_UUID = #{fileUUID}
     </select>
-    <select id="getEmpListByDeptId">
+    <select id="getHiredEmpListByDeptId">
         SELECT emp_id, ename, tel, job_name, dept_name
-        FROM emp e left join job j on e.job_id = j.job_id
-                   left join dept d on e.dept_id = d.dept_id
+        FROM emp e
+                 left join job j on e.job_id = j.job_id
+                 left join dept d on e.dept_id = d.dept_id
         WHERE e.dept_id = #{deptId}
-          and emp_id != 'admin';
+          and emp_id != 'admin' and hired = 1
+        order by e.job_id, emp_id
     </select>
     <select id="getEmpListByName">
         SELECT emp_id, ename, tel, job_name, dept_name
         FROM emp e left join job j on e.job_id = j.job_id
                    left join dept d on e.dept_id = d.dept_id
         WHERE e.ename like #{ename}
-          and emp_id != 'admin';
+          and emp_id != 'admin'
+        order by e.job_id, emp_id
     </select>
 </mapper>
 

@@ -40,40 +40,78 @@ public class EmpService {
     }
 
     @Transactional
+    public Emp registerEmp(EmpRegisterDTO empRegisterDTO, MultipartFile file) {
+        // 1. 파일 업로드
+        FileDTO fileDTO = profileImgService.insertProfileImg(file);
+
+        // 2. empRegisterDTO -> emp Entity로 변환
+        Emp emp = empRegisterDTO.toEntity(fileDTO);
+
+        // 3. emp 테이블에 입력
+        empMapper.insertEmp(emp);
+
+
+        // 4. 자격증 및 외국어능력 입력
+        List<Lang> langList = empRegisterDTO.getLang();
+        List<Cert> certList = empRegisterDTO.getCert();
+
+        if (langList != null && !langList.isEmpty()) {
+            langMapper.insertLang(langList);
+        }
+
+        if (certList != null && !certList.isEmpty()) {
+            certMapper.insertCert(certList);
+        }
+
+        return emp;
+    }
+
+    @Transactional
     public int updateEmpByAdmin(String empId, MultipartFile file, EmpAdminUpdateDTO dto) {
         Emp emp = empMapper.getEmpById(empId);
-        FileDTO fileDTO = profileImgService.changeProfileImg(file, dto.getBeforeFileName(), emp);
+        FileDTO fileDTO = profileImgService.updateProfileImg(file, dto.getBeforeFileName(), emp);
         emp.updateByAdmin(dto, fileDTO);
         updateLangAndCert(dto);
-        return empMapper.update(emp);
+        return empMapper.updateEmp(emp);
     }
 
     @Transactional
     public int updateEmpBySelf(String empId, MultipartFile file, EmpSelfUpdateDTO dto) {
         Emp emp = empMapper.getEmpById(empId);
-        FileDTO fileDTO = profileImgService.changeProfileImg(file, dto.getBeforeFileName(), emp);
+        FileDTO fileDTO = profileImgService.updateProfileImg(file, dto.getBeforeFileName(), emp);
         emp.updateBySelf(dto, fileDTO);
-        return empMapper.update(emp);
+        return empMapper.updateEmp(emp);
     }
+
 
     private void updateLangAndCert(EmpAdminUpdateDTO dto) {
         langMapper.deleteAllLangByEmpId(dto.getEmpId());
         certMapper.deleteAllCertByEmpId(dto.getEmpId());
         List<Lang> langList = dto.getLang();
         List<Cert> certList = dto.getCert();
-        if (!langList.isEmpty()) {
+
+        if (langList != null && !langList.isEmpty()) {
             langMapper.insertLang(langList);
         }
-        if (!certList.isEmpty()) {
+
+        if (certList != null && !certList.isEmpty()) {
             certMapper.insertCert(certList);
         }
     }
 
     public List<EmpTreeDTO> getEmpListByDeptId(Long deptId) {
-        return empMapper.getEmpListByDeptId(deptId);
+        return empMapper.getHiredEmpListByDeptId(deptId);
     }
 
     public List<EmpTreeDTO> getEmpListByName(String ename) {
         return empMapper.getEmpListByName(ename);
+    }
+
+    public RegisterDTO getRegisterPageData() {
+        return new RegisterDTO(deptMapper.getAllDept(), jobMapper.getAllJob());
+    }
+
+    public void resignEmp(String empId) {
+        empMapper.resignEmp(empId);
     }
 }

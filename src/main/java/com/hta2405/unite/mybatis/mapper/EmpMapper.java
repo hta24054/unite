@@ -5,17 +5,20 @@ import com.hta2405.unite.dto.EmpTreeDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
-import java.util.Optional;
 
 @Mapper
 public interface EmpMapper {
     Emp getEmpById(String empId);
 
-    int update(Emp emp);
+    int updateEmp(Emp emp);
 
     String getImgOriginal(String fileUUID);
 
-    List<EmpTreeDTO> getEmpListByDeptId(Long deptId);
+    List<EmpTreeDTO> getHiredEmpListByDeptId(Long deptId);
 
     List<EmpTreeDTO> getEmpListByName(String ename);
+
+    int insertEmp(Emp emp);
+
+    void resignEmp(String empId);
 }

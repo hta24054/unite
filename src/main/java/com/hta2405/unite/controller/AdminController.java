@@ -1,20 +1,23 @@
 package com.hta2405.unite.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Holiday;
 import com.hta2405.unite.domain.Notice;
 import com.hta2405.unite.domain.Resource;
+import com.hta2405.unite.dto.EmpRegisterDTO;
+import com.hta2405.unite.service.EmpService;
 import com.hta2405.unite.service.HolidayService;
 import com.hta2405.unite.service.NoticeService;
 import com.hta2405.unite.service.ResourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Arrays;
@@ -27,11 +30,13 @@ public class AdminController {
     private final HolidayService holidayService;
     private final ResourceService resourceService;
     private final NoticeService noticeService;
+    private final EmpService empService;
 
-    public AdminController(HolidayService holidayService, ResourceService resourceService, NoticeService noticeService) {
+    public AdminController(HolidayService holidayService, ResourceService resourceService, NoticeService noticeService, EmpService empService) {
         this.holidayService = holidayService;
         this.resourceService = resourceService;
         this.noticeService = noticeService;
+        this.empService = empService;
     }
 
     @GetMapping("/holiday")
@@ -161,7 +166,44 @@ public class AdminController {
     }
 
     @GetMapping("/emp-manage")
-    public String showEmpManage(){
+    public String showEmpManage() {
         return "/admin/empManage";
+    }
+
+    @GetMapping("/emp-manage/info")
+    public String showEmpInfo(String empId) {
+        return "redirect:/emp/info?empId=" + empId;
+    }
+
+    @GetMapping("/emp-manage/register")
+    public ModelAndView showEmpRegister(ModelAndView mv) {
+        mv.setViewName("/emp/empRegister");
+        mv.addObject("registerDTO", empService.getRegisterPageData());
+        return mv;
+    }
+
+    @PostMapping("/emp-manage")
+    @ResponseBody
+    public String registerEmp(@RequestPart(value = "file", required = false) MultipartFile file,
+                              @RequestPart(value = "dto") String dtoJson
+    ) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        EmpRegisterDTO empRegisterDTO;
+        try {
+            empRegisterDTO = objectMapper.readValue(dtoJson, EmpRegisterDTO.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("JSON 데이터 변환 실패", e);
+        }
+        Emp emp = empService.registerEmp(empRegisterDTO, file);
+
+        return String.format("%s(%s) 직원을 등록하였습니다.", emp.getEname(), emp.getEmpId());
+    }
+
+    @DeleteMapping("/emp-manage")
+    @ResponseBody
+    public String fireEmp(String empId) {
+        empService.resignEmp(empId);
+        return "퇴사처리 완료";
     }
 }

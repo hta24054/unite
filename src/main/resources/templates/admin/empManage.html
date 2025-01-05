@@ -30,16 +30,16 @@
             </style>
         </head>
         <body>
-            <h2 id="main_title">직원 관리</h2>
-            <div class="container">
-                <!-- 우측 상단 버튼 그룹 -->
-                <div class="button-group">
-                    <button type="button" class="btn btn-success" onclick="insertEmp()">등록</button>
-                    <button type="button" class="btn btn-info" onclick="editEmp()">수정</button>
-                    <button type="button" class="btn btn-danger" onclick="deleteEmp()">삭제</button>
-                </div>
-                <div th:include="common/empTree.html"></div>
+        <h2 id="main_title">직원 관리</h2>
+        <div class="container">
+            <!-- 우측 상단 버튼 그룹 -->
+            <div class="button-group">
+                <button type="button" class="btn btn-success" onclick="insertEmp()">등록</button>
+                <button type="button" class="btn btn-info" onclick="editEmp()">상세</button>
+                <button type="button" class="btn btn-danger" onclick="resignEmp()">삭제</button>
             </div>
+            <div th:include="common/empTree.html"></div>
+        </div>
 
         <script>
             $(document).ready(function () {
@@ -80,37 +80,37 @@
             })
             ;
 
-            const contextPath = "${pageContext.request.contextPath}";
-
             function insertEmp() {
-                window.location.href = contextPath + '/admin/emp-manage/register';
+                window.location.href = '../admin/emp-manage/register';
             }
 
             function editEmp() {
                 const empId = $('input[name="selectedEmp"]:checked').val();
 
                 if (empId) {
-                    window.location.href = contextPath + '/admin/emp-manage/edit?empId=' + empId;
+                    window.location.href = '../admin/emp-manage/info?empId=' + empId;
                 } else {
                     alert("수정할 직원을 선택해 주세요.");
                 }
             }
 
-            function deleteEmp() {
+            const contextPath = /*[[@{/}]]*/ '';
+
+            function resignEmp() {
                 const empId = $('input[name="selectedEmp"]:checked').val();
                 console.log(empId)
-                if (confirm("직원을 삭제하시겠습니까?")) {
+                if (confirm("직원을 퇴사처리 하시겠습니까?")) {
                     if (empId) {
                         $.ajax({
-                            url: contextPath + '/admin/emp-manage/fire',
-                            type: 'POST',
+                            url: contextPath + '/admin/emp-manage',
+                            type: 'DELETE',
                             data: {empId: empId},
                             success: function (data) {
-                                alert(data.message);
+                                alert(data);
                                 location.reload();
                             },
                             error: function () {
-                                alert("직원 삭제를 실패했습니다.");
+                                alert("직원 퇴사처리를 실패했습니다.");
                             }
                         });
                     } else {

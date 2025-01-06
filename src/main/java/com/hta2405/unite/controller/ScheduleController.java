@@ -1,29 +1,20 @@
 package com.hta2405.unite.controller;
 
 import com.hta2405.unite.domain.Schedule;
-import com.hta2405.unite.domain.ScheduleShare;
 import com.hta2405.unite.service.ScheduleService;
-import com.hta2405.unite.service.ScheduleShareService;
-import jakarta.servlet.http.HttpSession;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
 
 @Controller
 @Slf4j
@@ -33,12 +24,9 @@ public class ScheduleController {
     private static final Logger logger = LoggerFactory.getLogger(ScheduleController.class);
 
     private ScheduleService scheduleService;
-    private ScheduleShareService scheduleShareService;
 
-    @Autowired
-    public ScheduleController(ScheduleService scheduleService, ScheduleShareService scheduleShareService) {
+    public ScheduleController(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
-        this.scheduleShareService = scheduleShareService;
     }
 
     @GetMapping("/calender")
@@ -93,30 +81,4 @@ public class ScheduleController {
         //System.out.println("schedule 삭제 " + result);
         return result;
     }
-
-    @GetMapping("/scheduleShare")
-    public String shareSchedule(Schedule schedule) {
-        return "schedule/scheduleShare";
-    }
-
-    @ResponseBody
-    @GetMapping("/sharedScheduleList")
-    public List<Schedule> sharedScheduleList() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return new ArrayList<>();
-        }
-        String empId = authentication.getName();
-        List<Schedule> sharedSchedules = scheduleShareService.getListSharedSchedule(empId);
-        return sharedSchedules;
-    }
-
-    @ResponseBody
-    @PostMapping("/scheduleShareAdd")
-    public int insertScheduleShare(Schedule schedule, ScheduleShare scheduleShare) {
-        int result = scheduleShareService.insertScheduleShare(schedule, scheduleShare);
-        return result;
-    }
-
-
 }

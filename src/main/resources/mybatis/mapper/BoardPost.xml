@@ -130,4 +130,104 @@
              ) j;
         ]]>
     </select>
+
+    <select id="getSearchListCountByBoardId" resultType="int">
+        <choose>
+            <!-- '작성자'로 검색하는 경우 -->
+            <when test="category == '작성자'">
+                SELECT COUNT(*)
+                FROM post
+                WHERE post_writer IN (
+                SELECT emp_id
+                FROM emp
+                WHERE ename LIKE CONCAT('%', #{query}, '%')
+                )
+                AND board_id = #{boardId}
+            </when>
+
+            <!-- '제목' 또는 '내용'으로 검색하는 경우 -->
+            <otherwise>
+                SELECT COUNT(*)
+                FROM post
+                WHERE
+                <choose>
+                    <when test="category == '제목'">post_subject</when>
+                    <when test="category == '내용'">post_content</when>
+                </choose>
+                LIKE CONCAT('%', #{query}, '%')
+                AND board_id = #{boardId}
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 게시판별 검색 게시글 목록 -->
+    <select id="getSearchListByBoardId" resultType="Post">
+        SELECT post.*, IFNULL(pc.cnt, 0) AS postCommentCnt
+        FROM post
+        LEFT JOIN (
+        SELECT post_id, COUNT(*) AS cnt
+        FROM post_comment
+        GROUP BY post_id
+        ) pc ON post.post_id = pc.post_id
+        WHERE board_id = #{boardId}
+        AND
+        <choose>
+            <!-- '제목'으로 검색 -->
+            <when test="category == '제목'">
+                post_subject LIKE CONCAT('%', #{query}, '%')
+            </when>
+
+            <!-- '내용'으로 검색 -->
+            <when test="category == '내용'">
+                post_content LIKE CONCAT('%', #{query}, '%')
+            </when>
+
+            <!-- '작성자'로 검색 -->
+            <otherwise>
+                post_writer IN (
+                SELECT emp_id
+                FROM emp
+                WHERE ename LIKE CONCAT('%', #{query}, '%')
+                )
+            </otherwise>
+        </choose>
+        ORDER BY post_re_ref DESC, post_re_seq ASC
+        LIMIT #{startRow}, #{endRow}
+    </select>
+
+    <update id="setReadCountUpdate">
+        UPDATE post
+        SET post_view = post_view + 1
+        WHERE post_id = #{postId}
+    </update>
+
+<!--    <select id="getDetail" resultMap="PostDetailResultMap">-->
+    <select id="getDetail" resultType="com.hta2405.unite.dto.PostDetailDTO">
+        SELECT
+            post.*,
+            COALESCE(pc.cnt, 0) AS cnt,
+            emp.img_path,
+            emp.img_original,
+            emp.img_uuid,
+            emp.img_type
+        FROM
+            post
+                LEFT JOIN (
+                SELECT
+                    post_id,
+                    COUNT(*) AS cnt
+                FROM
+                    post_comment
+                GROUP BY
+                    post_id
+            ) pc ON post.post_id = pc.post_id
+                JOIN emp ON emp.emp_id = post.post_writer
+        WHERE post.post_id = #{postId}
+    </select>
+
+    <select id="getDetailPostFile" resultType="PostFile">
+        SELECT *
+        FROM post_file
+        WHERE post_id = #{postId}
+    </select>
 </mapper>

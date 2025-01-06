@@ -10,6 +10,18 @@ $(document).ready(function () {
     const contextPath = '${pageContext.request.contextPath}'; // contextPath 가져오기
 
     $('.sidebar a').each(function () {
+        //게시판 리스트일 경우
+        if(currentPath.includes("board/boardList")){
+            const params = new URLSearchParams(window.location.search);
+            const boardName2 = params.get('boardName2');
+            const thisBoardName2 = decodeURIComponent($(this).attr('href').split('=')[2]);
+
+            if (thisBoardName2 === boardName2) {
+                $(this).addClass('active'); // 현재 링크 활성화
+            }
+            return;
+        }
+
         const link = $(this);
         const linkPath = link.attr('href').split('?')[0]; // 링크 경로에서 파라미터 제거
         // 경로만 비교 (contextPath 포함)

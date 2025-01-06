@@ -28,27 +28,35 @@ public class ProfileImgService {
         this.empMapper = empMapper;
     }
 
+    public FileDTO insertProfileImg(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return new FileDTO();
+        }
+        return fileService.uploadFile(file, FILE_DIR);
+    }
+
     @Transactional
-    public FileDTO changeImg(MultipartFile file, String beforeFileName, Emp emp) {
+    public FileDTO updateProfileImg(MultipartFile file, String beforeFileName, Emp emp) {
 
         //기존 파일명이 파라미터로 옴 -> 파일이 변경되지 않음.
         if (beforeFileName != null) {
             return new FileDTO(emp.getImgOriginal(), emp.getImgPath(), emp.getImgType(), emp.getImgUUID());
         }
 
-        // 기존파일명이 파라미터로 오지 않고, 파일명이 있으며, 파일이 존재 -> 프로필사진 변경
-        if (file != null && !file.isEmpty()) {
+        //기존에 파일이 있었으나, 현재 파일명이 없음 -> 프로필사진 삭제
+        if (file == null || file.isEmpty()) {
             fileService.deleteFile(emp.getImgUUID(), FILE_DIR, emp.getImgOriginal());
-            return fileService.uploadFile(file, FILE_DIR);
+            return new FileDTO(); //빈 객체
         }
 
-        //기존에 파일이 있었으나, 현재 파일명이 없음 -> 프로필사진 삭제
+        // 기존파일명이 파라미터로 오지 않고, 파일명이 있으며, 파일이 존재 -> 프로필사진 변경
         fileService.deleteFile(emp.getImgUUID(), FILE_DIR, emp.getImgOriginal());
-        return new FileDTO(); //빈 객체
+        return fileService.uploadFile(file, FILE_DIR);
     }
 
     @Transactional
-    public void getProfileImage(String fileUUID, HttpServletResponse response) {
+    public void getProfileImage(Emp emp, HttpServletResponse response) {
+        String fileUUID = emp.getImgUUID();
         if (fileUUID == null || fileUUID.isEmpty()) {
             fileService.downloadFile(FILE_DIR, fileUUID, DEFAULT_PROFILE_IMAGE, response);
         } else {

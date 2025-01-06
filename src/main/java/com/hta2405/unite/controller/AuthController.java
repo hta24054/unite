@@ -37,8 +37,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO, HttpServletResponse response) {
-        Emp emp = empService.getEmpById(loginDTO.getUsername()).orElseThrow(
-                () -> new UsernameNotFoundException("user not found"));
+        Emp emp = empService.getEmpById(loginDTO.getUsername());
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         if (!emp.getEmpId().equals(loginDTO.getUsername()) || !encoder.matches(loginDTO.getPassword(), emp.getPassword())) {

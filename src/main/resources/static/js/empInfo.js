@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    const contextPath = /*[[@{/}]]*/ '';
     let originalValues = {};
     let editableFields = []; // 서버에서 가져온 수정 가능한 필드 목록
     let role;
@@ -6,7 +7,7 @@ $(document).ready(function () {
     // 서버에서 editable-field 데이터를 가져옴
     function fetchEditableFields() {
         return $.ajax({
-            url: '../emp/editable-field',
+            url: contextPath+'/emp/editable-field',
             method: 'GET',
             success: function (data) {
                 editableFields = data.field; // 수정 가능한 필드 목록

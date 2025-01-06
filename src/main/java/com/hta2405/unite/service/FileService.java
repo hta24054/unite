@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,8 +48,16 @@ public class FileService {
         }
 
         try {
+            // 파일명을 URL 인코딩
+            String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
+            encodedFileName = encodedFileName.replace("+", "%20"); // 공백 처리
+
+            // 헤더 설정
             response.setContentType("application/octet-stream");
-            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+            response.setCharacterEncoding("UTF-8");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedFileName + "\"; filename*=UTF-8''" + encodedFileName);
+
+            // 파일 스트림 전송
             Files.copy(filePath, response.getOutputStream());
             response.flushBuffer();
         } catch (IOException e) {

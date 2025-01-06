@@ -1,90 +1,92 @@
 $(document).ready(function () {
-    loadResourceTable();
+    const contextPath = /*[[@{}]]*/ '';
+    const lang_kor = {
+        "decimal": "",
+        "emptyTable": "데이터가 없습니다.",
+        "info": "_START_-_END_ (총 _TOTAL_명)",
+        "infoEmpty": "0명",
+        "infoFiltered": "(전체 _MAX_명 중 검색 결과)",
+        "infoPostFix": "",
+        "thousands": ",",
+        "lengthMenu": "_MENU_개씩 보기",
+        "loadingRecords": "로딩중...",
+        "processing": "처리중...",
+        "search": "검색:",
+        "zeroRecords": "검색된 데이터가 없습니다.",
+        "paginate": {"first": "첫 페이지", "last": "마지막 페이지", "next": "다음", "previous": "이전"},
+        "aria": {"sortAscending": ":오름차순 정렬", "sortDescending": ":내림차순 정렬"}
+    };
 
-    //자원목록 가져오기
-    function loadResourceTable() {
-        $.ajax({
-            url: "../admin/resource/list",
-            type: "GET",
-            success: function (data) {
-                const $tbody = $("#resource_table tbody");
-                $tbody.empty(); // 기존 테이블 내용 제거
+    // DataTable 초기화
+    const resourceTable = $('#resourceTable').DataTable({
+        language: lang_kor,
+        ajax: {
+            url: contextPath + "/admin/resource/list",
+            dataSrc: 'data',
 
-                data.forEach(resource => {
-                    const usableText = resource.resourceUsable ? "가능" : "불가";
-                    const row = `
-                        <tr>
-                            <td>
-                                <input type="checkbox" class="checkbox" name="resourceId" value="${resource.resourceId}">
-                            </td>
-                            <td style="text-align: left;">${resource.resourceType}</td>
-                            <td style="text-align: left;">${resource.resourceName}</td>
-                            <td style="text-align: left;">${resource.resourceInfo}</td>
-                            <td>${usableText}</td>
-                        </tr>
+        },
+        columns: [
+            {
+                data: null,
+                orderable: false,
+                render: function (data, type, row) {
+                    return `
+                        <input type="checkbox" width="30px" id="checkbox-${row.resourceId}" class="checkbox" name="resourceId" value="${row.resourceId}">
                     `;
-                    $tbody.append(row);
-                });
+                }
             },
-            error: function () {
-                alert("자원 목록을 불러오는 데 실패했습니다.");
+            {data: 'resourceType'},
+            {data: 'resourceName'},
+            {data: 'resourceInfo'},
+            {
+                data: 'resourceUsable',
+                render: function (data) {
+                    return data ? '가능' : '불가';
+                }
             }
-        });
-    }
-    // 자원등록
+        ]
+    });
+
+    // 등록 처리
     $("#insertResource").submit(function (event) {
         event.preventDefault();
-        $.ajax({
-            url: "../admin/resource",
-            type: "POST",
-            data: {
-                resourceType: $('#resourceType').val(),
-                resourceName: $('#resourceName').val(),
-                resourceInfo: $('#resourceInfo').val(),
-                resourceUsable: $('#resourceUsable').val(),
-            },
-            success: function (data) {
-                alert(data);
-                $('#addResourceModal').modal('hide'); // Bootstrap 메서드 사용
-                loadResourceTable();
+        $.post({
+            url: contextPath + "/admin/resource",
+            data: $(this).serialize(),
+            success: function () {
+                alert("등록 성공");
+                $('#addResourceModal').modal('hide');
+                resourceTable.ajax.reload();
             },
             error: function () {
-                alert("등록에 실패했습니다.");
+                alert("등록 실패");
             }
         });
     });
-    // 자원수정
+
+    // 수정 처리
     $("#updateResource").submit(function (event) {
         event.preventDefault();
         $.ajax({
-            url: "../admin/resource",
+            url: contextPath + "/admin/resource",
             type: "PATCH",
-            data: {
-                resourceId: $('#editResourceId').val(),
-                resourceType: $('#editResourceType').val(),
-                resourceName: $('#editResourceName').val(),
-                resourceInfo: $('#editResourceInfo').val(),
-                resourceUsable: $('#editResourceUsable').val(),
-            },
-            success: function (data) {
-                alert(data);
-                $('#editResourceModal').modal('hide'); // Bootstrap 메서드 사용
-                loadResourceTable();
+            data: $(this).serialize(),
+            success: function () {
+                alert("수정 성공");
+                $('#editResourceModal').modal('hide');
+                resourceTable.ajax.reload();
             },
             error: function () {
-                alert("등록에 실패했습니다.");
+                alert("수정 실패");
             }
         });
     });
 
-    //자원삭제
+    // 삭제 처리
     $("#deleteButton").click(function () {
-        const selectedIds = [];
-
-        // 체크된 체크박스의 값을 배열에 추가
-        $('.checkbox:checked').each(function () {
-            selectedIds.push($(this).val());
-        });
+        const selectedIds = $('.checkbox:checked').map(function () {
+            return $(this).val();
+        }).get();
 
         if (selectedIds.length === 0) {
             alert("삭제할 자원을 선택해주세요.");
@@ -99,26 +101,34 @@ $(document).ready(function () {
                 data: {selectedIds},
                 success: function (data) {
                     alert(data);
-                    loadResourceTable();
+                    resourceTable.ajax.reload();
                 },
                 error: function () {
-                    alert("등록에 실패했습니다.");
+                    alert("삭제에 실패했습니다.");
                 }
             });
         }
     });
+
+    $('#editResourceModal').attr('aria-hidden', 'true');
+    document.querySelectorAll('button, input, select, textarea').forEach(element => {
+        element.blur();
+    });
+    $('#addResourceModal').attr('aria-hidden', 'true');
+    document.querySelectorAll('button, input, select, textarea').forEach(element => {
+        element.blur();
+    });
+    $('#editClose').click(function () {
+        console.log("눌렸다")
+    })
 });
 
+// 수정 모달 열기
 function openEditModal() {
-    // 체크된 체크박스의 개수를 확인
-    const checkedCount = $('.checkbox:checked').length;
+    const selectedCheckbox = $('.checkbox:checked');
 
-    if (checkedCount === 0) {
-        alert("수정할 자원을 선택해주세요.");
-        return;
-    }
-    if (checkedCount > 1) {
-        alert("수정할 자원을 한 개만 선택해주세요.");
+    if (selectedCheckbox.length !== 1) {
+        alert("수정할 자원을 하나 선택해주세요.");
         return;
     }
 

@@ -6,7 +6,39 @@
         WHERE EMP_ID = #{empId}
     </select>
 
-    <update id="update" parameterType="Emp">
+    <insert id="insertEmp" parameterType="Emp">
+        INSERT INTO emp
+        VALUES (#{empId},
+                #{password},
+                #{ename},
+                #{role},
+                #{deptId},
+                #{jobId},
+                #{gender},
+                #{email},
+                #{tel},
+                #{mobile},
+                #{mobile2},
+                #{imgPath},
+                #{imgOriginal},
+                #{imgUUID},
+                #{imgType},
+                #{hireDate},
+                #{hireType},
+                #{birthday},
+                #{birthdayType},
+                #{school},
+                #{major},
+                #{bank},
+                #{account},
+                #{address},
+                #{married},
+                #{child},
+                #{etype},
+                #{vacationCount},
+                #{hired})
+    </insert>
+    <update id="updateEmp" parameterType="Emp">
         update emp
         set password       = #{password},
             ename          = #{ename},
@@ -38,9 +70,44 @@
             hired          = #{hired}
         where emp_id = #{empId}
     </update>
+    <update id="resignEmp">
+        update emp set hired = 0
+        where emp_id = #{empId}
+    </update>
     <select id="getImgOriginal" resultType="String">
         SELECT IMG_ORIGINAL FROM emp
         WHERE IMG_UUID = #{fileUUID}
+    </select>
+    <select id="getHiredEmpListByDeptId">
+        SELECT emp_id, ename, tel, job_name, dept_name
+        FROM emp e
+                 left join job j on e.job_id = j.job_id
+                 left join dept d on e.dept_id = d.dept_id
+        WHERE e.dept_id = #{deptId}
+          and e.emp_id != 'admin'
+          and e.hired = 1
+        order by e.job_id, e.emp_id
+    </select>
+    <select id="getHiredEmpListByName">
+        SELECT emp_id, ename, tel, job_name, dept_name
+        FROM emp e
+                 left join job j on e.job_id = j.job_id
+                 left join dept d on e.dept_id = d.dept_id
+        WHERE e.ename like #{ename}
+          and e.emp_id != 'admin'
+          and e.hired = 1
+        order by e.job_id, e.emp_id
+    </select>
+    <select id="getEmpListDTO">
+        select e.emp_id, e.ename, d.dept_name, j.job_name, e.email, e.tel, e.mobile
+        from emp e left join dept d on e.dept_id = d.dept_id
+        left join job j on e.job_id = j.job_id
+        where d.dept_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.deptId}
+        </foreach>
+        and e.hired = 1 and emp_id != 'admin'
+        order by e.job_id, e.emp_id
     </select>
 </mapper>
 

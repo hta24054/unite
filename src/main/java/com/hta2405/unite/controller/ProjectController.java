@@ -129,7 +129,7 @@ public class ProjectController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userid = authentication.getName();
 
-        int limit = 5; // 페이지 당 표시할 데이터 개수
+        int limit = 4; // 페이지 당 표시할 데이터 개수
         int listcount = projectService.mainCountList(userid, favorite); // 총 프로젝트 개수 (favorite 파라미터를 넘겨서 처리)
         List<Project> mainList = projectService.getmainList(userid, favorite, page, limit); // 프로젝트 목록 가져오기
 
@@ -162,12 +162,67 @@ public class ProjectController {
         }
         return response; // JSON 형태로 반환
     }
-
-    @PostMapping("/saveProjectColorSettings")
-    public void saveColorSettings(
+ @PostMapping("/saveProjectColor")
+    public String saveColorSettings(
             @RequestParam int projectId,
             @RequestParam String bgColor,
             @RequestParam String textColor) {
-        projectService.projectColor(projectId, bgColor, textColor);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userid = authentication.getName();
+        logger.info(String.format("User: %s, ProjectId: %d, BgColor: %s, TextColor: %s", userid, projectId, bgColor, textColor));
+        projectService.projectColor(userid, projectId, bgColor, textColor);
+        return "redirect:/project/main";
     }
+
+    // 프로젝트 상태 업데이트 처리
+    @PostMapping("/updateStatus")
+    @ResponseBody
+    public Map<String, Object> updateProjectStatus(@RequestParam("projectId") int projectId,
+                                                   @RequestParam("status") String status) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            boolean isUpdated = projectService.updateProjectStatus(projectId, status);  // 서비스 메서드 호출
+
+            if (isUpdated) {
+                response.put("success", true);
+                response.put("message", "프로젝트 상태가 업데이트되었습니다.");
+            } else {
+                response.put("success", false);
+                response.put("message", "프로젝트 상태 업데이트 실패.");
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "서버 오류 발생.");
+        }
+        return response;
+    }
+    @GetMapping("/cancel")
+    public String cancel() {return "project/project_cancel";}
+    @GetMapping("/cancelList")
+    @ResponseBody
+    public Map<String, Object> cancel(@RequestParam(defaultValue = "1") int page) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userid = authentication.getName();
+
+        int limit = 10; // 페이지 당 표시할 데이터 개수
+        int listcount = projectService.doneCountList(userid, 0, 1); // 총 프로젝트 개수 (favorite 파라미터를 넘겨서 처리)
+        List<Project> mainList = projectService.getDoneList(userid, page, limit); // 프로젝트 목록 가져오기
+
+        PaginationResult result = new PaginationResult(page, limit, listcount); // 페이지네이션 결과 계산
+        logger.info("mainList size = {}", mainList.size());
+        logger.info("startpage = {}", result.getStartpage());
+        logger.info("endpage = {}", result.getEndpage());
+        Map<String, Object> response = new HashMap<>();
+        response.put("page", page);
+        response.put("maxpage", result.getMaxpage());
+        response.put("startpage", result.getStartpage());
+        response.put("endpage", result.getEndpage());
+        response.put("listcount", listcount);
+        response.put("boardlist", mainList);
+        response.put("limit", limit);
+
+        return response;
+    }
+    @GetMapping("/complete")
+    public String complete() {return "project/project_complete";}
 }

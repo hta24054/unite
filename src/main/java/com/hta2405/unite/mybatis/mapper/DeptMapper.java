@@ -10,4 +10,6 @@ public interface DeptMapper {
     Dept getDeptByEmpId(String empId);
 
     List<Dept> getAllDept();
+
+    List<Dept> getSubDeptList(Long deptId);
 }

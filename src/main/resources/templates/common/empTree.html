@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>조직도 및 직원 검색</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.fancytree/2.38.0/jquery.fancytree-all-deps.min.js"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/jquery.fancytree/2.38.0/skin-win8/ui.fancytree.min.css"/>
+    <script th:src="@{/js/empTree.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/empTree.css}">
+</head>
+<body>
+<div th:fragment="tree">
+    <div class="container mt-4">
+        <div class="content-container">
+            <!-- 조직도 영역 -->
+            <div id="treeContainer">
+                <h5 class="title" id="tree_title">조직도</h5>
+                <div id="tree"></div>
+            </div>
+
+            <!-- 직원 목록 테이블 영역 -->
+            <div id="employeeTableContainer">
+                <h5 class="title">
+                    직원 목록
+                    <div class="search-container-inline">
+                        <input type="text" id="searchInput" placeholder="직원 이름 검색">
+                        <button id="searchButton">
+                            <img src="https://img.icons8.com/ios-glyphs/30/000000/search.png" alt="Search Icon">
+                        </button>
+                    </div>
+                </h5>
+                <table class="table table-bordered mt-4" id="tree_table">
+                    <thead>
+                    <tr>
+                        <th style="display: none;">id</th>
+                        <th>이름</th>
+                        <th>내선번호</th>
+                        <th>직급</th>
+                    </tr>
+                    </thead>
+                    <tbody id="employeeTableBody">
+                    <!-- 직원 정보가 AJAX로 로드되어 여기에 추가됩니다. -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

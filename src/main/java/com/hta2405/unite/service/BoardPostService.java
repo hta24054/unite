@@ -35,7 +35,7 @@ public class BoardPostService {
     }
 
     public List<BoardPostEmpDTO> getBoardListAll(String empId) {
-        Emp emp = empService.getEmpById(empId).orElseThrow(() -> new RuntimeException("Emp not found"));
+        Emp emp = empService.getEmpById(empId);
         Long deptId = emp.getDeptId();
 
         List<BoardPostEmpDTO> boardPostEmpDTOList = boardPostMapper.getBoardListAll(deptId);

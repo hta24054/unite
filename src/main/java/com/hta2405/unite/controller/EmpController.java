@@ -3,17 +3,18 @@ package com.hta2405.unite.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.dto.EmpAdminUpdateDTO;
 import com.hta2405.unite.dto.EmpInfoDTO;
 import com.hta2405.unite.dto.EmpSelfUpdateDTO;
+import com.hta2405.unite.dto.EmpTreeDTO;
 import com.hta2405.unite.service.EmpService;
 import com.hta2405.unite.service.ProfileImgService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -30,29 +31,35 @@ import java.util.stream.Stream;
 @Controller
 @RequestMapping("/emp")
 @Slf4j
+@AllArgsConstructor
 public class EmpController {
-
     private final EmpService empService;
     private final ProfileImgService profileImgService;
 
-    public EmpController(EmpService empService, ProfileImgService profileImgService) {
-        this.empService = empService;
-        this.profileImgService = profileImgService;
-    }
-
     @GetMapping("/info")
-    public ModelAndView showEmpInfoPage(ModelAndView mv, @RequestParam(required = false) String empId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String loginEmpId = authentication.getName();
+    public ModelAndView showEmpInfoPage(ModelAndView mv,
+                                        @AuthenticationPrincipal UserDetails user,
+                                        @RequestParam(required = false) String empId) {
+        String targetEmpId = (empId == null || empId.isEmpty()) ? user.getUsername() : empId;
 
-        String targetEmpId = (empId == null || empId.isEmpty()) ? loginEmpId : empId;
-
-        //관리자 -> 부서원 조회 아닐 시 거부하는 로직 구현 필요
         EmpInfoDTO empInfoDTO = empService.getEmpInfoDTO(targetEmpId);
-        System.out.println(empInfoDTO.getJobList());
-        System.out.println(empInfoDTO.getDeptList());
         mv.addObject("empInfoDTO", empInfoDTO);
         mv.setViewName("emp/empInfo");
+
+        //admin과 HR은 열람 가능
+        Emp emp = empService.getEmpById(user.getUsername());
+        if (emp.getRole().equals("ROLE_ADMIN") || empService.isHrDeptEmp(emp)) {
+            return mv;
+        }
+
+        //이 외라면, 본인의 정보거나, 내 부하직원인 경우만 열람 가능
+        Emp targetEmp = empService.getEmpById(targetEmpId);
+        if (empService.isMySubDeptEmp(emp, targetEmp)) {
+            return mv;
+        }
+
+        mv.setViewName("error/error");
+        mv.addObject("errorMessage", "회원정보 열람 권한이 없습니다.");
         return mv;
     }
 
@@ -118,9 +125,23 @@ public class EmpController {
         return "인사정보 수정 성공";
     }
 
+    @GetMapping("/empTree")
+    @ResponseBody
+    public List<EmpTreeDTO> getEmpListByDeptId(Long deptId) {
+        return empService.getEmpListByDeptId(deptId);
+    }
+
+    @GetMapping("/empTree-search")
+    @ResponseBody
+    public List<EmpTreeDTO> getEmpListByName(String query) {
+        query = "%" + query + "%";
+        return empService.getEmpListByName(query);
+    }
+
     @GetMapping("/profile-image")
     @ResponseBody
-    public void getProfileImage(String fileUUID, HttpServletResponse response) {
-        profileImgService.getProfileImage(fileUUID, response);
+    public void getProfileImage(String empId, HttpServletResponse response) {
+        Emp emp = empService.getEmpById(empId);
+        profileImgService.getProfileImage(emp, response);
     }
 }

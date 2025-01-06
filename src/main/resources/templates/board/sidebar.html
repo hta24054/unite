@@ -42,7 +42,7 @@
                         <th:block th:each="board : ${boardScope}">
                             <li class="left" style="border: none;">
                                 <th:block th:if="${board.deptId != null}">
-                                    <a th:href="'/board/boardList?boardName1=부서게시판&boardName2=' + ${board.boardName2}" class="boardName2" th:text="${board.boardName2}"></a>
+                                    <a th:href="@{/board/boardList(boardName1='부서게시판', boardName2=${board.boardName2})}" class="boardName2" th:text="${board.boardName2}"></a>
                                 </th:block>
                             </li>
                         </th:block>

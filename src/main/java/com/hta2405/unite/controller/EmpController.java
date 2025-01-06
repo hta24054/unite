@@ -13,10 +13,8 @@ import com.hta2405.unite.service.ProfileImgService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -39,16 +37,29 @@ public class EmpController {
     private final ProfileImgService profileImgService;
 
     @GetMapping("/info")
-    public ModelAndView showEmpInfoPage(ModelAndView mv, @RequestParam(required = false) String empId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String loginEmpId = authentication.getName();
+    public ModelAndView showEmpInfoPage(ModelAndView mv,
+                                        @AuthenticationPrincipal UserDetails user,
+                                        @RequestParam(required = false) String empId) {
+        String targetEmpId = (empId == null || empId.isEmpty()) ? user.getUsername() : empId;
 
-        String targetEmpId = (empId == null || empId.isEmpty()) ? loginEmpId : empId;
-
-        //관리자 -> 부서원 조회 아닐 시 거부하는 로직 구현 필요
         EmpInfoDTO empInfoDTO = empService.getEmpInfoDTO(targetEmpId);
         mv.addObject("empInfoDTO", empInfoDTO);
         mv.setViewName("emp/empInfo");
+
+        //admin과 HR은 열람 가능
+        Emp emp = empService.getEmpById(user.getUsername());
+        if (emp.getRole().equals("ROLE_ADMIN") || empService.isHrDeptEmp(emp)) {
+            return mv;
+        }
+
+        //이 외라면, 본인의 정보거나, 내 부하직원인 경우만 열람 가능
+        Emp targetEmp = empService.getEmpById(targetEmpId);
+        if (empService.isMySubDeptEmp(emp, targetEmp)) {
+            return mv;
+        }
+
+        mv.setViewName("error/error");
+        mv.addObject("errorMessage", "회원정보 열람 권한이 없습니다.");
         return mv;
     }
 

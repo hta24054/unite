@@ -1,6 +1,6 @@
 <th:block th:fragment="setContent(content)">
     <!DOCTYPE html>
-    <html lang="en">
+    <html xmlns:th="http://www.thymeleaf.org" lang="en">
     <head>
         <meta charset="utf-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -98,7 +98,7 @@
                              data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" th:href="@{/emp/info}">나의 인사정보</a>
-                                <a class="nav-link" th:href="@{/emp/Info/dept}">부서 인사정보</a>
+                                <a class="nav-link" th:href="@{/manager/empInfoList}">부서 인사정보</a>
                                 <a class="nav-link" th:href="@{/emp/Info/alldept}">전 부서 인사정보</a>
                             </nav>
                         </div>

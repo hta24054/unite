@@ -84,16 +84,30 @@
                  left join job j on e.job_id = j.job_id
                  left join dept d on e.dept_id = d.dept_id
         WHERE e.dept_id = #{deptId}
-          and emp_id != 'admin' and hired = 1
-        order by e.job_id, emp_id
+          and e.emp_id != 'admin'
+          and e.hired = 1
+        order by e.job_id, e.emp_id
     </select>
-    <select id="getEmpListByName">
+    <select id="getHiredEmpListByName">
         SELECT emp_id, ename, tel, job_name, dept_name
-        FROM emp e left join job j on e.job_id = j.job_id
-                   left join dept d on e.dept_id = d.dept_id
+        FROM emp e
+                 left join job j on e.job_id = j.job_id
+                 left join dept d on e.dept_id = d.dept_id
         WHERE e.ename like #{ename}
-          and emp_id != 'admin'
-        order by e.job_id, emp_id
+          and e.emp_id != 'admin'
+          and e.hired = 1
+        order by e.job_id, e.emp_id
+    </select>
+    <select id="getEmpListDTO">
+        select e.emp_id, e.ename, d.dept_name, j.job_name, e.email, e.tel, e.mobile
+        from emp e left join dept d on e.dept_id = d.dept_id
+        left join job j on e.job_id = j.job_id
+        where d.dept_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.deptId}
+        </foreach>
+        and e.hired = 1
+        order by e.job_id, e.emp_id
     </select>
 </mapper>
 

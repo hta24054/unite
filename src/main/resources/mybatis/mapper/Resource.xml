@@ -9,7 +9,7 @@
         INSERT INTO resc (RESC_TYPE, RESC_NAME, RESC_INFO, RESC_USABLE)
         VALUES (#{resourceType}, #{resourceName}, #{resourceInfo}, #{resourceUsable})
     </insert>
-    <delete id="deleteResources">
+    <delete id="deleteResource">
         DELETE FROM resc
         WHERE resc_id IN
         <foreach collection="list" item="item" open="(" separator="," close=")">

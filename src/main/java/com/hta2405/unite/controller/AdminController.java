@@ -3,6 +3,7 @@ package com.hta2405.unite.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.gson.JsonObject;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Holiday;
 import com.hta2405.unite.domain.Notice;
@@ -21,7 +22,9 @@ import org.springframework.web.servlet.ModelAndView;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
@@ -88,13 +91,19 @@ public class AdminController {
 
     @GetMapping("/resource")
     public String showResourcePage() {
-        return "/admin/resource";
+        return "/admin/resource2";
     }
 
     @GetMapping("/resource/list")
     @ResponseBody
-    public List<Resource> getAllResource() {
-        return resourceService.getResourceList();
+    public Map<String, Object> getAllResource() {
+        List<Resource> resourceList = resourceService.getResourceList();
+
+        // DataTables가 요구하는 JSON 구조 생성
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", resourceList);
+
+        return response;
     }
 
     @PostMapping("/resource")

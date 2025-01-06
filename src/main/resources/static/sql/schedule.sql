@@ -47,6 +47,8 @@ desc schedule;
 
 select * from schedule_share;
 
+desc schedule_share;
+
 select *
 from schedule
 where emp_id = '241001';

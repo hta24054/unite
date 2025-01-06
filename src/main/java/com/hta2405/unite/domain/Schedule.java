@@ -1,5 +1,6 @@
 package com.hta2405.unite.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -11,8 +12,10 @@ public class Schedule {
     private String empId;			//일정등록자
     private String scheduleName;	//일정명
     private String scheduleContent; //일정내용
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime scheduleStart;//시작일시
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime scheduleEnd;//종료일시
     private String scheduleColor;    //일정색상

@@ -13,5 +13,19 @@
            OR DEPT_NAME != '관리자'
         ORDER BY DEPT_ID
     </select>
+    <select id="getSubDeptList">
+        WITH RECURSIVE SubDepartments AS (
+            SELECT dept_id, dept_name, parent_deptId
+            FROM dept
+            WHERE dept_id = #{deptId} -- 시작점
+
+            UNION ALL
+
+            SELECT d.dept_id, d.dept_name, d.parent_deptId
+            FROM dept d
+                     INNER JOIN SubDepartments sd ON d.parent_deptId = sd.dept_id
+        )
+        SELECT * FROM SubDepartments
+    </select>
 </mapper>
 

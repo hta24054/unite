@@ -148,7 +148,7 @@
 					</div>
 				</div>
 
-				<script th:inline="javascript">
+				<script>
 					sharedEmployees();
 
 					$("#scheduleShareBtn").on("click", function(e) {
@@ -196,7 +196,6 @@
 							scheduleStart: moment($("#startAt").val()).format('YYYY-MM-DD HH:mm'),
 							scheduleEnd: moment($("#endAt").val()).format('YYYY-MM-DD HH:mm'),
 							schedule: {
-								scheduleId: $('#schedule_id').val(),
 								empId: $('#emp_id').val(),
 								shareEmp: $('#share_emp').val(),
 								scheduleName: $('#schedule_name').val(),
@@ -219,7 +218,6 @@
 							success: function(data) {
 								alert('공유 일정이 등록되었습니다.');
 								addEventToCalendar(shareData);
-								console.log("shareEmp:", shareData.scheduleShare.shareEmp);
 
 								const events = [];
 								if (data != null && data.length > 0) {
@@ -243,6 +241,8 @@
 								events.forEach(function(event) {
 									$('#calendar').fullCalendar('addEvent', event);
 								});
+
+								window.location.href = '/schedule/calender';
 							},
 							error: function() {
 								alert('공유 일정 등록 오류');
@@ -258,19 +258,7 @@
 							backgroundColor: eventData.bgColor,
 							description: eventData.description,
 							allDay: eventData.allDay === 1,
-							/*
-                            extendedProps: {
-                                description: eventData.description
-                            }
-                            */
 						};
-
-						// 캘린더 객체 가져오기
-						//const calendarEl = document.getElementById('calendar');
-						//const calendar = new FullCalendar.Calendar(calendarEl);
-
-						//calendar.addEvent(event);
-						//calendar.render();
 					}
 
 					function validateForm() {

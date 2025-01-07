@@ -53,22 +53,30 @@
         VALUES (#{shareEmp}, #{scheduleId});
     </insert>
 
-    <select id="getListSharedSchedule" resultType="Schedule">
-        SELECT s.schedule_id,
-               s.emp_id,
-               s.schedule_name,
-               s.schedule_content,
-               s.schedule_start,
-               s.schedule_end,
-               s.schedule_color,
-               s.schedule_allDay,
-               MIN(ss.share_emp) AS share_emp
-
+    <select id="getListSharedSchedule" resultType="schedule">
+        SELECT
+            s.schedule_id,
+            s.emp_id,
+            s.schedule_name,
+            s.schedule_content,
+            s.schedule_start,
+            s.schedule_end,
+            s.schedule_color,
+            s.schedule_allDay,
+            GROUP_CONCAT(ss.share_emp) AS share_emp -- 공유 직원 목록
         FROM schedule s
                  JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
-        WHERE s.emp_id = #{empId} OR ss.share_emp = #{shareEmp}
+        WHERE s.emp_id = #{empId}
+           OR ss.share_emp LIKE CONCAT('%', #{shareEmp}, '%') -- shareEmp를 LIKE로 처리
         GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
                  s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay
+    </select>
+
+    <!-- 공유 직원 조회 -->
+    <select id="getScheduleSharesByScheduleId" resultType="com.hta2405.unite.domain.ScheduleShare">
+        SELECT schedule_share_id, share_emp, schedule_id
+        FROM schedule_share
+        WHERE schedule_id = #{scheduleId}
     </select>
 
 </mapper>

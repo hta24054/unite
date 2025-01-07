@@ -148,7 +148,7 @@
 					</div>
 				</div>
 
-				<script th:inline="javascript">
+				<script>
 					sharedEmployees();
 
 					$("#scheduleShareBtn").on("click", function(e) {
@@ -241,6 +241,8 @@
 								events.forEach(function(event) {
 									$('#calendar').fullCalendar('addEvent', event);
 								});
+
+								window.location.href = '/schedule/calender';
 							},
 							error: function() {
 								alert('공유 일정 등록 오류');

@@ -1,9 +1,15 @@
+<th:block th:replace="layout :: setContent(~{this::content})">
+	<th:block th:fragment="content">
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-<script th:src="@{/js/writeform.js}"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.css" rel="stylesheet">
+	<script th:src="@{/js/jquery-3.7.1.js}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+	<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
+	<link rel="stylesheet" th:href="@{/css/boardHome.css}">
+	<link rel="stylesheet" th:href="@{/css/postWrite.css}">
 <style>
 	h1{font-size: 1.5rem; text-align: center; color:#1a92b9}
 	.container{width:60%}
@@ -143,7 +149,7 @@ function fileListAppendHtml(file) {
     if (file.isExisting) {// isExisting 조건에 따라 추가
         htmlData += ', true';
     }
-    htmlData += ');"><img src="${pageContext.request.contextPath}/image/delete.png"/></a>';
+    htmlData += ');"><img src="/image/delete.png"/></a>';
     
     htmlData += '</div>';
     $('.file-list').append(htmlData);
@@ -186,53 +192,69 @@ function deleteFile(deleteNo, isExisting = false) {
 /* 파일 목록이 비어있으면 숨김 처리 */
 function updateFileListVisibility() {
     $('.file-list').toggleClass('hidden', filesArr.length !== 0);
-	updateDividerHeight();
 }
 
 /* 폼 전송 */
 function submitForm() {
     var form = document.querySelector("form[name='boardform']");
     var formData = new FormData(form);
-    var j = 0;
 
-    // 삭제되지 않은 파일만 폼데이터에 담기
-    filesArr.forEach(file => {
-    	if (!file.isExisting) {
-            // 새로 추가된 파일만 처리
-            formData.append("attach_file" + j++, file);
-        }
-    });
+	// 삭제되지 않은 파일만 폼데이터에 담기
+	filesArr.forEach(file => {
+		if (!file.isExisting) {
+			// 새로 추가된 파일만 처리
+			formData.append("addFiles", file);
+		}
+	});
+
+	for(let [key, value] of formData.entries()) {
+		if(key === 'files'){
+			formData.delete(key);
+			console.log("delete = ",key)
+		}
+		console.log(key, value);
+	}
     
  	// 삭제된 기존 파일 데이터 전달
     deletedFiles.forEach(file => {
-        formData.append("deleted_files", JSON.stringify(file));
+        formData.append("deletedFiles", JSON.stringify(file));
+		console.log("deleted=",file)
     });
+
+	for(let [key, value] of formData.entries()) {
+		console.log(key, value);
+	}
 
     $.ajax({
         method: 'POST',
-        url: '../board/post/modifyProcess',
+        url: 'modifyProcess',
         dataType: 'json',
         data: formData,
         processData: false,
         contentType: false,
         cache: false,
         success: function (data) {
-            alert(data.message);
-            console.log('data.boardName2=',data.boardName2)
+			if(data.modifyCheck){
+				alert("게시글 수정 완료");
+			}else{
+				alert("게시글 수정 실패")
+			}
+            console.log('data.boardName2=',data.boardDTO.boardName2)
             console.log('data.postId=',data.postId)
             
-            $('.boardName2').each(function() {//left메뉴 이벤트 주기
-			    if ($(this).val() === data.boardName2) {
-			    	$(this).addClass('menuActive');
-					$(this).parent().parent().prev('a').addClass('menuActive');
-			    }
-			});
-            $('.boardContent').css('padding','0');
+            // $('.boardName2').each(function() {//left메뉴 이벤트 주기
+			//     if ($(this).val() === data.boardName2) {
+			//     	$(this).addClass('menuActive');
+			// 		$(this).parent().parent().prev('a').addClass('menuActive');
+			//     }
+			// });
+            // $('.boardContent').css('padding','0');
+			location.href="detail?no="+data.postId+"&boardName1="+data.boardDTO.boardName1+"&boardName2="+data.boardDTO.boardName2
 			loadBoardPost(data.boardName2,data.postId);
         },
         error: function (xhr, desc, err) {
             alert('에러가 발생하였습니다.');
-            location.href = "home";
+            history.go(-1);
         }
     });
 }
@@ -272,12 +294,10 @@ function filterBoardName2() {
 
 $(function(){
 	var departmentBoards = filterBoardName2();
-	console.log(departmentBoards);
+	console.log("depart=",departmentBoards);
 	
-	var BoardName2Value = $('.boardName2').filter(function() {
-	    return $(this).css('font-weight') === 'bold' || $(this).css('font-weight') === '700';
-	}).text();
-	
+	var BoardName2Value = $('#boardName2Hidden').val();
+	console.log("BoardName2Value=",BoardName2Value);
 	let boardName1Value;
 	
 	// BoardName2Text의 따라 BoardName1 구하기
@@ -352,67 +372,80 @@ document.addEventListener("drop", function (event) {
 </script>
 </head>
 <body>
- 	<form method="post" enctype="multipart/form-data"
-      name="boardform" onsubmit="event.preventDefault(); submitForm();">
- 		<div class="form-group2">
- 			<input type="hidden" name="postId" th:value='${list[0].postId}'/>
- 			<input type="hidden" id="boardName2Hidden" name="boardName2Hidden" th:value='${boardName2}'/>
- 			<label class="labelName">
- 				To.
- 				<select id="boardName1" name="boardName1" class="boardName">
- 					<option value="전사게시판">전사게시판</option>
- 					<option value="일반게시판">일반게시판</option>
- 					<option value="부서게시판">부서게시판</option>
- 				</select>
- 				<select id="boardName2" name="boardName2" class="boardName">
- 					<option value="공지사항">공지사항</option>
- 					<option value="주간식단표">주간식단표</option>
- 					<option value="FAQ">FAQ</option>
- 				</select>
- 			</label>
- 		</div>
- 		<div class="form-group2">
- 			<label class="labelName">제목</label>
- 			<input name="board_subject" id="board_subject" type="text" maxlength="100"
- 					class="form-control2" placeholder="Enter board_subject" th:value="${list[0].postSubject}" required>
- 		</div>
- 		<div class="form-group2-file">
- 			<label class="labelName">파일첨부</label>
- 			<div class="attachFile">
- 				<img th:src="${/image/attach.png}" alt="파일첨부">
- 				이 곳에 파일을 드래그 하세요. 또는 
-	 			<label class="fileLabel">
-	 				파일선택
-	 				<th:block th:if="${list[2] != null and not empty list[2]}">
-	    				<th:block th:each="postFile : ${list[2]} ">
-			 				<input type="hidden" class="filesHidden"
-			 						th:data-post-file-path="${postFile.postFilePath}"  th:data-post-file-uuid="${postFile.postFileUUID}"
-			 						th:data-post-file-type="${postFile.postFileType}"  th:data-post-file-original= "${postFile.postFileOriginal}"/>
-		 				</th:block>
-	 				</th:block>
-	 				<input type="file" id="upfile" onchange="addFile(this);" multiple/>
-	 			</label>
- 			</div>
- 		</div>
- 		<div class="file-list"></div>
-		<textarea class="summernote form-control2" id="board_content" name="board_content" required>[[${list[0].postContent}]]</textarea>
-		<div class="form-group-btn">
-	 		<button type="submit" class="btn registerBtn">수정</button>
-	 		<button type="reset" id="registerBtn" class="btn registerBtn tr-post" th:data-page="${list[0].postId}" th:data-name="${boardName2}">돌아가기</button>
- 		</div>
- 	</form>
+<link rel="stylesheet" th:href="@{/css/leftbar.css}">
+<script th:src="@{/js/leftbar.js}"></script>
+<div class="main">
+	<th:block th:replace="~{/board/sidebar :: boardSidebarFragment}"/>
 
-	<script>
-		$(document).ready(function () {
-	        $('.summernote').summernote({
-	            height: 400,
-	            minHeight: 400,
-	            maxHeight: null,
-	            focus: true
-	        });
-	        
-	        $('.boardContent .active').removeClass('active');
-	    });
- 	</script>
+	<div class="content">
+		<div class="boardTitle">게시글 수정</div>
+		<div class="boardContent">
+		<form method="post" enctype="multipart/form-data"
+		  name="boardform" onsubmit="event.preventDefault(); submitForm();">
+			<div class="form-group2">
+				<input type="hidden" name="postId" th:value='${postDetailDTO.postId}'/>
+				<input type="hidden" id="boardName1Hidden" name="boardName1Hidden" th:value='${boardDTO.getBoardName1()}'/>
+				<input type="hidden" id="boardName2Hidden" name="boardName2Hidden" th:value='${boardDTO.getBoardName2()}'/>
+				<label class="labelName">
+					To.
+					<select id="boardName1" name="boardName1" class="boardName">
+						<option value="전사게시판">전사게시판</option>
+						<option value="일반게시판">일반게시판</option>
+						<option value="부서게시판">부서게시판</option>
+					</select>
+					<select id="boardName2" name="boardName2" class="boardName">
+						<option value="공지사항">공지사항</option>
+						<option value="주간식단표">주간식단표</option>
+						<option value="FAQ">FAQ</option>
+					</select>
+				</label>
+			</div>
+			<div class="form-group2">
+				<label class="labelName">제목</label>
+				<input name="postSubject" id="post_subject" type="text" maxlength="100"
+						class="form-control2" placeholder="Enter board_subject" th:value="${postDetailDTO.postSubject}" required>
+			</div>
+			<div class="form-group2-file">
+				<label class="labelName">파일첨부</label>
+				<div class="attachFile">
+					<img th:src="@{/image/attach.png}" alt="파일첨부">
+					이 곳에 파일을 드래그 하세요. 또는
+					<label class="fileLabel">
+						파일선택
+						<th:block th:if="${postDetailDTO.postFiles != null}">
+							<th:block th:each="postFile : ${postDetailDTO.postFiles} ">
+								<input type="hidden" class="filesHidden"
+										th:data-post-file-path="${postFile.postFilePath}"  th:data-post-file-uuid="${postFile.postFileUUID}"
+										th:data-post-file-type="${postFile.postFileType}"  th:data-post-file-original= "${postFile.postFileOriginal}"/>
+							</th:block>
+						</th:block>
+						<input type="file" id="upfile" onchange="addFile(this);" multiple/>
+					</label>
+				</div>
+			</div>
+			<div class="file-list"></div>
+			<textarea class="summernote form-control2" id="board_content" name="postContent" th:utext="${postDetailDTO.postContent}" required></textarea>
+			<div class="form-group-btn">
+				<button type="submit" class="btn registerBtn">수정</button>
+				<button type="reset" id="registerBtn" class="btn registerBtn tr-post" onClick="history.go(-1)">돌아가기</button>
+			</div>
+		</form>
+		</div>
+	</div>
+</div>
+<script>
+	$(document).ready(function () {
+		$('.summernote').summernote({
+			height: 400,
+			minHeight: 400,
+			maxHeight: null,
+			focus: true
+		});
+
+		$('.boardContent .active').removeClass('active');
+	});
+</script>
 </body>
 </html>
+	</th:block>
+</th:block>

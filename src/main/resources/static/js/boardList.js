@@ -15,19 +15,6 @@ function go(page){
 	}
 	
 }
-//총 2페이지 페이징 처리된 경우
-//이전 1 2 다음
-//현재 페이지가 1페이지인 경우 아래와 같은 페이징 코드가 필요
-//<li class="page-item"><a class="page-link gray">이전&nbsp;</a></li>
-//<li class="page-item active"><a class="page-link">1</a></li>
-//<li class="page-item"><a class="page-link" href="javascript:go(2)">2</a></li> 
-//<li class="page-item"><a class="page-link" href="javascript:go(2)">다음&nbsp;</a></li>
-
-//현재 페이지가 2페이지인 경우 아래와 같은 페이징 코드가 필요
-//<li class="page-item"><a class="page-link" href="javascript:go(1)">이전&nbsp;</a></li>
-//<li class="page-item"><a class="page-link" href="javascript:go(1)">1</a></li>
-//<li class="page-item active"><a class="page-link">2</a></li>
-//<li class="page-item"><a class="page-link gray">다음&nbsp;</a></li>
 
 function setPaging(href, digit, isActive = false){
 	const gray = (href ==="" && isNaN(digit))? "gray":"";
@@ -80,7 +67,7 @@ function updateBoardList(data){
 
 		
 		output +=`
-			<tr class="tr-post" data-page="${item.postId}" data-name="${data.boardName2}">
+			<tr class="tr-post" data-no="${item.postId}" data-name1="${data.boardName1}" data-name2="${data.boardName2}" data-page="${data.page}">
 				<td>${num--}</td>
 				<td><div>${blank}${img}${changeSubject}[${item.postCommentCnt}]</div></td>
 				<td><div>${item.postWriter}</div></td>
@@ -177,10 +164,10 @@ $(function(){
 	$(document).on('click', '.tr-post', function(event) {
 		event.preventDefault();  // 기본 동작 방지 (링크 이동 방지)
 
-		var postPage = $(this).data('page');  // data-page에서 페이지 번호 가져오기
+		var postId = $(this).data('no');  // data-no에서 게시글 ID 가져오기
 		var boardName1 = $(this).data('name1');
 		var boardName2 = $(this).data('name2');
-
-		location.href=`/board/post/detail?no=${postPage}&boardName1=${boardName1}&boardName2=${boardName2}`;
+		var page = $(this).data('page');
+		location.href=`/board/post/detail?no=${postId}&boardName1=${boardName1}&boardName2=${boardName2}&page=${page}`;
 	});
 })

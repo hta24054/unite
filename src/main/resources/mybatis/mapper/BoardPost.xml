@@ -35,41 +35,6 @@
         order by post_date desc
     </select>
 
-    <!-- ResultMap 정의: Board, Post, Emp를 각각 매핑 -->
-    <resultMap id="BoardPostEmpResultMap" type="map">
-        <!-- Board 매핑 -->
-        <association property="board" javaType="Board">
-            <id property="boardId" column="board_id" />
-            <result property="boardName1" column="board_name1" />
-            <result property="boardName2" column="board_name2" />
-            <result property="deptId" column="dept_id" />
-        </association>
-
-        <!-- Post 매핑 -->
-        <association property="post" javaType="Post">
-            <id property="postId" column="post_id" />
-            <result property="boardId" column="board_id" />
-            <result property="postWriter" column="post_writer" />
-            <result property="postSubject" column="post_subject" />
-            <result property="postContent" column="post_content" javaType="string"/>
-            <result property="postDate" column="post_date" />
-            <result property="postUpdateDate" column="post_update_date" />
-            <result property="postReRef" column="post_re_ref" />
-            <result property="postReLev" column="post_re_lev" />
-            <result property="postReSeq" column="post_re_seq" />
-            <result property="postView" column="post_view" />
-            <result property="postCommentCnt" column="cnt" />
-        </association>
-
-        <!-- Emp 매핑 -->
-        <association property="emp" javaType="com.hta2405.unite.dto.BoardPostEmpDTO">
-            <result property="imgPath" column="img_path" />
-            <result property="imgOriginal" column="img_original" />
-            <result property="imgUUID" column="img_uuid" />
-            <result property="imgType" column="img_type" />
-        </association>
-    </resultMap>
-
     <select id="findBoardIdByName1Name2" resultType="long">
         SELECT BOARD_ID
         FROM board
@@ -201,7 +166,6 @@
         WHERE post_id = #{postId}
     </update>
 
-<!--    <select id="getDetail" resultMap="PostDetailResultMap">-->
     <select id="getDetail" resultType="com.hta2405.unite.dto.PostDetailDTO">
         SELECT
             post.*,
@@ -230,4 +194,63 @@
         FROM post_file
         WHERE post_id = #{postId}
     </select>
+
+    <select id="getPostFile" resultType="PostFile">
+        SELECT *
+        FROM post_file
+        WHERE post_file_id = #{postFileId}
+    </select>
+
+    <update id="updatePost">
+        UPDATE post
+        SET
+            board_id = #{boardId},
+            post_subject = #{postSubject},
+            post_content = #{postContent},
+            post_update_date = sysdate()
+        WHERE
+            post_id = #{postId}
+    </update>
+
+    <delete id="deletePostFile">
+        DELETE FROM post_file
+        WHERE post_file_uuid IN
+        <foreach collection="deletePostFileUUIDList" item="uuid" open="(" separator="," close=")">
+            #{uuid}
+        </foreach>
+    </delete>
+
+    <select id="selectPostInfo" resultType="map">
+        SELECT post_re_ref, post_re_lev, post_re_seq
+        FROM post
+        WHERE post_id = #{postId}
+    </select>
+
+    <!-- 게시글 삭제 -->
+    <delete id="deletePost">
+        <![CDATA[
+            DELETE FROM post
+            WHERE post_re_ref = #{postReRef}
+              AND post_re_lev >= #{postReLev}
+              AND post_re_seq >= #{postReSeq}
+              AND post_re_seq <= (
+                SELECT seq_boundary
+                FROM (
+                         SELECT
+                             IFNULL(
+                                     (SELECT MIN(post_re_seq) - 1
+                                      FROM post as post1
+                                      WHERE post1.post_re_ref = #{postReRef}
+                                        AND post1.post_re_lev = #{postReLev}
+                                        AND post1.post_re_seq > #{postReSeq}
+                                     ),
+                                     (SELECT MAX(post_re_seq)
+                                      FROM post as post2
+                                      WHERE post2.post_re_ref = #{postReRef}
+                                     )
+                             ) AS seq_boundary
+                     ) AS temp
+            )
+            ]]>
+    </delete>
 </mapper>

@@ -53,3 +53,13 @@ select *
 from schedule
 where emp_id = '241001';
 
+
+CREATE TABLE schedule_share (
+                                schedule_share_id bigINT AUTO_INCREMENT PRIMARY KEY,
+                                share_emp VARCHAR(100) NOT NULL,
+                                schedule_id bigINT NOT NULL,
+                                CONSTRAINT FK_schedule FOREIGN KEY (schedule_id) REFERENCES schedule(schedule_id) ON DELETE CASCADE
+);
+
+
+ALTER TABLE schedule_share MODIFY share_emp VARCHAR(255);

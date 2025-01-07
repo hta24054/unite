@@ -3,13 +3,14 @@ var searchValue=false;
 function go(page){
 	const limit = $('#viewCount').val();
 	/*const data =`limit=${limit}&state=ajax&page=${page}`; */
+	const boardName1 = $('#boardName1').val();
 	const boardName2 = $('#boardName2').val();
 	
 	if(searchValue){
 		const data = {limit:limit, page:page}
 		searchAjax(data);
 	}else{
-		const data = {boardName2:boardName2,limit:limit, state:"ajax", page:page}
+		const data = {boardName1:boardName1,boardName2:boardName2,limit:limit, ajax:true, page:page}
 		ajax(data);
 	}
 	
@@ -76,15 +77,14 @@ function updateBoardList(data){
 		const img = item.postReLev > 0 ? "<img class='lineImg' src='/unite/image/postLine.png'>" : "";
 		const subject = item.postSubject.length >= 20 ? item.postSubject.substr(0,20) + "..." : item.postSubject;
 		const changeSubject = subject.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-		
-		console.log(index)
+
 		
 		output +=`
 			<tr class="tr-post" data-page="${item.postId}" data-name="${data.boardName2}">
 				<td>${num--}</td>
 				<td><div>${blank}${img}${changeSubject}[${item.postCommentCnt}]</div></td>
-				<td><div>${data.empMap[item.postWriter]}</div></td>
-				<td><div>${item.postDate}</div></td>
+				<td><div>${item.postWriter}</div></td>
+				<td><div>${item.postDate.split('T').join(' ')}</div></td>
 				<td><div>${item.postView}</div></td>
 			</tr>
 		`;
@@ -97,19 +97,19 @@ function ajax(sdata){
 	console.log(sdata)
 	$.ajax({
 		data: sdata,
-		url: "boardList",
+		url: "boardListAjax",
 		dataType: "json",
 		cache: false,
 		success: function(data){
 			$("#viewCount").val(data.limit);
 			$("thead").find("span").text("총 "+data.listCount+"건");
-			
+
 			if(data.listCount>0){
 				$("tbody").remove();
 				updateBoardList(data);// 게시판 내용 업데이트
 				generatePagination(data);// 페이지네이션 생성
 				
-				updateDividerHeight();//구분선 길이 업데이트
+				//updateDividerHeight();//구분선 길이 업데이트
 			}
 		},
 		error: function(){
@@ -122,27 +122,28 @@ function ajax(sdata){
 function searchAjax(sdata){
 	const category = $('#search-category').val(); // 선택된 검색 범위
     const query = $('#search-input').val(); // 검색어
-	const boardName2 = $('.boardTitle').text();
-	
-	console.log("boardName2123=",boardName2)
+	const boardName1 = $('#boardName1').val();
+	const boardName2 = $('#boardName2').val();
+
 	if (query.trim()) {
 		// AJAX 요청을 통해 서버로 검색을 전송
   		$.ajax({
-	        url: 'search', // 서버의 검색 엔드포인트 (적절히 변경)
+	        url: 'searchAjax', // 서버의 검색 엔드포인트 (적절히 변경)
 	        method: 'GET',
-	        data: { boardName2: boardName2, category: category, query: query , state:"ajax", page:sdata.page,limit:sdata.limit},
+			dataType: "json",
+	        data: { boardName1: boardName1, boardName2: boardName2, category: category, query: query , state:true, page:sdata.page,limit:sdata.limit},
 	        success: function(data) {
-		    	
+				console.log("data="+data);
 	          	$("#viewCount").val(data.limit);
 				$("thead").find("span").text("글 개수 : "+data.listCount);
-				
+
 				if(data.listCount>0){
 					$("tbody").remove();
 					updateBoardList(data);// 게시판 내용 업데이트
 					generatePagination(data);// 페이지네이션 생성
 					searchValue = true;
 					
-					updateDividerHeight();//구분선 길이 업데이트
+					//updateDividerHeight();//구분선 길이 업데이트
 				}else{
 					$('tbody').html('<tr style="border-bottom:1px solid #dee2e6;"><td colspan="5" style="text-align: center;">검색 결과가 없습니다.</td></tr>');
 					$('.pagination').html('');
@@ -171,5 +172,15 @@ $(function(){
 	
 	$('#search-button').click(function() {
 		searchAjax(1);
+	});
+
+	$(document).on('click', '.tr-post', function(event) {
+		event.preventDefault();  // 기본 동작 방지 (링크 이동 방지)
+
+		var postPage = $(this).data('page');  // data-page에서 페이지 번호 가져오기
+		var boardName1 = $(this).data('name1');
+		var boardName2 = $(this).data('name2');
+
+		location.href=`/board/post/detail?no=${postPage}&boardName1=${boardName1}&boardName2=${boardName2}`;
 	});
 })

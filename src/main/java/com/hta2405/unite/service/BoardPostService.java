@@ -1,11 +1,10 @@
 package com.hta2405.unite.service;
 
+import com.hta2405.unite.domain.Board;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Post;
-import com.hta2405.unite.dto.BoardDTO;
-import com.hta2405.unite.dto.BoardPostEmpDTO;
-import com.hta2405.unite.dto.FileDTO;
-import com.hta2405.unite.dto.PostDTO;
+import com.hta2405.unite.domain.PostFile;
+import com.hta2405.unite.dto.*;
 import com.hta2405.unite.mybatis.mapper.BoardPostMapper;
 import com.hta2405.unite.util.ConfigUtil;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -25,6 +26,13 @@ public class BoardPostService {
     private final BoardPostMapper boardPostMapper;
     private final EmpService empService;
     private final FileService fileService;
+
+    public List<BoardHomeDeptDTO> getBoardListByEmpId(String empId) {
+        Emp emp = empService.getEmpById(empId);
+        Long deptId = emp.getDeptId();
+
+        return boardPostMapper.getBoardListByDeptId(deptId);
+    }
 
     public List<BoardPostEmpDTO> getBoardListAll(String empId) {
         Emp emp = empService.getEmpById(empId);
@@ -44,7 +52,6 @@ public class BoardPostService {
 
     @Transactional
     public boolean addPost(BoardDTO boardDTO, PostDTO postDTO, List<MultipartFile> files) {
-        log.info("boardDTO: " + boardDTO.toString());
 
         // 1. 게시판 ID 가져오기
         Long boardId = boardPostMapper.findBoardIdByName1Name2(boardDTO);
@@ -68,13 +75,81 @@ public class BoardPostService {
         }
 
         //파일업로드
-        List<FileDTO> fileDTOList = new ArrayList<>();
-        for (MultipartFile file : files) {
-            fileDTOList.add(fileService.uploadFile(file, UPLOAD_DIRECTORY));
+        if(files != null && !files.isEmpty()) {
+            List<FileDTO> fileDTOList = new ArrayList<>();
+            for (MultipartFile file : files) {
+                fileDTOList.add(fileService.uploadFile(file, UPLOAD_DIRECTORY));
+            }
+
+            int num = 0;
+            num += boardPostMapper.insertPostFile(post.getPostId(), fileDTOList);
+            return num > 0;
+        }
+        return true;
+    }
+
+
+
+    public HashMap<String, Object> getBoardListAndListCount(int page, int limit, BoardDTO boardDTO) {
+        Long boardId = boardPostMapper.findBoardIdByName1Name2(boardDTO);
+        if (boardId == null) {
+            throw new IllegalArgumentException("게시판 이름을 찾을 수 없습니다.");
         }
 
-        int num = 0;
-        num += boardPostMapper.insertPostFile(post.getPostId(), fileDTOList);
-        return num == files.size();
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("listCount", getListCountByBoardId(boardId));
+        map.put("postList", getPostListByBoardId(page, limit, boardId));
+        return map;
+    }
+
+    public int getListCountByBoardId(Long boardId) {
+        return boardPostMapper.getListCountByBoardId(boardId);
+    }
+
+    public List<Post> getPostListByBoardId(int page, int endRow, Long boardId) {
+        int startRow = (page - 1) * endRow;
+        List<Post> postList = boardPostMapper.getPostListByBoardId(startRow, endRow, boardId);
+        log.info("postList: " + postList.toString());
+        return postList;
+    }
+
+    public HashMap<String, Object> getSearchListCountByBoardId(int page, int limit, BoardDTO boardDTO, String category, String query) {
+        Long boardId = boardPostMapper.findBoardIdByName1Name2(boardDTO);
+        if (boardId == null) {
+            throw new IllegalArgumentException("게시판 이름을 찾을 수 없습니다.");
+        }
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("listCount", getSearchListCountByBoardId(boardId,category,query));
+        map.put("postList", getSearchListByBoardId(page,limit,boardId,category,query));
+        return map;
+    }
+
+    public int getSearchListCountByBoardId(Long boardId, String category, String query) {
+        return boardPostMapper.getSearchListCountByBoardId(boardId,category,query);
+    }
+
+    public List<Post> getSearchListByBoardId(int page, int endRow, Long boardId, String category, String query) {
+        int startRow = (page - 1) * endRow;
+        List<Post> postList = boardPostMapper.getSearchListByBoardId(startRow,endRow,boardId,category,query);
+        log.info("postList: " + postList.toString());
+        return postList;
+    }
+
+    public void setReadCountUpdate(Long postId) {
+        boardPostMapper.setReadCountUpdate(postId);
+    }
+
+    public PostDetailDTO getDetail(Long postId) {
+        //Map<String, Object> detail = boardPostMapper.getDetail(postId);
+        PostDetailDTO postDetailDTO = boardPostMapper.getDetail(postId);
+        List<PostFile> postFiles = boardPostMapper.getDetailPostFile(postId);
+        postDetailDTO.setPostFiles(postFiles);
+//        List<Object> result = new ArrayList<>();
+//        result.add(postDetailDTO.get("post")); // Post 객체
+//        result.add(postDetailDTO.get("emp"));  // Emp 객체
+//        result.add(postFiles);          // 파일 리스트
+
+        return postDetailDTO;
     }
 }

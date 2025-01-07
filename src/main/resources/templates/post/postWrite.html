@@ -360,7 +360,7 @@ function fileListAppendHtml(file){
 	let htmlData = '';
 	htmlData += '<div id="file' + fileNo + '" class="filebox">';
 	htmlData += '   <p class="name">' + file.name + '</p>';
-	htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><img src="${pageContext.request.contextPath}/image/delete.png"/></a>';
+	htmlData += '   <a class="delete" onclick="deleteFile(' + fileNo + ');"><img src="/image/delete.png"/></a>';
 	htmlData += '</div>';
 	$('.file-list').append(htmlData);
 	
@@ -397,7 +397,6 @@ function deleteFile(deleteNo) {
 
 /* 파일 목록이 비어있으면 숨김 처리 */
 function updateFileListVisibility() {
-	console.log(filesArr.length)
     $('.file-list').toggleClass('hidden', filesArr.length !== 0);
 	updateDividerHeight();
 }
@@ -410,10 +409,16 @@ function submitForm() {
 
     // 삭제되지 않은 파일만 폼데이터에 담기
     filesArr.forEach(file => {
-        formData.append("attach_file" + j++, file);
+        formData.append("attachFiles", file);
     });
 
-	console.log(formData)
+	for(let [key, value] of formData.entries()) {
+		if(key === 'files'){
+			formData.delete(key);
+			console.log("delete = ",key)
+		}
+		console.log(key, value);
+	}
 
     $.ajax({
         method: 'POST',

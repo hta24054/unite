@@ -1,19 +1,26 @@
 package com.hta2405.unite.controller;
 
-import com.hta2405.unite.dto.BoardDTO;
-import com.hta2405.unite.dto.BoardPostEmpDTO;
-import com.hta2405.unite.dto.PostDTO;
+import com.hta2405.unite.domain.Board;
+import com.hta2405.unite.domain.PaginationResult;
+import com.hta2405.unite.dto.*;
 import com.hta2405.unite.service.BoardPostService;
 import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024 * 5,   // 메모리 내 파일 크기 제한 (5MB)
@@ -31,8 +38,20 @@ public class BoardController {
     }
 
     @GetMapping(value = "/home")//board/write
-    public String boardHome() {
+    public String boardHome(Model model) {
+        //sidebar 부서게시판 설정
+        boardSidebar_dept(model);
+
         return "board/boardHome";
+    }
+
+    //sidebar 부서게시판 설정
+    private void boardSidebar_dept(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String empId = authentication.getName();
+
+        List<BoardHomeDeptDTO> BoardDeptList = boardPostService.getBoardListByEmpId(empId);
+        model.addAttribute("boardScope", BoardDeptList);
     }
 
     @ResponseBody
@@ -49,8 +68,117 @@ public class BoardController {
         return boardPostEmpDTOList;
     }
 
+    @GetMapping("/boardList")
+    public Object boardList(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int limit,
+            BoardDTO boardDTO,
+            Model model,
+            HttpSession session) {
+
+        boardSidebar_dept(model);
+        session.setAttribute("referer", "list");
+
+        HashMap<String, Object> map = boardPostService.getBoardListAndListCount(page, limit, boardDTO);
+        PaginationResult result = new PaginationResult(page, limit, (int) map.get("listCount"));
+
+        model.addAttribute("page", page);
+        model.addAttribute("maxPage", result.getMaxpage());
+        model.addAttribute("startPage", result.getStartpage());
+        model.addAttribute("endPage", result.getEndpage());
+        model.addAttribute("listCount", map.get("listCount"));
+        model.addAttribute("postList", map.get("postList"));
+        model.addAttribute("limit", limit);
+        model.addAttribute("boardName1", boardDTO.getBoardName1());
+        model.addAttribute("boardName2", boardDTO.getBoardName2());
+        return "board/boardList";
+    }
+
+    @ResponseBody
+    @GetMapping("/boardListAjax")
+    public Object boardListAjax(
+            boolean ajax,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int limit,
+            BoardDTO boardDTO,
+            Model model,
+            HttpSession session) {
+
+        boardSidebar_dept(model);
+        session.setAttribute("referer", "list");
+
+        HashMap<String, Object> map = boardPostService.getBoardListAndListCount(page, limit, boardDTO);
+        PaginationResult result = new PaginationResult(page, limit, (int) map.get("listCount"));
+
+        HashMap<String, Object> ajaxMap = new HashMap<>();
+        if (ajax) {
+            ajaxMap.put("page", page);
+            ajaxMap.put("maxPage", result.getMaxpage());
+            ajaxMap.put("startPage", result.getStartpage());
+            ajaxMap.put("endPage", result.getEndpage());
+            ajaxMap.put("listCount", map.get("listCount"));
+            ajaxMap.put("postList", map.get("postList"));
+            ajaxMap.put("limit", limit);
+            ajaxMap.put("boardName1", boardDTO.getBoardName1());
+            ajaxMap.put("boardName2", boardDTO.getBoardName2());
+        }
+        return ajaxMap;
+    }
+
+//    @GetMapping("/search")
+//    public String searchBoardList(@RequestParam(defaultValue = "1") int page,
+//                                  @RequestParam(defaultValue = "10") int limit,
+//                                  BoardDTO boardDTO,
+//                                  Model model,
+//                                  String category, String query) {
+//
+//        boardSidebar_dept(model);
+//
+//        HashMap<String, Object> map = boardPostService.getSearchListCountByBoardId(page,limit,boardDTO,category,query);
+//        PaginationResult result = new PaginationResult(page, limit, (int) map.get("listCount"));
+//
+//        model.addAttribute("page", page);
+//        model.addAttribute("maxPage", result.getMaxpage());
+//        model.addAttribute("startPage", result.getStartpage());
+//        model.addAttribute("endPage", result.getEndpage());
+//        model.addAttribute("listCount", map.get("listCount"));
+//        model.addAttribute("postList", map.get("postList"));
+//        model.addAttribute("limit", limit);
+//        model.addAttribute("boardName1", boardDTO.getBoardName1());
+//        model.addAttribute("boardName2", boardDTO.getBoardName2());
+//        return "board/boardList";
+//    }
+
+    @ResponseBody
+    @GetMapping("/searchAjax")
+    public Object searchBoardListAjax(
+                                      @RequestParam(defaultValue = "1") int page,
+                                      @RequestParam(defaultValue = "10") int limit,
+                                      BoardDTO boardDTO,
+                                      Model model,
+                                      String category, String query) {
+
+        boardSidebar_dept(model);
+
+        HashMap<String, Object> map = boardPostService.getSearchListCountByBoardId(page,limit,boardDTO,category,query);
+        PaginationResult result = new PaginationResult(page, limit, (int) map.get("listCount"));
+
+        HashMap<String, Object> ajaxMap = new HashMap<>();
+        ajaxMap.put("page", page);
+        ajaxMap.put("maxPage", result.getMaxpage());
+        ajaxMap.put("startPage", result.getStartpage());
+        ajaxMap.put("endPage", result.getEndpage());
+        ajaxMap.put("listCount", map.get("listCount"));
+        ajaxMap.put("postList", map.get("postList"));
+        ajaxMap.put("limit", limit);
+        ajaxMap.put("boardName1", boardDTO.getBoardName1());
+        ajaxMap.put("boardName2", boardDTO.getBoardName2());
+        return ajaxMap;
+    }
+
     @GetMapping(value = "/post/postWrite")
-    public String boardPostWrite() {
+    public String boardPostWrite(Model model) {
+        boardSidebar_dept(model);
         return "post/postWrite";
     }
 
@@ -59,7 +187,7 @@ public class BoardController {
     public boolean boardPostAdd(
             PostDTO postDTO,
             BoardDTO boardDTO,
-            @RequestParam(value = "files", required = false) List<MultipartFile> files) {
+            @RequestParam(value = "attachFiles", required = false) List<MultipartFile> files) {
 
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -71,5 +199,33 @@ public class BoardController {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @GetMapping("/post/detail")
+    public String boardPostDetail(BoardDTO boardDTO, Long no, Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String id = authentication.getName();
+
+        boardPostService.setReadCountUpdate(no);
+        PostDetailDTO postDetailDTO = boardPostService.getDetail(no);
+        System.out.println(postDetailDTO.getPostId());
+
+        if(postDetailDTO.getPostId() != null) {
+            model.addAttribute("postDetailDTO", postDetailDTO);
+            model.addAttribute("boardDTO", boardDTO);
+            model.addAttribute("id", id);
+            model.addAttribute("postId", no);
+            return "post/boardView";
+        }
+        return "board/boardList?boardName1="+boardDTO.getBoardName1()+"&boardName2="+boardDTO.getBoardName2();
+    }
+
+    @GetMapping("/post/modify")
+    public String boardModify(Long no, Model model) {
+        PostDetailDTO postDetailDTO = boardPostService.getDetail(no);
+        if(postDetailDTO.getPostId() != null) {
+            return "post/postModify";
+        }
+        return "board/board";
     }
 }

@@ -1,0 +1,28 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hta2405.unite.mybatis.mapper.AttendMapper">
+    <select id="getAttendListByEmpId">
+        select *
+        FROM attend
+        WHERE EMP_ID = #{empId}
+          AND ATTEND_DATE BETWEEN #{startDate} AND #{endDate}
+    </select>
+    <select id="getAttendByEmpId">
+        select *
+        FROM attend
+        WHERE EMP_ID = #{empId}
+          AND ATTEND_DATE = #{date}
+    </select>
+    <insert id="attendIn">
+        insert into attend(emp_id, attend_date, in_time, attend_type)
+        values (#{empId}, CURRENT_DATE,  CURRENT_TIMESTAMP, #{attendType})
+    </insert>
+
+    <update id="attendOut">
+        update attend
+        set out_time = CURRENT_TIMESTAMP
+        where emp_id = #{empId}
+          and attend_date =  CURRENT_DATE
+    </update>
+</mapper>
+

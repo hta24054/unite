@@ -1,0 +1,85 @@
+form[name=boardform]{
+	padding : 20px 60px;
+}
+
+h1{font-size: 1.5rem; text-align: center; color:#1a92b9}
+label{font-weight: bold}
+#upfile{display: none}
+img{width: 20px;}
+.attachFile{
+	border: 1px dashed;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 80px;
+	width: 85%;
+	border-radius: 10px;
+}
+
+.fileLabel{
+	margin:0px 3px;
+	cursor: pointer;
+}
+
+.file-list {
+	display: none;
+	height: 130px;
+	overflow: auto;
+	border: 1px solid #989898;
+	padding: 10px;
+	margin: 0px 0px 1rem 15%;
+	border-radius: 10px;
+}
+.file-list .filebox p {
+	font-size: 14px;
+	margin-top: 10px;
+	display: inline-block;
+}
+.file-list .filebox .delete i{
+	color: #ff5353;
+	margin-left: 5px;
+}
+.form-group2,.form-group2-file{
+	margin-bottom: 1rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+.boardName{
+	word-wrap: normal;
+	padding: 5px 15vh 5px 3px;
+	margin: 0px 5px;
+	font-size: 18px;
+	width: 300px;
+	border: 1px solid #ccc;
+}
+.form-control2{
+	width: 85%;
+}
+.form-group-btn{
+	display: flex;
+	justify-content: center;
+	height: 70px;
+	align-items: center;
+	margin-top: 10px;
+}
+.registerBtn{
+	width: 100px;
+	background: white;
+	color: #7f7f7f;
+	border: 1.5px solid #9d9c9c;
+	font-weight: bolder;
+}
+.labelName{
+	margin: 0px;
+	font-size: 18px;
+	font-weight: 600;
+	padding: 0px 0px 0px 10px;
+}
+.dragoverFile{
+	border:3px solid #334466;
+	z-index : 1;
+}
+.hidden {
+	display: block;
+}

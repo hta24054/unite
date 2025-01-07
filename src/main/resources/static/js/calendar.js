@@ -113,12 +113,17 @@ $(document).ready(function(){
 	        type: "get",
 	        dataType: "json",
 	        data: {
-	            emp_id: $("#emp_id").val(),
-	        },
+	            emp_id: $("#emp_id").val()
+			},
 	        success: function(data) {
-	            if (data != null) {
-	                // 공유 일정 데이터를 기존 이벤트 배열에 추가
+				console.log("응답 데이터:", data);
+
+				if (data != null) {
 	                for (let i = 0; i < data.length; i++) {
+
+						const sharedEmployees = data[i].shareEmp ? data[i].shareEmp.split(",") : [];
+						console.log("공유 일정의 공유 직원:", data[i].shareEmp);
+
 	                    // 중복 체크: schedule_id로 중복 여부 확인
 	                    if (!events.some(event => event.id === data[i].scheduleId)) {
 	                        events.push({
@@ -133,6 +138,7 @@ $(document).ready(function(){
                             	droppable: false, // 드래그 불가
 	                            extendedProps: {
 							        isShared: true, // 공유 일정
+									sharedEmployees: sharedEmployees, // 공유 직원 목록
 							    },
 	                        })
 	                    }
@@ -316,10 +322,8 @@ $(document).ready(function(){
 	    if (event.extendedProps.isShared === true) {
 	        $(".modal-header").find("h5").text("공유 일정");
 	        $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", true);
-	        //$(".modal-body").find(".btn_wrap").remove();
-	         $(".modal-body").find(".btn_wrap").html(`
-	            <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
-	        `);
+	        $(".modal-body").find(".btn_wrap").remove();
+			// $(".modal-body").find(".btn_wrap").html(`<button type="button" id="btnDelete" class="btn btn-danger">삭제</button>`);
 	    } else {
 	        $(".modal-header").find("h5").text("상세 일정");
 	        $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);

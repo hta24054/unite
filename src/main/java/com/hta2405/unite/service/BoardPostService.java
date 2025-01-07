@@ -28,7 +28,7 @@ public class BoardPostService {
     private final FileService fileService;
 
     public List<BoardHomeDeptDTO> getBoardListByEmpId(String empId) {
-        Emp emp = empService.getEmpById(empId).orElseThrow(() -> new RuntimeException("Emp not found"));
+        Emp emp = empService.getEmpById(empId);
         Long deptId = emp.getDeptId();
 
         return boardPostMapper.getBoardListByDeptId(deptId);

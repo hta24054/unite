@@ -35,5 +35,40 @@
         WHERE schedule_id = #{scheduleId}
     </delete>
 
+    <!-- 공유 일정 등록 -->
+    <insert id="insertScheduleShare">
+        INSERT INTO schedule
+        (emp_id, schedule_name, schedule_content, schedule_start, schedule_end, schedule_color, schedule_allDay)
+        VALUES (#{empId}, #{scheduleName}, #{scheduleContent},
+        #{scheduleStart}, #{scheduleEnd}, #{scheduleColor}, #{scheduleAllDay})
+
+        <selectKey resultType="int" keyProperty="scheduleId" keyColumn="schedule_id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <insert id="insertScheduleShareUsers" parameterType="map">
+        INSERT INTO schedule_share
+        (share_emp, schedule_id)
+        VALUES (#{shareEmp}, #{scheduleId});
+    </insert>
+
+    <select id="getListSharedSchedule" resultType="Schedule">
+        SELECT s.schedule_id,
+               s.emp_id,
+               s.schedule_name,
+               s.schedule_content,
+               s.schedule_start,
+               s.schedule_end,
+               s.schedule_color,
+               s.schedule_allDay,
+               MIN(ss.share_emp) AS share_emp
+
+        FROM schedule s
+                 JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
+        WHERE s.emp_id = #{empId} OR ss.share_emp = #{shareEmp}
+        GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
+                 s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay
+    </select>
 
 </mapper>

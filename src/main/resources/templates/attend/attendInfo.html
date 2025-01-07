@@ -20,10 +20,6 @@
             <div class="container-fluid px-4">
                 <h1 class="mt-4" style="color: #334466; font-weight: bold"
                     th:text="'근태 관리('+${attendInfoDTO.targetEmpName}+')'"></h1>
-                <ol class="breadcrumb mb-4">
-                    <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Tables</li>
-                </ol>
                 <div class="text-center my-4">
                     <button id="prevMonth" class="btn btn-outline-dark">&lt;</button>
                     <span id="currentYearMonth" style="font-weight: bold; font-size: 25px">&nbsp;&nbsp;[[${param.year}]]년 [[${param.month}]]월&nbsp;&nbsp;</span>

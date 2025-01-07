@@ -2,7 +2,6 @@ package com.hta2405.unite.controller;
 
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.dto.AttendInfoDTO;
-import com.hta2405.unite.enums.AttendType;
 import com.hta2405.unite.service.AttendService;
 import com.hta2405.unite.service.AuthService;
 import com.hta2405.unite.service.EmpService;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -34,14 +32,14 @@ public class AttendController {
                                         @RequestParam(required = false) String empId,
                                         @RequestParam(required = false) Integer year,
                                         @RequestParam(required = false) Integer month) {
+        String targetEmpId = (empId == null || empId.isEmpty()) ? user.getUsername() : empId;
         if (year == null || month == null) {
             year = LocalDate.now().getYear();
             month = LocalDate.now().getMonthValue();
-            mv.setViewName("redirect:/attend/info?year=" + year + "&month=" + month);
+            mv.setViewName("redirect:/attend/info?empId=" + targetEmpId + "&year=" + year + "&month=" + month);
             return mv;
         }
 
-        String targetEmpId = (empId == null || empId.isEmpty()) ? user.getUsername() : empId;
         Emp targetEmp = empService.getEmpById(targetEmpId);
         Emp emp = empService.getEmpById(user.getUsername());
 
@@ -73,6 +71,7 @@ public class AttendController {
     public ResponseEntity<Object> attendIn(@AuthenticationPrincipal UserDetails user, String attendType) {
         return attendService.attendIn(user, attendType);
     }
+
     @PostMapping("/out")
     @ResponseBody
     public ResponseEntity<Object> attendOut(@AuthenticationPrincipal UserDetails user) {

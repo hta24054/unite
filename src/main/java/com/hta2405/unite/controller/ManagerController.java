@@ -39,8 +39,27 @@ public class ManagerController {
         return empService.showEmpList(mv, "부서 인사정보", message, empList, "/manager/empInfo");
     }
 
+    @GetMapping("/attendInfoList")
+    public ModelAndView showAttendInfoList(@AuthenticationPrincipal UserDetails user, ModelAndView mv) {
+        Emp emp = empService.getEmpById(user.getUsername());
+        List<Dept> deptList;
+        if (empService.isHrDeptEmp(emp)) {
+            deptList = deptService.getAllDept();
+        } else {
+            deptList = deptService.getSubDeptList(emp.getDeptId());
+        }
+        List<EmpListDTO> empList = empService.getEmpListDTO(deptList);
+        String message = "근태정보 조회 페이지입니다. 이름을 클릭하면 근태정보 조회가 가능합니다.";
+        return empService.showEmpList(mv, "부서 근태정보", message, empList, "/manager/attendInfo");
+    }
+
     @GetMapping("/empInfo")
     public String showEmpInfo(String empId) {
         return "redirect:/emp/info?empId=" + empId;
+    }
+
+    @GetMapping("/attendInfo")
+    public String showAttendInfo(String empId) {
+        return "redirect:/attend/info?empId=" + empId;
     }
 }

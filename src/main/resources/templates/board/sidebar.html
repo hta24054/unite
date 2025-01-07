@@ -34,8 +34,8 @@
 
             <!-- 부서게시판 메뉴 -->
             <!-- 세션에서 받은 부서리스트 처리 -->
-            <li class="left deptBoard-list" style="border: none;">
-                <th:block th:if="${boardScope != null}"> <!-- 부서가 존재할 경우 -->
+            <th:block th:if="${boardScope != null}"> <!-- 부서가 존재할 경우 -->
+                <li class="left deptBoard-list" style="border: none;">
                     <a href="#" class="boardName1" onclick="toggleSubMenu('#submenu-doc-list')">부서게시판</a>
                     <ul class="submenu" id="submenu-doc-list">
 
@@ -48,8 +48,8 @@
                         </th:block>
 
                     </ul>
-                </th:block>
-            </li>
+                </li>
+            </th:block>
         </ul>
     </div>
 </th:block>

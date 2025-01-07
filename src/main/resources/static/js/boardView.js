@@ -237,7 +237,6 @@ function commentAddFile(file) {
 
 $(function(){
 	getList(option);	//처음 로드 될 때는 등록순 정렬
-	updateDividerHeight();
 	
 	$('.comment-area').on('keyup','.comment-write-area-text', function(){
 		const value = $(this).val();

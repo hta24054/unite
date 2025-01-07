@@ -1,0 +1,217 @@
+<th:block th:replace="layout :: setContent(~{this::content})">
+    <th:block th:fragment="content">
+        <!DOCTYPE html>
+        <html xmlns:th="http://www.thymeleaf.org" lang="en">
+        <head>
+            <title>자원 관리</title>
+            <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css" rel="stylesheet"
+                  type="text/css">
+            <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js" type="text/javascript"></script>
+            <link th:href="@{/css/layout.css}" rel="stylesheet"/>
+            <style>
+                #attendTable td, #attendTable th, #reportTable td, #reportTable th {
+                    text-align: center; /* 텍스트 가운데 정렬 */
+                    vertical-align: middle; /* 수직 가운데 정렬 */
+                }
+            </style>
+        </head>
+        <body>
+        <main>
+            <div class="container-fluid px-4">
+                <h1 class="mt-4" style="color: #334466; font-weight: bold"
+                    th:text="'근태 관리('+${attendInfoDTO.targetEmpName}+')'"></h1>
+                <div class="text-center my-4">
+                    <button id="prevMonth" class="btn btn-outline-dark">&lt;</button>
+                    <span id="currentYearMonth" style="font-weight: bold; font-size: 25px">&nbsp;&nbsp;[[${param.year}]]년 [[${param.month}]]월&nbsp;&nbsp;</span>
+                    <button id="nextMonth" class="btn btn-outline-dark">&gt;</button>
+                </div>
+                <table class="table table-bordered shadow-sm p-3 mb-5 bg-body rounded" id="reportTable">
+                    <thead>
+                    <tr>
+                        <th>당월 근무일</th>
+                        <th>근무</th>
+                        <th>휴가</th>
+                        <th>결근</th>
+                        <th>지각, 조퇴</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td th:text="${attendInfoDTO.allWork}"></td>
+                        <td th:text="${attendInfoDTO.myWork}"></td>
+                        <td th:text="${attendInfoDTO.vacation}"></td>
+                        <td th:text="${attendInfoDTO.absent}"></td>
+                        <td th:text="${attendInfoDTO.lateOrLeaveEarly}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-table me-1"></i>
+                        근태 기록
+                    </div>
+                    <div class="card-body">
+                        <table id="attendTable" class="display">
+                            <thead>
+                            <tr>
+                                <th>날짜</th>
+                                <th>출근 시각</th>
+                                <th>퇴근 시각</th>
+                                <th>근무 시간</th>
+                                <th>근무 유형</th>
+                            </tr>
+                            </thead>
+                            <tbody id="attendTableBody">
+                            <th:block th:each="attend : ${attendInfoDTO.attendDTOList}">
+                                <tr>
+                                    <td th:text="${attend.attendDate}">날짜</td>
+                                    <td th:text="${attend.inTime}">출근 시각</td>
+                                    <td th:text="${attend.outTime}">퇴근 시각</td>
+                                    <td th:text="${attend.workTime}">근무 시간</td>
+                                    <td th:text="${attend.attendType}==null ? '' : ${attend.attendType.typeName}">근무
+                                        유형
+                                    </td>
+                                </tr>
+                            </th:block>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <script>
+            $(document).ready(function () {
+                const lang_kor = {
+                    "decimal": "",
+                    "emptyTable": "데이터가 없습니다.",
+                    "info": "_START_-_END_ (총 _TOTAL_명)",
+                    "infoEmpty": "0명",
+                    "infoFiltered": "(전체 _MAX_명 중 검색 결과)",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "_MENU_개씩 보기",
+                    "loadingRecords": "로딩중...",
+                    "processing": "처리중...",
+                    "search": "검색:",
+                    "zeroRecords": "검색된 데이터가 없습니다.",
+                    "paginate": {"first": "첫 페이지", "last": "마지막 페이지", "next": "다음", "previous": "이전"},
+                    "aria": {"sortAscending": ":오름차순 정렬", "sortDescending": ":내림차순 정렬"}
+                };
+
+                $('#attendTable').DataTable({
+                    language: lang_kor,
+                    columns: [
+                        {
+                            data: 'attendDate',
+                            render: function (data, type, row) {
+                                const date = new Date(data);
+                                if (isNaN(date)) return data; // 날짜가 유효하지 않으면 그대로 반환
+
+                                // 날짜 포맷 (YYYY-MM-DD)
+                                const formattedDate = date.toISOString().split('T')[0];
+
+                                // 요일별 스타일 적용 및 근무 유형 확인
+                                const day = date.getDay(); // 0: 일요일, 6: 토요일
+                                if (day === 6) {
+                                    return `<span style="color: blue;">${formattedDate}</span>`; // 토요일
+                                }else if (day === 0 || row.attendTypeName === '휴일') {
+                                    return `<span style="color: red;">${formattedDate}</span>`; // 일요일 또는 '휴일'
+                                }
+                                return formattedDate; // 평일
+                            },
+                        },
+                        {
+                            data: 'inTime',
+                            render: function (data) {
+                                return formatTime(data); // 시간 포맷팅
+                            },
+                        },
+                        {
+                            data: 'outTime',
+                            render: function (data) {
+                                return formatTime(data); // 시간 포맷팅
+                            },
+                        },
+                        {
+                            data: 'workTime',
+                            render: function (data) {
+                                return formatDuration(data); // Duration 포맷팅
+                            },
+                        },
+                        {
+                            data: 'attendTypeName',
+                            render: function (data) {
+                                if (data === '결근') {
+                                    return `<span style="color: red;">${data}</span>`; // '결근' 빨간색
+                                }
+                                return data; // 다른 값은 그대로 출력
+                            },
+                        }, // 근무 유형 그대로 출력
+                    ],
+                });
+            });
+
+            const urlParams = new URLSearchParams(window.location.search);
+            let currentMonth = Number(urlParams.get("month"));
+            let currentYear = Number(urlParams.get("year"));
+
+            // 이전 달 버튼 클릭
+            $('#prevMonth').click(function () {
+                if (currentMonth === 1) {
+                    currentMonth = 12;
+                    currentYear -= 1;
+                } else {
+                    currentMonth -= 1;
+                }
+                sendRequest(currentYear, currentMonth);
+            });
+
+            // 다음 달 버튼 클릭
+            $('#nextMonth').click(function () {
+                if (currentMonth === 12) {
+                    currentMonth = 1;
+                    currentYear += 1;
+                } else {
+                    currentMonth += 1;
+                }
+                sendRequest(currentYear, currentMonth);
+            });
+
+            // GET 요청 보내기
+            function sendRequest(currentYear, currentMonth) {
+                // year와 month 파라미터 업데이트
+                urlParams.set('year', currentYear);
+                urlParams.set('month', currentMonth);
+
+                // emp 파라미터가 있는 경우 그대로 유지, 없는 경우 추가하지 않음
+                const params = urlParams.toString();
+
+                // 새 URL로 이동
+                window.location.href = "?" + params;
+            }
+
+            // 시간 포맷팅 함수 (HH:mm:ss)
+            const formatTime = (timeText) => {
+                if (!timeText) return ''; // 값이 없으면 빈 문자열 반환
+                const time = new Date(timeText); // 문자열을 Date 객체로 변환
+                return isNaN(time) ? timeText : time.toTimeString().split(' ')[0]; // HH:mm:ss 형식 반환
+            };
+
+
+            // Duration 포맷팅 함수 (PT2H54M42S -> 02시간 54분 42초)
+            const formatDuration = (durationText) => {
+                if (!durationText) return ''; // 값이 없으면 빈 문자열 반환
+                const parts = durationText.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+                if (!parts) return durationText; // 유효하지 않은 형식 그대로 반환
+
+                const hours = parts[1] ? parts[1].replace('H', '').padStart(2, '0') : '00';
+                const minutes = parts[2] ? parts[2].replace('M', '').padStart(2, '0') : '00';
+                const seconds = parts[3] ? parts[3].replace('S', '').padStart(2, '0') : '00';
+
+                return `${hours}시간 ${minutes}분 ${seconds}초`;
+            };
+        </script>
+        </body>
+        </html>
+    </th:block>
+</th:block>

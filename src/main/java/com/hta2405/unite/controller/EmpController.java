@@ -8,6 +8,7 @@ import com.hta2405.unite.dto.EmpAdminUpdateDTO;
 import com.hta2405.unite.dto.EmpInfoDTO;
 import com.hta2405.unite.dto.EmpSelfUpdateDTO;
 import com.hta2405.unite.dto.EmpTreeDTO;
+import com.hta2405.unite.service.AuthService;
 import com.hta2405.unite.service.EmpService;
 import com.hta2405.unite.service.ProfileImgService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,31 +36,27 @@ import java.util.stream.Stream;
 public class EmpController {
     private final EmpService empService;
     private final ProfileImgService profileImgService;
+    private final AuthService authService;
 
     @GetMapping("/info")
     public ModelAndView showEmpInfoPage(ModelAndView mv,
                                         @AuthenticationPrincipal UserDetails user,
                                         @RequestParam(required = false) String empId) {
         String targetEmpId = (empId == null || empId.isEmpty()) ? user.getUsername() : empId;
+        Emp targetEmp = empService.getEmpById(targetEmpId);
+        Emp emp = empService.getEmpById(user.getUsername());
+
+        //열람 권한 조회
+        if (!authService.isAuthorizedToView(emp, targetEmp, user.getUsername().equals(targetEmpId))){
+            mv.setViewName("error/error");
+            mv.addObject("errorMessage", "회원정보 열람 권한이 없습니다.");
+            return mv;
+        }
 
         EmpInfoDTO empInfoDTO = empService.getEmpInfoDTO(targetEmpId);
         mv.addObject("empInfoDTO", empInfoDTO);
         mv.setViewName("emp/empInfo");
 
-        //admin과 HR은 열람 가능
-        Emp emp = empService.getEmpById(user.getUsername());
-        if (emp.getRole().equals("ROLE_ADMIN") || empService.isHrDeptEmp(emp)) {
-            return mv;
-        }
-
-        //이 외라면, 본인의 정보거나, 내 부하직원인 경우만 열람 가능
-        Emp targetEmp = empService.getEmpById(targetEmpId);
-        if (empService.isMySubDeptEmp(emp, targetEmp)) {
-            return mv;
-        }
-
-        mv.setViewName("error/error");
-        mv.addObject("errorMessage", "회원정보 열람 권한이 없습니다.");
         return mv;
     }
 

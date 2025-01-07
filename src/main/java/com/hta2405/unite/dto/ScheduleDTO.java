@@ -10,8 +10,14 @@ import lombok.*;
 @ToString
 public class ScheduleDTO {
     private Long scheduleId;
+    private String empId;
+    private String scheduleName;
+    private String scheduleContent;
     private String scheduleStart;
     private String scheduleEnd;
+    private String scheduleColor;
+    private boolean scheduleAllDay;
+    private String shareEmp;
     private Schedule schedule;
     private ScheduleShare scheduleShare;
 }

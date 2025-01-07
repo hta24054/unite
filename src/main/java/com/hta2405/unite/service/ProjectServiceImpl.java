@@ -3,6 +3,8 @@ package com.hta2405.unite.service;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Project;
 import com.hta2405.unite.dto.ProjectDetailDTO;
+import com.hta2405.unite.dto.ProjectRoleDTO;
+import com.hta2405.unite.dto.ProjectTaskDTO;
 import com.hta2405.unite.mybatis.mapper.ProjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -81,8 +82,8 @@ public class ProjectServiceImpl implements ProjectService {
         return dao.getmainList(map);
     }
 
-    public void projectFavorite(int projectId) {
-        dao.projectFavorite(projectId);
+    public void projectFavorite(int projectId, String userid){
+        dao.projectFavorite(projectId, userid);
     }
     public void projectColor(String userid, int projectId,String bgColor,String textColor){
         dao.projectColor(userid, projectId, bgColor, textColor);
@@ -113,5 +114,18 @@ public class ProjectServiceImpl implements ProjectService {
     }
     public List<ProjectDetailDTO> getProjectDetail1(int projectId, String userid) {
         return dao.getProjectDetail1(projectId, userid);
+    }
+    public boolean updateTaskContent(int projectId, String memberId, String taskContent) {
+        return dao.updateTaskContent(projectId, memberId, taskContent);
+    }
+    public boolean updateProgressRate(int projectId, String memberId, int memberProgressRate){
+        return dao.updateProgressRate(projectId, memberId, memberProgressRate);
+    }
+
+    public List<ProjectTaskDTO> getProjectDetail2(int projectId){
+        return dao.getProjectDetail2(projectId);
+    }
+    public List<ProjectRoleDTO> getRole(int projectId, String userid){
+        return dao.getRole(projectId, userid);
     }
 }

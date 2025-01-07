@@ -22,7 +22,7 @@ $(document).ready(function() {
         }
 
         $.ajax({
-		    url: contextPath + "/project/updatetaskdesign",
+		    url: "/project/updatetaskdesign",
 		    type: "POST",
 		    data: {
 		        projectId: currentProjectId,
@@ -35,6 +35,7 @@ $(document).ready(function() {
 		            taskContentElement.text(newTaskContent);  // 새로 입력된 내용으로 업데이트
 		            taskContentElement.data("content", newTaskContent);  // data-content 업데이트
 		            taskContentElement.removeClass('clickable');  // 클릭 가능 상태 제거 (수정 후 더 이상 수정 불가)
+					alert("업무 내용 변경 완료했습니다");
 		        } else {
 		            alert("업무 내용 업데이트에 실패했습니다.");
 		        }
@@ -72,7 +73,7 @@ $(document).ready(function() {
 	
 	    // 서버에 요청
 	    $.ajax({
-	        url: contextPath + "/project/updateprogress",  // 서버 요청 URL
+	        url: "/project/updateprogress",  // 서버 요청 URL
 	        type: "POST",
 	        data: { 
 	            projectId: currentProjectId,      // 프로젝트 ID
@@ -102,6 +103,7 @@ $(document).ready(function() {
 	                } else {
 	                    console.log("진행률 요소를 찾을 수 없습니다.");
 	                }
+					alert("진행률 변경 완료했습니다");
 	            } else {
 	                console.log("업데이트에 실패했습니다.");
 	            }
@@ -117,20 +119,21 @@ $(document).ready(function() {
 	
 	$("#writeForm").submit(function(event) {
 	    event.preventDefault(); // 폼 기본 제출 방지
-	
+		const projectId = $("#projectId").val();
 	    const title = $("#postTitle").val();
 	    const content = $("#postContent").val();
 	    const file = $("#postFile")[0].files[0]; // 파일 가져오기 (수정된 부분)
-	
 	    const formData = new FormData();
+		console.log("sdfsd",projectId);
 	    formData.append("title", title);
 	    formData.append("content", content);
+		formData.append("projectId", projectId);
 	    if (file) {
 	        formData.append("file", file);
 	    }
 	
 	    $.ajax({
-	        url: contextPath + "/projectb/write", // 서버 경로
+	        url: "../projectBoard/write", // 서버 경로
 	        type: "POST", // HTTP 메서드
 	        data: formData, // FormData 객체로 전송
 	        contentType: false, // jQuery가 자동으로 Content-Type을 설정하지 않도록 설정
@@ -157,8 +160,8 @@ $(document).ready(function() {
 	});
 	// tr 클릭 시 submitForm 호출
     $('.clickable-row').on('click', function() {
-        var memberId = $(this).data('member-id'); // data-member-id에서 memberId를 가져옵니다.
-        submitForm(memberId); // submitForm 함수 호출
+		const projectId = $("#projectId").val();
+		location.href = "../projectBoard/list?projectId="+projectId;
     });
 	// 게시물 리스트 업데이트
 	function updatePostList(posts) {
@@ -171,7 +174,7 @@ $(document).ready(function() {
 	        posts.forEach(post => {
 	            const postRow = `
 	                <tr>
-	                    <td><a href="${contextPath}/projectb/membertask?memberId=${post.memberId}">${post.memberName}</a></td>
+	                    <td><a href="../projectBoard/membertask?memberId=${post.memberId}">${post.memberName}</a></td>
 	                    <td>${post.projectTitle}</td> <!-- 기존 taskTitle -> projectTitle로 수정 -->
 	                    <td>${post.projectUpdateDate}</td> <!-- 기존 taskUpdateDate -> projectContent로 수정 -->
 	                </tr>

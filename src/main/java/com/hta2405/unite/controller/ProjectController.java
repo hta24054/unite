@@ -3,9 +3,12 @@ package com.hta2405.unite.controller;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.PaginationResult;
 import com.hta2405.unite.domain.Project;
+import com.hta2405.unite.dto.ProjectRoleDTO;
+import com.hta2405.unite.dto.ProjectTaskDTO;
 import com.hta2405.unite.dto.ProjectDetailDTO;
 import com.hta2405.unite.mybatis.mapper.ProjectMapper;
 import com.hta2405.unite.service.ProjectService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +19,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,17 +131,15 @@ public class ProjectController {
     @ResponseBody
     public Map<String, Object> getProjects(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "0") int favorite) {  // 0: 진행 중, 1: 즐겨찾기
-        // 현재 인증된 사용자의 ID 가져오기
+            @RequestParam(defaultValue = "0") int favorite
+           ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userid = authentication.getName();
+        int limit = 100;
+        int listcount = projectService.mainCountList(userid, favorite);
+        List<Project> mainList = projectService.getmainList(userid, favorite, page, limit);
 
-        int limit = 4; // 페이지 당 표시할 데이터 개수
-        int listcount = projectService.mainCountList(userid, favorite); // 총 프로젝트 개수 (favorite 파라미터를 넘겨서 처리)
-        List<Project> mainList = projectService.getmainList(userid, favorite, page, limit); // 프로젝트 목록 가져오기
-
-        PaginationResult result = new PaginationResult(page, limit, listcount); // 페이지네이션 결과 계산
-        logger.info("mainList size = {}", mainList.size());
+        PaginationResult result = new PaginationResult(page, limit, listcount);
 
         Map<String, Object> response = new HashMap<>();
         response.put("page", page);
@@ -146,16 +149,18 @@ public class ProjectController {
         response.put("listcount", listcount);
         response.put("boardlist", mainList);
         response.put("limit", limit);
-
         return response;
     }
+
 
     @PostMapping("/toggleFavorite")
     @ResponseBody
     public Map<String, Object> toggleFavorite(@RequestParam int projectId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userid = authentication.getName();
         Map<String, Object> response = new HashMap<>();
         try {
-            projectService.projectFavorite(projectId);
+            projectService.projectFavorite(projectId, userid);
             response.put("success", true); // 성공 상태 전달
         } catch (Exception e) {
             e.printStackTrace();
@@ -235,14 +240,54 @@ public class ProjectController {
 
         String left = projectService.getProjectName(projectId);
         List<ProjectDetailDTO> detail_Progress = projectService.getProjectDetail1(projectId, userid);
-
-
+        for (ProjectDetailDTO projectDetail : detail_Progress) {
+            if (projectDetail.getManagerId() != null && projectDetail.getManagerId().equals(userid)) {
+                projectDetail.setIsManager(true);
+            } else {
+                projectDetail.setIsManager(false);
+            }
+        }
+        List<ProjectTaskDTO> project = projectService.getProjectDetail2(projectId);
+        List<ProjectRoleDTO> role = projectService.getRole(projectId, userid);
 
         mv.setViewName("project/project_detail");
         mv.addObject("left", left);
         mv.addObject("project", detail_Progress);
+        mv.addObject("project2", project);
+        mv.addObject("role", role);
 
         return mv;
+    }
+
+    @PostMapping("/updatetaskdesign")
+    @ResponseBody
+    public void updatetaskdesign(int projectId, String memberId, String taskContent, HttpServletResponse resp) throws IOException {
+        boolean success = projectService.updateTaskContent(projectId, memberId, taskContent);
+        sendJsonResponse(success, resp);
+    }
+
+    @PostMapping("/updateprogress")
+    @ResponseBody
+    public void updateprogress(int projectId, String memberId, int memberProgressRate, HttpServletResponse resp) throws IOException {
+        boolean success = projectService.updateProgressRate(projectId, memberId, memberProgressRate);
+        sendJsonResponse(success, resp);
+    }
+
+    private void sendJsonResponse(boolean success, HttpServletResponse resp) throws IOException {
+        // JSON 응답 생성
+        StringBuilder jsonResponse = new StringBuilder();
+        jsonResponse.append("{");
+        jsonResponse.append("\"success\":").append(success);
+        jsonResponse.append("}");
+
+        // 응답 타입 및 인코딩 설정
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+
+        // PrintWriter로 JSON 응답 보내기
+        PrintWriter out = resp.getWriter();
+        out.print(jsonResponse.toString());
+        out.flush();
     }
 
 }

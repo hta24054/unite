@@ -1,3 +1,5 @@
+<th:block th:replace="layout :: setContent(~{this::content})">
+	<th:block th:fragment="content">
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -13,14 +15,6 @@
 	    var projectName = "${left}";
 	</script>
 	<script th:src="@{/js/project_detail.js}"></script>
-	<script>
-	    function submitForm(memberId) {
-	        // memberId 값을 hidden input에 설정
-	        document.getElementById('memberId').value = memberId;
-	        // 폼을 제출
-	        document.getElementById('postForm').submit();
-	    }
-	</script>
 <!--	<jsp:include page="../common/header.jsp"/>-->
 	<th:block th:replace="~{project/project_leftbar :: leftbar}"/>
 	<style>
@@ -127,6 +121,7 @@
 					</thead>
 					<tbody>
 						<tr th:each="project : ${project}">
+							<input type="hidden" th:value="${project.projectId}" id="projectId">
 							<td th:text="${project.participantNames}"></td>
 							<td>
 							<span th:classappend="${project.isManager} ? 'task-content clickable' : 'task-content'"
@@ -137,7 +132,7 @@
 							</span>
 										</td>
 										<td>
-							<span th:classappend="${project.memberId == session.id} ? 'progress-rate clickable' : 'progress-rate'"
+							<span th:classappend="${project.memberId == #authentication.name} ? 'progress-rate clickable' : 'progress-rate'"
 								  th:data-id="${project.projectId}"
 								  th:data-memberid="${project.memberId}"
 								  th:data-rate="${project.memberProgressRate}">
@@ -156,20 +151,20 @@
 				            <h5>진행 과정</h5>
 							<button type="button"
 									class="btn btn-primary btn-sm float-right"
-									th:if="${role != 'VIEWER'}"
+									th:if="${#strings.replace(role, '[', '').replace(']', '') != 'VIEWER'}"
 									data-toggle="modal"
 									data-target="#writeModal">
 								글 작성
 							</button>
 
+							<!-- 글 작성 버튼 (VIEWER일 때) -->
 							<button type="button"
 									class="btn btn-primary btn-sm float-right"
-									th:if="${role == 'VIEWER'}"
+									th:if="${#strings.replace(role, '[', '').replace(']', '') == 'VIEWER'}"
 									style="display:none;"
 									disabled>
 								글 작성
 							</button>
-
 						</div>
 				    </caption>
 				    <thead>
@@ -185,18 +180,15 @@
 								<span th:text="${project.taskWriter}"></span>
 							</td>
 							<td>
-								<span th:text="${project.taskTitle}"></span>
+								<span th:text="${project.taskSubject}"></span>
 							</td>
 							<td>
-								<span th:text="${project.taskUpdateDate}"></span>
+								<span th:text="${project.taskDate}"></span>
 							</td>
 						</tr>
 
 					</tbody>
 				</table>
-			    <form id="postForm" action="${pageContext.request.contextPath}/projectb/list" method="POST" style="display:none;">
-				    <input type="hidden" name="memberId" id="memberId">
-				</form>
 			</div>
 <!--			<jsp:include page="project_notice.jsp"/>-->
 		</div>
@@ -255,7 +247,8 @@
 	                </button>
 	            </div>
 	            <div class="modal-body">
-	                <form id="writeForm" action="${pageContext.request.contextPath}/projectb/write" method="post" enctype="multipart/form-data">
+	                <form id="writeForm" th:action="@{../projectBorad/write}" method="post" enctype="multipart/form-data">
+
 	                    <div class="form-group">
 	                        <label for="postTitle">제목</label>
 	                        <input type="text" class="form-control" id="postTitle" name="title" placeholder="제목을 입력하세요" required>
@@ -280,3 +273,5 @@
 
 </body>
 </html>
+	</th:block>
+</th:block>

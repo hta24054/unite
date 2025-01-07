@@ -213,6 +213,8 @@ $(document).ready(function () {
             e.preventDefault();  // 제출 취소
         }
         if(!alluserid.includes(userid)){
+            console.log("all", alluserid);
+            console.log("user", userid);
 			alert("프로젝트에 본인이 포함되야 합니다");
 			e.preventDefault();
 		}

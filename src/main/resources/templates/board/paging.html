@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>paging.html</title>
+    <link rel="icon" th:href="@{/image/house.ico}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div th:fragment="paging(url, params)" class="container">
+        <div class="center-block mt-3">
+            <ul class="pagination justify-content-center">
+                <th:block th:if="${page <= 1}">
+                    <li class="page-item">
+                        <a class="gray page-link"><<</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="gray page-link"><</a>
+                    </li>
+                </th:block>
+
+                <th:block th:if="${page > 1}">
+                    <li class="page-item">
+                        <a th:href="@{|${url}?page=${1}${params}|}" class="page-link"><<</a>
+                    </li>
+                    <li class="page-item">
+                        <a th:href="@{|${url}?page=${page - 1}${params}|}" class="page-link"><</a>
+                    </li>
+                </th:block>
+
+                <li th:class="${a == page} ? 'page-item active' : 'page-item'"
+                    th:each="a : ${#numbers.sequence(startPage, endPage)}">
+                    <a th:href="${a != page} ? |${url}?page=${a}${params}|"
+                       class="page-link">
+                        <span th:text="${a}"></span>
+                    </a>
+                </li>
+
+                <th:block th:if="${page < maxPage}">
+                    <li class="page-item">
+                        <a th:href="@{|${url}?page=${page+1}${params}|}" class="page-link">></a>
+                    </li>
+                    <li class="page-item">
+                        <a th:href="@{|${url}?page=${maxPage}${params}|}" class="page-link">>></a>
+                    </li>
+                </th:block>
+
+                <th:block th:if="${page >= maxPage}">
+                    <li class="page-item">
+                        <a class="page-link gray">></a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link gray">>></a>
+                    </li>
+                </th:block>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -16,10 +16,12 @@ function ajax(sdata){
 	console.log(sdata);
 	$.ajax({
 		data: sdata,
-		url: "cancel",
+		url: "/project/cancelList",
+		type: 'GET',
 		dataType: "json",
 		cache: false,
 		success: function(data){
+			console.log("aaaaa");
 			$("#viewcount").val(data.limit);
 			$("thead").find("span").text("글 개수 : " + data.listcount);
 			if(data.listcount > 0){
@@ -60,7 +62,7 @@ function updateBoardList(data){
 			<tr>
 				<td>#&nbsp;${item.projectId}</td>
 				<td><div>${item.projectName}</div></td>
-				<td><div>${item.empName}</div></td>
+				<td><div>${item.managerName}</div></td>
 				<td><div>${participants}</div></td>
 				<td><div>${viewers}</div></td>
 				<td><div>${item.projectStartDate}</div></td>

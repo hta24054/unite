@@ -1,3 +1,5 @@
+<th:block th:replace="layout :: setContent(~{this::content})">
+	<th:block th:fragment="content">
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -17,15 +19,7 @@
 </head>
 	<th:block th:replace="~{project/project_leftbar :: leftbar}"/>
 <body>
-	<div class="rows">
-		<span>줄보기</span>
-		<select class="form-control" id="viewcount">
-			<option value="1">1</option>
-			<option value="3">3</option>
-			<option value="5" selected>5</option>
-		</select>
-	</div>
-	<div style="margin: 0px 0px 100px 350px;">
+	<div style="margin: 80px 0px 80px 200px;">
 		<h2>즐겨찾기
 			<button id="toggle-favorite" class="btn btn-link" style="font-size: 1.5rem; padding: 0;">
 				<span id="toggle-icon-f" style="font-size: 40px; color: black; text-decoration: none;">∨</span>
@@ -33,17 +27,17 @@
 		</h2>
 		<div id="project-favorite" style="display: block;"></div> <!-- 프로젝트 카드가 들어갈 곳 -->
 
-		<span id="favorite-toggle-text" style="margin-left: calc(50% - 175px);">+ 펼쳐보기</span>
+		<button id="favorite-toggle-text" style="margin-left: calc(50% - 175px);">+ 펼쳐보기</button>
 	</div>
 
-	<div style="margin-left: 350px;">
+	<div style="margin-left: 200px;">
 		<h2>진행 중 프로젝트
 			<button id="toggle-projects" class="btn btn-link" style="font-size: 1.5rem; padding: 0;">
 				<span id="toggle-icon-p" style="font-size: 40px; color: black; text-decoration: none;">∨</span>
 			</button>
 		</h2>
 		<div id="project-container" style="display: block;"></div>
-		<span id="project-toggle-text" style="margin-left: calc(50% - 175px);">+ 펼쳐보기</span>
+		<button id="project-toggle-text" style="margin-left: calc(50% - 175px);">+ 펼쳐보기</button>
 	</div>
 
 
@@ -120,3 +114,5 @@
 
 </body>
 </html>
+	</th:block>
+</th:block>

@@ -5,8 +5,7 @@ $(document).ready(function() {
 		go(1); //보여줄 페이지를 1페이지로 설정
 	});
 });
-$(document).on('cli' +
-	'ck', '#toggle-projects', function () {
+$(document).on('click', '#toggle-projects', function () {
 	const container = $('#project-container');
 	const icon = $('#toggle-icon-p');
 	const isVisible = container.is(':visible'); // 현재 열림 상태 확인
@@ -289,10 +288,26 @@ function toggleFavorite(projectId, element) {
 	});
 }
 
+// $(document).on('click', '#favorite-toggle-text', function() {
+// 	let favorite = 1; // 즐겨찾기
+// 	let limit = $('#favorite-projects-all').is(':visible') ? 4 : 100; // 접혀있으면 펼쳐보기, 펼쳐지면 접기
+// 	loadProjects(favorite, limit);
+// 	$('#favorite-toggle-text').text($('#favorite-projects-all').is(':visible') ? '+ 펼쳐보기' : '- 접기');
+// 	$('#project-favorite').toggle();
+// });
+//
+// // 진행 중 프로젝트에 대해서도 동일하게 처리
+// $(document).on('click', '#project-toggle-text', function() {
+// 	let favorite = 0; // 진행 중 프로젝트
+// 	let limit = $('#project-container').is(':visible') ? 4 : 100; // 접혀있으면 펼쳐보기, 펼쳐지면 접기
+// 	loadProjects(favorite, limit);
+// 	$('#project-toggle-text').text($('#project-container').is(':visible') ? '+ 펼쳐보기' : '- 접기');
+// 	$('#project-container').toggle();
+// });
 function loadProjects(favorite) {
 	$.ajax({
 		url: '/project/getProjects',
-		data: { page: 1, favorite: favorite },
+		data: { page: 1, favorite: favorite},
 		type: 'GET',
 		dataType: 'json',
 		async: false,
@@ -368,6 +383,7 @@ function updateFavoriteProjects(data) {
 	$('#project-favorite').html(favoriteProjectsHtml); // 즐겨찾기 목록 업데이트
 	updateProjectColors(data.boardlist);
 }
+
 function goToProjectDetail(projectId) {
 	window.location.href = `/project/detail?projectId=${projectId}`;
 }
@@ -383,42 +399,5 @@ function updateProjectColors(projects) {
 			projectCard.css('color', project.textColor);
 		}
 	});
-}
-
-
-function setPaging(href, digit, isActive = false) {
-	const gray = (href === "" && isNaN(digit)) ? "gray" : "";
-	const active = isActive ? "active" : "";
-	const anchor = `<a class="page-link ${gray}" ${href}>${digit}</a>`;
-	return `<li class="page-item ${active}">${anchor}</li>`;
-}
-
-function generatePagination(data) {
-	let output = "";
-
-	// 맨 처음 버튼
-	let firstHref = data.page > 1 ? `href=javascript:go(1)` : "";
-	output += setPaging(firstHref, '<<');
-
-	// 이전 버튼
-	let prevHref = data.page > 1 ? `href=javascript:go(${data.page - 1})` : "";
-	output += setPaging(prevHref, '<');
-
-	// 페이지 번호
-	for (let i = data.startpage; i <= data.endpage; i++) {
-		const isActive = (i === data.page);
-		let pageHref = !isActive ? `href=javascript:go(${i})` : "";
-		output += setPaging(pageHref, i, isActive);
-	}
-
-	// 다음 버튼
-	let nextHref = (data.page < data.maxpage) ? `href=javascript:go(${data.page + 1})` : "";
-	output += setPaging(nextHref, '>');
-
-	// 맨 마지막 버튼
-	let lastHref = data.page < data.maxpage ? `href=javascript:go(${data.maxpage})` : "";
-	output += setPaging(lastHref, '>>');
-
-	$('.pagination').empty().append(output);
 }
 

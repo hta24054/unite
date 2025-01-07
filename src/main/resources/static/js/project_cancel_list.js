@@ -62,7 +62,7 @@ function updateBoardList(data){
 			<tr>
 				<td>#&nbsp;${item.projectId}</td>
 				<td><div>${item.projectName}</div></td>
-				<td><div>${item.empName}</div></td>
+				<td><div>${item.managerName}</div></td>
 				<td><div>${participants}</div></td>
 				<td><div>${viewers}</div></td>
 				<td><div>${item.projectStartDate}</div></td>

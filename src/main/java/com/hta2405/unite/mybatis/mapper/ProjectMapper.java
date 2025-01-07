@@ -2,6 +2,9 @@ package com.hta2405.unite.mybatis.mapper;
 
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Project;
+import com.hta2405.unite.dto.ProjectDetailDTO;
+import com.hta2405.unite.dto.ProjectRoleDTO;
+import com.hta2405.unite.dto.ProjectTaskDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
@@ -20,7 +23,13 @@ public interface ProjectMapper {
     int doneCountList(String userid, int finish, int cancel);
     List<Project> getmainList(HashMap<String, Object> map);
     List<Project> getDoneList(HashMap<String, Object> map);
-    void projectFavorite(int projectId);
+    void projectFavorite(int projectId, String userid);
     void projectColor(String userid, int projectId, String bgColor,String textColor);
     boolean projectStatus(int projectId, int complete, int cancel);
+    String getProjectName(int projectId);
+    List<ProjectDetailDTO> getProjectDetail1(int projectId, String userid);
+    boolean updateTaskContent(int projectId, String memberId, String taskContent);
+    boolean updateProgressRate(int projectId, String memberId, int memberProgressRate);
+    List<ProjectTaskDTO> getProjectDetail2(int projectId);
+    List<ProjectRoleDTO> getRole(int projectId, String userid);
 }

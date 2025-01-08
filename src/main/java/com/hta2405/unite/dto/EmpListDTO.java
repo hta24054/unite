@@ -1,6 +1,6 @@
 package com.hta2405.unite.dto;
 
-import lombok.*;
+import lombok.Data;
 
 @Data
 public class EmpListDTO {

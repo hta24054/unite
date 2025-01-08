@@ -1,32 +1,23 @@
 package com.hta2405.unite.controller;
 
-import com.hta2405.unite.domain.Emp;
-import com.hta2405.unite.domain.PaginationResult;
-import com.hta2405.unite.domain.Project;
-import com.hta2405.unite.dto.FileDTO;
-import com.hta2405.unite.dto.ProjectDetailDTO;
-import com.hta2405.unite.dto.ProjectRoleDTO;
 import com.hta2405.unite.dto.ProjectTaskDTO;
-import com.hta2405.unite.mybatis.mapper.ProjectBoardMapper;
-import com.hta2405.unite.mybatis.mapper.ProjectMapper;
+import com.hta2405.unite.service.EmpService;
 import com.hta2405.unite.service.ProjectBoardService;
 import com.hta2405.unite.service.ProjectService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,19 +26,20 @@ import java.util.Map;
 @RequestMapping("/projectBoard")
 @Slf4j
 public class ProjectBoardController {
-    private static final Logger logger = LoggerFactory.getLogger(ProjectBoardController.class);
-
+    private final ProjectService projectService;
     private final ProjectBoardService projectBoardService;
+    private final EmpService empService;
 
-    public ProjectBoardController(ProjectBoardService projectBoardService) {
+    public ProjectBoardController(ProjectBoardService projectBoardService, ProjectService projectService, EmpService empService) {
         this.projectBoardService = projectBoardService;
+        this.projectService = projectService;
+        this.empService = empService;
     }
 
     @PostMapping("/write")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> write(int projectId, String title, String content, MultipartFile file) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = authentication.getName();
+    public ResponseEntity<Map<String, Object>> write(int projectId, String title, String content, MultipartFile file, @AuthenticationPrincipal UserDetails user) {
+        String userId = user.getUsername();
 
         if (file == null || file.isEmpty()) {
             System.out.println("첨부 파일이 없습니다.");
@@ -64,10 +56,28 @@ public class ProjectBoardController {
         return ResponseEntity.ok(response);
     }
 
+//    @GetMapping("/lists")
+//    @ResponseBody
+//    public Map<String, Object> list(@RequestParam int projectId) {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String userid = authentication.getName();
+//
+//        List<ProjectTask> taskList = projectBoardService.getTaskList(projectId, userid);
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("boardlist", taskList);
+//        response.put("projectName", projectService.getProjectName(projectId));
+//
+//        return response; // JSON 형식으로 반환
+//    }
     @GetMapping("/list")
-    public String list() {
-        return "project/project_task_list";
+    public ModelAndView tasklist(ModelAndView mv, int projectId, String memberId) {
+        mv.addObject("projectName", projectService.getProjectName(projectId));
+        mv.addObject("memberName", empService.getEmpById(memberId).getEname());
+        mv.addObject("boardlist", projectBoardService.getTaskList(projectId, memberId));
+        mv.addObject("message", "진행 과정 게시판");
+        mv.setViewName("project/project_task_list");
+        return mv;
     }
-
 
 }

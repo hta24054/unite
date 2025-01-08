@@ -161,7 +161,9 @@ $(document).ready(function() {
 	// tr 클릭 시 submitForm 호출
     $('.clickable-row').on('click', function() {
 		const projectId = $("#projectId").val();
-		location.href = "../projectBoard/list?projectId="+projectId;
+		const memberId = $(this).data('member-id');
+		console.log(memberId);
+		location.href = "../projectBoard/list?projectId="+projectId+"&memberId="+memberId;
     });
 	// 게시물 리스트 업데이트
 	function updatePostList(posts) {
@@ -256,5 +258,72 @@ $(document).ready(function() {
 	
 	// 3초마다 알림 업데이트
 	setInterval(fetchNotifications, 1000);*/
+	$(".clickable-participant").on("click", function() {
+		// 'this'를 변수에 저장하여 정확히 참조
+		const that = this;
+		const projectId = $(that).data("id");  // 프로젝트 ID 가져오기
+		const memberId = $(that).data("memberid");  // 멤버 ID 가져오기
+		const $row = $(that).closest("tr");  // 클릭된 tr 요소
+
+		// 클릭된 행 아래에 있는 모든 투두 리스트 항목을 확인
+		const todoRows = $row.nextAll(".todo-row");
+
+		// 이미 투두 리스트가 추가되어 있으면 전체 투두 리스트 제거
+		if (todoRows.length > 0) {
+			todoRows.remove();  // 추가된 투두 리스트 모두 제거
+			return;  // 다시 클릭시 추가되지 않도록 종료
+		}
+
+		// AJAX 요청 보내기
+		$.ajax({
+			url: "/project/todoList",  // 올바른 경로 설정
+			type: "GET",
+			data: {
+				projectId: projectId,
+				memberId: memberId
+			},
+			success: function(data) {
+				// 데이터 성공적으로 받아옴
+				console.log("투두 리스트 데이터:", data);
+				updateTodoList(data, $row);  // 받아온 데이터로 화면 업데이트
+			},
+			error: function(xhr, status, error) {
+				console.error("AJAX 오류 발생:", status, error);
+				alert("오류가 발생했습니다. 다시 시도해 주세요.");
+			}
+		});
+	});
+
+	function updateTodoList(todos, row) {
+		// 투두 리스트가 없으면 '작성하신 투두 리스트가 없습니다' 메시지 추가
+		if (!todos || todos.length === 0) {
+			console.log("투두 리스트가 없습니다.");
+			var todoRow = $("<tr class='todo-row' style='font-size:30px; background-color: gray; color: white;'></tr>");  // 새로운 tr 태그 생성
+			var todoData = `
+            <td colspan="3" style="text-align: center">작성하신 투두 리스트가 없습니다</td>
+        `;
+			todoRow.append(todoData);  // 해당 데이터를 tr에 추가
+			row.after(todoRow);  // 클릭된 행 바로 아래에 삽입
+			return;  // 데이터가 없으면 리턴
+		}
+
+		// 클릭된 행 아래에 투두리스트 전체 추가
+		todos.forEach(function(todo) {
+			var todoRow = $("<tr class='todo-row' style='font-size:15px; background-color: gray; color: white;'></tr>");  // 새로운 tr 태그 생성
+			var todoData = `
+            <td></td>
+            <td>${todo.todoSubject}</td>
+            <td>${todo.progressRate} %</td>
+        `;
+
+			todoRow.append(todoData);  // 해당 데이터를 tr에 추가
+			row.after(todoRow);  // 클릭된 행 바로 아래에 삽입
+		});
+	}
+
+
+
+
+
 
 });

@@ -1,8 +1,11 @@
 package com.hta2405.unite.dto;
 
+import com.hta2405.unite.domain.Dept;
 import com.hta2405.unite.domain.Schedule;
 import com.hta2405.unite.domain.ScheduleShare;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,4 +25,9 @@ public class ScheduleDTO {
     private String empIdName;
     private Schedule schedule;
     private ScheduleShare scheduleShare;
+    private Dept dept;
+    private Long deptId;
+    private String deptName;
+    private String deptManager;
+    private List<String> empIdInDept;
 }

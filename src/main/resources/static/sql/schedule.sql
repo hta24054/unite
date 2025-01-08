@@ -126,7 +126,6 @@ GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
          s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay;
 
 
-
 SELECT
     s.schedule_id,
     s.emp_id,
@@ -148,3 +147,50 @@ SELECT
          s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay;
 
 
+select dept_manager from dept;
+
+
+SELECT
+    s.schedule_id,
+    s.emp_id,
+    s.schedule_name,
+    s.schedule_content,
+    s.schedule_start,
+    s.schedule_end,
+    s.schedule_color,
+    s.schedule_allDay,
+    e.dept_id,  -- empId에 해당하는 부서의 deptId
+    d.dept_name  -- 부서명 가져오기
+FROM schedule s
+         JOIN emp e ON s.emp_id = e.emp_id  -- schedule 테이블과 emp 테이블을 empId로 조인
+         JOIN dept d ON e.dept_id = d.dept_id  -- emp 테이블과 dept 테이블을 deptId로 조인
+WHERE s.emp_id = '241001';  -- 특정 직원이 등록한 모든 일정에 대한 부서 정보
+
+
+
+
+SELECT
+    s.schedule_id,
+    s.emp_id,
+    s.schedule_name,
+    s.schedule_content,
+    s.schedule_start,
+    s.schedule_end,
+    s.schedule_color,
+    s.schedule_allDay,
+    e.dept_id,  -- empId에 해당하는 부서의 deptId
+    d.dept_name,  -- 부서명
+    GROUP_CONCAT(e2.emp_id) AS shared_emp_ids,  -- 같은 부서 직원들의 emp_id (일정 공유 대상)
+    GROUP_CONCAT(e2.ename) AS shared_emp_names  -- 같은 부서 직원들의 이름 (일정 공유 대상)
+FROM schedule s
+         JOIN emp e ON s.emp_id = e.emp_id  -- 일정 등록자(emp_id)
+         JOIN dept d ON e.dept_id = d.dept_id  -- 부서 정보
+         JOIN emp e2 ON e2.dept_id = e.dept_id  -- 같은 부서의 다른 직원들
+WHERE s.schedule_id = '103'  -- 특정 일정 정보
+GROUP BY s.schedule_id;
+
+
+
+SELECT emp_id
+FROM emp
+WHERE dept_id = '1100';

@@ -39,11 +39,13 @@ CREATE TABLE schedule_share (
 
 commit; /*INSERT 하고나서 항상 커밋!!!*/
 
-select * from schedule;
+select *
+from schedule;
 
 desc schedule;
 
-select * from schedule_share;
+select *
+from schedule_share;
 
 desc schedule_share;
 
@@ -52,15 +54,17 @@ from schedule
 where emp_id = '241001';
 
 
-CREATE TABLE schedule_share (
+CREATE TABLE schedule_share
+(
     schedule_share_id bigINT AUTO_INCREMENT PRIMARY KEY,
-    share_emp VARCHAR(100) NOT NULL,
-    schedule_id bigINT NOT NULL,
-    CONSTRAINT FK_schedule FOREIGN KEY (schedule_id) REFERENCES schedule(schedule_id) ON DELETE CASCADE
+    share_emp         VARCHAR(100) NOT NULL,
+    schedule_id       bigINT       NOT NULL,
+    CONSTRAINT FK_schedule FOREIGN KEY (schedule_id) REFERENCES schedule (schedule_id) ON DELETE CASCADE
 );
 
 
-ALTER TABLE schedule_share MODIFY share_emp VARCHAR(255);
+ALTER TABLE schedule_share
+    MODIFY share_emp VARCHAR(255);
 
 select share_emp from schedule_share;
 

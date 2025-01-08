@@ -3,7 +3,10 @@ package com.hta2405.unite.dto;
 import com.hta2405.unite.domain.Dept;
 import com.hta2405.unite.domain.Schedule;
 import com.hta2405.unite.domain.ScheduleShare;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 

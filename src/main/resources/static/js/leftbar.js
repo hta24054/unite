@@ -11,7 +11,7 @@ $(document).ready(function () {
 
     $('.sidebar a').each(function () {
         //게시판 리스트일 경우
-        if(currentPath.includes("board/boardList")){
+        if (currentPath.includes("board/boardList")) {
             const params = new URLSearchParams(window.location.search);
             const boardName2 = params.get('boardName2');
             const thisBoardName2 = decodeURIComponent($(this).attr('href').split('=')[2]);
@@ -30,6 +30,7 @@ $(document).ready(function () {
         }
     });
 });
+
 function adjustSidebarHeight() {
     const sidebar = $('.sidebar'); // jQuery 객체로 선택
     sidebar.css('height', $(document).height() + 'px'); // 문서 높이로 동적 설정

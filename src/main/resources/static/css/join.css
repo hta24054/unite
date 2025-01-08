@@ -59,7 +59,7 @@ button:focus {
     width: 50%;
 }
 
-form[name=joinForm]   {
+form[name=joinForm] {
     background-color: #fefefe;
     margin: 5% auto 15% auto;
     border: 1px solid lightgray;
@@ -67,6 +67,7 @@ form[name=joinForm]   {
     padding: 16px;
     box-shadow: 3px 3px 30px gray;
 }
+
 form[name=updateForm] {
     background-color: #fefefe;
     margin: 5% auto 15% auto;
@@ -107,8 +108,10 @@ b {
     display: block
 }
 
-form[name=joinform]  span{
-    display:inline-block;margin-top:-20px;font-size:10px
+form[name=joinform] span {
+    display: inline-block;
+    margin-top: -20px;
+    font-size: 10px
 }
 
 input[name=id] + span, input[name=email] + span {

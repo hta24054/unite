@@ -1,0 +1,27 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hta2405.unite.mybatis.mapper.PostCommentMapper">
+    <select id="getListCount" parameterType="long" resultType="int">
+        SELECT COUNT(*)
+        FROM post_comment
+        WHERE post_id = #{postId}
+    </select>
+
+    <select id="getCommentList" resultType="com.hta2405.unite.domain.PostComment">
+        SELECT comment_id,
+               post_id,
+               post_comment_writer,
+               post_comment_content,
+               post_comment_date,
+               post_comment_file_path,
+               post_comment_file_original,
+               post_comment_file_uuid,
+               post_comment_file_type,
+               post_comment_re_ref,
+               post_comment_re_lev,
+               post_comment_re_seq
+        FROM post_comment
+        WHERE post_id = #{postId}
+        ORDER BY post_comment_re_ref ${order}, post_comment_re_seq ASC
+    </select>
+</mapper>

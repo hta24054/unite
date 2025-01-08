@@ -15,13 +15,13 @@
     </select>
     <insert id="attendIn">
         insert into attend(emp_id, attend_date, in_time, attend_type)
-        values (#{empId}, CURRENT_DATE,  CURRENT_TIMESTAMP, #{attendType})
+        values (#{empId}, CURRENT_DATE, CURRENT_TIMESTAMP, #{attendType})
     </insert>
     <update id="attendOut">
         update attend
         set out_time = CURRENT_TIMESTAMP
         where emp_id = #{empId}
-          and attend_date =  CURRENT_DATE
+          and attend_date = CURRENT_DATE
     </update>
     <select id="getUsedAnnualVacationCount">
         SELECT ifnull(SUM(vacation_count), 0)

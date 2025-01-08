@@ -1,6 +1,7 @@
 package com.hta2405.unite.mybatis.mapper;
 
 import com.hta2405.unite.domain.*;
+import com.hta2405.unite.dto.DocInProgressDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -18,4 +19,6 @@ public interface DocMapper {
     void insertProducts(Long docBuyId, List<BuyItem> items);
 
     void insertVacationDoc(Long docId, DocVacation docVacation);
+
+    List<DocInProgressDTO> getInProgressDTO(String empId);
 }

@@ -1,6 +1,7 @@
 package com.hta2405.unite.service;
 
 import com.hta2405.unite.domain.*;
+import com.hta2405.unite.dto.DocInProgressDTO;
 import com.hta2405.unite.dto.FileDTO;
 import com.hta2405.unite.dto.ProductDTO;
 import com.hta2405.unite.mybatis.mapper.DocMapper;
@@ -104,5 +105,9 @@ public class DocService {
                         .signTime(i == 0 ? LocalDateTime.now() : null) // 첫 번째 항목(기안자) 결재 완료
                         .build())
                 .toList();
+    }
+
+    public List<DocInProgressDTO> getInProgressDTO(String empId) {
+        return docMapper.getInProgressDTO(empId);
     }
 }

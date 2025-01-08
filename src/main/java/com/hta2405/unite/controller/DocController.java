@@ -56,7 +56,8 @@ public class DocController {
                                            @AuthenticationPrincipal UserDetails user) throws JsonProcessingException {
         // JSON 데이터를 Map으로 변환
         ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> formData = objectMapper.readValue(formDataJson, new TypeReference<>() {});
+        Map<String, Object> formData = objectMapper.readValue(formDataJson, new TypeReference<>() {
+        });
 
         // DTO 생성
         DocSaveRequestDTO docSaveRequestDTO = new DocSaveRequestDTO(formData, files);
@@ -66,5 +67,12 @@ public class DocController {
         saver.save(user.getUsername(), docSaveRequestDTO);
 
         return ResponseEntity.ok("문서 작성(저장) 완료");
+    }
+
+    @GetMapping("/inProgress")
+    public String showInProgress(@AuthenticationPrincipal UserDetails user,
+                                 Model model) {
+        model.addAttribute("list", docService.getInProgressDTO(user.getUsername()));
+        return "/doc/inProgress";
     }
 }

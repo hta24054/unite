@@ -8,7 +8,7 @@ $(document).ready(function(){
 	    events = []; // 배열 초기화
 	    Promise.all([
 			fetchListData(),
-			fetchSharedListData()
+			fetchSharedListData(),
 		]).then(() => {
 	        const startMonth = moment().startOf('month').format('YYYY-MM');
 	        let endMonth = moment().add(1, 'year').endOf('month').format('YYYY-MM');
@@ -116,10 +116,6 @@ $(document).ready(function(){
 	            emp_id: $("#emp_id").val()
 			},
 	        success: function(data) {
-
-
-				console.log("응답 데이터:", data);
-
 				if (data != null) {
 	                for (let i = 0; i < data.length; i++) {
 
@@ -154,6 +150,12 @@ $(document).ready(function(){
 	        }
 	    });
 	}
+
+	// 부서 일정 리스트 불러오기
+
+
+
+
 
 	// 일정 등록
     function addEvent(eventData) {

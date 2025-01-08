@@ -1,0 +1,81 @@
+<th:block th:replace="layout :: setContent(~{this::content})">
+    <th:block th:fragment="content">
+        <!DOCTYPE html>
+        <html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO 리스트</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> <!-- Bootstrap CSS -->
+<!--    <link rel="stylesheet" href="style.css"> &lt;!&ndash; CSS 파일 링크 &ndash;&gt;-->
+    <script th:src="@{/js/project_todo.js}"></script>
+    <style>
+
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">TODO 리스트</h1>
+    <form  th:action="@{/project/todoForm(projectId=${projectId})}" method="POST" class="mb-4">
+        <div class="input-group">
+            <input type="text" id="task" name="task" class="form-control" placeholder="할 일을 입력하세요" required>
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">추가</button>
+            </div>
+        </div>
+    </form>
+
+    <h2>할 일 목록</h2>
+    <ul id="todoList" class="list-group">
+        <!-- TODO 항목은 서버에서 가져와 동적으로 추가 -->
+        <li th:each="todo, iterStat : ${todos}" class="list-group-item">
+            <div class="row">
+                <div class="col-1">
+                    <span th:text="${iterStat.index + 1}"></span> <!-- 번호 -->
+                </div>
+                <div class="col-5">
+                    <span th:text="${todo.todoSubject}"></span> <!-- 할 일 제목 -->
+                </div>
+                <div class="col-3">
+                   <span class="progress-btn" role="button" data-toggle="modal" data-target="#progressModal"
+                         th:data-todo-id="${todo.todoId}" th:data-progress-rate="${todo.progressRate}" th:data-projectid="${projectId}">
+                        <span class="progress-bar" role="progressbar"
+                              th:style="'width:' + ${todo.progressRate} + '%' + 'color:white;'">
+                            <span th:text="${todo.progressRate} + '%'"></span>
+                        </span>
+                    </span>
+                </div>
+                <div class="col-1">
+                    <button type="button" class="btn btn-warning edit-btn" th:data-todo-id="${todo.todoId}">수정</button>
+                </div>
+                <div class="col-1">
+                    <button type="button" class="btn btn-danger delete-btn" th:data-todo-id="${todo.todoId}">삭제</button>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+<div class="modal fade" id="progressModal" tabindex="-1" role="dialog" aria-labelledby="progressModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="progressModalLabel">진행률 변경</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label for="progressRate">진행률</label>
+                <input type="number" id="progressRate" class="form-control" min="0" max="100">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" id="saveProgressBtn">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+    </th:block>
+</th:block>

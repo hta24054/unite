@@ -89,7 +89,7 @@
                         </tr>
                         <tr>
                             <th class="table-secondary font-weight-bold text-center">첨부 파일</th>
-                            <td><input type="file" name="file"></td>
+                            <td><input type="file" name="files"></td>
                         </tr>
                         <tr>
                             <th colspan="2" class="table-secondary font-weight-bold" id="info">
@@ -170,6 +170,7 @@
                         alert("잔여 연차일수가 부족합니다.");
                         $('input[name="vacation_start"]').val('');
                         $('input[name="vacation_end"]').val('');
+                        ``
                         $('input[name="vacation_count"]').val('');
                         return false;
                     }
@@ -184,35 +185,49 @@
                     const confirmSubmission = confirm("문서를 작성하시겠습니까?");
                     if (!confirmSubmission) return;
 
-                    // FormData 객체 생성
-                    const formElement = document.getElementById("doc_form");
-                    const formData = new FormData(formElement);
+                    // 폼 데이터 수집
+                    const formData = new FormData();
+                    formData.append("formData", new Blob([JSON.stringify({
+                        writer: $('input[name="writer"]').val(),
+                        vacation_start: $('input[name="vacation_start"]').val(),
+                        vacation_end: $('input[name="vacation_end"]').val(),
+                        vacation_count: $('input[name="vacation_count"]').val(),
+                        content: $('input[name="vacation_start"]').val(),
+                        vacation_type: $('select[name=type]').val(),
+                        signers: $('input[name="sign[]"]').map(function () {
+                            return $(this).val();
+                        }).get()
+                    })], {type: "application/json"}));
 
-                    // 결재자 정보 추가
-                    $('input[name="sign[]"]').each(function () {
-                        formData.append("signers[]", $(this).val());
+                    // 파일 추가
+                    const fileInput = $('input[name="files"]')[0];
+                    if (fileInput && fileInput.files.length > 0) {
+                        for (let i = 0; i < fileInput.files.length; i++) {
+                            formData.append("files", fileInput.files[i]);
+                        }
+                    }
+
+                    formData.forEach((value, key) => {
+                        console.log(`${key}:`, value);
                     });
+
 
                     // AJAX 요청
                     $.ajax({
-                        url: /*[[@{/doc/vacation}]]*/ '',
+                        url: /*[[@{/doc/write/vacation}]]*/'',
                         type: "POST",
                         data: formData,
-                        processData: false,   // 폼 데이터 객체 사용 시 필요
-                        contentType: false,   // 폼 데이터 객체 사용 시 필요
+                        processData: false,
+                        contentType: false,
                         success: function (response) {
-                            if (response.status === 'success') {
-                                alert("문서 작성이 완료되었습니다.");
-                                window.location.href = /*[[@{/doc/inProgress}]]*/ '';
-                            } else {
-                                alert("문서 작성 중 오류가 발생했습니다.");
-                            }
+                            alert("문서 작성이 완료되었습니다.");
+                            window.location.href = /*[[@{/doc/inProcess}]]*/'';
                         },
                         error: function () {
                             alert("문서 작성 중 오류가 발생했습니다.");
                         }
                     });
-                });
+                })
             });
         </script>
         </body>

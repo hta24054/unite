@@ -28,5 +28,12 @@
             (#{docBuyId}, #{item.productName}, #{item.standard}, #{item.quantity}, #{item.price})
         </foreach>
     </insert>
+    <insert id="insertVacationDoc">
+        insert into doc_vacation(doc_id, vacation_start, vacation_end, vacation_type, vacation_count,
+                                 vacation_file_path, vacation_file_original, vacation_file_uuid,
+                                 vacation_file_type)
+        values (#{docId}, #{docVacation.vacationStart}, #{docVacation.vacationEnd}, #{docVacation.vacationType}, #{docVacation.vacationCount}, #{docVacation.vacationFilePath},
+                #{docVacation.vacationFileOriginal}, #{docVacation.vacationFileUUID}, #{docVacation.vacationFileType})
+    </insert>
 </mapper>
 

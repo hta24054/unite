@@ -4,11 +4,13 @@ body {
     color: #333; /* 기본 텍스트 색상 */
     margin: 0;
     padding: 0;
-    
+
 }
-html, body{
-	 overflow: hidden;  
+
+html, body {
+    overflow: hidden;
 }
+
 /* 헤더 및 왼쪽 메뉴 */
 .header {
     background-color: #343a40; /* 어두운 헤더 */
@@ -125,15 +127,29 @@ table tbody .btn-file:hover {
     }
 }
 
-table.member th:nth-child(1), table.member td:nth-child(1) { width: 60px; }
-table.member th:nth-child(2), table.member td:nth-child(2) { width: 160px; }
-table.member th:nth-child(4), table.member td:nth-child(4) { width: 175px; }
-table.member th:nth-child(5), table.member td:nth-child(5) { width: 175px; }
-table.member th:nth-child(6), table.member td:nth-child(6) { width: 100px; }
+table.member th:nth-child(1), table.member td:nth-child(1) {
+    width: 60px;
+}
 
-	/* 페이지네이션 스타일링 */
+table.member th:nth-child(2), table.member td:nth-child(2) {
+    width: 160px;
+}
+
+table.member th:nth-child(4), table.member td:nth-child(4) {
+    width: 175px;
+}
+
+table.member th:nth-child(5), table.member td:nth-child(5) {
+    width: 175px;
+}
+
+table.member th:nth-child(6), table.member td:nth-child(6) {
+    width: 100px;
+}
+
+/* 페이지네이션 스타일링 */
 .pagination .page-item a {
-	margin-top: 10px;
+    margin-top: 10px;
     color: rgb(51, 68, 102);
     background-color: #f8f9fa; /* 배경색 */
     border: 1px solid #dee2e6; /* 테두리 */

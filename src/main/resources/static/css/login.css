@@ -94,17 +94,17 @@ button:hover {
     background-color: #34495e;
 }
 
-img{
-    width:50px;
+img {
+    width: 50px;
 }
 
-a{
+a {
     text-decoration: none;
-    color:#666666;
+    color: #666666;
 }
 
-.idText,.pwText{
-    color:red;
+.idText, .pwText {
+    color: red;
     margin: 0px 5px;
     display: flex;
 }

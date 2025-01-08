@@ -2,7 +2,6 @@ package com.hta2405.unite.mybatis.mapper;
 
 import com.hta2405.unite.domain.Schedule;
 import com.hta2405.unite.domain.ScheduleShare;
-import com.hta2405.unite.dto.ScheduleDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;

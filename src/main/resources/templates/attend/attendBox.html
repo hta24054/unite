@@ -105,7 +105,7 @@
             const workTypeSelect = $("#workType");
             let optionFound = false;
 
-            workTypeSelect.find('option').each(function() {
+            workTypeSelect.find('option').each(function () {
                 if ($(this).data('enum') === type) {
                     $(this).prop('selected', true);
                     optionFound = true;
@@ -118,6 +118,7 @@
                 workTypeSelect.val('일반').prop('selected', true);
             }
         }
+
         //시간 표시 설정
         function getLocalTimeToString(localDateTimeString) {
             // LocalDateTime 문자열에서 날짜와 시간 분리

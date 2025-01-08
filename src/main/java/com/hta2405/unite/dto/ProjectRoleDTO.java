@@ -12,7 +12,8 @@ import lombok.ToString;
 @Builder
 public class ProjectRoleDTO {
     private String Role;
-    public String toString(){
+
+    public String toString() {
         return Role;
     }
 }

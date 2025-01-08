@@ -1,201 +1,228 @@
 <th:block th:replace="layout :: setContent(~{this::content})">
-	<th:block th:fragment="content">
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-<script th:src="@{/js/jquery-3.7.1.js}"></script>
-<script th:src="@{/js/boardList.js}"></script>
-<link rel="stylesheet" th:href="@{/css/boardHome.css}">
-<link rel="stylesheet" th:href="@{/css/leftbar.css}">
-<script th:src="@{/js/leftbar.js}"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-	<style>
-		select.form-control{
-			width: auto;
-			margin-bottom: 2em;
-			display: inline-block;
-		}
+    <th:block th:fragment="content">
+        <!DOCTYPE html>
+        <html xmlns:th="http://www.thymeleaf.org" lang="en">
+        <head>
+            <script th:src="@{/js/jquery-3.7.1.js}"></script>
+            <link rel="stylesheet" th:href="@{/css/boardHome.css}">
+            <link rel="stylesheet" th:href="@{/css/leftbar.css}">
+            <script th:src="@{/js/leftbar.js}"></script>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+            <style>
+                .rows {
+                    text-align: right;
+                }
 
-		.rows{
-			text-align: right;
-		}
+                .gray {
+                    color: gray;
+                }
 
-		.gray{
-			color: gray;
-		}
+                .tr-post:hover {
+                    background-color: rgba(0, 0, 0, .05);
+                    cursor: pointer;
+                }
 
-		.tr-post:hover{
-			background-color: rgba(0, 0, 0, .05);
-			cursor: pointer;
-		}
+                .lineImg {
+                    width: 13px;
+                    margin-bottom: 2px;
+                }
 
-		.lineImg{
-			width: 13px;
-			margin-bottom: 2px;
-		}
+                .search-container {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-bottom: 40px;
+                }
 
-		.search-container {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			margin-bottom: 40px;
-		}
+                .serach-main {
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                }
 
-		.serach-main{
-			border: 1px solid #ccc;
-			border-radius: 5px;
-		}
+                .search-category {
+                    padding: 5px 0px 5px 10px;
+                    margin-right: 5px;
+                    border: none;
+                    border-radius: 3px;
+                }
 
-		.search-category {
-			padding: 5px 0px 5px 10px;
-			margin-right: 5px;
-			border: none;
-			border-radius: 3px;
-		}
+                .search-input {
+                    padding: 5px 10px 5px;
+                    flex: 1;
+                    border: none;
+                    border-left: 1px solid #ccc;
+                }
 
-		.search-input {
-			padding: 5px 10px 5px;
-			flex: 1;
-			border: none;
-			border-left: 1px solid #ccc;
-		}
+                .search-button {
+                    background-color: #f1f1f1;
+                    border: none;
+                    padding: 5px 10px;
+                    margin-left: 10px;
+                    cursor: pointer;
+                    border-radius: 3px;
+                }
 
-		.search-button {
-			background-color: #f1f1f1;
-			border: none;
-			padding: 5px 10px;
-			margin-left: 10px;
-			cursor: pointer;
-			border-radius: 3px;
-		}
+                .search-button i {
+                    font-size: 16px;
+                }
 
-		.search-button i {
-			font-size: 16px;
-		}
+                .search-category, .search-input, .search-button {
+                    outline: none;
+                }
 
-		.search-category, .search-input, .search-button{
-			outline: none;
-		}
+                .container {
+                    max-width: none;
+                }
 
-		.container{
-			max-width : none;
-		}
+                .page-link {
+                    color: #334466;
+                }
 
-		.page-link{
-			color:#334466;
-		}
+                .page-item.active .page-link {
+                    background-color: #334466;
+                    border-color: #334466;
+                }
 
-		.page-item.active .page-link{
-			background-color: #334466;
-			border-color: #334466;
-		}
-		body > div > table > thead > tr:nth-child(2) > th:nth-child(1){width:8%}
-		body > div > table > thead > tr:nth-child(2) > th:nth-child(2){width:50%}
-		body > div > table > thead > tr:nth-child(2) > th:nth-child(3){width:14%}
-		body > div > table > thead > tr:nth-child(2) > th:nth-child(4){width:17%}
-		body > div > table > thead > tr:nth-child(2) > th:nth-child(5){width:11%}
-	</style>
-</head>
-<body>
-<!--<script th:src="@{/js/leftbar.js}"></script>-->
-<!-- <th:block th:replace="~{/common/header :: headerFragment}"/> -->
-<div class="main">
-	<th:block th:replace="~{/board/sidebar :: boardSidebarFragment}"/>
+                body > div > table > thead > tr:nth-child(2) > th:nth-child(1) {
+                    width: 8%
+                }
 
-	<div class="content">
-		<div class="boardTitle">[[${boardName2}]]</div>
-		<input type="hidden" id="boardName1" th:value="${boardName1}">
-		<input type="hidden" id="boardName2" th:value="${boardName2}">
-		<div class="container">
-			  <th:block th:if="${listCount > 0}">
-				<table class="table">
-					<thead>
-						<tr>
-							<th colspan="3" style="border-top: none;"></th>
-							<th colspan="1" style="border-top: none;line-height: 2rem;">
-								<span>총 [[${listCount}]]건</span>
-							</th>
-							<th colspan="1" style="border-top: none;">
-								<select class="form-control" id="viewCount" style="margin:0">
-									<option value="1">1</option>
-									<option value="5">5</option>
-									<option value="10" selected>10</option>
-									<option value="20">20</option>
-								</select>
-							</th>
-						</tr>
-						<tr>
-							<th style="width: 100px;"><div>번호</div></th>
-							<th ><div>제목</div></th>
-							<th style="width: 250px;"><div>작성자</div></th>
-							<th style="width: 200px;"><div>날짜</div></th>
-							<th style="width: 100px;"><div>조회수</div></th>
-						</tr>
-					</thead>
-					<tbody>
-					<th:block th:with="num=${listCount - (page - 1) * limit}">
-						<th:block th:each="p, iterStat : ${postList}">
-							<tr class="tr-post" th:data-page="${page}"
-								th:data-no="${p.postId}" th:data-name1="${boardName1}" th:data-name2="${boardName2}">
-								<td><!--번호 -->
-									<span th:text="${num - (iterStat.index)}"></span>
-								</td>
-								<td><!--제목 -->
-									<div>
-										<!-- 답변글 제목앞에 여백 처리 부분 -->
-										<th:block th:if="${p.postReLev>0}"> <!-- 답글인 경우 -->
-											<span th:each="i : ${#numbers.sequence(0, p.postReLev * 2)}">
+                body > div > table > thead > tr:nth-child(2) > th:nth-child(2) {
+                    width: 50%
+                }
+
+                body > div > table > thead > tr:nth-child(2) > th:nth-child(3) {
+                    width: 14%
+                }
+
+                body > div > table > thead > tr:nth-child(2) > th:nth-child(4) {
+                    width: 17%
+                }
+
+                body > div > table > thead > tr:nth-child(2) > th:nth-child(5) {
+                    width: 11%
+                }
+            </style>
+        </head>
+        <body>
+        <script type="module" th:src="@{/js/boardList.js}"></script>
+        <div class="main">
+            <th:block th:replace="~{/board/sidebar :: boardSidebarFragment}"/>
+
+            <div class="content">
+                <div class="boardTitle">[[${boardName2}]]</div>
+                <input type="hidden" id="boardName1" th:value="${boardName1}">
+                <input type="hidden" id="boardName2" th:value="${boardName2}">
+                <div class="container">
+                    <th:block th:if="${listCount > 0}">
+                        <table class="table" style="text-align: center">
+                            <thead>
+                            <tr>
+                                <th colspan="3" style="border-top: none;"></th>
+                                <th colspan="1" style="border-top: none;line-height: 2rem;">
+                                    <span>총 [[${listCount}]]건</span>
+                                </th>
+                                <th colspan="1" style="border-top: none;">
+                                    <select class="form-control" id="viewCount"
+                                            style="margin:0;padding:.375rem 20%;appearance: auto;text-align: center;">
+                                        <option value="1">1</option>
+                                        <option value="5">5</option>
+                                        <option value="10" selected>10</option>
+                                        <option value="20">20</option>
+                                    </select>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 100px;">
+                                    <div>번호</div>
+                                </th>
+                                <th style="min-width: 250px;">
+                                    <div>제목</div>
+                                </th>
+                                <th style="width: 250px;">
+                                    <div>작성자</div>
+                                </th>
+                                <th style="width: 200px;">
+                                    <div>날짜</div>
+                                </th>
+                                <th style="width: 100px;">
+                                    <div>조회수</div>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <th:block th:with="num=${listCount - (page - 1) * limit}">
+                                <th:block th:each="p, iterStat : ${postList}">
+                                    <tr class="tr-post" th:data-page="${page}"
+                                        th:data-no="${p.postId}" th:data-name1="${boardName1}"
+                                        th:data-name2="${boardName2}">
+                                        <td><!--번호 -->
+                                            <span th:text="${num - (iterStat.index)}"></span>
+                                        </td>
+                                        <td style="text-align: left;padding: 12px 5%;"><!--제목 -->
+                                            <div>
+                                                <!-- 답변글 제목앞에 여백 처리 부분 -->
+                                                <th:block th:if="${p.postReLev>0}"> <!-- 답글인 경우 -->
+                                                    <span th:each="i : ${#numbers.sequence(1, p.postReLev * 2)}">
 												&nbsp;
 											</span>
-											<img class="lineImg" src='/image/postLine.png'>
-										</th:block>
+                                                    <img class="lineImg" src='/image/postLine.png'>
+                                                </th:block>
 
-										<input type="hidden" th:id="${p.postId}" th:value="${p.postId}"><!--view.js에서 사용하기위해 추가합니다. -->
+                                                <input type="hidden" th:id="${p.postId}" th:value="${p.postId}">
+                                                <!--view.js에서 사용하기위해 추가합니다. -->
 
-										<th:block th:if="${p.postSubject.length()>=20}">
-											<th:block th:text="${p.postSubject.substring(0,20)}..."/>
-										</th:block>
-										<th:block th:if="${p.postSubject.length()<20}">
-											<th:block th:text="${p.postSubject}"/>
-										</th:block>
-										<th:block th:text="'['+${p.postCommentCnt}+']'"/>
-									</div>
-								</td>
-								<td><div>[[${p.postWriter}]]</div></td>
-								<td><div>[[${p.getFormattedPostDate()}]]</div></td>
-								<td><div>[[${p.postView}]]</div></td>
-							</tr>
-						</th:block>
-					</th:block>
-					</tbody>
-				</table>
+                                                <th:block th:if="${p.postSubject.length()>=40}">
+                                                    <th:block th:text="${p.postSubject.substring(0,40)} + '...'"/>
+                                                </th:block>
+                                                <th:block th:if="${p.postSubject.length()<40}">
+                                                    <th:block th:text="${p.postSubject}"/>
+                                                </th:block>
+                                                <th:block th:text="'['+${p.postCommentCnt}+']'"/>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>[[${p.postWriter}]]</div>
+                                        </td>
+                                        <td>
+                                            <div>[[${p.getFormattedPostDate()}]]</div>
+                                        </td>
+                                        <td>
+                                            <div>[[${p.postView}]]</div>
+                                        </td>
+                                    </tr>
+                                </th:block>
+                            </th:block>
+                            </tbody>
+                        </table>
 
-				<th:block th:replace="~{board/paging :: paging('boardList', '&boardName1=' + ${boardName1} + '&boardName2=' + ${boardName2} )}"/>
+                        <th:block
+                                th:replace="~{board/paging :: paging('boardList', '&boardName1=' + ${boardName1} + '&boardName2=' + ${boardName2} )}"/>
 
-				<div class="search-container">
-					<div class="serach-main">
-						<select id="search-category" name="category" class="search-category">
-							<option value="제목">제목</option>
-								<option value="내용">내용</option>
-								<option value="작성자">작성자</option>
-						</select>
-						<input type="text" id="search-input" name="query" class="search-input" placeholder="검색">
-						<button id="search-button" class="search-button">
-								<i class="fa fa-search"></i> 검색
-						</button>
-					</div>
-				</div>
-			  </th:block><!-- <c:if test="${listcount > 0}"> end -->
+                        <div class="search-container">
+                            <div class="serach-main">
+                                <select id="search-category" name="category" class="search-category">
+                                    <option value="제목">제목</option>
+                                    <option value="내용">내용</option>
+                                    <option value="작성자">작성자</option>
+                                </select>
+                                <input type="text" id="search-input" name="query" class="search-input" placeholder="검색">
+                                <button id="search-button" class="search-button">
+                                    <i class="fa fa-search"></i> 검색
+                                </button>
+                            </div>
+                        </div>
+                    </th:block><!-- <c:if test="${listcount > 0}"> end -->
 
-			  <!-- 게시글이 없는 경우 -->
-			  <th:block th:if="${listCount==0}">
-				<h3 style = "margin-top:40px;">등록된 게시글이 없습니다.</h3>
-			  </th:block>
+                    <!-- 게시글이 없는 경우 -->
+                    <th:block th:if="${listCount==0}">
+                        <h3 style="margin-top:40px;">등록된 게시글이 없습니다.</h3>
+                    </th:block>
 
-		</div> <!-- <div class="container"> end -->
-	</div>
-</div>
-</body>
-</html>
-	</th:block>
+                </div> <!-- <div class="container"> end -->
+            </div>
+        </div>
+        </body>
+        </html>
+    </th:block>
 </th:block>

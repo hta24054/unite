@@ -2,25 +2,28 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <meta charset="UTF-8">
 <th:block th:fragment="page">
-	<div class="center-block">
-		<ul class="pagination justify-content-center">
-			<!-- 이전 버튼 -->
-			<li class="page-item">
-				<a th:if="${page > 1}" th:href="@{/list(page=${page - 1}, memberId=${memberId})}" class="page-link">이전</a>
-				<a th:unless="${page > 1}" class="page-link gray">이전</a>
-			</li>
+    <div class="center-block">
+        <ul class="pagination justify-content-center">
+            <!-- 이전 버튼 -->
+            <li class="page-item">
+                <a th:if="${page > 1}" th:href="@{/list(page=${page - 1}, memberId=${memberId})}"
+                   class="page-link">이전</a>
+                <a th:unless="${page > 1}" class="page-link gray">이전</a>
+            </li>
 
-			<!-- 페이지 번호 -->
-			<li th:each="a : ${#numbers.sequence(startpage, endpage)}" th:classappend="${a == page} ? 'active'">
-				<a th:if="${a != page}" th:href="@{/list(page=${a}, memberId=${memberId})}" class="page-link" th:text="${a}"></a>
-				<a th:unless="${a != page}" class="page-link" th:text="${a}"></a>
-			</li>
+            <!-- 페이지 번호 -->
+            <li th:each="a : ${#numbers.sequence(startpage, endpage)}" th:classappend="${a == page} ? 'active'">
+                <a th:if="${a != page}" th:href="@{/list(page=${a}, memberId=${memberId})}" class="page-link"
+                   th:text="${a}"></a>
+                <a th:unless="${a != page}" class="page-link" th:text="${a}"></a>
+            </li>
 
-			<!-- 다음 버튼 -->
-			<li class="page-item">
-				<a th:if="${page < maxpage}" th:href="@{/list(page=${page + 1}, memberId=${memberId})}" class="page-link">다음</a>
-				<a th:unless="${page < maxpage}" class="page-link gray">다음</a>
-			</li>
-		</ul>
-	</div>
+            <!-- 다음 버튼 -->
+            <li class="page-item">
+                <a th:if="${page < maxpage}" th:href="@{/list(page=${page + 1}, memberId=${memberId})}"
+                   class="page-link">다음</a>
+                <a th:unless="${page < maxpage}" class="page-link gray">다음</a>
+            </li>
+        </ul>
+    </div>
 </th:block>

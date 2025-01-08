@@ -3,9 +3,9 @@ package com.hta2405.unite.controller;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.PaginationResult;
 import com.hta2405.unite.domain.Project;
+import com.hta2405.unite.dto.ProjectDetailDTO;
 import com.hta2405.unite.dto.ProjectRoleDTO;
 import com.hta2405.unite.dto.ProjectTaskDTO;
-import com.hta2405.unite.dto.ProjectDetailDTO;
 import com.hta2405.unite.mybatis.mapper.ProjectMapper;
 import com.hta2405.unite.service.ProjectService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -132,7 +132,7 @@ public class ProjectController {
     public Map<String, Object> getProjects(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "0") int favorite
-           ) {
+    ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userid = authentication.getName();
         int limit = 100;
@@ -169,7 +169,8 @@ public class ProjectController {
         }
         return response; // JSON 형태로 반환
     }
- @PostMapping("/saveProjectColor")
+
+    @PostMapping("/saveProjectColor")
     public String saveColorSettings(
             @RequestParam int projectId,
             @RequestParam String bgColor,
@@ -203,8 +204,12 @@ public class ProjectController {
         }
         return response;
     }
+
     @GetMapping("/cancel")
-    public String cancel() {return "project/project_cancel";}
+    public String cancel() {
+        return "project/project_cancel";
+    }
+
     @GetMapping("/cancelList")
     @ResponseBody
     public Map<String, Object> cancel(@RequestParam(defaultValue = "1") int page) {
@@ -230,8 +235,11 @@ public class ProjectController {
 
         return response;
     }
+
     @GetMapping("/complete")
-    public String complete() {return "project/project_complete";}
+    public String complete() {
+        return "project/project_complete";
+    }
 
     @GetMapping("/detail")
     public ModelAndView detail(int projectId, ModelAndView mv) {

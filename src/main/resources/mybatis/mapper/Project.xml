@@ -4,8 +4,9 @@
     <select id="getHiredEmpByDeptId" resultType="Emp">
         SELECT *
         FROM emp e
-        JOIN job j ON e.job_id = j.job_id
-        WHERE e.dept_id = #{deptId} AND e.hired = 1
+                 JOIN job j ON e.job_id = j.job_id
+        WHERE e.dept_id = #{deptId}
+          AND e.hired = 1
         ORDER BY j.job_rank, e.emp_id
     </select>
     <select id="getIdToJobNameMap" resultType="map">
@@ -28,8 +29,7 @@
     <!-- 여러 프로젝트 멤버 추가 -->
     <insert id="addProjectMembers">
         INSERT INTO project_member (member_id, project_id, member_role, member_date, member_name)
-        VALUES
-            (#{memberId}, #{projectId}, #{role}, NOW(), #{memberName})
+        VALUES (#{memberId}, #{projectId}, #{role}, NOW(), #{memberName})
     </insert>
 
     <!-- 작업 생성 -->
@@ -39,58 +39,66 @@
     </insert>
 
     <select id="mainCountList" resultType="int">
-        select count(*) from project p join project_member m on p.project_id = m.project_id where m.member_id = #{userid} and m.project_favorite = #{favorite} and project_finished = 0 and project_canceled = 0 order by p.project_id
+        select count(*)
+        from project p
+                 join project_member m on p.project_id = m.project_id
+        where m.member_id = #{userid}
+          and m.project_favorite = #{favorite}
+          and project_finished = 0
+          and project_canceled = 0
+        order by p.project_id
     </select>
 
     <select id="getmainList" resultType="Project">
         WITH ranked_projects AS (
-            SELECT
-                p.project_id,
-                p.project_name,
-            DATE(p.project_end_date) projectEndDate,
-            pm.bgColor,
-            pm.textColor,
-            pm.project_favorite projectFavorite,
-            COUNT(pm.project_member_id) AS member_count,
-            IFNULL(SUM(pm.MEMBER_PROGRESS_RATE) / COUNT(pm.project_member_id), 0) AS avg_progress,
-           (SELECT e.ename
-            FROM emp e
-            WHERE e.emp_id = (
-            SELECT m.member_id
-            FROM project_member m
-            WHERE m.project_id = p.project_id
-            AND m.member_role = 'MANAGER'
-            LIMIT 1
-            )) AS managerName,
-           (SELECT m.member_id
-            FROM project_member m
-            WHERE m.project_id = p.project_id
-            AND m.member_role = 'MANAGER'
-            LIMIT 1) AS manager_id,
-            GROUP_CONCAT(CASE WHEN pm.member_role = 'PARTICIPANT' THEN e.ename END ORDER BY e.ename SEPARATOR ', ') AS participants,
-            GROUP_CONCAT(CASE WHEN pm.member_role = 'VIEWER' THEN e.ename END ORDER BY e.ename SEPARATOR ', ') AS viewers,
-            ROW_NUMBER() OVER (ORDER BY p.project_id) AS rnum
+        SELECT
+        p.project_id,
+        p.project_name,
+        DATE(p.project_end_date) projectEndDate,
+        pm.bgColor,
+        pm.textColor,
+        pm.project_favorite projectFavorite,
+        COUNT(pm.project_member_id) AS member_count,
+        IFNULL(SUM(pm.MEMBER_PROGRESS_RATE) / COUNT(pm.project_member_id), 0) AS avg_progress,
+        (SELECT e.ename
+        FROM emp e
+        WHERE e.emp_id = (
+        SELECT m.member_id
+        FROM project_member m
+        WHERE m.project_id = p.project_id
+        AND m.member_role = 'MANAGER'
+        LIMIT 1
+        )) AS managerName,
+        (SELECT m.member_id
+        FROM project_member m
+        WHERE m.project_id = p.project_id
+        AND m.member_role = 'MANAGER'
+        LIMIT 1) AS manager_id,
+        GROUP_CONCAT(CASE WHEN pm.member_role = 'PARTICIPANT' THEN e.ename END ORDER BY e.ename SEPARATOR ', ') AS
+        participants,
+        GROUP_CONCAT(CASE WHEN pm.member_role = 'VIEWER' THEN e.ename END ORDER BY e.ename SEPARATOR ', ') AS viewers,
+        ROW_NUMBER() OVER (ORDER BY p.project_id) AS rnum
         FROM
-            project p
-            JOIN
-            project_member pm ON p.project_id = pm.project_id
-            LEFT JOIN
-            emp e ON pm.member_id = e.emp_id
+        project p
+        JOIN
+        project_member pm ON p.project_id = pm.project_id
+        LEFT JOIN
+        emp e ON pm.member_id = e.emp_id
         WHERE
-            p.project_id IN (
-            SELECT project_id
-            FROM project_member
-            WHERE member_id = #{userid}
-            )
-          AND p.project_finished = 0
-          AND p.project_canceled = 0
-          AND pm.member_id = #{userid}
+        p.project_id IN (
+        SELECT project_id
+        FROM project_member
+        WHERE member_id = #{userid}
+        )
+        AND p.project_finished = 0
+        AND p.project_canceled = 0
+        AND pm.member_id = #{userid}
         <if test="favorite != null">
             AND pm.project_favorite = #{favorite}
         </if>
         GROUP BY
-            p.project_id, p.project_name, p.project_end_date
-            )
+        p.project_id, p.project_name, p.project_end_date
+        )
         SELECT *
         FROM ranked_projects
         WHERE rnum BETWEEN #{start} AND #{end}
@@ -98,133 +106,145 @@
     </select>
 
     <update id="projectFavorite">
-        update project_member set project_favorite = case when project_favorite = 0 then 1 else 0 end where project_id = #{projectId} and member_id = #{userid}
+        update project_member
+        set project_favorite = case when project_favorite = 0 then 1 else 0 end
+        where project_id = #{projectId}
+          and member_id = #{userid}
     </update>
 
     <update id="projectColor">
-        update project_member set bgColor = #{bgColor}, textColor = #{textColor} where project_id = #{projectId} and member_id = #{userid}
+        update project_member
+        set bgColor   = #{bgColor},
+            textColor = #{textColor}
+        where project_id = #{projectId}
+          and member_id = #{userid}
     </update>
 
     <update id="projectStatus">
-        update project set project_finished = #{complete}, project_canceled = #{cancel} where project_id = #{projectId}
+        update project
+        set project_finished = #{complete},
+            project_canceled = #{cancel}
+        where project_id = #{projectId}
     </update>
 
     <select id="doneCountList" resultType="int">
-        select count(*) from project p join project_member m on p.project_id = m.project_id where m.member_id = #{userid} and project_finished = #{finish} and project_canceled = #{cancel} order by p.project_id
+        select count(*)
+        from project p
+                 join project_member m on p.project_id = m.project_id
+        where m.member_id = #{userid}
+          and project_finished = #{finish}
+          and project_canceled = #{cancel}
+        order by p.project_id
     </select>
 
     <select id="getDoneList" resultType="Project">
         SELECT *
-        FROM (
-                 SELECT
-                     p.project_id,
+        FROM (SELECT p.project_id,
                      p.project_name,
-                     substring(p.project_start_date, 1, 10) projectStartDate,
-                     substring(p.project_end_date, 1, 10) projectEndDate,
+                     substring(p.project_start_date, 1, 10)                                                                     projectStartDate,
+                     substring(p.project_end_date, 1, 10)                                                                       projectEndDate,
                      p.project_file_original,
                      p.project_file_uuid,
                      p.project_file_type,
-                     COUNT(pm.project_member_id) AS member_count,
-                     SUM(pm.MEMBER_PROGRESS_RATE) / COUNT(pm.project_member_id) AS avg_progress,
+                     COUNT(pm.project_member_id)                                                                             AS member_count,
+                     SUM(pm.MEMBER_PROGRESS_RATE) / COUNT(pm.project_member_id)                                              AS avg_progress,
                      (SELECT e.ename
                       FROM emp e
-                      WHERE e.emp_id = (
-                          SELECT m.member_id
-                          FROM project_member m
-                          WHERE m.project_id = p.project_id
-                            AND m.member_role = 'MANAGER'
-                         LIMIT 1
-             )) AS managerName,
-        (SELECT m.member_id
-         FROM project_member m
-         WHERE m.project_id = p.project_id
-         AND m.member_role = 'MANAGER') AS manager_id,
-        GROUP_CONCAT(CASE WHEN pm.member_role = 'PARTICIPANT' THEN e.ename END ORDER BY e.ename SEPARATOR ', ') AS participants,
-        GROUP_CONCAT(CASE WHEN pm.member_role = 'VIEWER' THEN e.ename END ORDER BY e.ename SEPARATOR ', ') AS viewers
-        FROM
-            project p
-            JOIN
-            project_member pm ON p.project_id = pm.project_id
-            LEFT JOIN
-            emp e ON pm.member_id = e.emp_id
-        WHERE
-            p.project_id IN (
-            SELECT project_id
-            FROM project_member
-            WHERE member_id = #{userid}
-            )
-          AND p.project_canceled = 1  -- 완료된 프로젝트만
-        GROUP BY
-            p.project_id, p.project_name, p.project_start_date, p.project_end_date, p.project_file_original, p.project_file_uuid, p.project_file_type
-        ORDER BY
-            p.project_id
-            LIMIT #{start}, #{end}
-            ) AS t;
+                      WHERE e.emp_id = (SELECT m.member_id
+                                        FROM project_member m
+                                        WHERE m.project_id = p.project_id
+                                          AND m.member_role = 'MANAGER' LIMIT 1))                                            AS managerName,
+                     (SELECT m.member_id
+                      FROM project_member m
+                      WHERE m.project_id = p.project_id
+                        AND m.member_role = 'MANAGER')                                                                       AS manager_id,
+                     GROUP_CONCAT(CASE WHEN pm.member_role = 'PARTICIPANT' THEN e.ename END ORDER BY e.ename SEPARATOR ', ') AS participants,
+                     GROUP_CONCAT(CASE WHEN pm.member_role = 'VIEWER' THEN e.ename END ORDER BY e.ename SEPARATOR ', ')      AS viewers
+              FROM project p
+                       JOIN
+                   project_member pm ON p.project_id = pm.project_id
+                       LEFT JOIN
+                   emp e ON pm.member_id = e.emp_id
+              WHERE p.project_id IN (SELECT project_id
+                                     FROM project_member
+                                     WHERE member_id = #{userid})
+                AND p.project_canceled = 1 -- 완료된 프로젝트만
+              GROUP BY p.project_id, p.project_name, p.project_start_date, p.project_end_date, p.project_file_original,
+                       p.project_file_uuid, p.project_file_type
+              ORDER BY p.project_id
+                  LIMIT #{start}, #{end}) AS t;
     </select>
 
     <select id="getProjectName" resultType="String">
-        select project_name from project where project_id = #{projectId}
+        select project_name
+        from project
+        where project_id = #{projectId}
     </select>
     <select id="getProjectDetail1" resultType="com.hta2405.unite.dto.ProjectDetailDTO">
-        select p.project_id as projectId, m.member_id as memberId, p.manager_id as managerId, m.member_name as participantNames, m.member_designated as memberDesign, m.member_progress_rate as memberProgressRate,  CASE WHEN p.manager_id = #{userid} THEN true ELSE false END as isManager
-        from project_member m join project p on m.project_id = p.project_id where p.project_id=#{projectId} and m.member_role != 'VIEWER'
+        select p.project_id                                                as projectId,
+               m.member_id                                                 as memberId,
+               p.manager_id                                                as managerId,
+               m.member_name                                               as participantNames,
+               m.member_designated                                         as memberDesign,
+               m.member_progress_rate                                      as memberProgressRate,
+               CASE WHEN p.manager_id = #{userid} THEN true ELSE false END as isManager
+        from project_member m
+                 join project p on m.project_id = p.project_id
+        where p.project_id = #{projectId}
+          and m.member_role != 'VIEWER'
     </select>
 
     <update id="updateTaskContent">
-        UPDATE project_member SET member_designated = #{taskContent} WHERE project_id = #{projectId} AND member_id = #{memberId}
+        UPDATE project_member
+        SET member_designated = #{taskContent}
+        WHERE project_id = #{projectId}
+          AND member_id = #{memberId}
     </update>
     <update id="updateProgressRate">
-        update project_member set member_progress_rate = #{memberProgressRate} where project_id = #{projectId} and member_id = #{memberId}
+        update project_member
+        set member_progress_rate = #{memberProgressRate}
+        where project_id = #{projectId}
+          and member_id = #{memberId}
     </update>
 
     <select id="getProjectDetail2" resultType="com.hta2405.unite.dto.ProjectTaskDTO">
-        SELECT
-            e.ename taskWriter,
-            IFNULL(t.task_subject, '') AS taskSubject,
-            COALESCE(t.task_update_date, t.task_date) AS taskDate,
-            m.member_id memberId
-        FROM
-            project p
-                JOIN
-            project_member m ON p.project_id = m.project_id
-                JOIN
-            emp e ON m.member_id = e.emp_id
-                LEFT JOIN (
-                SELECT
-                    task_subject,
-                    project_id,
-                    emp_id,
-                    task_date,
-                    task_update_date
-                FROM (
-                         SELECT
-                             task_subject,
-                             project_id,
-                             emp_id,
-                             task_date,
-                             task_update_date,
-                             ROW_NUMBER() OVER (
-                PARTITION BY emp_id
-                ORDER BY
-                    task_date DESC,
-                    task_update_date DESC
-            ) AS rn
-                         FROM
-                             task
-                         WHERE
-                             project_id = #{projectId}
-                     ) ranked_tasks
-                WHERE
-                    rn = 1
-            ) t ON p.project_id = t.project_id
-                AND m.member_id = t.emp_id
-        WHERE
-            p.project_id = #{projectId}
+        SELECT e.ename                                      taskWriter,
+               IFNULL(t.task_subject, '')                AS taskSubject,
+               COALESCE(t.task_update_date, t.task_date) AS taskDate,
+               m.member_id                                  memberId
+        FROM project p
+                 JOIN
+             project_member m ON p.project_id = m.project_id
+                 JOIN
+             emp e ON m.member_id = e.emp_id
+                 LEFT JOIN (SELECT task_subject,
+                                   project_id,
+                                   emp_id,
+                                   task_date,
+                                   task_update_date
+                            FROM (SELECT task_subject,
+                                         project_id,
+                                         emp_id,
+                                         task_date,
+                                         task_update_date,
+                                         ROW_NUMBER() OVER (
+                                             PARTITION BY emp_id
+                                             ORDER BY
+                                                 task_date DESC,
+                                                 task_update_date DESC
+                                             ) AS rn
+                                  FROM task
+                                  WHERE project_id = #{projectId}) ranked_tasks
+                            WHERE rn = 1) t ON p.project_id = t.project_id
+            AND m.member_id = t.emp_id
+        WHERE p.project_id = #{projectId}
           AND m.member_role != 'VIEWER'
-        ORDER BY
-            e.ename;
+        ORDER BY e.ename;
     </select>
     <select id="getRole" resultType="com.hta2405.unite.dto.ProjectRoleDTO">
-        SELECT m.member_role Role FROM project_member m WHERE m.project_id = #{projectId} AND m.member_id = #{userid}
+        SELECT m.member_role Role
+        FROM project_member m
+        WHERE m.project_id = #{projectId}
+          AND m.member_id = #{userid}
     </select>
 </mapper>

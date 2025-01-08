@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -30,6 +32,19 @@ public class EmpService {
 
     public Emp getEmpById(String empId) {
         return empMapper.getEmpById(empId);
+    }
+
+    public Map<String, String> getIdToENameMap() {
+        List<Map<String, Object>> resultList = empMapper.getIdToENameMap();
+
+        Map<String, String> resultMap = new HashMap<>();
+        for (Map<String, Object> row : resultList) {
+            String empId = String.valueOf(row.get("emp_id"));
+            String eName = (String) row.get("ename");
+            resultMap.put(empId, eName);
+        }
+
+        return resultMap;
     }
 
     @Transactional

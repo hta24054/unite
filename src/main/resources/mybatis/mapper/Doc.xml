@@ -5,6 +5,13 @@
         insert into doc(doc_writer, doc_type, doc_title, doc_content, doc_create_date)
         VALUES (#{docWriter}, #{docType}, #{docTitle}, #{docContent}, #{docCreateDate})
     </insert>
+    <insert id="insertTripDoc">
+        insert into doc_trip(doc_id, trip_start, trip_end, trip_loc, trip_phone, trip_info, card_start,
+                             card_end, card_return)
+        VALUES (#{docId}, #{docTrip.tripStart}, #{docTrip.tripEnd}, #{docTrip.tripLoc}, #{docTrip.tripPhone},
+                #{docTrip.tripInfo}, #{docTrip.cardStart}, #{docTrip.cardEnd}, #{docTrip.cardReturn})
+    </insert>
+
     <insert id="insertSign">
         insert into sign(emp_id, doc_id, sign_order, sign_time) VALUES
         <foreach collection="list" item="sign" separator=",">

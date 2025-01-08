@@ -20,13 +20,13 @@ public class GeneralDocSaver implements DocSaver {
     }
 
     @Override
-    public void save(String empId, DocSaveRequestDTO request) {
+    public void save(String empId, DocSaveRequestDTO req) {
         Doc doc = Doc.builder().docWriter(empId)
                 .docType(DocType.GENERAL)
-                .docTitle(request.getFormData().get("title").toString())
-                .docContent(request.getFormData().get("content").toString())
+                .docTitle(req.getFormData().get("title").toString())
+                .docContent(req.getFormData().get("content").toString())
                 .docCreateDate(LocalDateTime.now())
                 .signFinish(false).build();
-        docService.saveGeneralDoc(doc, request.getSigners());
+        docService.saveGeneralDoc(doc, req.getSigners());
     }
 }

@@ -1,9 +1,6 @@
 package com.hta2405.unite.service;
 
-import com.hta2405.unite.domain.Dept;
-import com.hta2405.unite.domain.Doc;
-import com.hta2405.unite.domain.Emp;
-import com.hta2405.unite.domain.Sign;
+import com.hta2405.unite.domain.*;
 import com.hta2405.unite.dto.DocWriteDTO;
 import com.hta2405.unite.mybatis.mapper.DocMapper;
 import lombok.RequiredArgsConstructor;
@@ -49,14 +46,22 @@ public class DocService {
     @Transactional
     public void saveGeneralDoc(Doc doc, List<String> signers) {
         docMapper.insertGeneralDoc(doc);
-        /**
-         *     private Long signId;
-         *     private String empId;
-         *     private Long docId;
-         *     private int signOrder;
-         *     private LocalDateTime signDate;
-         */
-        List<Sign> list = IntStream.range(0, signers.size())
+
+        List<Sign> list = getSigns(doc, signers);
+        docMapper.insertSign(list);
+    }
+
+    @Transactional
+    public void saveTripDoc(Doc doc, DocTrip docTrip, List<String> signers) {
+        docMapper.insertGeneralDoc(doc);
+        docMapper.insertTripDoc(doc.getDocId(), docTrip);
+
+        List<Sign> list = getSigns(doc, signers);
+        docMapper.insertSign(list);
+    }
+
+    private static List<Sign> getSigns(Doc doc, List<String> signers) {
+        return IntStream.range(0, signers.size())
                 .mapToObj(i -> Sign.builder()
                         .empId(signers.get(i))
                         .docId(doc.getDocId())
@@ -64,6 +69,5 @@ public class DocService {
                         .signTime(i == 0 ? LocalDateTime.now() : null) // 첫 번째 항목(기안자) 결재 완료
                         .build())
                 .toList();
-        docMapper.insertSign(list);
     }
 }

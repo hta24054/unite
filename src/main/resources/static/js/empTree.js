@@ -53,11 +53,12 @@ $(document).ready(function () {
             loadEmployees(deptId);
         }
     });
+    const pageContext = /*[[@{}]]*/'';
 
     // 부서 선택 시 직원 목록 로드
     function loadEmployees(deptId) {
         $.ajax({
-            url: '../emp/empTree',
+            url: pageContext + '/emp/empTree',
             method: 'GET',
             data: {deptId: deptId},
             success: function (data) {
@@ -76,7 +77,7 @@ $(document).ready(function () {
 
         // 검색어를 백엔드로 전송
         $.ajax({
-            url: '../emp/empTree-search',
+            url: pageContext + '/emp/empTree-search',
             method: 'GET',
             data: {query: searchQuery},
             success: function (data) {

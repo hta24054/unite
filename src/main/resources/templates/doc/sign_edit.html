@@ -1,0 +1,59 @@
+<th:block th:fragment="sign_edit">
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <head>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sign.css">
+        <script th:src="@{/js/sign_write.js}"></script>
+        <title>결재자</title>
+    </head>
+    <body>
+    <div class="approval-table-container">
+        <table class="approval-table table table-bordered" id="approvalTable">
+            <tr>
+                <td rowspan="3" class="label-cell" id="title">결재</td>
+                <th:block th:each="sign, stat : ${signList}">
+                    <th class="label-cell">
+                        <span th:if="${stat.index == 0}">기안자</span>
+                        <span th:unless="${stat.index == 0}">결재자<span th:text="${stat.index}"></span></span>
+                    </th>
+                </th:block>
+            </tr>
+            <tr>
+                <th:block th:each="sign : ${signList}">
+                    <td class="name" th:text="${nameMap[sign.empId]}"></td>
+                </th:block>
+            </tr>
+            <th:block th:each="sign : ${signList}">
+                <input type="hidden" name="sign[]" th:value="${sign.empId}">
+            </th:block>
+        </table>
+
+        <!-- 버튼 컨테이너: 버튼을 테이블 우측 하단에 배치 -->
+        <div class="button-container">
+            <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#employeeModal">추가
+            </button>
+            <button type="button" class="btn btn-sm btn-danger" id="deleteButton">삭제</button>
+        </div>
+    </div>
+
+    <!-- 모달 -->
+    <div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="employeeModalLabel">
+                        조직도 및 직원 검색<span style="color: red">(더블클릭으로 추가)</span></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- 조직도와 직원 목록 포함 -->
+                    <th:block th:include="common/empTree.html"></th:block>
+                </div>
+            </div>
+        </div>
+    </div>
+    </body>
+    </html>
+</th:block>

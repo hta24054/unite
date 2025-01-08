@@ -19,4 +19,8 @@ public class DeptService {
     public List<Dept> getAllDept() {
         return deptMapper.getAllDept();
     }
+
+    public Dept getDeptByEmpId(String empId) {
+        return deptMapper.getDeptByEmpId(empId);
+    }
 }

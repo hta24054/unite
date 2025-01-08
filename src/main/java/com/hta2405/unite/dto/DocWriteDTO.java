@@ -1,14 +1,15 @@
 package com.hta2405.unite.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
-public class EmpListDTO {
+@AllArgsConstructor
+public class DocWriteDTO {
     private String empId;
     private String ename;
     private String deptName;
-    private String jobName;
-    private String email;
-    private String tel;
-    private String mobile;
+    private LocalDate date;
 }

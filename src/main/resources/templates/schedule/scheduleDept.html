@@ -1,0 +1,241 @@
+<th:block th:replace="layout :: setContent(~{this::content})">
+	<th:block th:fragment="content">
+		<!DOCTYPE html>
+		<html xmlns:th="http://www.thymeleaf.org">
+			<head>
+				<meta charset="UTF-8">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>캘린더 - 부서 일정 등록</title>
+				<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+				<script th:src="@{/js/jquery-3.7.1.js}"></script>
+				<script th:src="@{https://cdn.jsdelivr.net/npm/moment@2.27.0/min/moment.min.js}"></script>
+				<script th:src="@{https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js}"></script>
+				<script th:src="@{https://cdn.jsdelivr.net/npm/@fullcalendar/moment@6.1.15/index.global.min.js}"></script>
+				<script th:src="@{/js/calendar.js}"></script>
+				<style>
+					textarea {
+						width: 100%;
+						height: 100px;
+						margin-bottom: 10px;
+					}
+
+					.btn_wrap {
+						display: flex;
+						align-items: center;
+						justify-content: center;
+					}
+
+					.btn_wrap button {
+						margin: 0 5px;
+					}
+
+					a:hover {
+						text-decoration: none;
+					}
+				</style>
+			</head>
+			<body class="sb-nav-fixed">
+				<div class="px-5 py-4">
+					<h3 class="mb-5">부서 일정 등록</h3>
+					<div>
+						<input type="hidden" id="schedule_id" name="schedule_id" th:value="${schedule_id}">
+						<input type="hidden" id="emp_id" name="emp_id" th:value="${#authentication.name}">
+						<input type="hidden" id="dept_id" name="dept_id" th:value="${dept_id}">
+
+						<div class="form-group row">
+							<label for="schedule_name" class="col-sm-2 col-form-label">일정명</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" placeholder="일정명을 입력하세요" name="schedule_name" id="schedule_name">
+							</div>
+						</div>
+
+						<div class="form-group row custom-control custom-checkbox">
+							<div class="col-sm-7">
+								<input type="checkbox" name="allDay" id="allDay" class="custom-control-input" value="">
+								<label for="allDay" class="custom-control-label">하루종일</label>
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<label for="startAt" class="col-sm-2 col-form-label">시작날짜/시간</label>
+							<div class="col-sm-8">
+								<input type="datetime-local" name="startAt" id="startAt" class="form-control">
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<label for="endAt" class="col-sm-2 col-form-label">종료날짜/시간</label>
+							<div class="col-sm-8">
+								<input type="datetime-local" name="endAt" id="endAt" class="form-control">
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<p class="col-sm-2">부서</p>
+							<div class="col-sm-8">
+								<select name="department" id="department">
+									<option value="" disabled selected>부서</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<p class="col-sm-2">내용</p>
+							<div class="col-sm-8">
+								<textarea rows="10" name="description" id="description"></textarea>
+							</div>
+						</div>
+
+						<div class="btn_wrap">
+							<button type="button" class="btn btn-secondary" id="resetButton">취소</button>
+							<button type="button" class="btn btn-info" id="btnShareRegister">등록</button>
+						</div>
+					</div>
+				</div>
+
+				<script>
+					// 부서 정보
+					const departments = [
+						// { title: "대표이사", key: "1000" },
+						// { title: "부사장", key: "1001" },
+						{ title: "경영기획본부", key: "1100" },
+						{ title: "재무관리팀", key: "1110" },
+						{ title: "인사관리팀", key: "1120" },
+						{ title: "SI사업본부", key: "1200" },
+						{ title: "신용평가팀", key: "1210" },
+						{ title: "금융SI팀", key: "1220" },
+						{ title: "비금융SI팀", key: "1230" },
+						{ title: "SM팀", key: "1240" },
+						{ title: "영업본부", key: "1300" },
+						{ title: "솔루션영업팀", key: "1310" },
+						{ title: "SI영업팀", key: "1320" },
+						{ title: "SM영업팀", key: "1330" },
+						{ title: "R&D본부", key: "1400" },
+						{ title: "연구개발팀", key: "1410" }
+					];
+
+					const selectElement = $('#department');
+					selectElement.empty();
+
+					selectElement.append(new Option('부서', '', false, true));
+
+					departments.forEach(function(department) {
+						selectElement.append(new Option(department.title, department.key));
+					});
+
+					$('#department').on('change', function() {
+						const selectedDeptId = $(this).val(); // 선택된 부서의 key 값을 가져옴
+						$('#dept_id').val(selectedDeptId); // 해당 값으로 hidden input 업데이트
+					});
+
+					$('#btnShareRegister').on('click', function(e) {
+						e.preventDefault();
+						if (!validateForm()) {
+							return;
+						}
+
+						const deptData = {
+							scheduleStart: moment($("#startAt").val()).format('YYYY-MM-DD HH:mm'),
+							scheduleEnd: moment($("#endAt").val()).format('YYYY-MM-DD HH:mm'),
+							schedule: {
+								empId: $('#emp_id').val(),
+								deptId: $('#dept_id').val(),
+								scheduleName: $('#schedule_name').val(),
+								scheduleAllDay: $('#allDay').prop('checked') ? 1 : 0,
+								scheduleContent: $('#description').val()
+							},
+							dept: {
+								deptId: $('#dept_id').val(),
+							}
+						}
+
+						$.ajax({
+							url: '/schedule/scheduleDeptAdd',
+							method: 'post',
+							dataType: 'json',
+							contentType: 'application/json',
+							data: JSON.stringify(deptData),
+							success: function(data) {
+								alert('부서 일정이 등록되었습니다.');
+
+								console.log(data);
+
+								addEventToCalendar(deptData);
+
+								const events = [];
+								if (data != null && data.length > 0) {
+									for (let i = 0; i < data.length; i++) {
+
+										const isAllDay = data[i].scheduleAllDay === 1;
+										events.push({
+											title: data[i].scheduleName,
+											start: data[i].scheduleStart,
+											end: data[i].scheduleEnd,
+											description: data[i].scheduleContent,
+											allDay: isAllDay
+										});
+									}
+								}
+
+								events.forEach(function(event) {
+									$('#calendar').fullCalendar('addEvent', event);
+								});
+
+								window.location.href = '/schedule/calender';
+							},
+							error: function() {
+								alert('부서 일정 등록 오류');
+							}
+						});
+					});
+
+					function validateForm() {
+						const $scheduleName = $("#schedule_name");
+						const $start = $("#startAt");
+						const $end = $("#endAt");
+						const $department = $("#department");
+
+						if ($scheduleName.val().trim() === "") {
+							alert("일정명을 입력하세요");
+							$scheduleName.focus();
+							return false;
+						}
+
+						if ($start.val().trim() === "") {
+							alert("시작 날짜/시간을 선택하세요");
+							$start.focus();
+							return false;
+						}
+
+						if (new Date($start.val()) > new Date($end.val())) {
+							alert("끝나는 날짜/시간이 시작 날짜/시간보다 이전입니다. 다시 확인해 주세요.");
+							return false;
+						}
+
+						if ($end.val().trim() === "") {
+							alert("종료 날짜/시간을 선택하세요");
+							$end.focus();
+							return false;
+						}
+
+						if ($department.val() === "") {
+							alert("부서를 선택하세요");
+							$department.focus();
+							return false;
+						}
+
+						return true;
+					}
+
+					$('#resetButton').on('click', function() {
+						$('#schedule_name').val('');
+						$('#allDay').prop('checked', false);
+						$("#startAt, #endAt").prop("type", "datetime-local").val("");
+						$('#department').val('');
+						$('#description').val('');
+					});
+				</script>
+			</body>
+		</html>
+	</th:block>
+</th:block>

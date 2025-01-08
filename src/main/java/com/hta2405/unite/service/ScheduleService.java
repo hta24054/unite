@@ -20,10 +20,17 @@ public interface ScheduleService {
 
     public int insertScheduleShare(ScheduleDTO scheduleDTO);
 
-    //public List<Schedule> getSharedSchedule(String empId, ScheduleDTO scheduleDTO);
-
     public List<Schedule> getListSharedSchedule(String empId);
 
     // scheduleId에 해당하는 ScheduleShare 리스트 가져오는 메서드 추가
     public List<ScheduleShare> getScheduleSharesByScheduleId(int scheduleId);
+
+    public String getShareEmpNames(int scheduleId);
+
+    public String getEmpIdName(String empId);
+
+    // 부서 일정 등록
+    public int insertScheduleDept(ScheduleDTO scheduleDTO);
+
+    public List<String> getEmpIdByDeptId(Long deptId);
 }

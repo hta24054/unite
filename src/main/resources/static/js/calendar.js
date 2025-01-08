@@ -8,7 +8,7 @@ $(document).ready(function(){
 	    events = []; // 배열 초기화
 	    Promise.all([
 			fetchListData(),
-			fetchSharedListData()
+			fetchSharedListData(),
 		]).then(() => {
 	        const startMonth = moment().startOf('month').format('YYYY-MM');
 	        let endMonth = moment().add(1, 'year').endOf('month').format('YYYY-MM');
@@ -116,13 +116,10 @@ $(document).ready(function(){
 	            emp_id: $("#emp_id").val()
 			},
 	        success: function(data) {
-				console.log("응답 데이터:", data);
-
 				if (data != null) {
 	                for (let i = 0; i < data.length; i++) {
 
 						const sharedEmployees = data[i].shareEmp ? data[i].shareEmp.split(",") : [];
-						console.log("공유 일정의 공유 직원:", data[i].shareEmp);
 
 	                    // 중복 체크: schedule_id로 중복 여부 확인
 	                    if (!events.some(event => event.id === data[i].scheduleId)) {
@@ -138,7 +135,8 @@ $(document).ready(function(){
                             	droppable: false, // 드래그 불가
 	                            extendedProps: {
 							        isShared: true, // 공유 일정
-									sharedEmployees: sharedEmployees, // 공유 직원 목록
+									shareEmpNames: data[i].shareEmpNames, // 공유자 이름 목록
+									empIdName: data[i].empIdName, // 본인 이름
 							    },
 	                        })
 	                    }
@@ -152,6 +150,12 @@ $(document).ready(function(){
 	        }
 	    });
 	}
+
+	// 부서 일정 리스트 불러오기
+
+
+
+
 
 	// 일정 등록
     function addEvent(eventData) {
@@ -284,7 +288,7 @@ $(document).ready(function(){
 	        $("#schedule_name").val("");
 		    $("#startAt, #endAt").prop("type", "datetime-local").val("");
 	        $("#description").val("");
-	        $("#bgColor").val("#1e3a8a");
+	        $("#bgColor").val("#000");
 	        $("#allDay").prop("checked", false);
 	        return;
 	    }
@@ -323,6 +327,17 @@ $(document).ready(function(){
 	        $(".modal-header").find("h5").text("공유 일정");
 	        $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", true);
 	        $(".modal-body").find(".btn_wrap").remove();
+
+			$(".modal-body").find(".form-group:nth-of-type(1)").after(`
+				<div class="form-group">
+					<p style="margin-bottom: 5px;">공유자 정보</p>
+					<ul>
+						<li><span>등록자:</span> ${event.extendedProps.empIdName}</li>
+						<li><span>참여자:</span> ${event.extendedProps.shareEmpNames}</li>
+					</ul>
+				</div>
+			`);
+
 			// $(".modal-body").find(".btn_wrap").html(`<button type="button" id="btnDelete" class="btn btn-danger">삭제</button>`);
 	    } else {
 	        $(".modal-header").find("h5").text("상세 일정");
@@ -362,13 +377,13 @@ $(document).ready(function(){
 	    $("#scheduleModal").modal('show');
 	}
 
-	$(".btn.btn-lg[data-target='#scheduleModal']").on("click", function () {
-	    initializeModalForRegistration();
+	$(".btn.btn-lg[data-bs-toggle='modal']").on("click", function () {
+		initializeModalForRegistration();
 	});
 
-	$("#scheduleModal").on("hidden.bs.modal", function () {
-	    $("#startAt, #endAt").prop("type", "datetime-local").val("");
-	});
+	// $("#scheduleModal").on("hidden.bs.modal", function () {
+	//     $("#startAt, #endAt").prop("type", "datetime-local").val("");
+	// });
 
 	// 등록 버튼 클릭 시 모달 강제 초기화
 	function initializeModalForRegistration() {
@@ -377,7 +392,7 @@ $(document).ready(function(){
 	    $("#startAt").val("");
 	    $("#endAt").val("");
 	    $("#description").val("");
-	    $("#bgColor").val("#1e3a8a");
+	    $("#bgColor").val("#000");
 	    $("#allDay").prop("checked", false);
 
 	    $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);
@@ -409,11 +424,15 @@ $(document).ready(function(){
 	    });
 	}
 
+	// 모달 닫을 때 초기화
+	$("#scheduleModal").on("hidden.bs.modal", function () {
+		// 모달을 닫을 때 폼을 초기화
+		$("form[name='scheduleEvent']").each(function () {
+			this.reset();
+		});
 
-	$(".close").on("click", function () {
-	    $("form").each(function () {
-	        this.reset();
-	    });
+		$("#startAt, #endAt").prop("type", "datetime-local").val("");
+		$("#bgColor").val("#000");
 	});
 
 	// form 유효성 검사
@@ -490,9 +509,9 @@ $(document).ready(function(){
         }
     });
 
-    $('#bgColor').on("change", function () {
-	    $(this).css('color', $(this).val());
-	});
+    // $('#bgColor').on("change", function () {
+	//     $(this).css('color', $(this).val());
+	// });
 
 	// 캘린더 생성
 	function initCalendar(){
@@ -530,7 +549,7 @@ $(document).ready(function(){
 		        $("#schedule_name").val("");
 		        $("#startAt, #endAt").prop("type", "datetime-local").val("");
 		        $("#description").val("");
-		        $("#bgColor").val("#1e3a8a");
+		        $("#bgColor").val("#000");
 		        $("#allDay").prop("checked", false);
 		        $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);
 

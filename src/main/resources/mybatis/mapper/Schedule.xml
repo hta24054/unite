@@ -63,13 +63,16 @@
             s.schedule_end,
             s.schedule_color,
             s.schedule_allDay,
-            GROUP_CONCAT(ss.share_emp) AS share_emp -- 공유 직원 목록
+            (SELECT ename FROM emp WHERE emp_id = #{empId}) AS empIdName, -- 로그인한 사용자의 이름을 가져옵니다.
+            GROUP_CONCAT(ss.share_emp) AS share_emp, -- 공유된 직원들의 emp_id
+            GROUP_CONCAT(e.ename) AS share_emp_names -- 공유된 직원들의 이름
         FROM schedule s
                  JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
+                 LEFT JOIN emp e ON ss.share_emp REGEXP CONCAT('(^|,)', e.emp_id, '(,|$)') -- share_emp와 일치하는 emp_id 이름
         WHERE s.emp_id = #{empId}
-           OR ss.share_emp LIKE CONCAT('%', #{shareEmp}, '%') -- shareEmp를 LIKE로 처리
+           OR ss.share_emp LIKE CONCAT('%', #{shareEmp}, '%')
         GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
-                 s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay
+            s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay;
     </select>
 
     <!-- 공유 직원 조회 -->
@@ -78,5 +81,61 @@
         FROM schedule_share
         WHERE schedule_id = #{scheduleId}
     </select>
+
+    <select id="getShareEmpNames" resultType="string">
+        SELECT GROUP_CONCAT(e.ename)
+        FROM emp e
+                 JOIN schedule_share ss ON FIND_IN_SET(e.emp_id, ss.share_emp) > 0
+        WHERE ss.schedule_id = #{scheduleId}
+    </select>
+
+    <select id="getEmpIdName" resultType="string">
+        SELECT e.ename
+        FROM emp e
+        WHERE e.emp_id = #{empId}
+    </select>
+
+
+    <select id="getEmpIdsByDeptId" resultType="String">
+        SELECT emp_id
+        FROM emp
+        WHERE dept_id = #{deptId}
+    </select>
+
+    <insert id="insertScheduleDeptShare" parameterType="com.hta2405.unite.dto.ScheduleDTO">
+        INSERT INTO schedule_share (schedule_id, share_emp)
+        VALUES
+        <foreach collection="empIdsInDept" item="empId" separator=",">
+            (#{scheduleId}, #{empId})
+        </foreach>
+    </insert>
+
+
+    <!-- 부서 일정 등록 -->
+    <insert id="insertScheduleDept" parameterType="map">
+        INSERT INTO schedule
+        (emp_id, schedule_name, schedule_content, schedule_start, schedule_end, schedule_color, schedule_allDay)
+        VALUES (#{empId}, #{scheduleName}, #{scheduleContent},
+        #{scheduleStart}, #{scheduleEnd},
+        COALESCE(#{scheduleColor}, '#1d4ed8'), #{scheduleAllDay})
+
+        <selectKey resultType="int" keyProperty="scheduleId" keyColumn="schedule_id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <insert id="insertScheduleDeptShareWithDept" parameterType="com.hta2405.unite.dto.ScheduleDTO">
+        INSERT INTO schedule_share (schedule_id, dept_id)
+        VALUES (#{scheduleId}, #{deptId})
+    </insert>
+
+
+
+
+
+
+
+
+
 
 </mapper>

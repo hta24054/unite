@@ -4,7 +4,6 @@ import com.hta2405.unite.domain.Schedule;
 import com.hta2405.unite.domain.ScheduleShare;
 import com.hta2405.unite.dto.ScheduleDTO;
 import com.hta2405.unite.service.ScheduleService;
-
 import com.hta2405.unite.util.CalendarDateTimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -13,23 +12,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Controller
 @Slf4j
 @RequestMapping("/schedule")
 public class ScheduleController {
-
-    private static final Logger logger = LoggerFactory.getLogger(ScheduleController.class);
-
     private ScheduleService scheduleService;
 
     public ScheduleController(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
     }
+
 
     @GetMapping("/calender")
     public String calender() {
@@ -90,32 +84,6 @@ public class ScheduleController {
         return "schedule/scheduleShare";
     }
 
-
-    /*
-    @ResponseBody
-    @GetMapping("/sharedScheduleList")
-    public List<Schedule> getSharedSchedule(ScheduleDTO scheduleDTO) {
-        // 현재 인증된 사용자 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return new ArrayList<>();
-        }
-        String empId = authentication.getName(); // 로그인한 사용자의 ID (username)
-
-        // scheduleShare가 null인지 체크
-        ScheduleShare scheduleShare = scheduleDTO.getScheduleShare();
-        if (scheduleShare == null) {
-            return new ArrayList<>(); // null일 경우 빈 리스트 반환 (또는 다른 처리를 할 수 있음)
-        }
-
-        // scheduleShare가 null이 아닐 때 계속 진행
-        List<Schedule> result = scheduleService.getSharedSchedule(empId, scheduleDTO);
-        System.out.println("공유 일정 " + result);
-        return result;
-    }*/
-
-
-
     @ResponseBody
     @GetMapping("/sharedScheduleList")
     public List<ScheduleDTO> getListSharedSchedule() {
@@ -150,81 +118,21 @@ public class ScheduleController {
             scheduleDTO.setScheduleColor(schedule.getScheduleColor());
             scheduleDTO.setScheduleAllDay(schedule.isScheduleAllDay());
 
+            scheduleDTO.setShareEmpNames(scheduleService.getShareEmpNames(schedule.getScheduleId())); //공유된 직원들 이름조회
+            scheduleDTO.setEmpIdName(scheduleService.getEmpIdName(schedule.getEmpId()));
+
             scheduleDTOList.add(scheduleDTO);
         }
 
-        System.out.println("공유 일정 DTO 리스트: " + scheduleDTOList);
+        //System.out.println("공유 일정 DTO 리스트: " + scheduleDTOList);
         return scheduleDTOList;
     }
-
-//    @ResponseBody
-//    @GetMapping("/sharedScheduleList")
-//    public List<ScheduleDTO> getListSharedSchedule() {
-//        // 현재 인증된 사용자 정보 가져오기
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication == null || !authentication.isAuthenticated()) {
-//            return new ArrayList<>();
-//        }
-//        String empId = authentication.getName(); // 로그인한 사용자의 ID (username)
-//
-//        List<Schedule> sharedSchedules = scheduleService.getListSharedSchedule(empId);
-//        List<ScheduleDTO> scheduleDTOList = new ArrayList<>();
-//
-//        for (Schedule schedule : sharedSchedules) {
-//            ScheduleDTO scheduleDTO = new ScheduleDTO();
-//            scheduleDTO.setScheduleId((long) schedule.getScheduleId());
-//            scheduleDTO.setEmpId(schedule.getEmpId());
-//
-//            // scheduleShare가 null이 아니면 shareEmp 값을 설정
-//            if (scheduleDTO.getScheduleShare() != null) {
-//                scheduleDTO.setShareEmp(scheduleDTO.getScheduleShare().getShareEmp());  // 실제로 shareEmp 설정
-//            } else {
-//                scheduleDTO.setShareEmp("");  // 혹은 null로 설정
-//            }
-//
-//            scheduleDTO.setScheduleName(schedule.getScheduleName());
-//            scheduleDTO.setScheduleContent(String.valueOf(schedule.getScheduleContent()));
-//            scheduleDTO.setScheduleStart(String.valueOf(schedule.getScheduleStart()));
-//            scheduleDTO.setScheduleEnd(String.valueOf(schedule.getScheduleEnd()));
-//            scheduleDTO.setScheduleColor(schedule.getScheduleColor());
-//            scheduleDTO.setScheduleAllDay(schedule.isScheduleAllDay());
-//            scheduleDTOList.add(scheduleDTO);
-//        }
-//
-//        System.out.println("공유 일정 DTO 리스트: " + scheduleDTOList);
-//        return scheduleDTOList;
-//    }
-
-    /*
-    @ResponseBody
-    @GetMapping("/sharedScheduleList")
-    public List<Schedule> getListSharedSchedule() {
-        // 현재 인증된 사용자 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return new ArrayList<>();
-        }
-        String empId = authentication.getName(); // 로그인한 사용자의 ID (username)
-        //System.out.println("공유 일정 empId " + empId);
-
-        List<Schedule> sharedSchedules = scheduleService.getListSharedSchedule(empId);
-        System.out.println("공유 일정 " + sharedSchedules);
-
-        return sharedSchedules;
-    }*/
 
     @ResponseBody
     @PostMapping("/scheduleShareAdd")
     public int insertScheduleShare(@RequestBody ScheduleDTO scheduleDTO) {
-
-        // ScheduleDTO에서 schedule, scheduleShare 객체 추출
         Schedule schedule = scheduleDTO.getSchedule();
         ScheduleShare scheduleShare = scheduleDTO.getScheduleShare();
-        String shareEmp = scheduleShare.getShareEmp();
-
-        //System.out.println("Schedule ID: " + schedule.getScheduleId());
-        //System.out.println("shareEmp" + shareEmp);
-        //System.out.println("scheduleShare" + scheduleShare);
 
         // CalendarDateTimeUtil을 사용하여 날짜 변환
         if (schedule != null) {
@@ -237,7 +145,45 @@ public class ScheduleController {
         }
 
         int updatedScheduleDTO = scheduleService.insertScheduleShare(scheduleDTO);
-        System.out.println("\n scheduleShare.getScheduleId() = " + schedule.getScheduleId());
+        //System.out.println("\n scheduleShare.getScheduleId() = " + schedule.getScheduleId());
         return updatedScheduleDTO;
     }
+
+    // 부서 일정 등록 페이지
+    @GetMapping("/scheduleDept")
+    public String scheduleDept(Schedule schedule) {
+        return "schedule/scheduleDept";
+    }
+
+    @ResponseBody
+    @PostMapping("/scheduleDeptAdd")
+    public int insertScheduleDept(@RequestBody ScheduleDTO scheduleDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String empId = authentication.getName();
+
+        scheduleDTO.getSchedule().setEmpId(empId);
+        Schedule schedule = scheduleDTO.getSchedule();
+
+        if (schedule != null) {
+            String scheduleStartStr = scheduleDTO.getScheduleStart();
+            String scheduleEndStr = scheduleDTO.getScheduleEnd();
+
+            schedule.setScheduleStart(CalendarDateTimeUtil.parseDateTimeWithoutT(scheduleStartStr));
+            schedule.setScheduleEnd(CalendarDateTimeUtil.parseDateTimeWithoutT(scheduleEndStr));
+        }
+
+        // System.out.println("\n schedule.getScheduleId() = " + schedule.getScheduleId());
+
+        // 부서 일정 등록
+        int deptScheduleDTO = scheduleService.insertScheduleDept(scheduleDTO);
+        System.out.println("\n deptScheduleDTO" + deptScheduleDTO);
+
+        // 부서에 속한 다른 직원들에게 일정 공유 추가
+        Long deptId = scheduleDTO.getDeptId(); // 부서 ID 가져오기
+        List<String> empIdDept = scheduleService.getEmpIdByDeptId(deptId); // 부서에 속한 직원들의 empId 목록을 가져오기
+
+        return deptScheduleDTO;
+    }
+
+
 }

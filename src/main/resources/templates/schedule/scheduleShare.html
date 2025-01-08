@@ -8,25 +8,11 @@
 				<title>캘린더 - 공유 일정 등록</title>
 				<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 				<script th:src="@{/js/jquery-3.7.1.js}"></script>
-				<script th:src="@{https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js}"></script>
-				<script th:src="@{https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js}"></script>
 				<script th:src="@{https://cdn.jsdelivr.net/npm/moment@2.27.0/min/moment.min.js}"></script>
 				<script th:src="@{https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js}"></script>
 				<script th:src="@{https://cdn.jsdelivr.net/npm/@fullcalendar/moment@6.1.15/index.global.min.js}"></script>
 				<script th:src="@{/js/calendar.js}"></script>
 				<style>
-					.container-xxl {
-						display: flex;
-						flex-wrap: wrap;
-						margin: 0 auto;
-					}
-
-					.container-xxl > div {
-						flex: 1;
-						max-width: 100%;
-						padding-left: 50px;
-					}
-
 					textarea {
 						width: 100%;
 						height: 100px;
@@ -120,21 +106,19 @@
 						</div>
 
 						<div class="btn_wrap">
-							<button type="reset" class="btn btn-secondary">취소</button>
+							<button type="button" class="btn btn-secondary" id="resetButton">취소</button>
 							<button type="button" class="btn btn-info" id="btnShareRegister">등록</button>
 						</div>
 					</div>
 				</div>
 
 				<!-- 공유자 선택 모달 -->
-				<div class="modal fade" id="scheduleShareModal" tabindex="-1" role="dialog" aria-labelledby="scheduleShareModalLabel" aria-hidden="true">
+				<div class="modal fade" id="scheduleShareModal">
 					<div class="modal-dialog modal-lg">
 						<div class="modal-content">
 							<div class="modal-header">
 								<h5 class="modal-title" id="scheduleShareModalLabel">조직도</h5>
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
-								</button>
+								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 							</div>
 							<div class="modal-body">
 								<div th:include="common/empTree.html"></div>
@@ -350,6 +334,17 @@
 						alert('선택된 직원 : ' + selectedEmpData.map(emp => emp.name).join(', '));
 						$('#scheduleShareModal').modal('hide');
 					}
+
+					$('#resetButton').on('click', function() {
+						$('#schedule_name').val('');
+						$("#startAt, #endAt").prop("type", "datetime-local").val("");
+						$('#description').val('');
+						$('#bgColor').val('#1e3a8a');
+						$('#allDay').prop('checked', false);
+						$('#share_emp').val('');
+						$('#scheduleShareEmp').empty();
+						$('input[name="selectedEmp"]').prop('checked', false);
+					});
 				</script>
 			</body>
 		</html>

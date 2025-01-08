@@ -11,9 +11,10 @@ public class AuthService {
 
     /**
      * 인사정보, 근태정보, 휴가정보 조회 권한을 확인하는 메서드
-     * @param emp 사용자
+     *
+     * @param emp       사용자
      * @param targetEmp 조회대상자
-     * @param isSelf 사용자 = 조회대상자인지 확인
+     * @param isSelf    사용자 = 조회대상자인지 확인
      * @return 조회 가능 여부
      */
     public boolean isAuthorizedToView(Emp emp, Emp targetEmp, boolean isSelf) {

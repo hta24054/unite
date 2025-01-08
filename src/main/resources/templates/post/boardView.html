@@ -1,263 +1,279 @@
 <th:block th:replace="layout :: setContent(~{this::content})">
-	<th:block th:fragment="content">
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-	<script th:src="@{/js/jquery-3.7.1.js}"></script>
-	<script th:src="@{/js/leftbar.js}"></script>
-	<script th:src="@{/js/boardView.js}"></script>
-	<link rel="stylesheet" th:href="@{/css/boardHome.css}">
-	<link rel="stylesheet" th:href="@{/css/leftbar.css}">
-	<link rel="stylesheet" th:href="@{/css/boardView.css}" type="text/css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-<style>
-.boardViewcontainer{
-	width:100%;
-	margin: 0;
-	padding: 0px 10px;
-}
-.board_view_header{
-	display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.left_subeject{
-	font-size: 2rem;
-	text-align: left;
-	display: flex;
-    align-items: center;
-    gap: 5px;
-}
-.right_btns{
-    padding-right: 15px;
-    text-align: right;
-}
-.board_view_btn{
-	border: 1px solid #afafaf;
-    padding: 5px 20px;
-    margin-left: 5px;
-}
+    <th:block th:fragment="content">
+        <!DOCTYPE html>
+        <html xmlns:th="http://www.thymeleaf.org" lang="en">
+        <head>
+            <script th:src="@{/js/jquery-3.7.1.js}"></script>
+            <script th:src="@{/js/leftbar.js}"></script>
+            <script th:src="@{/js/boardView.js}"></script>
+            <link rel="stylesheet" th:href="@{/css/boardHome.css}">
+            <link rel="stylesheet" th:href="@{/css/leftbar.css}">
+            <link rel="stylesheet" th:href="@{/css/boardView.css}" type="text/css">
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+            <style>
+                .boardViewcontainer {
+                    width: 100%;
+                    margin: 0;
+                    padding: 0px 10px;
+                }
 
-.table td{
-	border: none;
-	padding: 12px 12px 0px 12px;
-}
+                .board_view_header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
 
-.icon , .username, .date{
-	display: inline;
-}
+                .left_subeject {
+                    font-size: 2rem;
+                    text-align: left;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                }
 
-.username{
-	font-weight: 600;
-    padding-right: 15px;
-}
+                .right_btns {
+                    padding-right: 15px;
+                    text-align: right;
+                }
 
-.icon{
-	margin: 0px;
-	margin-left: 20px;
-    margin-bottom: 1px;
-}
+                .board_view_btn {
+                    border: 1px solid #afafaf;
+                    padding: 5px 20px;
+                    margin-left: 5px;
+                }
 
-.board_view_content{
-	min-height: 250px;
-    padding: 20px 20px 30px;
-    font-size: 22px;
-}
+                .table td {
+                    border: none;
+                    padding: 12px 12px 0px 12px;
+                }
 
-.preview-btn,.download-btn{
-	font-size: 11px;
-	padding: 0 4px;
-	border: 1px solid #ccc;
-	margin-left:5px; 
-}
+                .icon, .username, .date {
+                    display: inline;
+                }
 
-sup {
-    font-size: 16px;
-    top: 0px;
-}
+                .username {
+                    font-weight: 600;
+                    padding-right: 15px;
+                }
 
-.comment-head{
-	display: none;
-}
+                .icon {
+                    margin: 0px;
+                    margin-left: 20px;
+                    margin-bottom: 1px;
+                }
 
-.boardViewCommentscontainer ,.comment-order-list{
-	padding-right: 40px;
-}
-.boardViewCommentscontainer{
-	border-top: 1px solid #ccc;
-}
-	
-.viewIcon{
-	border: 1px solid gray;
-}
+                .board_view_content {
+                    min-height: 250px;
+                    padding: 20px 20px 30px;
+                    font-size: 22px;
+                }
 
-.page-link{
-	display:inline-block; 
-	color:#212529; 
-	line-height:1.5;
-}
+                .preview-btn, .download-btn {
+                    font-size: 11px;
+                    padding: 0 4px;
+                    border: 1px solid #ccc;
+                    margin-left: 5px;
+                }
 
-.count{
-	color: #a9a9a9;
-}
+                sup {
+                    font-size: 16px;
+                    top: 0px;
+                }
 
-.layer-item{
-	padding: 0;
-}
+                .comment-head {
+                    display: none;
+                }
 
-.LayerMore{
-	padding: 10px;
-}
+                .boardViewCommentscontainer, .comment-order-list {
+                    padding-right: 40px;
+                }
 
-.layer-list{
-	display: flex;
-    justify-content: space-around;
-}
+                .boardViewCommentscontainer {
+                    border-top: 1px solid #ccc;
+                }
 
-#upfile{
-	display: none;
-}
+                .viewIcon {
+                    border: 1px solid gray;
+                }
 
-.text-comment{
-	word-break: break-all;
-}
-</style>
-</head>
-<body>
-<div class="main">
-	<th:block th:replace="~{/board/sidebar :: boardSidebarFragment}"/>
+                .page-link {
+                    display: inline-block;
+                    color: #212529;
+                    line-height: 1.5;
+                }
 
-	<div class="content">
-		<div class="boardTitle">[[${boardDTO.boardName2}]]</div>
+                .count {
+                    color: #a9a9a9;
+                }
 
-		<input type="hidden" id="empId" th:value="${id}" name="empId">
-		<div class="boardViewcontainer">
-			<table class="table">
-				<tr>
-					<td colspan="3" class="board_view_header" style="padding: 12px 25px 0px;">
+                .layer-item {
+                    padding: 0;
+                }
+
+                .LayerMore {
+                    padding: 10px;
+                }
+
+                .layer-list {
+                    display: flex;
+                    justify-content: space-around;
+                }
+
+                #upfile {
+                    display: none;
+                }
+
+                .text-comment {
+                    word-break: break-all;
+                }
+            </style>
+        </head>
+        <body>
+        <div class="main">
+            <th:block th:replace="~{/board/sidebar :: boardSidebarFragment}"/>
+
+            <div class="content">
+                <div class="boardTitle">[[${boardDTO.boardName2}]]</div>
+
+                <input type="hidden" id="empId" th:value="${id}" name="empId">
+                <div class="boardViewcontainer">
+                    <table class="table">
+                        <tr>
+                            <td colspan="3" class="board_view_header" style="padding: 12px 25px 0px;">
 						<span class="left_subeject" style="word-break: break-all;">
 							<th:block th:text="${postDetailDTO.postSubject}"/>
-<!--							<span class="count" style="font-size: 25px;"><th:block th:text="'['+${postDetailDTO.postCommentCnt}+']'"/></span>-->
+                            <!--							<span class="count" style="font-size: 25px;"><th:block th:text="'['+${postDetailDTO.postCommentCnt}+']'"/></span>-->
 						</span>
 
-						<span class="right_btns">
+                                <span class="right_btns">
 							<th:block th:if="${postDetailDTO.postWriter == id||id == 'admin'}">
-								<a th:href="@{|modify?no=${postDetailDTO.postId}&boardName1=${boardDTO.getBoardName1()}&boardName2=${boardDTO.getBoardName2()}|}"><button class="btn board_view_btn postModify-link">수정</button></a>
+								<a th:href="@{modify(no=${postDetailDTO.postId},boardName1=${boardDTO.getBoardName1()},boardName2=${boardDTO.getBoardName2()})}">
+									<button class="btn board_view_btn postModify-link">수정</button></a>
 
 								<button class="btn board_view_btn" data-toggle="modal"
-									data-target="#myModal">삭제</button>
+                                        data-target="#myModal">삭제</button>
 							</th:block>
-							<a th:href="@{|reply?no=${postDetailDTO.postId}|}"><button class="btn board_view_btn postReply-link">답글</button></a>
+							<a th:href="@{reply(no=${postDetailDTO.postId},boardName1=${boardDTO.getBoardName1()},boardName2=${boardDTO.getBoardName2()})}">
+								<button class="btn board_view_btn postReply-link">답글</button></a>
 
-							<a th:href="@{|/board/boardList?boardName1=${boardDTO.boardName1}&boardName2=${boardDTO.boardName2}&page=${page}|}">
+							<a th:href="@{/board/boardList(boardName1=${boardDTO.boardName1},boardName2=${boardDTO.boardName2},page=${page})}">
 								<button class="btn board_view_btn">목록</button>
 							</a>
 						</span>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="3" style="padding-top: 10px;">
-						<img th:src="@{|/emp/profile-image?empId=${id}|}" alt="프로필 이미지" class="icon viewIcon">
-						<div class="username">[[${postDetailDTO.postWriter}]]</div>
-						<div class="date"> [[${postDetailDTO.getFormattedPostDate()}]] </div>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="3">
-						<div class="board_view_content" style="word-break: break-all;" th:utext="${postDetailDTO.postContent}"></div>
-					</td>
-				</tr>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="padding-top: 10px;">
+                                <img th:src="@{|/emp/profile-image?empId=${id}|}" alt="프로필 이미지" class="icon viewIcon">
+                                <div class="username">[[${postDetailDTO.postWriter}]]</div>
+                                <div class="date"> [[${postDetailDTO.getFormattedPostDate()}]]</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <div class="board_view_content" style="word-break: break-all;"
+                                     th:utext="${postDetailDTO.postContent}"></div>
+                            </td>
+                        </tr>
 
-				<!-- 파일을 첨부한 경우 -->
-				<th:block th:if="${postDetailDTO.PostFiles != null}">
-					<th:block th:each="postFile : ${postDetailDTO.PostFiles}">
-						<tr>
-							<td colspan="3" style="padding: 0px 12px 0px 12px;">
-								<img th:src="@{/image/attach.png}" style="width:13px; margin: 0px 5px 0px 20px;">
-								<a th:href="@{|down?postFileId=${postFile.postFileId}|}">[[${postFile.postFileOriginal}]]</a>
-							</td>
-						</tr>
-					</th:block>
-				</th:block>
-				<tr>
-					<td colspan="3" style="padding-bottom:12px;">
-						<div class="file-meta">
-							<img th:src='@{/image/comments.png}' alt="프로필 이미지" class="icon" style="margin: -1px -4px 0px 15px; width: 30px;height: 30px;"/>
-							<span class="comments">
+                        <!-- 파일을 첨부한 경우 -->
+                        <th:block th:if="${postDetailDTO.PostFiles != null}">
+                            <th:block th:each="postFile : ${postDetailDTO.PostFiles}">
+                                <tr>
+                                    <td colspan="3" style="padding: 0px 12px 0px 12px;">
+                                        <img th:src="@{/image/attach.png}"
+                                             style="width:13px; margin: 0px 5px 0px 20px;">
+                                        <a th:href="@{|down?postFileId=${postFile.postFileId}|}">[[${postFile.postFileOriginal}]]</a>
+                                    </td>
+                                </tr>
+                            </th:block>
+                        </th:block>
+                        <tr>
+                            <td colspan="3" style="padding-bottom:12px;">
+                                <div class="file-meta">
+                                    <img th:src='@{/image/comments.png}' alt="프로필 이미지" class="icon"
+                                         style="margin: -1px -4px 0px 15px; width: 30px;height: 30px;"/>
+                                    <span class="comments">
 								댓글
 								<sup class="count" id="count" style="font-family: arial, sans-serif;"></sup>개</span>
-							<span style="color:#ccc;">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
-							조회<span class="count"> [[${postDetailDTO.postView}]]</span>
-						</div>
-					</td>
-				</tr>
-			</table>
-			<!-- 게시판 view end -->
+                                    <span style="color:#ccc;">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+                                    조회<span class="count"> [[${postDetailDTO.postView}]]</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- 게시판 view end -->
 
-			<!-- modal 시작 -->
-			<div class="modal" id="myModal">
-				<div class="modal-dialog">
-					<div class="modal-content">
-						<div class="modal-body">
-							<form name="deleteForm" action="delete" method="post">
-								<input type="hidden" name="page" th:value="${page}">
-								<input type="hidden" name="boardDTO" th:value="${boardDTO}" id="boardDTO">
-								<input type="hidden" name="no" th:value="${postDetailDTO.postId}" id="postId">
-								<div class="form-group">
-								<label>정말 삭제하시겠습니까? <br> 복구가 불가능합니다.</label>
-								</div>
-								<button type="submit" class="btn btn-primary" style="background-color: #334466; border-color: #334466;">삭제</button>
-								<button type="button" class="btn btn-danger" data-dismiss="modal" style="background-color: #33446699; border-color: #33446644;">취소</button>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+                    <!-- modal 시작 -->
+                    <div class="modal" id="myModal">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <form name="deleteForm" action="delete" method="post">
+                                        <input type="hidden" name="page" th:value="${page}">
+                                        <input type="hidden" name="boardName1" th:value="${boardDTO.boardName1}">
+                                        <input type="hidden" name="boardName2" th:value="${boardDTO.boardName2}">
+                                        <input type="hidden" name="no" th:value="${postDetailDTO.postId}" id="postId">
+                                        <div class="form-group">
+                                            <label>정말 삭제하시겠습니까? <br> 복구가 불가능합니다.</label>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary"
+                                                style="background-color: #334466; border-color: #334466;">삭제
+                                        </button>
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal"
+                                                style="background-color: #33446699; border-color: #33446644;">취소
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-		<div class="boardViewCommentscontainer">
-			<!--댓글창 시작 -->
-			<div class="comment-area">
-				<div class="comment-head">
-					<div class="comment-order">
-						<ul class="comment-order-list">
-						</ul>
-					</div>
-				</div><!-- comment-head end-->
-				<ul class="comment-list">
-				</ul>
-				<div class="comment-write-container">
+                <div class="boardViewCommentscontainer">
+                    <!--댓글창 시작 -->
+                    <div class="comment-area">
+                        <div class="comment-head">
+                            <div class="comment-order">
+                                <ul class="comment-order-list">
+                                </ul>
+                            </div>
+                        </div><!-- comment-head end-->
+                        <ul class="comment-list">
+                        </ul>
+                        <div class="comment-write-container">
 					<span class="comment-photo">
 						<img th:src="@{|/emp/profile-image?empId=${id}|}" class="profileImg" width=36 height=36>
 					</span>
 
-					<div class="comment-write">
-						<div class="comment-write-area">
-							<b class="comment-write-area-name">[[${id}]]</b>
-							<span class="comment-write-area-count">0/200</span>
-							<textarea placeholder="댓글을 남겨보세요" rows="1" class="comment-write-area-text" maxlength="200"></textarea>
+                            <div class="comment-write">
+                                <div class="comment-write-area">
+                                    <b class="comment-write-area-name">[[${id}]]</b>
+                                    <span class="comment-write-area-count">0/200</span>
+                                    <textarea placeholder="댓글을 남겨보세요" rows="1" class="comment-write-area-text"
+                                              maxlength="200"></textarea>
 
-						</div>
-						<div class="comment-attachFile"></div>
-						<div class="register-box">
+                                </div>
+                                <div class="comment-attachFile"></div>
+                                <div class="register-box">
 							<span class="emoji_btn" id="emoji_btn">
 								<img th:src="@{/image/insert_emoticon.png}" width=20 height=20 style="opacity: 0.5">
 							</span>
-							<label class="emoji_btn" id="emoji_btn2" style="margin:0;">
-								<img th:src="@{/image/attach.png}" width=20 height=20 style="opacity: 0.5">
-								<input type="file" id="upfile"/>
-							</label>
-							<div class="button btn-cancel">취소</div>
-							<div class="button btn-register">등록</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-</body>
-</html>
-	</th:block>
+                                    <label class="emoji_btn" id="emoji_btn2" style="margin:0;">
+                                        <img th:src="@{/image/attach.png}" width=20 height=20 style="opacity: 0.5">
+                                        <input type="file" id="upfile"/>
+                                    </label>
+                                    <div class="button btn-cancel">취소</div>
+                                    <div class="button btn-register">등록</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </body>
+        </html>
+    </th:block>
 </th:block>

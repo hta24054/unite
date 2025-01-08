@@ -114,7 +114,7 @@
                                 const day = date.getDay(); // 0: 일요일, 6: 토요일
                                 if (day === 6) {
                                     return `<span style="color: blue;">${formattedDate}</span>`; // 토요일
-                                }else if (day === 0 || row.attendTypeName === '휴일') {
+                                } else if (day === 0 || row.attendTypeName === '휴일') {
                                     return `<span style="color: red;">${formattedDate}</span>`; // 일요일 또는 '휴일'
                                 }
                                 return formattedDate; // 평일

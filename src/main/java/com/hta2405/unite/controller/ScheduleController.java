@@ -4,19 +4,17 @@ import com.hta2405.unite.domain.Schedule;
 import com.hta2405.unite.domain.ScheduleShare;
 import com.hta2405.unite.dto.ScheduleDTO;
 import com.hta2405.unite.service.ScheduleService;
-
 import com.hta2405.unite.util.CalendarDateTimeUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Controller
 @Slf4j
@@ -113,7 +111,6 @@ public class ScheduleController {
         System.out.println("공유 일정 " + result);
         return result;
     }*/
-
 
 
     @ResponseBody

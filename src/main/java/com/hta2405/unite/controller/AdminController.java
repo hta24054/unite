@@ -3,7 +3,6 @@ package com.hta2405.unite.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.google.gson.JsonObject;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Holiday;
 import com.hta2405.unite.domain.Notice;

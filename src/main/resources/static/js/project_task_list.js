@@ -1,46 +1,46 @@
-$(function(){
-	go(1);
-	$("#viewcount").change(function(){
-		go(1); //보여줄 페이지를 1페이지로 설정
-	});
+$(function () {
+    go(1);
+    $("#viewcount").change(function () {
+        go(1); //보여줄 페이지를 1페이지로 설정
+    });
 })
 
-function go(page){
-	const limit = $('#viewcount').val();
-	const memberId = $('.memberId').val(); 
-	//const data = `limit=${limit}&state=ajax&page=${page}`;
-	const data = {limit:limit, state:"ajax", page: page, memberId:memberId}
-	ajax(data);
+function go(page) {
+    const limit = $('#viewcount').val();
+    const memberId = $('.memberId').val();
+    //const data = `limit=${limit}&state=ajax&page=${page}`;
+    const data = {limit: limit, state: "ajax", page: page, memberId: memberId}
+    ajax(data);
 }
 
 
-function ajax(sdata){
-	console.log(sdata);
-	$.ajax({
-		data: sdata,
-		url: contextPath + "/projectb/list",
-		dataType: "json",
-		cache: false,
-		success: function(data){
-			$("#viewcount").val(data.limit);
-			$("thead").find("span").text("글 개수 : " + data.listcount);
-			if(data.listcount > 0){
-				$("tbody").remove();
-				updateBoardList(data); //게시판 내용 업데이트
-				generatePagination(data);
-			}
-		},
-		error: function(){
-			console.log('에러');
-		}
-	});
+function ajax(sdata) {
+    console.log(sdata);
+    $.ajax({
+        data: sdata,
+        url: contextPath + "/projectb/list",
+        dataType: "json",
+        cache: false,
+        success: function (data) {
+            $("#viewcount").val(data.limit);
+            $("thead").find("span").text("글 개수 : " + data.listcount);
+            if (data.listcount > 0) {
+                $("tbody").remove();
+                updateBoardList(data); //게시판 내용 업데이트
+                generatePagination(data);
+            }
+        },
+        error: function () {
+            console.log('에러');
+        }
+    });
 }
 
 function updateBoardList(data) {
     let num = data.listcount - (data.page - 1) * data.limit;
     let output = "<tbody>";
 
-    $(data.boardlist).each(function(index, item) {
+    $(data.boardlist).each(function (index, item) {
         const blank = '&nbsp;&nbsp;'.repeat(item.board_re_lev * 2);
         const img = item.board_re_lev > 0 ? `<img src='${contextPath}/image/line.gif'>` : ""; // contextPath 사용
         const subject = item.projectTitle.length >= 20 ? item.projectTitle.substr(0, 20) + "..." : item.projectTitle;
@@ -60,8 +60,8 @@ function updateBoardList(data) {
                 <td><div>${item.projectDate}</div></td>
                 <td><div>${item.projectUpdateDate}</div></td>
                 <td>
-                    ${taskFileOriginal ? 
-                        `<a href="down?filename=${item.task_file_uuid}${item.task_file_type}&originalFilename=${item.task_file_original}" 
+                    ${taskFileOriginal ?
+            `<a href="down?filename=${item.task_file_uuid}${item.task_file_type}&originalFilename=${item.task_file_original}" 
                            title="${item.task_file_original}">${file_name}</a>` : ''}
                 </td>
             </tr>

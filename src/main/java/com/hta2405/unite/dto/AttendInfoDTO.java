@@ -1,6 +1,5 @@
 package com.hta2405.unite.dto;
 
-import com.hta2405.unite.domain.Emp;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

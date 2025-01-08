@@ -286,7 +286,7 @@ $(document).ready(function(){
 	        $("#schedule_name").val("");
 		    $("#startAt, #endAt").prop("type", "datetime-local").val("");
 	        $("#description").val("");
-	        $("#bgColor").val("#1e3a8a");
+	        $("#bgColor").val("#000");
 	        $("#allDay").prop("checked", false);
 	        return;
 	    }
@@ -335,6 +335,7 @@ $(document).ready(function(){
 					</ul>
 				</div>
 			`);
+
 			// $(".modal-body").find(".btn_wrap").html(`<button type="button" id="btnDelete" class="btn btn-danger">삭제</button>`);
 	    } else {
 	        $(".modal-header").find("h5").text("상세 일정");
@@ -374,13 +375,13 @@ $(document).ready(function(){
 	    $("#scheduleModal").modal('show');
 	}
 
-	$(".btn.btn-lg[data-target='#scheduleModal']").on("click", function () {
-	    initializeModalForRegistration();
+	$(".btn.btn-lg[data-bs-toggle='modal']").on("click", function () {
+		initializeModalForRegistration();
 	});
 
-	$("#scheduleModal").on("hidden.bs.modal", function () {
-	    $("#startAt, #endAt").prop("type", "datetime-local").val("");
-	});
+	// $("#scheduleModal").on("hidden.bs.modal", function () {
+	//     $("#startAt, #endAt").prop("type", "datetime-local").val("");
+	// });
 
 	// 등록 버튼 클릭 시 모달 강제 초기화
 	function initializeModalForRegistration() {
@@ -389,7 +390,7 @@ $(document).ready(function(){
 	    $("#startAt").val("");
 	    $("#endAt").val("");
 	    $("#description").val("");
-	    $("#bgColor").val("#1e3a8a");
+	    $("#bgColor").val("#000");
 	    $("#allDay").prop("checked", false);
 
 	    $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);
@@ -421,11 +422,15 @@ $(document).ready(function(){
 	    });
 	}
 
+	// 모달 닫을 때 초기화
+	$("#scheduleModal").on("hidden.bs.modal", function () {
+		// 모달을 닫을 때 폼을 초기화
+		$("form[name='scheduleEvent']").each(function () {
+			this.reset();
+		});
 
-	$(".close").on("click", function () {
-	    $("form").each(function () {
-	        this.reset();
-	    });
+		$("#startAt, #endAt").prop("type", "datetime-local").val("");
+		$("#bgColor").val("#000");
 	});
 
 	// form 유효성 검사
@@ -502,9 +507,9 @@ $(document).ready(function(){
         }
     });
 
-    $('#bgColor').on("change", function () {
-	    $(this).css('color', $(this).val());
-	});
+    // $('#bgColor').on("change", function () {
+	//     $(this).css('color', $(this).val());
+	// });
 
 	// 캘린더 생성
 	function initCalendar(){
@@ -542,7 +547,7 @@ $(document).ready(function(){
 		        $("#schedule_name").val("");
 		        $("#startAt, #endAt").prop("type", "datetime-local").val("");
 		        $("#description").val("");
-		        $("#bgColor").val("#1e3a8a");
+		        $("#bgColor").val("#000");
 		        $("#allDay").prop("checked", false);
 		        $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);
 

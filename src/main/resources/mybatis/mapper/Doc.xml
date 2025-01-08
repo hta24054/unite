@@ -35,5 +35,21 @@
         values (#{docId}, #{docVacation.vacationStart}, #{docVacation.vacationEnd}, #{docVacation.vacationType}, #{docVacation.vacationCount}, #{docVacation.vacationFilePath},
                 #{docVacation.vacationFileOriginal}, #{docVacation.vacationFileUUID}, #{docVacation.vacationFileType})
     </insert>
+    <select id="getInProgressDTO">
+        SELECT doc.doc_id,doc_create_date, doc.doc_type, doc.doc_title, emp.ename
+        FROM doc
+                 JOIN sign ON doc.doc_ID = sign.doc_ID
+                 JOIN emp ON sign.emp_ID = emp.emp_ID
+                 JOIN (SELECT doc_ID, MIN(sign_ORDER) AS min_sign_order
+                       FROM sign
+                       WHERE sign_TIME IS NULL
+                       GROUP BY doc_ID) min_sign
+                      ON sign.doc_ID = min_sign.doc_ID AND sign.sign_ORDER = min_sign.min_sign_order
+        WHERE doc.sign_FINISH = 0
+          AND sign.sign_TIME IS NULL
+          AND doc_WRITER = #{empId}
+          AND sign.emp_ID != doc_WRITER
+        ORDER BY doc_CREATE_DATE
+    </select>
 </mapper>
 

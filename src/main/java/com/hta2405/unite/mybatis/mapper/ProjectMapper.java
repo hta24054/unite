@@ -5,6 +5,7 @@ import com.hta2405.unite.domain.Project;
 import com.hta2405.unite.dto.ProjectDetailDTO;
 import com.hta2405.unite.dto.ProjectRoleDTO;
 import com.hta2405.unite.dto.ProjectTaskDTO;
+import com.hta2405.unite.dto.ProjectTodoDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
@@ -32,4 +33,7 @@ public interface ProjectMapper {
     boolean updateProgressRate(int projectId, String memberId, int memberProgressRate);
     List<ProjectTaskDTO> getProjectDetail2(int projectId);
     List<ProjectRoleDTO> getRole(int projectId, String userid);
+    void insertToDo(String task, String userid, int projectId);
+    List<ProjectTodoDTO> getTodoList(int projectId, String userid);
+    boolean updateTodoProgressRate(int projectId, String userid, int todoId, int memberProgressRate);
 }

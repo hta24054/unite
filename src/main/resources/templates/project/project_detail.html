@@ -16,7 +16,7 @@
 	</script>
 	<script th:src="@{/js/project_detail.js}"></script>
 <!--	<jsp:include page="../common/header.jsp"/>-->
-	<th:block th:replace="~{project/project_leftbar :: leftbar}"/>
+<!--	<th:block th:replace="~{project/project_leftbar :: leftbar}"/>-->
 	<style>
 	html, body{
 	 overflow: hidden;  
@@ -113,38 +113,42 @@
 				<table class="table">
 					<caption><h5>진행률</h5></caption>
 					<thead>
-						<tr>
-							<th>참여자</th>
-							<th>업무내용</th>
-							<th>진행률</th>
-						</tr>
+					<tr>
+						<th>참여자</th>
+						<th>업무내용</th>
+						<th>진행률</th>
+					</tr>
 					</thead>
 					<tbody>
-						<tr th:each="project : ${project}">
-							<input type="hidden" th:value="${project.projectId}" id="projectId">
-							<td th:text="${project.participantNames}"></td>
-							<td>
-							<span th:classappend="${project.isManager} ? 'task-content clickable' : 'task-content'"
-								  th:data-id="${project.projectId}"
-								  th:data-memberid="${project.memberId}"
-								  th:data-content="${project.memberDesign}">
-								<span th:text="${project.memberDesign == null ? '업무를 지정해주세요' : project.memberDesign}"></span>
-							</span>
-										</td>
-										<td>
-							<span th:classappend="${project.memberId == #authentication.name} ? 'progress-rate clickable' : 'progress-rate'"
-								  th:data-id="${project.projectId}"
-								  th:data-memberid="${project.memberId}"
-								  th:data-rate="${project.memberProgressRate}">
-								<span class="progress-bar" role="progressbar"
-									  th:style="'width:' + ${project.memberProgressRate} + '%'">
-									<span th:text="${project.memberProgressRate} + '%'"></span>
-								</span>
-							</span>
-							</td>
-						</tr>
+					<tr th:each="project : ${project}">
+						<input type="hidden" th:value="${project.projectId}" id="projectId">
+						<td th:text="${project.participantNames}"
+							th:data-id="${project.projectId}"
+							th:data-memberid="${project.memberId}"
+							class="clickable-participant"></td> <!-- 클릭 이벤트 추가 -->
+						<td>
+                <span th:classappend="${project.isManager} ? 'task-content clickable' : 'task-content'"
+					  th:data-id="${project.projectId}"
+					  th:data-memberid="${project.memberId}"
+					  th:data-content="${project.memberDesign}">
+                    <span th:text="${project.memberDesign == null ? '업무를 지정해주세요' : project.memberDesign}"></span>
+                </span>
+						</td>
+						<td>
+                <span th:classappend="${project.memberId == #authentication.name} ? 'progress-rate clickable' : 'progress-rate'"
+					  th:data-id="${project.projectId}"
+					  th:data-memberid="${project.memberId}"
+					  th:data-rate="${project.memberProgressRate}">
+                    <span class="progress-bar" role="progressbar"
+						  th:style="'width:' + ${project.memberProgressRate} + '%'">
+                        <span th:text="${project.memberProgressRate} + '%'"></span>
+                    </span>
+                </span>
+						</td>
+					</tr>
 					</tbody>
 				</table>
+
 				<table id="postTable" class="table">
 				    <caption>
 				        <div class="d-flex justify-content-between align-items-center">
@@ -190,7 +194,11 @@
 					</tbody>
 				</table>
 			</div>
-<!--			<jsp:include page="project_notice.jsp"/>-->
+			<a th:href="@{/project/todo(projectId=${projectId})}">투두</a>
+
+
+
+			<!--			<jsp:include page="project_notice.jsp"/>-->
 		</div>
 	</div>
 	

@@ -3,17 +3,18 @@ package com.hta2405.unite.controller;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.PaginationResult;
 import com.hta2405.unite.domain.Project;
+import com.hta2405.unite.dto.ProjectDetailDTO;
 import com.hta2405.unite.dto.ProjectRoleDTO;
 import com.hta2405.unite.dto.ProjectTaskDTO;
-import com.hta2405.unite.dto.ProjectDetailDTO;
-import com.hta2405.unite.mybatis.mapper.ProjectMapper;
+import com.hta2405.unite.dto.ProjectTodoDTO;
 import com.hta2405.unite.service.ProjectService;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,16 +28,12 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/project")
-@Slf4j
 public class ProjectController {
     private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
-    private final ProjectMapper projectMapper;
-
     private final ProjectService projectService;
 
-    public ProjectController(ProjectService projectService, ProjectMapper projectMapper) {
+    public ProjectController(ProjectService projectService) {
         this.projectService = projectService;
-        this.projectMapper = projectMapper;
     }
 
     @GetMapping(value = "/main")
@@ -64,7 +61,6 @@ public class ProjectController {
 
     @PostMapping("/doCreate")
     public String doCreate(@ModelAttribute Project project, Model model) {
-        //String userid = (String) session.getAttribute("id"); // 현재 로그인한 사용자 ID
         int projectId = projectService.createProject(project);
         logger.info("projectId = ", projectId);
         String name;
@@ -76,12 +72,8 @@ public class ProjectController {
         }
 
         if (projectId > 0) {
-            //String[] manager = project.getManager_id().split(","); // 매니저 ID 분리
-            //if (manager.length > 0) {
             projectService.addProjectMember(projectId, name, project.getManagerId(), "MANAGER");
             projectService.createTask(projectId, project.getManagerId(), name);
-            //}
-
             // 참여자 처리
             if (project.getParticipants() != null && !project.getParticipants().isEmpty()) {
                 String[] participantArray = project.getParticipants().split(","); // 쉼표로 구분된 참여자들
@@ -131,10 +123,10 @@ public class ProjectController {
     @ResponseBody
     public Map<String, Object> getProjects(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "0") int favorite
+            @RequestParam(defaultValue = "0") int favorite,
+            @AuthenticationPrincipal UserDetails user
            ) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userid = authentication.getName();
+        String userid = user.getUsername();
         int limit = 100;
         int listcount = projectService.mainCountList(userid, favorite);
         List<Project> mainList = projectService.getmainList(userid, favorite, page, limit);
@@ -155,9 +147,8 @@ public class ProjectController {
 
     @PostMapping("/toggleFavorite")
     @ResponseBody
-    public Map<String, Object> toggleFavorite(@RequestParam int projectId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userid = authentication.getName();
+    public Map<String, Object> toggleFavorite(@RequestParam int projectId, @AuthenticationPrincipal UserDetails user) {
+        String userid = user.getUsername();
         Map<String, Object> response = new HashMap<>();
         try {
             projectService.projectFavorite(projectId, userid);
@@ -173,9 +164,9 @@ public class ProjectController {
     public String saveColorSettings(
             @RequestParam int projectId,
             @RequestParam String bgColor,
-            @RequestParam String textColor) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userid = authentication.getName();
+            @RequestParam String textColor,
+            @AuthenticationPrincipal UserDetails user) {
+        String userid = user.getUsername();
         logger.info(String.format("User: %s, ProjectId: %d, BgColor: %s, TextColor: %s", userid, projectId, bgColor, textColor));
         projectService.projectColor(userid, projectId, bgColor, textColor);
         return "redirect:/project/main";
@@ -207,9 +198,8 @@ public class ProjectController {
     public String cancel() {return "project/project_cancel";}
     @GetMapping("/cancelList")
     @ResponseBody
-    public Map<String, Object> cancel(@RequestParam(defaultValue = "1") int page) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userid = authentication.getName();
+    public Map<String, Object> cancel(@RequestParam(defaultValue = "1") int page, @AuthenticationPrincipal UserDetails user) {
+        String userid = user.getUsername();
 
         int limit = 10; // 페이지 당 표시할 데이터 개수
         int listcount = projectService.doneCountList(userid, 0, 1); // 총 프로젝트 개수 (favorite 파라미터를 넘겨서 처리)
@@ -234,9 +224,8 @@ public class ProjectController {
     public String complete() {return "project/project_complete";}
 
     @GetMapping("/detail")
-    public ModelAndView detail(int projectId, ModelAndView mv) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userid = authentication.getName();
+    public ModelAndView detail(int projectId, ModelAndView mv, @AuthenticationPrincipal UserDetails user) {
+        String userid = user.getUsername();
 
         String left = projectService.getProjectName(projectId);
         List<ProjectDetailDTO> detail_Progress = projectService.getProjectDetail1(projectId, userid);
@@ -255,6 +244,7 @@ public class ProjectController {
         mv.addObject("project", detail_Progress);
         mv.addObject("project2", project);
         mv.addObject("role", role);
+        mv.addObject("projectId", projectId);
 
         return mv;
     }
@@ -288,6 +278,37 @@ public class ProjectController {
         PrintWriter out = resp.getWriter();
         out.print(jsonResponse.toString());
         out.flush();
+    }
+
+    @GetMapping("/todo")
+    public String todo(int projectId, Model model, @AuthenticationPrincipal UserDetails user){
+        String userid = user.getUsername();
+        List<ProjectTodoDTO> todos = projectService.getTodoList(projectId, userid);
+        model.addAttribute("todos", todos);
+        model.addAttribute("projectId", projectId);
+        return "project/Todo";
+    }
+    @PostMapping("/todoForm")
+    public String todoForm(String task, int projectId, Model model, @AuthenticationPrincipal UserDetails user){
+        String userid = user.getUsername();
+        projectService.insertToDo(task, userid, projectId);
+        model.addAttribute("projectId", projectId);
+        return "redirect:/project/todo?projectId="+projectId;
+    }
+    @GetMapping("/todoList")
+    @ResponseBody
+    public List<ProjectTodoDTO> getTodoList(@RequestParam("projectId") int projectId,
+                                            @RequestParam("memberId") String memberId) {
+        // 해당 프로젝트와 멤버에 맞는 투두리스트 가져오기
+        List<ProjectTodoDTO> todos = projectService.getTodoList(projectId, memberId);
+        return todos;  // JSON 형태로 자동 변환되어 클라이언트로 반환됨
+    }
+    @PostMapping("/todoprogress")
+    @ResponseBody
+    public void todoprogress(int projectId, int todoId, int memberProgressRate, HttpServletResponse resp, @AuthenticationPrincipal UserDetails user) throws IOException {
+        String userid = user.getUsername();
+        boolean success = projectService.todoProgressRate(projectId, userid, todoId, memberProgressRate);
+        sendJsonResponse(success, resp);
     }
 
 }

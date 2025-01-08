@@ -5,6 +5,7 @@ import com.hta2405.unite.domain.Project;
 import com.hta2405.unite.dto.ProjectDetailDTO;
 import com.hta2405.unite.dto.ProjectRoleDTO;
 import com.hta2405.unite.dto.ProjectTaskDTO;
+import com.hta2405.unite.dto.ProjectTodoDTO;
 import com.hta2405.unite.mybatis.mapper.ProjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -127,5 +128,17 @@ public class ProjectServiceImpl implements ProjectService {
     }
     public List<ProjectRoleDTO> getRole(int projectId, String userid){
         return dao.getRole(projectId, userid);
+    }
+
+    public void insertToDo(String task, String userid, int projectId){
+        dao.insertToDo(task, userid, projectId);
+    }
+
+    public List<ProjectTodoDTO> getTodoList(int projectId, String userid){
+        return dao.getTodoList(projectId, userid);
+    }
+
+    public boolean todoProgressRate(int projectId, String userid, int todoId, int memberProgressRate){
+        return dao.updateTodoProgressRate(projectId, userid, todoId, memberProgressRate);
     }
 }

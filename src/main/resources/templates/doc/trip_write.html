@@ -29,7 +29,7 @@
                                 <tr>
                                     <td class="table-secondary font-weight-bold text-center">신 청 자</td>
                                     <td>[[${ename}]]</td>
-                                    <input type="hidden" name="writer" th:value="${empId}">
+                                    <input type="hidden" name="writer" th:value="${ename}">
                                 </tr>
                                 <tr>
                                     <td class="table-secondary font-weight-bold text-center">작 성 일</td>
@@ -134,7 +134,8 @@
                     const confirmSubmission = confirm("문서를 작성하시겠습니까?");
                     if (!confirmSubmission) return;
                     // 폼 데이터 수집
-                    const formData = {
+                    const formData = new FormData();
+                    formData.append("formData", new Blob([JSON.stringify({
                         writer: $('input[name="writer"]').val(),
                         trip_start: $('input[name="trip_start"]').val(),
                         trip_end: $('input[name="trip_end"]').val(),
@@ -144,34 +145,35 @@
                         card_start: $('input[name="card_start"]').val(),
                         card_end: $('input[name="card_end"]').val(),
                         card_return: $('input[name="card_return"]').val(),
-                        signers: []
-                    };
+                        signers: $('input[name="sign[]"]').map(function () {
+                            return $(this).val();
+                        }).get()
+                    })], { type: "application/json" }));
 
-                    // 결재자 정보 추가
-                    $('input[name="sign[]"]').each(function () {
-                        formData.signers.push($(this).val());
-                    });
+                    // 파일 추가
+                    const fileInput = $('input[name="files"]')[0];
+                    if (fileInput && fileInput.files.length > 0) {
+                        for (let i = 0; i < fileInput.files.length; i++) {
+                            formData.append("files", fileInput.files[i]);
+                        }
+                    }
 
                     // AJAX 요청
                     $.ajax({
-                        url: /*[[@{/doc/trip}]]*/'',
+                        url: /*[[@{/doc/write/trip}]]*/'',
                         type: "POST",
-                        data: JSON.stringify(formData),
-                        contentType: "application/json; charset=UTF-8",
-                        dataType: "json",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
                         success: function (response) {
-                            if (response.status === 'success') {
-                                alert("문서 작성이 완료되었습니다.");
-                                window.location.href = "${pageContext.request.contextPath}/doc/in-progress";
-                            } else {
-                                alert("문서 작성 중 오류가 발생했습니다.");
-                            }
+                            alert("문서 작성이 완료되었습니다.");
+                            window.location.href = /*[[@{/doc/inProcess}]]*/'';
                         },
                         error: function () {
                             alert("문서 작성 중 오류가 발생했습니다.");
                         }
                     });
-                });
+                })
             });
         </script>
         </body>

@@ -1,11 +1,13 @@
 package com.hta2405.unite.service;
 
 import com.hta2405.unite.domain.*;
+import com.hta2405.unite.dto.FileDTO;
 import com.hta2405.unite.dto.ProductDTO;
 import com.hta2405.unite.mybatis.mapper.DocMapper;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,18 +16,19 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 @Service
-@RequiredArgsConstructor
 public class DocService {
-    private final EmpService empService;
-    private final DeptService deptService;
-    private final AttendService attendService;
     private final HolidayService holidayService;
     private final DocMapper docMapper;
+    private final String VACATION_FILE_DIR;
+    private final FileService fileService;
 
-    public int countVacation(LocalDate startDate, LocalDate endDate) {
-        int allCount = (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
-        int holidayCount = holidayService.getHolidayList(startDate, endDate).size();
-        return allCount - holidayCount;
+    public DocService(HolidayService holidayService,
+                      DocMapper docMapper,
+                      @Value("${vacation.upload.directory}") String VACATION_FILE_DIR, FileService fileService) {
+        this.holidayService = holidayService;
+        this.docMapper = docMapper;
+        this.VACATION_FILE_DIR = VACATION_FILE_DIR;
+        this.fileService = fileService;
     }
 
     @Transactional
@@ -64,6 +67,32 @@ public class DocService {
 
         List<Sign> list = getSigns(doc, signers);
         docMapper.insertSign(list);
+    }
+
+    @Transactional
+    public void saveVacationDoc(Doc doc, DocVacation.DocVacationBuilder docVacationBuilder, List<String> signers, List<MultipartFile> files) {
+        docMapper.insertGeneralDoc(doc);
+
+        if (files != null && !files.isEmpty()) {
+            //어차피 일단 정책상 아직 첨부파일 최대 1개
+            FileDTO fileDTO = fileService.uploadFile(files.get(0), VACATION_FILE_DIR);
+            docVacationBuilder.vacationFilePath(fileDTO.getFilePath())
+                    .vacationFileOriginal(fileDTO.getFileOriginal())
+                    .vacationFileUUID(fileDTO.getFileUUID())
+                    .vacationFileType(fileDTO.getFileType());
+        }
+        DocVacation docVacation = docVacationBuilder.build();
+
+        docMapper.insertVacationDoc(doc.getDocId(), docVacation);
+
+        List<Sign> list = getSigns(doc, signers);
+        docMapper.insertSign(list);
+    }
+
+    public int countVacation(LocalDate startDate, LocalDate endDate) {
+        int allCount = (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
+        int holidayCount = holidayService.getHolidayList(startDate, endDate).size();
+        return allCount - holidayCount;
     }
 
     private static List<Sign> getSigns(Doc doc, List<String> signers) {

@@ -16,4 +16,6 @@ public interface DocMapper {
     void insertBuyDoc(DocBuy docBuy);
 
     void insertProducts(Long docBuyId, List<BuyItem> items);
+
+    void insertVacationDoc(Long docId, DocVacation docVacation);
 }

@@ -1,0 +1,15 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hta2405.unite.mybatis.mapper.DocMapper">
+    <insert id="insertGeneralDoc" parameterType="Doc" useGeneratedKeys="true" keyProperty="docId">
+        insert into doc(doc_writer, doc_type, doc_title, doc_content, doc_create_date)
+        VALUES (#{docWriter}, #{docType}, #{docTitle}, #{docContent}, #{docCreateDate})
+    </insert>
+    <insert id="insertSign">
+        insert into sign(emp_id, doc_id, sign_order, sign_time) VALUES
+        <foreach collection="list" item="sign" separator=",">
+            (#{sign.empId}, #{sign.docId}, #{sign.signOrder}, #{sign.signTime})
+        </foreach>
+    </insert>
+</mapper>
+

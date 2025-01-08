@@ -5,6 +5,7 @@ import com.hta2405.unite.domain.Project;
 import com.hta2405.unite.dto.ProjectDetailDTO;
 import com.hta2405.unite.dto.ProjectRoleDTO;
 import com.hta2405.unite.dto.ProjectTaskDTO;
+import com.hta2405.unite.dto.ProjectTodoDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,4 +32,7 @@ public interface ProjectService {
     boolean updateProgressRate(int projectId, String memberId, int memberProgressRate);
     List<ProjectTaskDTO> getProjectDetail2(int projectId);
     List<ProjectRoleDTO> getRole(int projectId, String userid);
+    void insertToDo(String task, String userid, int projectId);
+    List<ProjectTodoDTO> getTodoList(int projectId, String userid);
+    boolean todoProgressRate(int projectId, String userid, int todoId, int memberProgressRate);
 }

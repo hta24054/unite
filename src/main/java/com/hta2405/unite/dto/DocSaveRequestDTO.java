@@ -12,5 +12,4 @@ import java.util.Map;
 public class DocSaveRequestDTO {
     private Map<String, Object> formData;
     private List<MultipartFile> files;
-    private List<String> signers;
 }

@@ -12,5 +12,4 @@ import lombok.ToString;
 public class DocBuy {
     private Long docBuyId;
     private Long docId;
-
 }

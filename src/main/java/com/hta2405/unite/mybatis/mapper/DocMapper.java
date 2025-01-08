@@ -1,8 +1,6 @@
 package com.hta2405.unite.mybatis.mapper;
 
-import com.hta2405.unite.domain.Doc;
-import com.hta2405.unite.domain.DocTrip;
-import com.hta2405.unite.domain.Sign;
+import com.hta2405.unite.domain.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -14,4 +12,8 @@ public interface DocMapper {
     void insertSign(List<Sign> list);
 
     void insertTripDoc(Long docId, DocTrip docTrip);
+
+    void insertBuyDoc(DocBuy docBuy);
+
+    void insertProducts(Long docBuyId, List<BuyItem> items);
 }

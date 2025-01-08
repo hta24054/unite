@@ -1,6 +1,5 @@
 package com.hta2405.unite.factory;
 
-import com.hta2405.unite.strategy.BuyDocWriter;
 import com.hta2405.unite.strategy.DocWriter;
 import com.hta2405.unite.strategy.GeneralDocWriter;
 import org.springframework.stereotype.Component;

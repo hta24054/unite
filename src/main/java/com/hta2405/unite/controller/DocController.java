@@ -58,7 +58,8 @@ public class DocController {
         // JSON 데이터를 Map으로 변환
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> formData = objectMapper.readValue(formDataJson,
-                new TypeReference<Map<String, Object>>() {});
+                new TypeReference<Map<String, Object>>() {
+                });
 
         // signers 필드 추출
         List<String> signers = (List<String>) formData.get("signers");
@@ -66,7 +67,7 @@ public class DocController {
         // DTO 생성
         DocSaveRequestDTO docSaveRequestDTO = new DocSaveRequestDTO(formData, files, signers);
 
-        System.out.println(docSaveRequestDTO+"!!!!!!!!!!!!!!!!!!!");
+        System.out.println(docSaveRequestDTO + "!!!!!!!!!!!!!!!!!!!");
         // 저장 처리
         DocSaver saver = docSaverFactory.getSaver(type);
         saver.save(user.getUsername(), docSaveRequestDTO);

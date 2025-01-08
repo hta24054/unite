@@ -14,6 +14,7 @@ public class AttendDTO {
     public AttendDTO(LocalDate attendDate) {
         this.attendDate = attendDate;
     }
+
     private LocalDate attendDate;
     private LocalDateTime inTime;
     private LocalDateTime outTime;

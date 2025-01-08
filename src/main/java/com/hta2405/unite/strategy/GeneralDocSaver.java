@@ -1,7 +1,6 @@
 package com.hta2405.unite.strategy;
 
 import com.hta2405.unite.domain.Doc;
-import com.hta2405.unite.domain.Sign;
 import com.hta2405.unite.dto.DocSaveRequestDTO;
 import com.hta2405.unite.enums.DocType;
 import com.hta2405.unite.service.DocService;
@@ -9,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

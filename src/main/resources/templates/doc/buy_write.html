@@ -32,7 +32,7 @@
                                 <tr>
                                     <td class="table-secondary font-weight-bold text-center">신 청 자</td>
                                     <td>[[${ename}]]</td>
-                                    <input type="hidden" name="writer" th:value="${empId}">
+                                    <input type="hidden" name="writer" th:value="${ename}">
                                 </tr>
                                 <tr>
                                     <td class="table-secondary font-weight-bold text-center">작 성 일</td>
@@ -52,7 +52,7 @@
                             <th colspan="1" class="table-secondary font-weight-bold text-center">제목</th>
                             <td colspan="5">
                                 <input type="text" name="title" class="form-control" placeholder="제목을 입력하세요"
-                                       data-name="제목"
+                                       data-name="제목" th:value="${'구매신청서('+deptName+')'}"
                                        required>
                             </td>
                         </tr>
@@ -104,7 +104,7 @@
                 </div>
             </div>
         </form>
-        <script>
+        <script th:inline="javascript">
             $(document).ready(function () {
                 // 최대 품목 수, 수량, 단가
                 const maxItems = 10;
@@ -225,44 +225,53 @@
                     if (!confirmSubmission) return;
 
                     // 폼 데이터 수집
-                    const formData = {
+                    const formData = new FormData();
+
+                    // JSON 데이터 생성
+                    const jsonData = {
                         title: $('input[name="title"]').val(),
                         content: $('textarea[name="content"]').val(),
                         writer: $('input[name="writer"]').val(),
-                        productDetails: [],
-                        signers: []
+                        signers: $('input[name="sign[]"]').map(function () {
+                            return $(this).val();
+                        }).get(),
+                        products: [] // 제품 정보 배열 초기화
                     };
 
-                    // 결재자 정보 추가
-                    $('input[name="sign[]"]').each(function () {
-                        formData.signers.push($(this).val());
-                    });
-
-                    //제품정보 추가
+                    // 제품 정보 추가
                     $('#itemTable .item-row').each(function () {
                         const product = {
-                            product_name: $(this).find('input[name="product_name"]').val(),
+                            productName: $(this).find('input[name="product_name"]').val(),
                             standard: $(this).find('input[name="standard"]').val(),
                             quantity: parseNumber($(this).find('input[name="quantity"]').val()),
                             price: parseNumber($(this).find('input[name="price"]').val())
                         };
-                        formData.productDetails.push(product);
+                        jsonData.products.push(product);
                     });
-                    console.log(formData);
 
+                    // JSON 데이터를 Blob으로 추가
+                    formData.append("formData", new Blob([JSON.stringify(jsonData)], { type: "application/json" }));
+
+                    console.log(jsonData);
+
+                    // 파일 추가
+                    const fileInput = $('input[name="files"]')[0];
+                    if (fileInput && fileInput.files.length > 0) {
+                        for (let i = 0; i < fileInput.files.length; i++) {
+                            formData.append("files", fileInput.files[i]);
+                        }
+                    }
+
+                    // AJAX 요청
                     $.ajax({
-                        url: "${pageContext.request.contextPath}/doc/buy_write",
+                        url: /*[[@{/doc/write/buy}]]*/'',
                         type: "POST",
-                        data: JSON.stringify(formData),
-                        contentType: "application/json; charset=UTF-8",
-                        dataType: "json",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
                         success: function (response) {
-                            if (response.status === 'success') {
-                                alert("문서 작성이 완료되었습니다.");
-                                window.location.href = "${pageContext.request.contextPath}/doc/in-progress";
-                            } else {
-                                alert("문서 작성 중 오류가 발생했습니다.");
-                            }
+                            alert("문서 작성이 완료되었습니다.");
+                            window.location.href = /*[[@{/doc/inProcess}]]*/'';
                         },
                         error: function () {
                             alert("문서 작성 중 오류가 발생했습니다.");

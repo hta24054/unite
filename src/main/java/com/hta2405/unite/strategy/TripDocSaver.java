@@ -1,5 +1,7 @@
 package com.hta2405.unite.strategy;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hta2405.unite.domain.Doc;
 import com.hta2405.unite.domain.DocTrip;
 import com.hta2405.unite.dto.DocSaveRequestDTO;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -25,7 +28,6 @@ public class TripDocSaver implements DocSaver {
     @Override
     public void save(String empId, DocSaveRequestDTO req) {
         Map<String, Object> formData = req.getFormData();
-        System.out.println(req.getFormData());
         Doc doc = Doc.builder().docWriter(empId)
                 .docType(DocType.TRIP)
                 .docTitle("출장신청서(" + formData.get("writer").toString() + ")")
@@ -44,6 +46,10 @@ public class TripDocSaver implements DocSaver {
                 .cardReturn(LocalDate.parse(formData.get("card_return").toString()))
                 .build();
 
-        docService.saveTripDoc(doc, docTrip, req.getSigners());
+        ObjectMapper mapper = new ObjectMapper();
+        List<String> signers = mapper.convertValue(req.getFormData().get("signers"), new TypeReference<>() {
+        });
+
+        docService.saveTripDoc(doc, docTrip, signers);
     }
 }

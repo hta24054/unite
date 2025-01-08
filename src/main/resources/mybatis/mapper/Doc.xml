@@ -11,11 +11,21 @@
         VALUES (#{docId}, #{docTrip.tripStart}, #{docTrip.tripEnd}, #{docTrip.tripLoc}, #{docTrip.tripPhone},
                 #{docTrip.tripInfo}, #{docTrip.cardStart}, #{docTrip.cardEnd}, #{docTrip.cardReturn})
     </insert>
+    <insert id="insertBuyDoc" useGeneratedKeys="true" keyProperty="docBuyId">
+        insert into doc_buy(doc_id)
+        VALUES (#{docId})
+    </insert>
 
     <insert id="insertSign">
         insert into sign(emp_id, doc_id, sign_order, sign_time) VALUES
         <foreach collection="list" item="sign" separator=",">
             (#{sign.empId}, #{sign.docId}, #{sign.signOrder}, #{sign.signTime})
+        </foreach>
+    </insert>
+    <insert id="insertProducts">
+        insert into buy_item(doc_buy_id, product_name, standard, quantity, price) VALUES
+        <foreach collection="items" item="item" separator=",">
+            (#{docBuyId}, #{item.productName}, #{item.standard}, #{item.quantity}, #{item.price})
         </foreach>
     </insert>
 </mapper>

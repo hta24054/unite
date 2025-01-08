@@ -54,20 +54,13 @@ public class DocController {
                                            @RequestPart("formData") String formDataJson,
                                            @RequestPart(value = "files", required = false) List<MultipartFile> files,
                                            @AuthenticationPrincipal UserDetails user) throws JsonProcessingException {
-
         // JSON 데이터를 Map으로 변환
         ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> formData = objectMapper.readValue(formDataJson,
-                new TypeReference<Map<String, Object>>() {
-                });
-
-        // signers 필드 추출
-        List<String> signers = (List<String>) formData.get("signers");
+        Map<String, Object> formData = objectMapper.readValue(formDataJson, new TypeReference<>() {});
 
         // DTO 생성
-        DocSaveRequestDTO docSaveRequestDTO = new DocSaveRequestDTO(formData, files, signers);
+        DocSaveRequestDTO docSaveRequestDTO = new DocSaveRequestDTO(formData, files);
 
-        System.out.println(docSaveRequestDTO + "!!!!!!!!!!!!!!!!!!!");
         // 저장 처리
         DocSaver saver = docSaverFactory.getSaver(type);
         saver.save(user.getUsername(), docSaveRequestDTO);

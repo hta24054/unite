@@ -1,0 +1,55 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hta2405.unite.mybatis.mapper.DocMapper">
+    <insert id="insertGeneralDoc" parameterType="Doc" useGeneratedKeys="true" keyProperty="docId">
+        insert into doc(doc_writer, doc_type, doc_title, doc_content, doc_create_date)
+        VALUES (#{docWriter}, #{docType}, #{docTitle}, #{docContent}, #{docCreateDate})
+    </insert>
+    <insert id="insertTripDoc">
+        insert into doc_trip(doc_id, trip_start, trip_end, trip_loc, trip_phone, trip_info, card_start,
+                             card_end, card_return)
+        VALUES (#{docId}, #{docTrip.tripStart}, #{docTrip.tripEnd}, #{docTrip.tripLoc}, #{docTrip.tripPhone},
+                #{docTrip.tripInfo}, #{docTrip.cardStart}, #{docTrip.cardEnd}, #{docTrip.cardReturn})
+    </insert>
+    <insert id="insertBuyDoc" useGeneratedKeys="true" keyProperty="docBuyId">
+        insert into doc_buy(doc_id)
+        VALUES (#{docId})
+    </insert>
+
+    <insert id="insertSign">
+        insert into sign(emp_id, doc_id, sign_order, sign_time) VALUES
+        <foreach collection="list" item="sign" separator=",">
+            (#{sign.empId}, #{sign.docId}, #{sign.signOrder}, #{sign.signTime})
+        </foreach>
+    </insert>
+    <insert id="insertProducts">
+        insert into buy_item(doc_buy_id, product_name, standard, quantity, price) VALUES
+        <foreach collection="items" item="item" separator=",">
+            (#{docBuyId}, #{item.productName}, #{item.standard}, #{item.quantity}, #{item.price})
+        </foreach>
+    </insert>
+    <insert id="insertVacationDoc">
+        insert into doc_vacation(doc_id, vacation_start, vacation_end, vacation_type, vacation_count,
+                                 vacation_file_path, vacation_file_original, vacation_file_uuid,
+                                 vacation_file_type)
+        values (#{docId}, #{docVacation.vacationStart}, #{docVacation.vacationEnd}, #{docVacation.vacationType}, #{docVacation.vacationCount}, #{docVacation.vacationFilePath},
+                #{docVacation.vacationFileOriginal}, #{docVacation.vacationFileUUID}, #{docVacation.vacationFileType})
+    </insert>
+    <select id="getInProgressDTO">
+        SELECT doc.doc_id,doc_create_date, doc.doc_type, doc.doc_title, emp.ename
+        FROM doc
+                 JOIN sign ON doc.doc_ID = sign.doc_ID
+                 JOIN emp ON sign.emp_ID = emp.emp_ID
+                 JOIN (SELECT doc_ID, MIN(sign_ORDER) AS min_sign_order
+                       FROM sign
+                       WHERE sign_TIME IS NULL
+                       GROUP BY doc_ID) min_sign
+                      ON sign.doc_ID = min_sign.doc_ID AND sign.sign_ORDER = min_sign.min_sign_order
+        WHERE doc.sign_FINISH = 0
+          AND sign.sign_TIME IS NULL
+          AND doc_WRITER = #{empId}
+          AND sign.emp_ID != doc_WRITER
+        ORDER BY doc_CREATE_DATE
+    </select>
+</mapper>
+

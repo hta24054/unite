@@ -201,4 +201,8 @@ public class AttendService {
         }
         return ResponseEntity.ok("정상 처리");
     }
+
+    public int getUsedAnnualVacationCount(String empId, int year) {
+        return attendMapper.getUsedAnnualVacationCount(empId, year);
+    }
 }

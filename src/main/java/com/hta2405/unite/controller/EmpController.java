@@ -47,7 +47,7 @@ public class EmpController {
         Emp emp = empService.getEmpById(user.getUsername());
 
         //열람 권한 조회
-        if (!authService.isAuthorizedToView(emp, targetEmp, user.getUsername().equals(targetEmpId))){
+        if (!authService.isAuthorizedToView(emp, targetEmp, user.getUsername().equals(targetEmpId))) {
             mv.setViewName("error/error");
             mv.addObject("errorMessage", "회원정보 열람 권한이 없습니다.");
             return mv;

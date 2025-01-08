@@ -1,6 +1,5 @@
 package com.hta2405.unite.service;
 
-import com.hta2405.unite.domain.Board;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Post;
 import com.hta2405.unite.domain.PostFile;
@@ -14,9 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,7 +53,7 @@ public class BoardPostService {
     }
 
     @Transactional
-    public boolean addPost(BoardDTO boardDTO, PostDTO postDTO, List<MultipartFile> files) {
+    public Long addPost(BoardDTO boardDTO, PostAddDTO postAddDTO, List<MultipartFile> files) {
 
         // 1. 게시판 ID 가져오기
         Long boardId = boardPostMapper.findBoardIdByName1Name2(boardDTO);
@@ -63,9 +63,9 @@ public class BoardPostService {
 
         Post post = Post.builder()
                 .boardId(boardId)
-                .postWriter(postDTO.getPostWriter())
-                .postSubject(postDTO.getPostSubject())
-                .postContent(postDTO.getPostContent()).build();
+                .postWriter(postAddDTO.getPostWriter())
+                .postSubject(postAddDTO.getPostSubject())
+                .postContent(postAddDTO.getPostContent()).build();
 
 
         // 2. 게시글 삽입
@@ -77,7 +77,7 @@ public class BoardPostService {
         }
 
         //파일업로드
-        if(files != null && !files.isEmpty()) {
+        if (files != null && !files.isEmpty()) {
             List<FileDTO> fileDTOList = new ArrayList<>();
             for (MultipartFile file : files) {
                 fileDTOList.add(fileService.uploadFile(file, UPLOAD_DIRECTORY));
@@ -85,11 +85,12 @@ public class BoardPostService {
 
             int num = 0;
             num += boardPostMapper.insertPostFile(post.getPostId(), fileDTOList);
-            return num > 0;
+            if (num <= 0) {
+                return -1L;
+            }
         }
-        return true;
+        return post.getPostId();
     }
-
 
 
     public HashMap<String, Object> getBoardListAndListCount(int page, int limit, BoardDTO boardDTO) {
@@ -122,18 +123,18 @@ public class BoardPostService {
         }
 
         HashMap<String, Object> map = new HashMap<>();
-        map.put("listCount", getSearchListCountByBoardId(boardId,category,query));
-        map.put("postList", getSearchListByBoardId(page,limit,boardId,category,query));
+        map.put("listCount", getSearchListCountByBoardId(boardId, category, query));
+        map.put("postList", getSearchListByBoardId(page, limit, boardId, category, query));
         return map;
     }
 
     public int getSearchListCountByBoardId(Long boardId, String category, String query) {
-        return boardPostMapper.getSearchListCountByBoardId(boardId,category,query);
+        return boardPostMapper.getSearchListCountByBoardId(boardId, category, query);
     }
 
     public List<Post> getSearchListByBoardId(int page, int endRow, Long boardId, String category, String query) {
         int startRow = (page - 1) * endRow;
-        List<Post> postList = boardPostMapper.getSearchListByBoardId(startRow,endRow,boardId,category,query);
+        List<Post> postList = boardPostMapper.getSearchListByBoardId(startRow, endRow, boardId, category, query);
         log.info("postList: " + postList.toString());
         return postList;
     }
@@ -210,7 +211,7 @@ public class BoardPostService {
         }
 
         //파일 추가
-        if(addFiles != null && !addFiles.isEmpty()) {
+        if (addFiles != null && !addFiles.isEmpty()) {
             List<FileDTO> fileDTOList = new ArrayList<>();
             for (MultipartFile file : addFiles) {
                 fileDTOList.add(fileService.uploadFile(file, UPLOAD_DIRECTORY));
@@ -232,18 +233,71 @@ public class BoardPostService {
         fileService.downloadFile(UPLOAD_DIRECTORY, postFile.getPostFileUUID(), postFile.getPostFileOriginal(), response);
     }
 
-    public boolean postDelete(int postId) {
+    public boolean postDelete(Long postId) {
         // 게시글 정보 조회
-        HashMap<String, Integer> map = boardPostMapper.selectPostInfo(postId);
-
+        HashMap<String, Object> map = selectPostInfo(postId);
         if (map == null) {
             throw new RuntimeException("게시글 정보 조회 에러");
         }
 
+        //게시글 첨부파일 삭제
+        List<PostFile> postFiles = boardPostMapper.getDetailPostFile(postId);
+        if (postFiles != null && !postFiles.isEmpty()) {
+            for (PostFile postFile : postFiles) {
+                fileService.deleteFile(postFile.getPostFileUUID(), UPLOAD_DIRECTORY, postFile.getPostFileOriginal());
+            }
+        }
+
         // 게시글 삭제
-        int result = boardPostMapper.deletePost(map.get("post_re_ref"),
-                                                map.get("post_re_lev"),
-                                                map.get("post_re_seq"));
+        int result = boardPostMapper.deletePost((int) map.get("post_re_ref"),
+                (int) map.get("post_re_lev"),
+                (int) map.get("post_re_seq"));
         return result >= 1; // 삭제 성공 여부 반환
+    }
+
+    public HashMap<String, Object> selectPostInfo(Long postId) {
+        return boardPostMapper.selectPostInfo(postId);
+    }
+
+    @Transactional
+    public Long replyPost(BoardDTO boardDTO, PostReplyDTO postReplyDTO, List<MultipartFile> files) {
+
+        // 1. 게시판 ID 가져오기
+        Long boardId = boardPostMapper.findBoardIdByName1Name2(boardDTO);
+        if (boardId == null) {
+            throw new IllegalArgumentException("게시판 이름을 찾을 수 없습니다.");
+        }
+
+        Post post = Post.builder()
+                .boardId(boardId)
+                .postWriter(postReplyDTO.getPostWriter())
+                .postSubject(postReplyDTO.getPostSubject())
+                .postContent(postReplyDTO.getPostContent())
+                .postReRef(postReplyDTO.getPostReRef())
+                .postReLev(postReplyDTO.getPostReLev())
+                .postReSeq(postReplyDTO.getPostReSeq()).build();
+
+
+        // 2. 게시글 삽입
+        boardPostMapper.updateReplySeq(post.getPostReRef(), post.getPostReSeq()); //게시글 순서 업데이트
+        int postReply = boardPostMapper.replyPostInsert(post);
+
+        if (postReply <= 0) {
+            throw new RuntimeException("게시글 삽입 실패");
+        }
+
+        //파일업로드
+        if (files != null && !files.isEmpty()) {
+            List<FileDTO> fileDTOList = new ArrayList<>();
+            for (MultipartFile file : files) {
+                fileDTOList.add(fileService.uploadFile(file, UPLOAD_DIRECTORY));
+            }
+
+            int num = boardPostMapper.insertPostFile(post.getPostId(), fileDTOList);
+            if (num <= 0) {
+                return -1L;
+            }
+        }
+        return post.getPostId();
     }
 }

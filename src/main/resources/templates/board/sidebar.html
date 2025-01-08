@@ -15,7 +15,7 @@
         <ul class="list-group" style="list-style-type: disc; padding-left: 20px;">
             <!-- 전사게시판 메뉴 -->
             <li class="left" style="border: none;">
-                <a  href="#" class="boardName1" onclick="toggleSubMenu('#submenu-doc-draft')">전사게시판</a>
+                <a href="#" class="boardName1" onclick="toggleSubMenu('#submenu-doc-draft')">전사게시판</a>
                 <ul class="submenu" id="submenu-doc-draft">
                     <li class="left" style="border: none;">
                         <a href="/board/boardList?boardName1=전사게시판&boardName2=공지사항" class="boardName2">공지사항</a>
@@ -30,7 +30,8 @@
             </li>
 
             <!-- 일반게시판 메뉴 -->
-            <li class="left" style="border: none;"><a href="/board/boardList?boardName1=일반게시판&boardName2=일반게시판" class="boardName1 boardName2">일반게시판</a></li>
+            <li class="left" style="border: none;"><a href="/board/boardList?boardName1=일반게시판&boardName2=일반게시판"
+                                                      class="boardName1 boardName2">일반게시판</a></li>
 
             <!-- 부서게시판 메뉴 -->
             <!-- 세션에서 받은 부서리스트 처리 -->
@@ -42,7 +43,8 @@
                         <th:block th:each="board : ${boardScope}">
                             <li class="left" style="border: none;">
                                 <th:block th:if="${board.deptId != null}">
-                                    <a th:href="@{/board/boardList(boardName1='부서게시판', boardName2=${board.boardName2})}" class="boardName2" th:text="${board.boardName2}"></a>
+                                    <a th:href="@{/board/boardList(boardName1='부서게시판', boardName2=${board.boardName2})}"
+                                       class="boardName2" th:text="${board.boardName2}"></a>
                                 </th:block>
                             </li>
                         </th:block>

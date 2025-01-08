@@ -1,6 +1,5 @@
 package com.hta2405.unite.mybatis.mapper;
 
-import com.hta2405.unite.domain.Board;
 import com.hta2405.unite.domain.Post;
 import com.hta2405.unite.domain.PostFile;
 import com.hta2405.unite.dto.*;
@@ -9,7 +8,6 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface BoardPostMapper {
@@ -46,9 +44,13 @@ public interface BoardPostMapper {
 
     int deletePostFile(List<String> deletePostFileUUIDList);
 
-    HashMap<String, Integer> selectPostInfo(@Param("postId") int postId);
+    HashMap<String, Object> selectPostInfo(@Param("postId") Long postId);
 
     int deletePost(@Param("postReRef") int postReRef,
                    @Param("postReLev") int postReLev,
                    @Param("postReSeq") int postReSeq);
+
+    void updateReplySeq(Long postReRef, Long postReSeq);
+
+    int replyPostInsert(Post postData);
 }

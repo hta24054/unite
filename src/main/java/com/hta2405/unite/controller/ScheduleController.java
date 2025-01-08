@@ -150,6 +150,9 @@ public class ScheduleController {
             scheduleDTO.setScheduleColor(schedule.getScheduleColor());
             scheduleDTO.setScheduleAllDay(schedule.isScheduleAllDay());
 
+            scheduleDTO.setShareEmpNames(scheduleService.getShareEmpNames(schedule.getScheduleId())); //공유된 직원들 이름조회
+            scheduleDTO.setEmpIdName(scheduleService.getEmpIdName(schedule.getEmpId()));
+
             scheduleDTOList.add(scheduleDTO);
         }
 

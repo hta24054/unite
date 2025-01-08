@@ -7,7 +7,6 @@ import com.hta2405.unite.mybatis.mapper.ScheduleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -86,6 +85,16 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public List<ScheduleShare> getScheduleSharesByScheduleId(int scheduleId) {
         return scheduleDAO.getScheduleSharesByScheduleId(scheduleId);
+    }
+
+    @Override
+    public String getShareEmpNames(int scheduleId) {
+        return scheduleDAO.getShareEmpNames(scheduleId);
+    }
+
+    @Override
+    public String getEmpIdName(String empId) {
+        return scheduleDAO.getEmpIdName(empId);
     }
 
 }

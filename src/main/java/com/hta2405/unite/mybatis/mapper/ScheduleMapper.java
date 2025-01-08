@@ -39,6 +39,10 @@ public interface ScheduleMapper {
 
     public List<ScheduleShare> getScheduleSharesByScheduleId(int scheduleId);
 
+    public String getShareEmpNames(int scheduleId);
+
+    public String getEmpIdName(String empId);
+
     // 공휴일 리스트
     // public List<Holiday> getHoliday(LocalDate startDate, LocalDate endDate);
 

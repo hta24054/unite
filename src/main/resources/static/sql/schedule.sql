@@ -62,6 +62,8 @@ CREATE TABLE schedule_share (
 
 ALTER TABLE schedule_share MODIFY share_emp VARCHAR(255);
 
+select share_emp from schedule_share;
+
 SELECT
     s.schedule_id,
     s.emp_id,
@@ -71,10 +73,34 @@ SELECT
     s.schedule_end,
     s.schedule_color,
     s.schedule_allDay,
+    (select ename from emp where emp_id  = '241101') ename,
     GROUP_CONCAT(ss.share_emp) AS share_emp -- 공유 직원 목록
 FROM schedule s
          JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
-WHERE s.emp_id = '241001' OR ss.share_emp = '241101, 241102'
+WHERE s.emp_id = '241001'
+   OR ss.share_emp LIKE CONCAT('%', '241101', '%') -- shareEmp를 LIKE로 처리
+   GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
+   s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay;
+
+
+
+SELECT
+    s.schedule_id,
+    s.emp_id,
+    s.schedule_name,
+    s.schedule_content,
+    s.schedule_start,
+    s.schedule_end,
+    s.schedule_color,
+    s.schedule_allDay,
+    (SELECT ename FROM emp WHERE emp_id = '241001') AS ename,
+    GROUP_CONCAT(ss.share_emp) AS share_emp, -- 공유된 직원들의 emp_id
+    GROUP_CONCAT(e.ename) AS share_emp_names -- 공유된 직원들의 이름
+FROM schedule s
+         JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
+         LEFT JOIN emp e ON FIND_IN_SET(e.emp_id, ss.share_emp) > 0  -- share_emp와 일치하는 emp_id 이름
+WHERE s.emp_id = '241001'
+   OR ss.share_emp LIKE CONCAT('%', '241101,241102', '%')
 GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
          s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay;
 
@@ -88,10 +114,37 @@ SELECT
     s.schedule_end,
     s.schedule_color,
     s.schedule_allDay,
-    GROUP_CONCAT(ss.share_emp) AS share_emp -- 공유 직원 목록
+    (SELECT ename FROM emp WHERE emp_id = '241001') AS ename,
+    GROUP_CONCAT(ss.share_emp) AS share_emp, -- 공유된 직원들의 emp_id
+    GROUP_CONCAT(e.ename) AS share_emp_names -- 공유된 직원들의 이름
 FROM schedule s
          JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
-WHERE s.emp_id = '241101' OR ss.share_emp = '241101, 241102'
+         LEFT JOIN emp e ON ss.share_emp REGEXP CONCAT('(^|,)', e.emp_id, '(,|$)') -- share_emp와 일치하는 emp_id 이름
+WHERE s.emp_id = '241001'
+   OR ss.share_emp LIKE CONCAT('%', '241101,241102', '%')
 GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
          s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay;
+
+
+
+SELECT
+    s.schedule_id,
+    s.emp_id,
+    s.schedule_name,
+    s.schedule_content,
+    s.schedule_start,
+    s.schedule_end,
+    s.schedule_color,
+    s.schedule_allDay,
+    (SELECT ename FROM emp WHERE emp_id = '241001') AS empIdName, -- 로그인한 사용자의 이름을 가져옵니다.
+                                 GROUP_CONCAT(ss.share_emp) AS share_emp, -- 공유된 직원들의 emp_id
+            GROUP_CONCAT(e.ename) AS share_emp_names -- 공유된 직원들의 이름
+     FROM schedule s
+         JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
+         LEFT JOIN emp e ON ss.share_emp REGEXP CONCAT('(^|,)', e.emp_id, '(,|$)') -- share_emp와 일치하는 emp_id 이름
+     WHERE s.emp_id = '241001'
+        OR ss.share_emp LIKE CONCAT('%', '241101,241102', '%')
+         GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
+         s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay;
+
 

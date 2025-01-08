@@ -18,6 +18,8 @@ public class ScheduleDTO {
     private String scheduleColor;
     private boolean scheduleAllDay;
     private String shareEmp;
+    private String shareEmpNames;
+    private String empIdName;
     private Schedule schedule;
     private ScheduleShare scheduleShare;
 }

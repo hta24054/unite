@@ -116,13 +116,14 @@ $(document).ready(function(){
 	            emp_id: $("#emp_id").val()
 			},
 	        success: function(data) {
+
+
 				console.log("응답 데이터:", data);
 
 				if (data != null) {
 	                for (let i = 0; i < data.length; i++) {
 
 						const sharedEmployees = data[i].shareEmp ? data[i].shareEmp.split(",") : [];
-						console.log("공유 일정의 공유 직원:", data[i].shareEmp);
 
 	                    // 중복 체크: schedule_id로 중복 여부 확인
 	                    if (!events.some(event => event.id === data[i].scheduleId)) {
@@ -138,7 +139,8 @@ $(document).ready(function(){
                             	droppable: false, // 드래그 불가
 	                            extendedProps: {
 							        isShared: true, // 공유 일정
-									sharedEmployees: sharedEmployees, // 공유 직원 목록
+									shareEmpNames: data[i].shareEmpNames, // 공유자 이름 목록
+									empIdName: data[i].empIdName, // 본인 이름
 							    },
 	                        })
 	                    }
@@ -323,6 +325,16 @@ $(document).ready(function(){
 	        $(".modal-header").find("h5").text("공유 일정");
 	        $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", true);
 	        $(".modal-body").find(".btn_wrap").remove();
+
+			$(".modal-body").find(".form-group:nth-of-type(1)").after(`
+				<div class="form-group">
+					<p style="margin-bottom: 5px;">공유자 정보</p>
+					<ul>
+						<li><span>등록자:</span> ${event.extendedProps.empIdName}</li>
+						<li><span>참여자:</span> ${event.extendedProps.shareEmpNames}</li>
+					</ul>
+				</div>
+			`);
 			// $(".modal-body").find(".btn_wrap").html(`<button type="button" id="btnDelete" class="btn btn-danger">삭제</button>`);
 	    } else {
 	        $(".modal-header").find("h5").text("상세 일정");

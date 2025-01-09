@@ -8,7 +8,8 @@ public enum DocRole {
     POST_SIGNED_WRITER("postSignedWriter"),
     PRE_SIGNER("preSigner"),
     POST_SIGNER("postSigner"),
-    VIEWER("viewer");
+    VIEWER("viewer"),
+    INVALID("invalid");
 
     private final String type;
 

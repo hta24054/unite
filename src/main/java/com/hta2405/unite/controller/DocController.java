@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hta2405.unite.domain.Doc;
 import com.hta2405.unite.dto.DocSaveRequestDTO;
+import com.hta2405.unite.enums.DocRole;
 import com.hta2405.unite.enums.DocType;
 import com.hta2405.unite.factory.DocReaderFactory;
 import com.hta2405.unite.factory.DocSaverFactory;
@@ -75,17 +76,22 @@ public class DocController {
     }
 
     @GetMapping("/inProgress")
-    public String showInProgress(@AuthenticationPrincipal UserDetails user,
-                                 Model model) {
+    public String showInProgress(@AuthenticationPrincipal UserDetails user, Model model) {
         model.addAttribute("list", docService.getInProgressDTO(user.getUsername()));
         return "/doc/inProgress";
     }
 
     @GetMapping(value = "/read")
     public String readDoc(@AuthenticationPrincipal UserDetails user, Long docId, Model model) {
+        DocRole docRole = docService.checkRole(user.getUsername(), docId);
+        if (docRole.equals(DocRole.INVALID)) {
+            model.addAttribute("errorMessage", "문서 조회 권한이 없습니다.");
+            return "error/error";
+        }
+
         Doc doc = docService.getDocById(docId);
-        DocReader reader = docReaderFactory.getReader(doc);
-        reader.prepareRead(user.getUsername(), model);
+        DocReader reader = docReaderFactory.getReader(doc.getDocType());
+        reader.prepareRead(doc, docRole, model);
 
         return reader.getView();
     }

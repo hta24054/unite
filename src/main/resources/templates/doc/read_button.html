@@ -1,0 +1,107 @@
+<th:block th:fragment="button">
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <style>
+        .button-container {
+            margin-bottom: 20px;
+        }
+    </style>
+    <div class="button-container">
+        <th:block th:if="${role == 'preSignedWriter' || role == 'preSigner'}">
+            <button type="button" class="btn btn-success" id="sign">결재</button>
+        </th:block>
+        <th:block th:if="${role == 'preSignedWriter'}">
+            <button type="button" class="btn btn-info" id="edit">수정</button>
+        </th:block>
+        <th:block th:if="${role == 'postSignedWriter'|| role == 'postSigner'}">
+            <button type="button" class="btn btn-warning" id="revoke">회수</button>
+        </th:block>
+        <th:block th:if="${role == 'preSignedWriter'}">
+            <button type="button" class="btn btn-danger" id="delete">삭제</button>
+        </th:block>
+        <button id="printButton" class="btn btn-secondary" th:data-context-path="@{/}">인쇄
+        </button>
+        <script th:src="@{/js/print_doc.js}"></script>
+        <button type="button" class="btn btn-light" id="back">목록으로</button>
+    </div>
+    <script th:inline="javascript">
+        $('#back').click(function () {
+            const role = /*[[${role}]]*/'';
+            if (role === 'viewer') {
+                history.back();
+            } else if (role === 'preSignedWriter' || role === 'preSigner' || role === 'postSigner') {
+                window.location.href = /*[[@{/doc/waiting}]]*/'';
+            } else if (role === 'postSignedWriter') {
+                window.location.href = /*[[@{/doc/inProgress}]]*/'';
+            }
+        });
+
+        $("#edit").click(function () {
+            window.location.href = /*[[@{/doc/edit(docId=${doc.docId})}]]*/'';
+        });
+
+        $('#sign').click(function () {
+            if (confirm('문서를 결재하시겠습니까?')) {
+                $.ajax({
+                    url: /*[[@{/doc/sign}]]*/'',
+                    data: {docId: /*[[${doc.docId}]]*/''},
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            alert("문서를 결재하였습니다.");
+                            location.reload();
+                        } else {
+                            alert("문서 결재 중 오류가 발생했습니다.");
+                        }
+                    },
+                    error: function () {
+                        alert("문서 결재 중 오류가 발생했습니다.");
+                    }
+                });
+            }
+        });
+
+        $('#revoke').click(function () {
+            if (confirm('결재한 문서를 회수하시겠습니까?')) {
+                $.ajax({
+                    url: /*[[@{/doc/revoke}]]*/'',
+                    data: {docId: /*[[${doc.docId}]]*/''},
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            alert("문서를 회수하였습니다.");
+                            location.reload();
+                        } else {
+                            alert("문서 회수 중 오류가 발생했습니다.");
+                        }
+                    },
+                    error: function () {
+                        alert("문서 회수 중 오류가 발생했습니다.");
+                    }
+                });
+            }
+        });
+        $('#delete').click(function () {
+            if (confirm('문서를 삭제하시겠습니까?')) {
+                $.ajax({
+
+                    url: /*[[@{/doc/delete}]]*/'',
+                    data: {docId: /*[[${doc.docId}]]*/''},
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            alert("문서를 삭제하였습니다.");
+                            window.location.href = /*[[@{/doc/waiting}]]*/'';
+                        } else {
+                            alert("문서 삭제 중 오류가 발생했습니다.");
+                        }
+                    },
+                    error: function () {
+                        alert("문서 삭제 중 오류가 발생했습니다.");
+                    }
+                });
+            }
+        });
+    </script>
+    </html>
+</th:block>

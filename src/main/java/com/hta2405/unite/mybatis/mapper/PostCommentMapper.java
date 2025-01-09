@@ -10,4 +10,18 @@ public interface PostCommentMapper {
     int getListCount(Long postId);
 
     List<PostComment> getCommentList(Long postId, String order);
+
+    int commentsInsert(PostComment postComment);
+
+    int refUpdate(Long postId);
+
+    PostComment getPostCommentByCommentId(Long commentId);
+
+    int commentsUpdate(PostComment postComment, Boolean fileUpdateCheck);
+
+    void replyUpdate(Long postCommentReRef, Long postCommentReSeq);
+
+    int commentsReply(PostComment postComment);
+
+    int commentsDelete(Long commentId);
 }

@@ -59,9 +59,17 @@
             </style>
         </head>
         <body class="sb-nav-fixed">
-        <div class="px-5 py-4">
-            <div style="display: flex;">
-                <button type="button" class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#scheduleModal" style="margin-left: auto; background-color: #334466; color: #fff;">일정 등록</button>
+        <div class="p-5">
+            <div style="display: flex;" class="mb-5">
+                <div style="display: flex; align-items: center; gap: 30px;}">
+                    <button type="button" class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#scheduleModal" style="background-color: #334466; color: #fff;">일정 등록</button>
+                    <div class="form-check" style="font-size: 20px;">
+                        <input class="form-check-input" type="checkbox" id="departmentScheduleCheckbox">
+                        <label class="form-check-label" for="departmentScheduleCheckbox">
+                            <strong>부서 일정 보기</strong>
+                        </label>
+                    </div>
+                </div>
             </div>
             <div id="calendar"></div>
         </div>

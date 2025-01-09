@@ -9,14 +9,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -45,25 +46,25 @@ public class BoardController {
 
     //sidebar 부서게시판 설정
     private void boardSidebar_dept(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String empId = authentication.getName();
-
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String empId = auth.getName();
         List<BoardHomeDeptDTO> BoardDeptList = boardPostService.getBoardListByEmpId(empId);
         model.addAttribute("boardScope", BoardDeptList);
     }
 
     @ResponseBody
     @GetMapping(value = "/homeProcess")
-    public List<BoardPostEmpDTO> boardProcess() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String empId = authentication.getName();
-
+    public Object boardProcess(@AuthenticationPrincipal UserDetails user) {
+        String empId = user.getUsername();
         List<BoardPostEmpDTO> boardPostEmpDTOList = boardPostService.getBoardListAll(empId);
 
         if (boardPostEmpDTOList.isEmpty()) {
-            return Collections.emptyList();
+            return null;
         }
-        return boardPostEmpDTOList;
+        HashMap<String, Object> ajaxMap = new HashMap<>();
+        ajaxMap.put("list", boardPostEmpDTOList);
+        ajaxMap.put("empMap", boardPostService.getIdToENameMap());
+        return ajaxMap;
     }
 
     @GetMapping("/boardList")
@@ -89,6 +90,7 @@ public class BoardController {
         model.addAttribute("limit", limit);
         model.addAttribute("boardName1", boardDTO.getBoardName1());
         model.addAttribute("boardName2", boardDTO.getBoardName2());
+        model.addAttribute("empMap", boardPostService.getIdToENameMap());
         return "board/boardList";
     }
 
@@ -119,6 +121,7 @@ public class BoardController {
             ajaxMap.put("limit", limit);
             ajaxMap.put("boardName1", boardDTO.getBoardName1());
             ajaxMap.put("boardName2", boardDTO.getBoardName2());
+            ajaxMap.put("empMap", boardPostService.getIdToENameMap());
         }
         return ajaxMap;
     }
@@ -147,6 +150,7 @@ public class BoardController {
         ajaxMap.put("limit", limit);
         ajaxMap.put("boardName1", boardDTO.getBoardName1());
         ajaxMap.put("boardName2", boardDTO.getBoardName2());
+        ajaxMap.put("empMap", boardPostService.getIdToENameMap());
         return ajaxMap;
     }
 
@@ -161,12 +165,12 @@ public class BoardController {
     public HashMap<String, Object> boardPostAdd(
             PostAddDTO postAddDTO,
             BoardDTO boardDTO,
+            @AuthenticationPrincipal UserDetails user,
             @RequestParam(value = "attachFiles", required = false) List<MultipartFile> files) {
 
         HashMap<String, Object> map = new HashMap<>();
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String postWriter = authentication.getName();
+            String postWriter = user.getUsername();
             postAddDTO.setPostWriter(postWriter);
 
             map.put("postId", boardPostService.addPost(boardDTO, postAddDTO, files));
@@ -179,16 +183,17 @@ public class BoardController {
     }
 
     @GetMapping("/post/detail")
-    public String boardPostDetail(@RequestParam(defaultValue = "1") int page, BoardDTO boardDTO, Long no, Model model, RedirectAttributes rattr) {
+    public String boardPostDetail(@RequestParam(defaultValue = "1") int page, BoardDTO boardDTO,
+                                  Long no, Model model, RedirectAttributes rattr,
+                                  @AuthenticationPrincipal UserDetails user) {
         boardSidebar_dept(model);
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String id = authentication.getName();
+        String id = user.getUsername();
 
         boardPostService.setReadCountUpdate(no);
         PostDetailDTO postDetailDTO = boardPostService.getDetail(no);
 
         if (postDetailDTO.getPostId() != null) {
+            model.addAttribute("empMap", boardPostService.getIdToENameMap());
             model.addAttribute("postDetailDTO", postDetailDTO);
             model.addAttribute("boardDTO", boardDTO);
             model.addAttribute("id", id);
@@ -279,11 +284,11 @@ public class BoardController {
     @PostMapping("/post/replyProcess")
     public HashMap<String, Object> replyProcess(PostReplyDTO postReplyDTO,
                                                 BoardDTO boardDTO,
+                                                @AuthenticationPrincipal UserDetails user,
                                                 @RequestParam(value = "attachFiles", required = false) List<MultipartFile> files) {
         HashMap<String, Object> map = new HashMap<>();
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String postWriter = authentication.getName();
+            String postWriter = user.getUsername();
             postReplyDTO.setPostWriter(postWriter);
 
             map.put("postId", boardPostService.replyPost(boardDTO, postReplyDTO, files));

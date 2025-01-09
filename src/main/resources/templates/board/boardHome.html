@@ -25,9 +25,9 @@
                 alert(result);
             }
         </script>
-        <!-- <th:block th:replace="~{/common/header :: headerFragment}"/> -->
         <div class="main">
             <th:block th:replace="~{/board/sidebar :: boardSidebarFragment}"/>
+            <!--            <th:block th:replace="~{/board/sidebarSample :: boardSidebarFragment}"/>-->
 
             <div class="content">
                 <div class="boardTitle">게시판 홈</div>
@@ -37,6 +37,13 @@
             </div>
         </div>
 
+        <div id="loading-overlay"
+             style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.3); z-index: 9999;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                <img src="/image/spinner.webp" alt="Loading..." style="width: 100px; height: 100px;">
+                <span style="font-size: 30px; font-weight: bold; margin-left: 30px">Loading...</span>
+            </div>
+        </div>
 
         </body>
         </html>

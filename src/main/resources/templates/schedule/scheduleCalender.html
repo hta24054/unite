@@ -33,11 +33,11 @@
                     color: blue !important;
                 }
 
-                .color-group {
+                .color-group > div {
                     display: flex;
                 }
 
-                .color-group > p {
+                .color-group > div > p {
                     margin: 0 10px 0 0;
                 }
 
@@ -98,8 +98,8 @@
                                 <label for="endAt">종료날짜/시간</label>
                                 <input type="datetime-local" name="endAt" id="endAt" class="form-control">
                             </div>
-                            <div class="form-group">
-                                <div class="color-group">
+                            <div class="form-group color-group">
+                                <div>
                                     <p>색상</p>
                                     <select name="bgColor" id="bgColor">
                                         <option value="#1e3a8a" style="color: #1e3a8a;">Blue100</option>

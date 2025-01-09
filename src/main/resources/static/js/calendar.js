@@ -378,7 +378,13 @@ $(document).ready(function () {
                     </div>
                 `);
             }
-	    } else {
+	    } else if(event.extendedProps.isDept === true) { // 부서 일정
+            $(".modal-header").find("h5").text("부서 일정");
+            $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] textarea").prop("disabled", true);
+            $(".modal-body").find(".form-group.color-group").remove();
+            $(".modal-body").find(".btn_wrap").remove();
+
+        } else {
 	        $(".modal-header").find("h5").text("상세 일정");
 	        $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);
 	        $(".modal-body").find(".btn_wrap").html(`

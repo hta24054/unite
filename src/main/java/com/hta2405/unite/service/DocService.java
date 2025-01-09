@@ -110,4 +110,8 @@ public class DocService {
     public List<DocInProgressDTO> getInProgressDTO(String empId) {
         return docMapper.getInProgressDTO(empId);
     }
+
+    public Doc getDocById(Long docId) {
+        return docMapper.getDocById(docId);
+    }
 }

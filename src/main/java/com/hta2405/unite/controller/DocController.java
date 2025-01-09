@@ -3,10 +3,14 @@ package com.hta2405.unite.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hta2405.unite.domain.Doc;
 import com.hta2405.unite.dto.DocSaveRequestDTO;
+import com.hta2405.unite.enums.DocType;
+import com.hta2405.unite.factory.DocReaderFactory;
 import com.hta2405.unite.factory.DocSaverFactory;
 import com.hta2405.unite.factory.DocWriterFactory;
 import com.hta2405.unite.service.DocService;
+import com.hta2405.unite.strategy.DocReader;
 import com.hta2405.unite.strategy.DocSaver;
 import com.hta2405.unite.strategy.DocWriter;
 import lombok.RequiredArgsConstructor;
@@ -32,15 +36,16 @@ public class DocController {
     private final DocService docService;
     private final DocWriterFactory docWriterFactory;
     private final DocSaverFactory docSaverFactory;
+    private final DocReaderFactory docReaderFactory;
 
     @GetMapping("/write/{type}")
     public String showWritePage(@PathVariable String type,
                                 @AuthenticationPrincipal UserDetails user,
                                 Model model) {
-        DocWriter writer = docWriterFactory.getWriter(type);
+        DocWriter writer = docWriterFactory.getWriter(DocType.fromString(type));
         writer.prepareWriter(user.getUsername(), model);
 
-        return "/doc/" + type + "_write";
+        return writer.getView();
     }
 
     @GetMapping("/countVacation")
@@ -63,7 +68,7 @@ public class DocController {
         DocSaveRequestDTO docSaveRequestDTO = new DocSaveRequestDTO(formData, files);
 
         // 저장 처리
-        DocSaver saver = docSaverFactory.getSaver(type);
+        DocSaver saver = docSaverFactory.getSaver(DocType.fromString(type));
         saver.save(user.getUsername(), docSaveRequestDTO);
 
         return ResponseEntity.ok("문서 작성(저장) 완료");
@@ -74,5 +79,14 @@ public class DocController {
                                  Model model) {
         model.addAttribute("list", docService.getInProgressDTO(user.getUsername()));
         return "/doc/inProgress";
+    }
+
+    @GetMapping(value = "/read")
+    public String readDoc(@AuthenticationPrincipal UserDetails user, Long docId, Model model) {
+        Doc doc = docService.getDocById(docId);
+        DocReader reader = docReaderFactory.getReader(doc);
+        reader.prepareRead(user.getUsername(), model);
+
+        return reader.getView();
     }
 }

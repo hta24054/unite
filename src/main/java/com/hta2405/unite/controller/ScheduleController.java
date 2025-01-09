@@ -24,7 +24,6 @@ public class ScheduleController {
         this.scheduleService = scheduleService;
     }
 
-
     @GetMapping("/calender")
     public String calender() {
         return "schedule/scheduleCalender";
@@ -41,7 +40,6 @@ public class ScheduleController {
 
         String id = authentication.getName(); // 로그인한 사용자의 ID (username)
         List<Schedule> schedules = scheduleService.getListSchedule(id);
-        //System.out.println("schedules " + schedules);
 
         return schedules;
     }
@@ -50,7 +48,6 @@ public class ScheduleController {
     @PostMapping("/scheduleAdd")
     public int insertSchedule(Schedule schedule) {
         int result = scheduleService.insertSchedule(schedule);
-        //System.out.println("schedule 등록 " + schedule);
         return result;
     }
 
@@ -58,7 +55,6 @@ public class ScheduleController {
     @PostMapping("/scheduleUpdate")
     public int updateSchedule(Schedule schedule) {
         int result = scheduleService.updateSchedule(schedule);
-        //System.out.println("schedule 수정 " + schedule);
         return result;
     }
 
@@ -66,7 +62,6 @@ public class ScheduleController {
     @PostMapping("/scheduleDragUpdate")
     public int dragUpdateSchedule(Schedule schedule) {
         int result = scheduleService.dragUpdateSchedule(schedule);
-        //System.out.println("schedule 드래그로 수정 " + schedule);
         return result;
     }
 
@@ -74,7 +69,6 @@ public class ScheduleController {
     @PostMapping("/scheduleDelete")
     public int deleteSchedule(int scheduleId) {
         int result = scheduleService.deleteSchedule(scheduleId);
-        //System.out.println("schedule 삭제 " + result);
         return result;
     }
 
@@ -124,7 +118,6 @@ public class ScheduleController {
             scheduleDTOList.add(scheduleDTO);
         }
 
-        //System.out.println("공유 일정 DTO 리스트: " + scheduleDTOList);
         return scheduleDTOList;
     }
 
@@ -132,7 +125,6 @@ public class ScheduleController {
     @PostMapping("/scheduleShareAdd")
     public int insertScheduleShare(@RequestBody ScheduleDTO scheduleDTO) {
         Schedule schedule = scheduleDTO.getSchedule();
-        ScheduleShare scheduleShare = scheduleDTO.getScheduleShare();
 
         // CalendarDateTimeUtil을 사용하여 날짜 변환
         if (schedule != null) {
@@ -145,7 +137,6 @@ public class ScheduleController {
         }
 
         int updatedScheduleDTO = scheduleService.insertScheduleShare(scheduleDTO);
-        //System.out.println("\n scheduleShare.getScheduleId() = " + schedule.getScheduleId());
         return updatedScheduleDTO;
     }
 
@@ -195,6 +186,7 @@ public class ScheduleController {
 
         // 각 일정 객체를 DTO로 변환
         for (Schedule schedule : deptSchedules) {
+
             ScheduleDTO scheduleDTO = new ScheduleDTO();
             scheduleDTO.setScheduleId((long) schedule.getScheduleId());
             scheduleDTO.setEmpId(schedule.getEmpId());
@@ -209,9 +201,6 @@ public class ScheduleController {
 
             scheduleDTOList.add(scheduleDTO);
         }
-
-        System.out.println("\n *** Converted scheduleDTOList :" + scheduleDTOList);
-
         return scheduleDTOList;
     }
 

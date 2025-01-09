@@ -45,6 +45,10 @@ public interface ScheduleMapper {
 
     public int insertScheduleShareWithDept(HashMap<String, Object> hashMap);
 
+    public String getDeptIdByEmpId(String empId);
+
+    public List<Schedule> getScheduleForDept(String deptId, String empId);
+
     // 공휴일 리스트
     // public List<Holiday> getHoliday(LocalDate startDate, LocalDate endDate);
 

@@ -212,3 +212,64 @@ ALTER TABLE schedule_share
 ADD CONSTRAINT fk_deptId FOREIGN KEY (dept_id) REFERENCES dept(dept_id) ON DELETE CASCADE;
 
 
+
+
+SELECT
+    s.schedule_id,
+    s.schedule_name,
+    s.schedule_content,
+    s.schedule_start,
+    s.schedule_end,
+    s.schedule_color,
+    s.schedule_allDay,
+    GROUP_CONCAT(e.emp_id) AS share_emp_ids,  -- 공유된 직원들의 emp_id
+    e.dept_id  -- 해당 일정과 관련된 직원의 부서 ID
+FROM schedule s
+         JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
+         LEFT JOIN emp e ON FIND_IN_SET(e.emp_id, ss.share_emp) > 0  -- 공유된 직원들의 emp_id
+WHERE ss.dept_id = '1100'  -- 특정 부서 ID
+  AND ss.share_emp != '241001' -- 로그인한 사용자는 제외
+GROUP BY s.schedule_id, s.schedule_name, s.schedule_content, s.schedule_start,
+         s.schedule_end, s.schedule_color, s.schedule_allDay, e.dept_id;
+
+SELECT
+    s.schedule_id,
+    s.schedule_name,
+    s.schedule_content,
+    s.schedule_start,
+    s.schedule_end,
+    s.schedule_color,
+    s.schedule_allDay,
+    GROUP_CONCAT(e.emp_id) AS share_emp_ids,
+    e.dept_id
+FROM schedule s
+         JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
+         LEFT JOIN emp e ON FIND_IN_SET(e.emp_id, ss.share_emp) > 0
+WHERE ss.dept_id = '1100'
+  AND ss.share_emp != '241001'
+GROUP BY s.schedule_id, s.schedule_name, s.schedule_content, s.schedule_start,
+         s.schedule_end, s.schedule_color, s.schedule_allDay;
+
+
+
+
+
+SELECT
+    s.schedule_id,
+    s.schedule_name,
+    s.schedule_content,
+    s.schedule_start,
+    s.schedule_end,
+    s.schedule_color,
+    s.schedule_allDay,
+    GROUP_CONCAT(e.emp_id) AS share_emp_ids,  -- 공유된 직원들의 emp_id
+    e.dept_id  -- 해당 일정과 관련된 직원의 부서 ID
+FROM schedule s
+         JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
+         LEFT JOIN emp e ON FIND_IN_SET(e.emp_id, ss.share_emp) > 0  -- 공유된 직원들의 emp_id
+WHERE ss.dept_id = '1100' -- 특정 부서 ID
+  AND FIND_IN_SET('241001', ss.share_emp) = 0  -- 로그인한 사용자가 공유한 일정은 제외
+        GROUP BY s.schedule_id, s.schedule_name, s.schedule_content, s.schedule_start,
+        s.schedule_end, s.schedule_color, s.schedule_allDay, e.dept_id;
+
+

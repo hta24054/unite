@@ -91,4 +91,35 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         return scheduleDAO.insertScheduleShareWithDept(hashMap);
     }
+
+    // 사용자의 부서 ID 조회
+    @Override
+    public String getDeptIdByEmpId(String empId) {
+        String deptId = scheduleDAO.getDeptIdByEmpId(empId);
+        System.out.println("\n *** Dept ID for empId 사용자의 부서 ID 조회 = " + empId + ": " + deptId);
+        return deptId;
+    }
+
+    // 부서의 일정을 조회하는 메서드 (등록자는 제외)
+//    @Override
+//    public List<Schedule> getListDeptSchedule(String deptId, String empId) {
+//        System.out.println("\n ****** deptId: " + deptId);
+//        System.out.println("\n ****** empId: " + empId);
+//        List<Schedule> deptSchedules = scheduleDAO.getScheduleForDept(deptId, empId);
+//        System.out.println("\n ****** Dept schedules retrieved: " + deptSchedules);
+//        return deptSchedules;
+//    }
+
+    @Override
+    public List<Schedule> getListDeptSchedule(String deptId, String empId) {
+        System.out.println("\n ****** Dept ID =  " + deptId);
+        System.out.println("\n ****** Emp ID = " + empId);
+        List<Schedule> deptSchedules = scheduleDAO.getScheduleForDept(deptId, empId);
+        System.out.println("\n ****** Dept schedules retrieved = " + deptSchedules);
+        if (deptSchedules.isEmpty()) {
+            System.out.println("\n ******  No schedules found for deptId: " + deptId + " and empId: " + empId);
+        }
+        return deptSchedules;
+    }
+
 }

@@ -21,4 +21,10 @@ public interface DocMapper {
     void insertVacationDoc(Long docId, DocVacation docVacation);
 
     List<DocInProgressDTO> getInProgressDTO(String empId);
+
+    Doc getDocById(Long docId);
+
+    List<Sign> getSignListByDocId(Long docId);
+
+    List<BuyItem> getBuyItemListByDocId(Long docId);
 }

@@ -68,5 +68,15 @@
         from buy_item
         WHERE DOC_BUY_ID = (select doc_buy_id from doc_buy where doc_id = #{doc_id})
     </select>
+    <select id="getDocTripByDocId">
+        select *
+        from doc_trip
+        WHERE doc_id = #{doc_id}
+    </select>
+    <select id="getDocVacationByDocId">
+        select *
+        from doc_vacation
+        WHERE doc_id = #{doc_id}
+    </select>
 </mapper>
 

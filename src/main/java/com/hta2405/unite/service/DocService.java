@@ -6,6 +6,7 @@ import com.hta2405.unite.dto.FileDTO;
 import com.hta2405.unite.dto.ProductDTO;
 import com.hta2405.unite.enums.DocRole;
 import com.hta2405.unite.mybatis.mapper.DocMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
-import static com.hta2405.unite.domain.DocVacation.DocVacationBuilder;
 
 @Service
 public class DocService {
@@ -28,20 +28,20 @@ public class DocService {
     private final DeptService deptService;
     private final DocMapper docMapper;
     private final FileService fileService;
-    private final String VACATION_FILE_DIR;
+    private final String FILE_DIR;
 
     public DocService(HolidayService holidayService,
                       EmpService empService,
                       DeptService deptService,
                       DocMapper docMapper,
                       FileService fileService,
-                      @Value("${vacation.upload.directory}") String VACATION_FILE_DIR) {
+                      @Value("${doc.upload.directory}") String FILE_DIR) {
         this.holidayService = holidayService;
         this.empService = empService;
         this.deptService = deptService;
         this.docMapper = docMapper;
 
-        this.VACATION_FILE_DIR = VACATION_FILE_DIR;
+        this.FILE_DIR = FILE_DIR;
         this.fileService = fileService;
     }
 
@@ -85,14 +85,14 @@ public class DocService {
 
     @Transactional
     public void saveVacationDoc(Doc doc,
-                                DocVacationBuilder docVacationBuilder,
+                                DocVacation.DocVacationBuilder docVacationBuilder,
                                 List<String> signers,
                                 List<MultipartFile> files) {
         docMapper.insertGeneralDoc(doc);
 
         if (files != null && !files.isEmpty()) {
             //어차피 일단 정책상 아직 첨부파일 최대 1개
-            FileDTO fileDTO = fileService.uploadFile(files.get(0), VACATION_FILE_DIR);
+            FileDTO fileDTO = fileService.uploadFile(files.get(0), FILE_DIR);
             docVacationBuilder.vacationFilePath(fileDTO.getFilePath())
                     .vacationFileOriginal(fileDTO.getFileOriginal())
                     .vacationFileUUID(fileDTO.getFileUUID())
@@ -199,5 +199,17 @@ public class DocService {
 
     public Doc getDocById(Long docId) {
         return docMapper.getDocById(docId);
+    }
+
+    public DocTrip getDocTripByDocId(Long docId) {
+        return docMapper.getDocTripByDocId(docId);
+    }
+    public DocVacation getDocVacationByDocId(Long docId) {
+        return docMapper.getDocVacationByDocId(docId);
+    }
+
+
+    public void downloadFile(String fileUUID, String fileName, HttpServletResponse response) {
+        fileService.downloadFile(FILE_DIR, fileUUID, fileName, response);
     }
 }

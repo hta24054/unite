@@ -14,6 +14,7 @@ import com.hta2405.unite.service.DocService;
 import com.hta2405.unite.strategy.DocReader;
 import com.hta2405.unite.strategy.DocSaver;
 import com.hta2405.unite.strategy.DocWriter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -94,5 +95,11 @@ public class DocController {
         reader.prepareRead(doc, docRole, model);
 
         return reader.getView();
+    }
+
+    @GetMapping("/download")
+    public void downloadFile(String fileUUID, String fileName, HttpServletResponse response) {
+        docService.downloadFile(fileUUID, fileName, response);
+
     }
 }

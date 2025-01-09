@@ -44,6 +44,7 @@
             if (confirm('문서를 결재하시겠습니까?')) {
                 $.ajax({
                     url: /*[[@{/doc/sign}]]*/'',
+                    type: 'POST',
                     data: {docId: /*[[${doc.docId}]]*/''},
                     dataType: "json",
                     success: function (response) {
@@ -66,6 +67,7 @@
                 $.ajax({
                     url: /*[[@{/doc/revoke}]]*/'',
                     data: {docId: /*[[${doc.docId}]]*/''},
+                    type: 'POST',
                     dataType: "json",
                     success: function (response) {
                         if (response.status === 'success') {
@@ -84,8 +86,8 @@
         $('#delete').click(function () {
             if (confirm('문서를 삭제하시겠습니까?')) {
                 $.ajax({
-
                     url: /*[[@{/doc/delete}]]*/'',
+                    type: 'POST',
                     data: {docId: /*[[${doc.docId}]]*/''},
                     dataType: "json",
                     success: function (response) {

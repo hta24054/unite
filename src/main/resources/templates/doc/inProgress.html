@@ -38,7 +38,7 @@
                             <th:block th:each="dto : ${list}">
                                 <tr>
                                     <td th:text="${dto.docId}">문서번호</td>
-                                    <td><a th:href="@{/doc/read(docId=${dto.docId})}">[[${dto.docTitle}]]</a></td>
+                                    <td><a th:href="@{/doc(docId=${dto.docId})}">[[${dto.docTitle}]]</a></td>
                                     <td th:text="${dto.docType.getTypeKor()}">문서구분</td>
                                     <td th:text="${dto.createDate}">기안일시</td>
                                     <td th:text="${dto.currSignerName}">결재자</td>

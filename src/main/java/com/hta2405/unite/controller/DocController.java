@@ -40,6 +40,21 @@ public class DocController {
     private final DocSaverFactory docSaverFactory;
     private final DocReaderFactory docReaderFactory;
 
+    @GetMapping
+    public String readDoc(@AuthenticationPrincipal UserDetails user, Long docId, Model model) {
+        DocRole docRole = docService.checkRole(user.getUsername(), docId);
+        if (docRole.equals(DocRole.INVALID)) {
+            model.addAttribute("errorMessage", "문서 조회 권한이 없습니다.");
+            return "error/error";
+        }
+
+        Doc doc = docService.getDocById(docId);
+        DocReader reader = docReaderFactory.getReader(doc.getDocType());
+        reader.prepareRead(doc, docRole, model);
+
+        return reader.getView();
+    }
+
     @GetMapping("/write/{type}")
     public String showWritePage(@PathVariable String type,
                                 @AuthenticationPrincipal UserDetails user,
@@ -56,7 +71,7 @@ public class DocController {
         return docService.countVacation(LocalDate.parse(startDate), LocalDate.parse(endDate));
     }
 
-    @PostMapping(value = "/write/{type}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{type}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> writeDoc(@PathVariable String type,
                                            @RequestPart("formData") String formDataJson,
                                            @RequestPart(value = "files", required = false) List<MultipartFile> files,
@@ -80,21 +95,6 @@ public class DocController {
     public String showInProgress(@AuthenticationPrincipal UserDetails user, Model model) {
         model.addAttribute("list", docService.getInProgressDTO(user.getUsername()));
         return "/doc/inProgress";
-    }
-
-    @GetMapping(value = "/read")
-    public String readDoc(@AuthenticationPrincipal UserDetails user, Long docId, Model model) {
-        DocRole docRole = docService.checkRole(user.getUsername(), docId);
-        if (docRole.equals(DocRole.INVALID)) {
-            model.addAttribute("errorMessage", "문서 조회 권한이 없습니다.");
-            return "error/error";
-        }
-
-        Doc doc = docService.getDocById(docId);
-        DocReader reader = docReaderFactory.getReader(doc.getDocType());
-        reader.prepareRead(doc, docRole, model);
-
-        return reader.getView();
     }
 
     @GetMapping(value = "/waiting")

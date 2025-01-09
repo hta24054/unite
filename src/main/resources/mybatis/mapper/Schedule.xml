@@ -13,34 +13,25 @@
     <insert id="insertSchedule" parameterType="com.hta2405.unite.domain.Schedule">
         INSERT INTO schedule
         (emp_id, schedule_name, schedule_content, schedule_start, schedule_end, schedule_color, schedule_allDay)
-        VALUES (#{empId}, #{scheduleName}, #{scheduleContent}, #{scheduleStart}, #{scheduleEnd}, #{scheduleColor},
-                #{scheduleAllDay})
+        VALUES (#{empId}, #{scheduleName}, #{scheduleContent}, #{scheduleStart}, #{scheduleEnd}, #{scheduleColor}, #{scheduleAllDay})
     </insert>
 
     <update id="updateSchedule">
         UPDATE schedule
-        SET schedule_name    = #{scheduleName},
-            schedule_start   = #{scheduleStart},
-            schedule_end     = #{scheduleEnd},
-            schedule_color   = #{scheduleColor},
-            schedule_content = #{scheduleContent},
-            schedule_allDay  = #{scheduleAllDay}
-        WHERE schedule_id = #{scheduleId}
-          AND emp_id = #{empId}
+        SET    schedule_name = #{scheduleName}, schedule_start = #{scheduleStart}, schedule_end = #{scheduleEnd},
+               schedule_color = #{scheduleColor}, schedule_content = #{scheduleContent}, schedule_allDay = #{scheduleAllDay}
+        WHERE  schedule_id = #{scheduleId} AND emp_id = #{empId}
     </update>
 
     <update id="dragUpdateSchedule">
         UPDATE schedule
-        SET schedule_start  = #{scheduleStart},
-            schedule_end    = #{scheduleEnd},
-            schedule_allDay = #{scheduleAllDay}
-        WHERE schedule_id = #{scheduleId}
-          AND emp_id = #{empId}
+        SET    schedule_start = #{scheduleStart}, schedule_end = #{scheduleEnd},
+               schedule_allDay = #{scheduleAllDay}
+        WHERE  schedule_id = #{scheduleId} AND emp_id = #{empId}
     </update>
 
     <delete id="deleteSchedule">
-        DELETE
-        FROM schedule
+        DELETE FROM schedule
         WHERE schedule_id = #{scheduleId}
     </delete>
 
@@ -137,12 +128,6 @@
         INSERT INTO schedule_share (schedule_id, dept_id)
         VALUES (#{scheduleId}, #{deptId})
     </insert>
-
-
-
-
-
-
 
 
 

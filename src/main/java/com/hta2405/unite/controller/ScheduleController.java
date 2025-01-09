@@ -6,8 +6,6 @@ import com.hta2405.unite.dto.ScheduleDTO;
 import com.hta2405.unite.service.ScheduleService;
 import com.hta2405.unite.util.CalendarDateTimeUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -85,7 +83,6 @@ public class ScheduleController {
     public String shareSchedule(Schedule schedule) {
         return "schedule/scheduleShare";
     }
-
 
     @ResponseBody
     @GetMapping("/sharedScheduleList")

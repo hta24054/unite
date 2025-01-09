@@ -53,10 +53,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("scheduleId", scheduleDTO.getSchedule().getScheduleId());
-        //hashMap.put("shareEmp", scheduleDTO.getShareEmp());
         hashMap.put("shareEmp", scheduleDTO.getScheduleShare().getShareEmp());
 
-        //System.out.println("hashMap" + hashMap);
         return scheduleDAO.insertScheduleShareUsers(hashMap);
     }
 
@@ -87,8 +85,6 @@ public class ScheduleServiceImpl implements ScheduleService {
         hashMap.put("scheduleId", scheduleDTO.getSchedule().getScheduleId());
         hashMap.put("deptId", scheduleDTO.getDept().getDeptId());
 
-        System.out.println("scheduleDTO.getDept().getDeptId()" + scheduleDTO.getDept().getDeptId());
-
         return scheduleDAO.insertScheduleShareWithDept(hashMap);
     }
 
@@ -100,26 +96,9 @@ public class ScheduleServiceImpl implements ScheduleService {
         return deptId;
     }
 
-    // 부서의 일정을 조회하는 메서드 (등록자는 제외)
-//    @Override
-//    public List<Schedule> getListDeptSchedule(String deptId, String empId) {
-//        System.out.println("\n ****** deptId: " + deptId);
-//        System.out.println("\n ****** empId: " + empId);
-//        List<Schedule> deptSchedules = scheduleDAO.getScheduleForDept(deptId, empId);
-//        System.out.println("\n ****** Dept schedules retrieved: " + deptSchedules);
-//        return deptSchedules;
-//    }
-
     @Override
     public List<Schedule> getListDeptSchedule(String deptId, String empId) {
-        System.out.println("\n ****** Dept ID =  " + deptId);
-        System.out.println("\n ****** Emp ID = " + empId);
-        List<Schedule> deptSchedules = scheduleDAO.getScheduleForDept(deptId, empId);
-        System.out.println("\n ****** Dept schedules retrieved = " + deptSchedules);
-        if (deptSchedules.isEmpty()) {
-            System.out.println("\n ******  No schedules found for deptId: " + deptId + " and empId: " + empId);
-        }
-        return deptSchedules;
+        List<Schedule> deptSchedule = scheduleDAO.getScheduleForDept(deptId, empId);
+        return deptSchedule;
     }
-
 }

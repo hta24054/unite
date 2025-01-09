@@ -63,6 +63,7 @@ CREATE TABLE schedule_share
 );
 
 
+
 ALTER TABLE schedule_share
     MODIFY share_emp VARCHAR(255);
 
@@ -198,3 +199,16 @@ GROUP BY s.schedule_id;
 SELECT emp_id
 FROM emp
 WHERE dept_id = '1100';
+
+
+desc schedule_share;
+select * from schedule;
+select * from schedule_share;
+
+select * from dept;
+
+
+ALTER TABLE schedule_share
+ADD CONSTRAINT fk_deptId FOREIGN KEY (dept_id) REFERENCES dept(dept_id) ON DELETE CASCADE;
+
+

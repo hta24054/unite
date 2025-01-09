@@ -83,36 +83,12 @@ public class ScheduleServiceImpl implements ScheduleService {
     public int insertScheduleDept(ScheduleDTO scheduleDTO) {
         scheduleDAO.insertScheduleDept(scheduleDTO.getSchedule());
 
-        // 부서에 속한 직원들의 empId를 조회
-        List<String> empIdInDept = scheduleDAO.getEmpIdByDeptId(scheduleDTO.getDeptId());
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("scheduleId", scheduleDTO.getSchedule().getScheduleId());
+        hashMap.put("deptId", scheduleDTO.getDept().getDeptId());
 
-        // 일정 공유 삽입 (부서에 속한 직원들에게 일정 공유)
-        scheduleDTO.setEmpIdInDept(empIdInDept);  // 일정 공유 대상 직원 리스트
-        return scheduleDAO.insertScheduleDeptShareWithDept(scheduleDTO.getDept().getDeptId());
-    }
+        System.out.println("scheduleDTO.getDept().getDeptId()" + scheduleDTO.getDept().getDeptId());
 
-//    @Override
-//    public int insertScheduleDept(ScheduleDTO scheduleDTO) {
-//        scheduleDAO.insertScheduleDept(scheduleDTO.getSchedule());
-//
-//        HashMap<String, Object> hashMap = new HashMap<>();
-//        hashMap.put("empId", scheduleDTO.getEmpId());
-//        hashMap.put("scheduleName", scheduleDTO.getScheduleName());
-//        hashMap.put("scheduleContent", scheduleDTO.getScheduleContent());
-//        hashMap.put("scheduleStart", scheduleDTO.getScheduleStart());
-//        hashMap.put("scheduleEnd", scheduleDTO.getScheduleEnd());
-//        hashMap.put("scheduleAllDay", scheduleDTO.isScheduleAllDay());
-//        hashMap.put("scheduleId", scheduleDTO.getSchedule().getScheduleId());
-//        hashMap.put("deptId", scheduleDTO.getDept().getDeptId());
-//
-//        System.out.println("scheduleDTO.getDept().getDeptId()" + scheduleDTO.getDept().getDeptId());
-//        System.out.println("hashMap" + hashMap);
-//        return scheduleDAO.insertScheduleDeptShareWithDept(scheduleDTO.getDept().getDeptId());
-//    }
-
-
-    public List<String> getEmpIdByDeptId(Long deptId) {
-        // 해당 부서에 속한 직원들의 empId를 조회하는 로직
-        return scheduleDAO.getEmpIdByDeptId(deptId);
+        return scheduleDAO.insertScheduleShareWithDept(hashMap);
     }
 }

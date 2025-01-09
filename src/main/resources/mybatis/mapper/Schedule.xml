@@ -95,24 +95,8 @@
         WHERE e.emp_id = #{empId}
     </select>
 
-
-    <select id="getEmpIdsByDeptId" resultType="String">
-        SELECT emp_id
-        FROM emp
-        WHERE dept_id = #{deptId}
-    </select>
-
-    <insert id="insertScheduleDeptShare" parameterType="com.hta2405.unite.dto.ScheduleDTO">
-        INSERT INTO schedule_share (schedule_id, share_emp)
-        VALUES
-        <foreach collection="empIdsInDept" item="empId" separator=",">
-            (#{scheduleId}, #{empId})
-        </foreach>
-    </insert>
-
-
     <!-- 부서 일정 등록 -->
-    <insert id="insertScheduleDept" parameterType="map">
+    <insert id="insertScheduleDept" parameterType="schedule">
         INSERT INTO schedule
         (emp_id, schedule_name, schedule_content, schedule_start, schedule_end, schedule_color, schedule_allDay)
         VALUES (#{empId}, #{scheduleName}, #{scheduleContent},
@@ -124,10 +108,20 @@
         </selectKey>
     </insert>
 
-    <insert id="insertScheduleDeptShareWithDept" parameterType="com.hta2405.unite.dto.ScheduleDTO">
-        INSERT INTO schedule_share (schedule_id, dept_id)
-        VALUES (#{scheduleId}, #{deptId})
+    <!-- 부서 내 모든 직원에게 일정 공유 -->
+    <insert id="insertScheduleShareWithDept" parameterType="map">
+        INSERT INTO schedule_share (schedule_id, share_emp, dept_id)
+        SELECT #{scheduleId}, emp_id, #{deptId}
+        FROM emp
+        WHERE dept_id = #{deptId}
     </insert>
+
+    <select id="getEmpIdByDeptId" resultType="String">
+        SELECT emp_id
+        FROM emp
+        WHERE dept_id = #{deptId}
+    </select>
+
 
 
 

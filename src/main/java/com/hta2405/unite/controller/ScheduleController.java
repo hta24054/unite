@@ -172,18 +172,10 @@ public class ScheduleController {
             schedule.setScheduleEnd(CalendarDateTimeUtil.parseDateTimeWithoutT(scheduleEndStr));
         }
 
-        // System.out.println("\n schedule.getScheduleId() = " + schedule.getScheduleId());
-
-        // 부서 일정 등록
-        int deptScheduleDTO = scheduleService.insertScheduleDept(scheduleDTO);
-        System.out.println("\n deptScheduleDTO" + deptScheduleDTO);
-
-        // 부서에 속한 다른 직원들에게 일정 공유 추가
-        Long deptId = scheduleDTO.getDeptId(); // 부서 ID 가져오기
-        List<String> empIdDept = scheduleService.getEmpIdByDeptId(deptId); // 부서에 속한 직원들의 empId 목록을 가져오기
-
-        return deptScheduleDTO;
+        int scheduleDeptDTO = scheduleService.insertScheduleDept(scheduleDTO);
+        return scheduleDeptDTO;
     }
+
 
 
 }

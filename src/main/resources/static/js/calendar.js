@@ -8,8 +8,7 @@ $(document).ready(function () {
 	    events = []; // 배열 초기화
 	    Promise.all([
 			fetchListData(),
-			fetchSharedListData(),
-            fetchDeptListData()
+			fetchSharedListData()
 		]).then(() => {
 	        const startMonth = moment().startOf('month').format('YYYY-MM');
 	        let endMonth = moment().add(1, 'year').endOf('month').format('YYYY-MM');
@@ -151,6 +150,17 @@ $(document).ready(function () {
             }
         });
     }
+
+    // 체크박스 클릭 시 부서 일정 리스트 불러오기
+    $('#departmentScheduleCheckbox').on('change', function() {
+        if ($(this).prop('checked')) {
+            fetchDeptListData();
+        } else {
+            // 부서 일정 제거
+            events = events.filter(event => !event.extendedProps.isDept);
+            initCalendar();
+        }
+    });
 
 	// 부서 일정 리스트 불러오기
     function fetchDeptListData() {
@@ -426,9 +436,6 @@ $(document).ready(function () {
 		initializeModalForRegistration();
 	});
 
-	// $("#scheduleModal").on("hidden.bs.modal", function () {
-	//     $("#startAt, #endAt").prop("type", "datetime-local").val("");
-	// });
 
 	// 등록 버튼 클릭 시 모달 강제 초기화
 	function initializeModalForRegistration() {

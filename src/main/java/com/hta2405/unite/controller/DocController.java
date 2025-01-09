@@ -97,9 +97,14 @@ public class DocController {
         return reader.getView();
     }
 
+    @GetMapping(value = "/waiting")
+    public String showWaitingList(@AuthenticationPrincipal UserDetails user, Model model) {
+        model.addAttribute("list", docService.getWaitingDocs(user.getUsername()));
+        return "/doc/waiting";
+    }
+
     @GetMapping("/download")
     public void downloadFile(String fileUUID, String fileName, HttpServletResponse response) {
         docService.downloadFile(fileUUID, fileName, response);
-
     }
 }

@@ -36,8 +36,13 @@
                 #{docVacation.vacationCount}, #{docVacation.vacationFilePath},
                 #{docVacation.vacationFileOriginal}, #{docVacation.vacationFileUUID}, #{docVacation.vacationFileType})
     </insert>
-    <select id="getInProgressDTO">
-        SELECT doc.doc_id, doc_create_date, doc.doc_type, doc.doc_title, emp.ename
+    <select id="getInProgressDocsByEmpId">
+        SELECT doc.doc_id as docId,
+               doc.doc_writer as writer,
+               doc_create_date as createDate,
+               doc.doc_type as docType,
+               doc.doc_title as docTitle,
+               emp.ename as currSignerName
         FROM doc
                  JOIN sign ON doc.doc_ID = sign.doc_ID
                  JOIN emp ON sign.emp_ID = emp.emp_ID
@@ -77,6 +82,24 @@
         select *
         from doc_vacation
         WHERE doc_id = #{doc_id}
+    </select>
+    <select id="getWaitingDocsByEmpId">
+        SELECT d.doc_id          as docId,
+               d.DOC_WRITER      as writer,
+               d.DOC_CREATE_DATE as createDate,
+               d.DOC_TYPE        as docType,
+               d.DOC_TITLE       as docTitle,
+               e.ENAME           as currSignerName
+        FROM doc d
+                 JOIN sign s ON d.DOC_ID = s.DOC_ID
+                 JOIN emp e ON s.EMP_ID = e.EMP_ID
+        WHERE (d.doc_id, s.SIGN_ORDER) in (SELECT doc_id, MIN(SIGN_ORDER)
+                                           FROM sign
+                                           where SIGN_TIME IS NULL
+                                           group by doc_id)
+          AND s.SIGN_TIME IS NULL
+          AND s.EMP_ID = #{empId}
+        ORDER BY doc_create_date
     </select>
 </mapper>
 

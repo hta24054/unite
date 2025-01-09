@@ -46,14 +46,9 @@
                     url: /*[[@{/doc/sign}]]*/'',
                     type: 'POST',
                     data: {docId: /*[[${doc.docId}]]*/''},
-                    dataType: "json",
-                    success: function (response) {
-                        if (response.status === 'success') {
-                            alert("문서를 결재하였습니다.");
-                            location.reload();
-                        } else {
-                            alert("문서 결재 중 오류가 발생했습니다.");
-                        }
+                    success: function () {
+                        alert("문서를 결재하였습니다.");
+                        location.reload();
                     },
                     error: function () {
                         alert("문서 결재 중 오류가 발생했습니다.");
@@ -68,14 +63,9 @@
                     url: /*[[@{/doc/revoke}]]*/'',
                     data: {docId: /*[[${doc.docId}]]*/''},
                     type: 'POST',
-                    dataType: "json",
-                    success: function (response) {
-                        if (response.status === 'success') {
-                            alert("문서를 회수하였습니다.");
-                            location.reload();
-                        } else {
-                            alert("문서 회수 중 오류가 발생했습니다.");
-                        }
+                    success: function () {
+                        alert("문서를 회수하였습니다.");
+                        location.reload();
                     },
                     error: function () {
                         alert("문서 회수 중 오류가 발생했습니다.");
@@ -86,17 +76,12 @@
         $('#delete').click(function () {
             if (confirm('문서를 삭제하시겠습니까?')) {
                 $.ajax({
-                    url: /*[[@{/doc/delete}]]*/'',
-                    type: 'POST',
+                    url: /*[[@{/doc}]]*/'',
+                    type: 'DELETE',
                     data: {docId: /*[[${doc.docId}]]*/''},
-                    dataType: "json",
-                    success: function (response) {
-                        if (response.status === 'success') {
-                            alert("문서를 삭제하였습니다.");
-                            window.location.href = /*[[@{/doc/waiting}]]*/'';
-                        } else {
-                            alert("문서 삭제 중 오류가 발생했습니다.");
-                        }
+                    success: function () {
+                        alert("문서를 삭제하였습니다.");
+                        window.location.href = /*[[@{/doc/waiting}]]*/'';
                     },
                     error: function () {
                         alert("문서 삭제 중 오류가 발생했습니다.");

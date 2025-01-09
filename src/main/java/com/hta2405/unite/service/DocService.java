@@ -1,7 +1,7 @@
 package com.hta2405.unite.service;
 
 import com.hta2405.unite.domain.*;
-import com.hta2405.unite.dto.DocInProgressDTO;
+import com.hta2405.unite.dto.DocListDTO;
 import com.hta2405.unite.dto.FileDTO;
 import com.hta2405.unite.dto.ProductDTO;
 import com.hta2405.unite.enums.DocRole;
@@ -123,8 +123,8 @@ public class DocService {
                 .toList();
     }
 
-    public List<DocInProgressDTO> getInProgressDTO(String empId) {
-        return docMapper.getInProgressDTO(empId);
+    public List<DocListDTO> getInProgressDTO(String empId) {
+        return docMapper.getInProgressDocsByEmpId(empId);
     }
 
     /*
@@ -204,6 +204,7 @@ public class DocService {
     public DocTrip getDocTripByDocId(Long docId) {
         return docMapper.getDocTripByDocId(docId);
     }
+
     public DocVacation getDocVacationByDocId(Long docId) {
         return docMapper.getDocVacationByDocId(docId);
     }
@@ -211,5 +212,9 @@ public class DocService {
 
     public void downloadFile(String fileUUID, String fileName, HttpServletResponse response) {
         fileService.downloadFile(FILE_DIR, fileUUID, fileName, response);
+    }
+
+    public List<DocListDTO> getWaitingDocs(String empId) {
+        return docMapper.getWaitingDocsByEmpId(empId);
     }
 }

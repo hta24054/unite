@@ -1,7 +1,7 @@
 package com.hta2405.unite.mybatis.mapper;
 
 import com.hta2405.unite.domain.*;
-import com.hta2405.unite.dto.DocInProgressDTO;
+import com.hta2405.unite.dto.DocListDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public interface DocMapper {
 
     void insertVacationDoc(Long docId, DocVacation docVacation);
 
-    List<DocInProgressDTO> getInProgressDTO(String empId);
+    List<DocListDTO> getInProgressDocsByEmpId(String empId);
 
     Doc getDocById(Long docId);
 
@@ -31,4 +31,6 @@ public interface DocMapper {
     DocTrip getDocTripByDocId(Long docId);
 
     DocVacation getDocVacationByDocId(Long docId);
+
+    List<DocListDTO> getWaitingDocsByEmpId(String empId);
 }

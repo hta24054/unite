@@ -1,8 +1,6 @@
 package com.hta2405.unite.service;
 
-import com.hta2405.unite.domain.Attend;
-import com.hta2405.unite.domain.Emp;
-import com.hta2405.unite.domain.Holiday;
+import com.hta2405.unite.domain.*;
 import com.hta2405.unite.dto.AttendDTO;
 import com.hta2405.unite.dto.AttendInfoDTO;
 import com.hta2405.unite.enums.AttendType;
@@ -13,13 +11,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.hta2405.unite.enums.AttendType.*;
 
@@ -204,5 +205,23 @@ public class AttendService {
 
     public int getUsedAnnualVacationCount(String empId, int year) {
         return attendMapper.getUsedAnnualVacationCount(empId, year);
+    }
+
+    @Transactional
+    public void insertVacation(String empId, DocVacation docVacation) {
+        List<LocalDate> dates = getDateList(docVacation.getVacationStart(), docVacation.getVacationEnd());
+        attendMapper.insertVacation(empId, dates, docVacation.getVacationType());
+    }
+
+    @Transactional
+    public void insertTrip(String empId, DocTrip docTrip) {
+        List<LocalDate> dates = getDateList(docTrip.getTripStart(), docTrip.getTripEnd());
+        attendMapper.insertTrip(empId, dates);
+    }
+
+    private static List<LocalDate> getDateList(LocalDate startDate, LocalDate endDate) {
+        return Stream.iterate(startDate, date -> date.plusDays(1))
+                .limit(ChronoUnit.DAYS.between(startDate, endDate) + 1)
+                .collect(Collectors.toList());
     }
 }

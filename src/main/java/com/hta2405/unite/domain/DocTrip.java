@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @Builder
 public class DocTrip {
     private Long docTripId;
+    private Long docId;
     private LocalDate tripStart;
     private LocalDate tripEnd;
     private String tripLoc;

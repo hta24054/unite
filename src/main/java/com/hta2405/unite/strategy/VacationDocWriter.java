@@ -2,6 +2,7 @@ package com.hta2405.unite.strategy;
 
 import com.hta2405.unite.domain.Dept;
 import com.hta2405.unite.domain.Emp;
+import com.hta2405.unite.enums.DocType;
 import com.hta2405.unite.service.AttendService;
 import com.hta2405.unite.service.DeptService;
 import com.hta2405.unite.service.EmpService;
@@ -19,8 +20,8 @@ public class VacationDocWriter implements DocWriter {
     private final AttendService attendService;
 
     @Override
-    public String getType() {
-        return "vacation";
+    public DocType getType() {
+        return DocType.VACATION;
     }
 
     @Override
@@ -35,5 +36,10 @@ public class VacationDocWriter implements DocWriter {
         model.addAttribute("date", LocalDate.now());
         model.addAttribute("usedCount",
                 attendService.getUsedAnnualVacationCount(empId, LocalDate.now().getYear()));
+    }
+
+    @Override
+    public String getView() {
+        return "/doc/vacation_write";
     }
 }

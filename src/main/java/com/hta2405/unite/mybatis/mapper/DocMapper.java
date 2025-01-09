@@ -27,4 +27,8 @@ public interface DocMapper {
     List<Sign> getSignListByDocId(Long docId);
 
     List<BuyItem> getBuyItemListByDocId(Long docId);
+
+    DocTrip getDocTripByDocId(Long docId);
+
+    DocVacation getDocVacationByDocId(Long docId);
 }

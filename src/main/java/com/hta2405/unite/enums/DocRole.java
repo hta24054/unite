@@ -16,13 +16,4 @@ public enum DocRole {
     DocRole(String type) {
         this.type = type;
     }
-
-    public static DocRole fromString(String type) {
-        for (DocRole docRole : DocRole.values()) {
-            if (docRole.getType().equals(type)) {
-                return docRole;
-            }
-        }
-        throw new IllegalArgumentException("알수없는 타입명: " + type);
-    }
 }

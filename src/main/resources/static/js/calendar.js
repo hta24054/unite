@@ -288,7 +288,7 @@ $(document).ready(function () {
 	        $("#schedule_name").val("");
 		    $("#startAt, #endAt").prop("type", "datetime-local").val("");
 	        $("#description").val("");
-	        $("#bgColor").val("#000");
+	        $("#bgColor").val("#1e3a8a");
 	        $("#allDay").prop("checked", false);
 	        return;
 	    }
@@ -392,7 +392,7 @@ $(document).ready(function () {
 	    $("#startAt").val("");
 	    $("#endAt").val("");
 	    $("#description").val("");
-	    $("#bgColor").val("#000");
+	    $("#bgColor").val("#1e3a8a");
 	    $("#allDay").prop("checked", false);
 
         $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);
@@ -432,7 +432,6 @@ $(document).ready(function () {
 		});
 
 		$("#startAt, #endAt").prop("type", "datetime-local").val("");
-		$("#bgColor").val("#000");
 	});
 
     // form 유효성 검사
@@ -549,7 +548,7 @@ $(document).ready(function () {
 		        $("#schedule_name").val("");
 		        $("#startAt, #endAt").prop("type", "datetime-local").val("");
 		        $("#description").val("");
-		        $("#bgColor").val("#000");
+		        $("#bgColor").val("#1e3a8a");
 		        $("#allDay").prop("checked", false);
 		        $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);
 

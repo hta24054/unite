@@ -1,0 +1,98 @@
+<th:block th:replace="layout :: setContent(~{this::content})">
+    <th:block th:fragment="content">
+        <!DOCTYPE html>
+        <html xmlns:th="http://www.thymeleaf.org" lang="en">
+        <head>
+            <link th:href="@{/css/doc.css}" rel="stylesheet">
+            <meta charset="UTF-8">
+            <title>휴가신청서</title>
+        </head>
+        <body>
+        <div class="container mt-4">
+            <div class="document-wrapper">
+                <div class="text-center mb-4">
+                    <h1 class="header-cell">휴가신청서</h1>
+                </div>
+                <!-- 문서 정보 및 결재자 테이블을 좌우로 배치 -->
+                <div class="row">
+                    <!-- 문서 정보 테이블 -->
+                    <div class="col-md-6 mb-3">
+                        <table class="table table-bordered">
+                            <tr>
+                                <td class="table-secondary font-weight-bold text-center">문서번호</td>
+                                <td th:text="${doc.docId}">문서번호</td>
+                            </tr>
+                            <tr>
+                                <td class="table-secondary font-weight-bold text-center">부&nbsp;&nbsp;&nbsp;서</td>
+                                <td th:text="${dept.deptName}">부서</td>
+                            </tr>
+                            <tr>
+                                <td class="table-secondary font-weight-bold text-center">기 안 자</td>
+                                <td th:text="${writer.ename}">기안자</td>
+                            </tr>
+                            <tr>
+                                <td class="table-secondary font-weight-bold text-center">작 성 일</td>
+                                <td th:text="${doc.docCreateDate.toLocalDate()}">작성일</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <!-- 결재자 테이블 -->
+                    <div class="col-md-6">
+                        <th:block th:include="doc/sign_read.html"/>
+                    </div>
+                </div>
+
+                <table class="table table-bordered mt-4 item_table" id="itemTable">
+                    <tr>
+                        <th class="table-secondary font-weight-bold text-center">제목</th>
+                        <td th:text="${doc.docTitle}">제목</td>
+                    </tr>
+                    <tr>
+                        <th class="table-secondary font-weight-bold text-center">휴가 종류</th>
+                        <td th:text="${docVacation.vacationType.typeName}">휴가 종류</td>
+                    </tr>
+                    <tr>
+                        <th class="table-secondary font-weight-bold text-center">시작일</th>
+                        <td th:text="${docVacation.vacationStart}">시작일</td>
+                    </tr>
+                    <tr>
+                        <th class="table-secondary font-weight-bold text-center">종료일</th>
+                        <td th:text="${docVacation.vacationEnd}">종료일</td>
+                    </tr>
+                    <tr>
+                        <th class="table-secondary font-weight-bold text-center">휴가 일수</th>
+                        <td th:text="${docVacation.vacationCount}">휴가 일수</td>
+                    </tr>
+                    <tr>
+                        <th class="table-secondary font-weight-bold text-center">휴가 사유</th>
+                        <td th:text="${doc.docContent}">휴가 사유</td>
+                    </tr>
+                    <tr>
+                        <th class="table-secondary font-weight-bold text-center">첨부 파일</th>
+                        <td>
+                            <th:block th:if="${docVacation.vacationFileOriginal != null}">
+                                <a th:href="@{/doc/download(fileName=${docVacation.vacationFileOriginal},fileUUID=${docVacation.vacationFileUUID})}">
+                                    [[${docVacation.vacationFileOriginal}]]
+                                </a>
+                            </th:block>
+                            <th:block th:if="${docVacation.vacationFileOriginal == null}">
+                                파일 없음
+                            </th:block>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2" class="table-secondary font-weight-bold" id="info">
+                            1. 연차의 사용은 근로기준법에 따라 전년도에 발생한 개인별 잔여 연차에 한하여 사용함을 원칙으로 한다.<br>
+                            단, 최초 입사시에는 근로기준법에 따라 발생 예정된 연차를 사용하여 월 1회 사용할 수 있다.<br>
+                            2. 경조사 휴가는 증빙서류를 제출할 수 있는 가족관계증명서 또는 청첩장 등 제출<br>
+                            3. 공가(예비군/민방위)는 사전에 통지서를, 사후에 참석증을 반드시 제출
+                        </th>
+                    </tr>
+                </table>
+            </div>
+            <th:block th:include="doc/read_button"/>
+        </div>
+        </body>
+        </html>
+    </th:block>
+</th:block>

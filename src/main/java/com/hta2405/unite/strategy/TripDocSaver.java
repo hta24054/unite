@@ -21,8 +21,8 @@ public class TripDocSaver implements DocSaver {
     private final DocService docService;
 
     @Override
-    public String getType() {
-        return "trip";
+    public DocType getType() {
+        return DocType.TRIP;
     }
 
     @Override

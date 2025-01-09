@@ -32,11 +32,17 @@
         insert into doc_vacation(doc_id, vacation_start, vacation_end, vacation_type, vacation_count,
                                  vacation_file_path, vacation_file_original, vacation_file_uuid,
                                  vacation_file_type)
-        values (#{docId}, #{docVacation.vacationStart}, #{docVacation.vacationEnd}, #{docVacation.vacationType}, #{docVacation.vacationCount}, #{docVacation.vacationFilePath},
+        values (#{docId}, #{docVacation.vacationStart}, #{docVacation.vacationEnd}, #{docVacation.vacationType},
+                #{docVacation.vacationCount}, #{docVacation.vacationFilePath},
                 #{docVacation.vacationFileOriginal}, #{docVacation.vacationFileUUID}, #{docVacation.vacationFileType})
     </insert>
-    <select id="getInProgressDTO">
-        SELECT doc.doc_id,doc_create_date, doc.doc_type, doc.doc_title, emp.ename
+    <select id="getInProgressDocsByEmpId">
+        SELECT doc.doc_id      as docId,
+               doc.doc_writer  as writer,
+               doc_create_date as createDate,
+               doc.doc_type    as docType,
+               doc.doc_title   as docTitle,
+               emp.ename       as currSignerName
         FROM doc
                  JOIN sign ON doc.doc_ID = sign.doc_ID
                  JOIN emp ON sign.emp_ID = emp.emp_ID
@@ -51,5 +57,103 @@
           AND sign.emp_ID != doc_WRITER
         ORDER BY doc_CREATE_DATE
     </select>
+    <select id="getDocById">
+        select *
+        from doc
+        where doc_id = #{docId}
+    </select>
+    <select id="getSignListByDocId">
+        SELECT *
+        FROM sign
+        WHERE DOC_ID = #{docId}
+        ORDER BY SIGN_ORDER
+    </select>
+    <select id="getBuyItemListByDocId">
+        select *
+        from buy_item
+        WHERE DOC_BUY_ID = (select doc_buy_id from doc_buy where doc_id = #{doc_id})
+    </select>
+    <select id="getDocTripByDocId">
+        select *
+        from doc_trip
+        WHERE doc_id = #{doc_id}
+    </select>
+    <select id="getDocVacationByDocId">
+        select *
+        from doc_vacation
+        WHERE doc_id = #{doc_id}
+    </select>
+    <select id="getWaitingDocsByEmpId">
+        SELECT d.doc_id          as docId,
+               d.DOC_WRITER      as writer,
+               d.DOC_CREATE_DATE as createDate,
+               d.DOC_TYPE        as docType,
+               d.DOC_TITLE       as docTitle,
+               e.ENAME           as currSignerName
+        FROM doc d
+                 JOIN sign s ON d.DOC_ID = s.DOC_ID
+                 JOIN emp e ON s.EMP_ID = e.EMP_ID
+        WHERE (d.doc_id, s.SIGN_ORDER) in (SELECT doc_id, MIN(SIGN_ORDER)
+                                           FROM sign
+                                           where SIGN_TIME IS NULL
+                                           group by doc_id)
+          AND s.SIGN_TIME IS NULL
+          AND s.EMP_ID = #{empId}
+        ORDER BY doc_create_date
+    </select>
+    <select id="getNowSigner">
+        SELECT emp_id
+        FROM sign
+        WHERE doc_id = #{docId}
+          AND SIGN_TIME IS NULL
+          AND SIGN_ORDER = (SELECT MIN(SIGN_ORDER)
+                            FROM sign
+                            WHERE doc_id = #{docId}
+                              AND SIGN_TIME IS NULL)
+    </select>
+    <update id="signDoc">
+        UPDATE sign
+        SET sign_time = now()
+        WHERE doc_id = #{docId}
+          and emp_id = #{empId}
+    </update>
+    <select id="isDocSignedByEmpId">
+        SELECT CASE
+                   WHEN SIGN_TIME IS NULL THEN 0
+                   ELSE 1
+                   END
+        FROM sign
+        WHERE DOC_ID = #{docId}
+          AND EMP_ID = #{empId}
+    </select>
+    <update id="revokeDoc">
+        UPDATE sign
+        SET sign_time = NULL
+        WHERE doc_id = #{docId}
+          AND sign_order >= (SELECT sign_order_temp
+                             FROM (SELECT sign_order AS sign_order_temp
+                                   FROM sign
+                                   WHERE doc_id = #{docId}
+                                     AND emp_id = #{empId}) temp_table);
+    </update>
+    <delete id="deleteDoc">
+        delete
+        from doc
+        where doc_id = #{docId}
+    </delete>
+    <select id="checkSignFinished">
+        SELECT CASE
+                   WHEN COUNT(*) = SUM(CASE WHEN sign_time IS NOT NULL THEN 1 ELSE 0 END)
+                       THEN 1
+                   ELSE 0
+                   END AS all_signed
+        FROM sign
+        WHERE doc_id = #{docId}
+    </select>
+    <update id="setSignFinished">
+        UPDATE doc
+        SET SIGN_FINISH = 1
+        WHERE doc_id = #{docId}
+    </update>
 </mapper>
 

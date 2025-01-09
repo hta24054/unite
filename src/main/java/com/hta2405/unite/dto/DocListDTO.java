@@ -8,8 +8,9 @@ import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-public class DocInProgressDTO {
+public class DocListDTO {
     private Long docId;
+    private String writer;
     private LocalDateTime createDate;
     private DocType docType;
     private String docTitle;

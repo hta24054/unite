@@ -23,8 +23,8 @@ public class VacationDocSaver implements DocSaver {
     private final DocService docService;
 
     @Override
-    public String getType() {
-        return "vacation";
+    public DocType getType() {
+        return DocType.VACATION;
     }
 
     @Override
@@ -43,7 +43,6 @@ public class VacationDocSaver implements DocSaver {
         List<MultipartFile> files = req.getFiles();
 
         DocVacation.DocVacationBuilder docVacationBuilder = DocVacation.builder()
-                .vacationApply(LocalDate.now())
                 .vacationStart(LocalDate.parse(formData.get("vacation_start").toString()))
                 .vacationEnd(LocalDate.parse(formData.get("vacation_end").toString()))
                 .vacationCount(Integer.parseInt(formData.get("vacation_count").toString()))

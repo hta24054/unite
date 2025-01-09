@@ -166,7 +166,7 @@
                         <tr>
                             <td colspan="3" style="padding-top: 10px;">
                                 <img th:src="@{|/emp/profile-image?empId=${id}|}" alt="프로필 이미지" class="icon viewIcon">
-                                <div class="username">[[${postDetailDTO.postWriter}]]</div>
+                                <div class="username">[[${empMap.get(postDetailDTO.postWriter)}]]</div>
                                 <div class="date"> [[${postDetailDTO.getFormattedPostDate()}]]</div>
                             </td>
                         </tr>
@@ -243,23 +243,22 @@
                         <ul class="comment-list">
                         </ul>
                         <div class="comment-write-container">
-					<span class="comment-photo">
-						<img th:src="@{|/emp/profile-image?empId=${id}|}" class="profileImg" width=36 height=36>
-					</span>
-
+                            <span class="comment-photo">
+                                <img th:src="@{|/emp/profile-image?empId=${id}|}" class="profileImg" width=36 height=36>
+                            </span>
                             <div class="comment-write">
                                 <div class="comment-write-area">
-                                    <b class="comment-write-area-name">[[${id}]]</b>
+                                    <b class="comment-write-area-name" th:text="${empMap.get(id)}"></b>
                                     <span class="comment-write-area-count">0/200</span>
                                     <textarea placeholder="댓글을 남겨보세요" rows="1" class="comment-write-area-text"
                                               maxlength="200"></textarea>
-
                                 </div>
                                 <div class="comment-attachFile"></div>
                                 <div class="register-box">
-							<span class="emoji_btn" id="emoji_btn">
-								<img th:src="@{/image/insert_emoticon.png}" width=20 height=20 style="opacity: 0.5">
-							</span>
+                                    <span class="emoji_btn" id="emoji_btn">
+                                        <img th:src="@{/image/insert_emoticon.png}" width=20 height=20
+                                             style="opacity: 0.5">
+                                    </span>
                                     <label class="emoji_btn" id="emoji_btn2" style="margin:0;">
                                         <img th:src="@{/image/attach.png}" width=20 height=20 style="opacity: 0.5">
                                         <input type="file" id="upfile"/>

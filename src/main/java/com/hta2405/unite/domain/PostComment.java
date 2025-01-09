@@ -5,6 +5,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
@@ -23,4 +24,5 @@ public class PostComment {
     private Long postCommentReRef;
     private Long postCommentReLev;
     private Long postCommentReSeq;
+    private int deleted;
 }

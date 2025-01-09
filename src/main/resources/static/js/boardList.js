@@ -76,7 +76,7 @@ function updateBoardList(data) {
 			<tr class="tr-post" data-no="${item.postId}" data-name1="${data.boardName1}" data-name2="${data.boardName2}" data-page="${data.page}">
 				<td>${num--}</td>
 				<td><div>${blank}${img}${changeSubject}[${item.postCommentCnt}]</div></td>
-				<td><div>${item.postWriter}</div></td>
+				<td><div>${data.empMap[item.postWriter]}</div></td>
 				<td><div>${item.postDate.split('T').join(' ')}</div></td>
 				<td><div>${item.postView}</div></td>
 			</tr>

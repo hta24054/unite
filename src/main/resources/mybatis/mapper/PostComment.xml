@@ -19,9 +19,101 @@
                post_comment_file_type,
                post_comment_re_ref,
                post_comment_re_lev,
-               post_comment_re_seq
+               post_comment_re_seq,
+               deleted
         FROM post_comment
         WHERE post_id = #{postId}
         ORDER BY post_comment_re_ref ${order}, post_comment_re_seq ASC
     </select>
+
+    <insert id="commentsInsert" parameterType="PostComment" useGeneratedKeys="true" keyProperty="commentId">
+        INSERT INTO post_comment (post_id,
+                                  post_comment_writer,
+                                  post_comment_content,
+                                  post_comment_date,
+                                  post_comment_update_date,
+                                  post_comment_file_path,
+                                  post_comment_file_original,
+                                  post_comment_file_uuid,
+                                  post_comment_file_type,
+                                  post_comment_re_ref,
+                                  post_comment_re_lev,
+                                  post_comment_re_seq)
+        VALUES (#{postId},
+                #{postCommentWriter},
+                #{postCommentContent},
+                sysdate(),
+                sysdate(),
+                #{postCommentFilePath},
+                #{postCommentFileOriginal},
+                #{postCommentFileUUID},
+                #{postCommentFileType},
+                -1,
+                #{postCommentReLev},
+                #{postCommentReSeq})
+    </insert>
+    <update id="refUpdate" parameterType="Long">
+        UPDATE post_comment
+        SET post_comment_re_ref = #{commentId}
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <select id="getPostCommentByCommentId" parameterType="Long" resultType="PostComment">
+        SELECT comment_id,
+               post_id,
+               post_comment_writer,
+               post_comment_content,
+               post_comment_date,
+               post_comment_update_date,
+               post_comment_file_path,
+               post_comment_file_original,
+               post_comment_file_uuid,
+               post_comment_file_type,
+               post_comment_re_ref,
+               post_comment_re_lev,
+               post_comment_re_seq
+        FROM post_comment
+        WHERE comment_id = #{commentId}
+    </select>
+
+    <update id="commentsUpdate">
+        UPDATE post_comment
+        SET
+        post_comment_content = #{postComment.postCommentContent},
+        post_comment_update_date = sysdate()
+        <if test="fileUpdateCheck">
+            , post_comment_file_path = #{postComment.postCommentFilePath},
+            post_comment_file_original = #{postComment.postCommentFileOriginal},
+            post_comment_file_uuid = #{postComment.postCommentFileUUID},
+            post_comment_file_type = #{postComment.postCommentFileType}
+        </if>
+        WHERE comment_id = #{postComment.commentId}
+    </update>
+
+    <update id="replyUpdate">
+        <![CDATA[
+        update post_comment
+        set post_comment_re_seq = post_comment_re_seq + 1
+        where post_comment_re_ref = #{postCommentReRef}
+          and post_comment_re_seq > #{postCommentReSeq}
+        ]]>
+    </update>
+
+    <insert id="commentsReply" parameterType="PostComment">
+        <![CDATA[
+        insert into post_comment
+        (post_id, post_comment_writer, post_comment_content, post_comment_date, post_comment_update_date,
+         post_comment_file_path, post_comment_file_original, post_comment_file_uuid, post_comment_file_type,
+         post_comment_re_ref, post_comment_re_lev, post_comment_re_seq)
+        values (#{postId}, #{postCommentWriter}, #{postCommentContent}, sysdate(), sysdate(),
+                #{postCommentFilePath}, #{postCommentFileOriginal}, #{postCommentFileUUID},
+                #{postCommentFileType}, #{postCommentReRef}, #{postCommentReLev} + 1, #{postCommentReSeq} + 1)
+        ]]>
+    </insert>
+
+    <update id="commentsDelete">
+        update post_comment
+        set deleted = 1
+        where comment_id = #{commentId}
+    </update>
 </mapper>

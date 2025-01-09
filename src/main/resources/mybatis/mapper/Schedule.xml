@@ -78,9 +78,10 @@
         WHERE
             (s.emp_id = #{empId}
            OR ss.share_emp LIKE CONCAT('%', #{shareEmp}, '%'))
-          AND ss.dept_id IS NULL -- 부서 제외
-        -- 로그인한 사용자의 부서와 동일한 부서 ID만 조회
-          AND ss.dept_id = (SELECT dept_id FROM emp WHERE emp_id = #{empId})
+          AND (
+            ss.dept_id IS NULL -- 부서 정보가 없거나
+           OR ss.dept_id = (SELECT dept_id FROM emp WHERE emp_id = #{empId}) -- 로그인한 사용자의 부서와 동일한 부서 ID
+            )
         GROUP BY
             s.schedule_id,
             s.emp_id,
@@ -91,6 +92,7 @@
             s.schedule_color,
             s.schedule_allDay;
     </select>
+
 
     <!--    <select id="getListSharedSchedule" resultType="schedule">-->
 <!--        SELECT-->

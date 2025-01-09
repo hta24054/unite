@@ -328,15 +328,17 @@ $(document).ready(function () {
 	        $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", true);
 	        $(".modal-body").find(".btn_wrap").remove();
 
-			$(".modal-body").find(".form-group:nth-of-type(1)").after(`
-				<div class="form-group">
-					<p style="margin-bottom: 5px;">공유자 정보</p>
-					<ul>
-						<li><span>등록자:</span> ${event.extendedProps.empIdName}</li>
-						<li><span>참여자:</span> ${event.extendedProps.shareEmpNames}</li>
-					</ul>
-				</div>
-			`);
+            if ($(".modal-body").find(".form-group.share-info").length === 0) {
+                $(".modal-body").find(".form-group:nth-of-type(1)").after(`
+                    <div class="form-group share-info">
+                        <p style="margin-bottom: 5px;">공유자 정보</p>
+                        <ul>
+                            <li><span>등록자:</span> ${event.extendedProps.empIdName}</li>
+                            <li><span>참여자:</span> ${event.extendedProps.shareEmpNames}</li>
+                        </ul>
+                    </div>
+                `);
+            }
 
 			// $(".modal-body").find(".btn_wrap").html(`<button type="button" id="btnDelete" class="btn btn-danger">삭제</button>`);
 	    } else {

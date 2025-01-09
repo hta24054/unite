@@ -65,12 +65,6 @@ public class DocController {
         return writer.getView();
     }
 
-    @GetMapping("/countVacation")
-    @ResponseBody
-    public int countVacation(String startDate, String endDate) {
-        return docService.countVacation(LocalDate.parse(startDate), LocalDate.parse(endDate));
-    }
-
     @PostMapping(value = "/{type}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> writeDoc(@PathVariable String type,
                                            @RequestPart("formData") String formDataJson,
@@ -91,6 +85,12 @@ public class DocController {
         return ResponseEntity.ok("문서 작성(저장) 완료");
     }
 
+    @GetMapping("/countVacation")
+    @ResponseBody
+    public int countVacation(String startDate, String endDate) {
+        return docService.countVacation(LocalDate.parse(startDate), LocalDate.parse(endDate));
+    }
+
     @GetMapping("/inProgress")
     public String showInProgress(@AuthenticationPrincipal UserDetails user, Model model) {
         model.addAttribute("list", docService.getInProgressDTO(user.getUsername()));
@@ -106,5 +106,26 @@ public class DocController {
     @GetMapping("/download")
     public void downloadFile(String fileUUID, String fileName, HttpServletResponse response) {
         docService.downloadFile(fileUUID, fileName, response);
+    }
+
+    @PostMapping("/sign")
+    @ResponseBody
+    public ResponseEntity<String> signDoc(Long docId, @AuthenticationPrincipal UserDetails user) {
+        return docService.signDoc(docId, user.getUsername())
+                ? ResponseEntity.ok("결재 성공") : ResponseEntity.badRequest().body("결재 실패");
+    }
+
+    @PostMapping("/revoke")
+    @ResponseBody
+    public ResponseEntity<String> revokeDoc(Long docId, @AuthenticationPrincipal UserDetails user) {
+        return docService.revokeDoc(docId, user.getUsername())
+                ? ResponseEntity.ok("회수 성공") : ResponseEntity.badRequest().body("회수 실패");
+    }
+
+    @DeleteMapping
+    @ResponseBody
+    public ResponseEntity<String> deleteDoc(Long docId, @AuthenticationPrincipal UserDetails user) {
+        return docService.deleteDoc(docId, user.getUsername())
+                ? ResponseEntity.ok("삭제 성공") : ResponseEntity.badRequest().body("삭제 실패");
     }
 }

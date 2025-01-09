@@ -33,4 +33,18 @@ public interface DocMapper {
     DocVacation getDocVacationByDocId(Long docId);
 
     List<DocListDTO> getWaitingDocsByEmpId(String empId);
+
+    String getNowSigner(Long docId);
+
+    int signDoc(Long docId, String empId);
+
+    boolean isDocSignedByEmpId(Long docId, String empId);
+
+    int revokeDoc(Long docId, String empId);
+
+    int deleteDoc(Long docId);
+
+    boolean checkSignFinished(Long docId);
+
+    int setSignFinished(Long docId);
 }

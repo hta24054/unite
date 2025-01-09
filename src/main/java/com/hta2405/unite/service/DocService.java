@@ -5,6 +5,7 @@ import com.hta2405.unite.dto.DocListDTO;
 import com.hta2405.unite.dto.FileDTO;
 import com.hta2405.unite.dto.ProductDTO;
 import com.hta2405.unite.enums.DocRole;
+import com.hta2405.unite.enums.DocType;
 import com.hta2405.unite.mybatis.mapper.DocMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,20 +30,22 @@ public class DocService {
     private final DocMapper docMapper;
     private final FileService fileService;
     private final String FILE_DIR;
+    private final AttendService attendService;
 
     public DocService(HolidayService holidayService,
                       EmpService empService,
                       DeptService deptService,
                       DocMapper docMapper,
                       FileService fileService,
+                      AttendService attendService,
                       @Value("${doc.upload.directory}") String FILE_DIR) {
         this.holidayService = holidayService;
         this.empService = empService;
         this.deptService = deptService;
         this.docMapper = docMapper;
-
-        this.FILE_DIR = FILE_DIR;
         this.fileService = fileService;
+        this.attendService = attendService;
+        this.FILE_DIR = FILE_DIR;
     }
 
     @Transactional
@@ -216,5 +219,58 @@ public class DocService {
 
     public List<DocListDTO> getWaitingDocs(String empId) {
         return docMapper.getWaitingDocsByEmpId(empId);
+    }
+
+    @Transactional
+    public boolean signDoc(Long docId, String empId) {
+        // 현재 결재자인지 확인
+        if (!docMapper.getNowSigner(docId).equals(empId)) {
+            return false;
+        }
+
+        // 결재 수행
+        if (docMapper.signDoc(docId, empId) != 1) {
+            return false;
+        }
+
+        // 결재 완료 처리
+        if (docMapper.checkSignFinished(docId)) {
+            docMapper.setSignFinished(docId);
+            Doc doc = docMapper.getDocById(docId);
+
+            if (doc.getDocType() == DocType.VACATION) {
+                attendService.insertVacation(doc.getDocWriter(), docMapper.getDocVacationByDocId(docId));
+            }
+
+            if (doc.getDocType() == DocType.TRIP) {
+                attendService.insertTrip(doc.getDocWriter(), docMapper.getDocTripByDocId(docId));
+            }
+        }
+
+        return true;
+    }
+
+    @Transactional
+    public boolean revokeDoc(Long docId, String empId) {
+        //결재한적이 없거나, 결재가 이미 끝난 문서면 false
+        if (!docMapper.isDocSignedByEmpId(docId, empId) || docMapper.getDocById(docId).isSignFinish()) {
+            return false;
+        }
+        return docMapper.revokeDoc(docId, empId) > 0;
+    }
+
+    @Transactional
+    public boolean deleteDoc(Long docId, String empId) {
+        Doc doc = docMapper.getDocById(docId);
+        /*
+            작성자가 아니거나, 현재 로그인 한 사람의 결재순번이 아니거나, 문서가 결재가 완료되었으면 fail
+            즉, 로그인한 사람이 작성자면서 + 그 사람이 결재순번인 경우 + 문서결재가 완료되지 않은 경우만 success
+         */
+        if (!doc.getDocWriter().equals(empId)
+                || !docMapper.getNowSigner(docId).equals(empId)
+                || doc.isSignFinish()) {
+            return false;
+        }
+        return docMapper.deleteDoc(docId) == 1;
     }
 }

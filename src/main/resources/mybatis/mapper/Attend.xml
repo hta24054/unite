@@ -31,5 +31,18 @@
           AND VACATION_TYPE = '연차'
           AND YEAR(VACATION_START) = '2024'
     </select>
+
+    <insert id="insertVacation">
+        INSERT INTO attend(EMP_ID, ATTEND_DATE, ATTEND_TYPE) VALUES
+        <foreach collection="list" item="date" separator=",">
+            (#{empId}, #{date}, #{vacationType})
+        </foreach>
+    </insert>
+    <insert id="insertTrip">
+        INSERT INTO attend(EMP_ID, ATTEND_DATE, ATTEND_TYPE) VALUES
+        <foreach collection="list" item="date" separator=",">
+            (#{empId}, #{date}, 'TRIP')
+        </foreach>
+    </insert>
 </mapper>
 

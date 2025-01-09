@@ -3,12 +3,13 @@ $(document).ready(function () {
     let events = [];
     let isAllDayChk, startDate, endDate;
 
-	// 개인/공유 일정, 공휴일 불러오기
+	// 개인/공유/부서 일정, 공휴일 불러오기
 	function fetchAllData() {
 	    events = []; // 배열 초기화
 	    Promise.all([
 			fetchListData(),
 			fetchSharedListData(),
+            fetchDeptListData()
 		]).then(() => {
 	        const startMonth = moment().startOf('month').format('YYYY-MM');
 	        let endMonth = moment().add(1, 'year').endOf('month').format('YYYY-MM');
@@ -152,10 +153,48 @@ $(document).ready(function () {
     }
 
 	// 부서 일정 리스트 불러오기
+    function fetchDeptListData() {
+        $.ajax({
+            url: "deptScheduleList",
+            type: "get",
+            dataType: "json",
+            data: {
+                emp_id: $("#emp_id").val(),  // 로그인된 직원 ID
+                dept_id: $('#dept_id').val(),
+            },
+            success: function(data) {
+                console.log("부서 일정 데이터:", data);
 
+                if (data != null) {
+                    for (let i = 0; i < data.length; i++) {
 
+                        // 중복 체크: schedule_id로 중복 여부 확인
+                        if (!events.some(event => event.id === data[i].scheduleId)) {
+                            events.push({
+                                id: data[i].scheduleId,
+                                title: data[i].scheduleName,
+                                start: data[i].scheduleStart,
+                                end: data[i].scheduleEnd,
+                                backgroundColor: data[i].scheduleColor,
+                                description: data[i].scheduleContent,
+                                allDay: data[i].scheduleAllDay,
+                                editable: false, // 수정 불가
+                                droppable: false, // 드래그 불가
+                                extendedProps: {
+                                    isDept: true, // 부서 일정
+                                },
+                            })
+                        }
+                    }
+                }
 
-
+                initCalendar();
+            },
+            error: function (error) {
+                console.log("부서 일정 리스트 불러오기 오류", error);
+            }
+        });
+    }
 
 	// 일정 등록
     function addEvent(eventData) {
@@ -339,8 +378,6 @@ $(document).ready(function () {
                     </div>
                 `);
             }
-
-			// $(".modal-body").find(".btn_wrap").html(`<button type="button" id="btnDelete" class="btn btn-danger">삭제</button>`);
 	    } else {
 	        $(".modal-header").find("h5").text("상세 일정");
 	        $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);

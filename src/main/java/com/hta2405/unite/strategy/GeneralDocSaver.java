@@ -18,8 +18,8 @@ public class GeneralDocSaver implements DocSaver {
     private final DocService docService;
 
     @Override
-    public String getType() {
-        return "general";
+    public DocType getType() {
+        return DocType.GENERAL;
     }
 
     @Override

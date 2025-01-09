@@ -23,8 +23,8 @@ public class VacationDocSaver implements DocSaver {
     private final DocService docService;
 
     @Override
-    public String getType() {
-        return "vacation";
+    public DocType getType() {
+        return DocType.VACATION;
     }
 
     @Override

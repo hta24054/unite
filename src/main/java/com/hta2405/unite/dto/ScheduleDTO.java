@@ -28,9 +28,14 @@ public class ScheduleDTO {
     private String empIdName;
     private Schedule schedule;
     private ScheduleShare scheduleShare;
-    private Dept dept;
     private Long deptId;
-    private String deptName;
-    private String deptManager;
-    private List<String> empIdInDept;
+    private Dept dept;
+
+    public ScheduleShare getScheduleShare() {
+        // 만약 null이면 새로운 ScheduleShare 객체를 생성해서 반환
+        if (this.scheduleShare == null) {
+            this.scheduleShare = new ScheduleShare();
+        }
+        return this.scheduleShare;
+    }
 }

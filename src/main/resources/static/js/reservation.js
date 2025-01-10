@@ -2,12 +2,15 @@ $(document).ready(function () {
     let calendar;
     let events = [];
     let isAllDayChk, startDate, endDate;
+
+    const $resourceTypeCategory = $("#resourceTypeCategory");
+    const $resourceNameCategory = $("#resourceNameCategory");
     const $resourceType = $("#resourceType");
     const $resourceName = $("#resourceName");
 
     initCalendar();
+    getResourceList();
     // getReservationList();
-    // getResourceList();
 
     // 자원 목록 불러오기
     function getResourceList() {
@@ -20,12 +23,17 @@ $(document).ready(function () {
                 $resourceType.append('<option value="">분류명</option>');
                 $resourceName.hide();
 
+                $resourceTypeCategory.empty();
+                $resourceTypeCategory.append('<option value="">분류명</option>');
+                $resourceNameCategory.hide();
+
                 // 중복 제거 Set
                 const uniqueResourceType = new Set();
                 data.forEach(function (resource) {
                     if (!uniqueResourceType.has(resource.resourceType)) {
                         uniqueResourceType.add(resource.resourceType);
                         $resourceType.append('<option value="' + resource.resourceType + '">' + resource.resourceType + '</option>');
+                        $resourceTypeCategory.append('<option value="' + resource.resourceType + '">' + resource.resourceType + '</option>');
                     }
                 });
             },
@@ -36,9 +44,35 @@ $(document).ready(function () {
     }
 
     // 자원 선택 시 해당 자원명 불러오기
+    $resourceTypeCategory.on("change", function () {
+        const $selectedVal = $(this).val();
+        $.ajax({
+            url: "resourceSelectChange",
+            type: "get",
+            dataType: "json",
+            data: {
+                resourceType: $selectedVal,
+            },
+            success: function (data) {
+                $resourceNameCategory.empty();
+                $resourceNameCategory.append('<option value="">자원명</option>');
+
+                // resource_id를 value로 설정
+                data.forEach(function (resource) {
+                    $resourceNameCategory.append('<option value="' + resource.resourceId + '">' + resource.resourceName + '</option>');
+                });
+
+                $resourceNameCategory.show();
+            },
+            error: function () {
+                alert("자원명 불러오기 실패");
+            }
+        });
+    });
+
+    // 자원 선택 시 해당 자원명 불러오기
     $resourceType.on("change", function () {
         const $selectedVal = $(this).val();
-
         $.ajax({
             url: "resourceSelectChange",
             type: "get",
@@ -465,6 +499,4 @@ $(document).ready(function () {
         calendar.unselect();
         calendar.render();
     }
-
-
 });

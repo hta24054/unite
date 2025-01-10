@@ -2,18 +2,20 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hta2405.unite.mybatis.mapper.NoticeMapper">
     <select id="getAllNotice" resultType="Notice">
-        SELECT * FROM notice
+        SELECT *
+        FROM notice
         ORDER BY NOTICE_END_DATE
     </select>
 
     <select id="getAliveNotice" resultType="Notice">
-        SELECT * FROM notice
-        where NOTICE_END_DATE >= sysdate-1
+        SELECT *
+        FROM notice
+        where NOTICE_END_DATE >= sysdate - 1
         ORDER BY NOTICE_ID desc
     </select>
     <insert id="insertNotice" parameterType="Notice">
         INSERT INTO notice(NOTICE_SUBJECT, NOTICE_CONTENT, NOTICE_END_DATE)
-        VALUES(#{noticeSubject}, #{noticeContent}, #{noticeEndDate})
+        VALUES (#{noticeSubject}, #{noticeContent}, #{noticeEndDate})
     </insert>
     <update id="updateNotice">
         UPDATE notice

@@ -19,8 +19,8 @@ public class BuyDocSaver implements DocSaver {
     private final DocService docService;
 
     @Override
-    public String getType() {
-        return "buy";
+    public DocType getType() {
+        return DocType.BUY;
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.hta2405.unite.dto.EmpTreeDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface EmpMapper {
@@ -25,4 +26,6 @@ public interface EmpMapper {
     void resignEmp(String empId);
 
     List<EmpListDTO> getEmpListDTO(List<Dept> list);
+
+    List<Map<String, Object>> getIdToENameMap();
 }

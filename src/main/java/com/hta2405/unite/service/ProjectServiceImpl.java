@@ -68,9 +68,11 @@ public class ProjectServiceImpl implements ProjectService {
     public int mainCountList(String userid, int favorite) {
         return dao.mainCountList(userid, favorite);
     }
-    public int doneCountList(String userid, int finish, int cancel){
+
+    public int doneCountList(String userid, int finish, int cancel) {
         return dao.doneCountList(userid, finish, cancel);
     }
+
     @Override
     public List<Project> getmainList(String userid, int favorite, int page, int limit) {
         HashMap<String, Object> map = new HashMap<>();
@@ -83,10 +85,11 @@ public class ProjectServiceImpl implements ProjectService {
         return dao.getmainList(map);
     }
 
-    public void projectFavorite(int projectId, String userid){
+    public void projectFavorite(int projectId, String userid) {
         dao.projectFavorite(projectId, userid);
     }
-    public void projectColor(String userid, int projectId,String bgColor,String textColor){
+
+    public void projectColor(String userid, int projectId, String bgColor, String textColor) {
         dao.projectColor(userid, projectId, bgColor, textColor);
     }
 
@@ -100,7 +103,7 @@ public class ProjectServiceImpl implements ProjectService {
         return false;
     }
 
-    public List<Project> getDoneList(String userid, int page, int limit){
+    public List<Project> getDoneList(String userid, int page, int limit) {
         HashMap<String, Object> map = new HashMap<>();
         int startrow = (page - 1) * limit;
         int endrow = startrow + limit;
@@ -113,20 +116,24 @@ public class ProjectServiceImpl implements ProjectService {
     public String getProjectName(int projectId) {
         return dao.getProjectName(projectId);
     }
+
     public List<ProjectDetailDTO> getProjectDetail1(int projectId, String userid) {
         return dao.getProjectDetail1(projectId, userid);
     }
+
     public boolean updateTaskContent(int projectId, String memberId, String taskContent) {
         return dao.updateTaskContent(projectId, memberId, taskContent);
     }
-    public boolean updateProgressRate(int projectId, String memberId, int memberProgressRate){
+
+    public boolean updateProgressRate(int projectId, String memberId, int memberProgressRate) {
         return dao.updateProgressRate(projectId, memberId, memberProgressRate);
     }
 
-    public List<ProjectTaskDTO> getProjectDetail2(int projectId){
+    public List<ProjectTaskDTO> getProjectDetail2(int projectId) {
         return dao.getProjectDetail2(projectId);
     }
-    public List<ProjectRoleDTO> getRole(int projectId, String userid){
+
+    public List<ProjectRoleDTO> getRole(int projectId, String userid) {
         return dao.getRole(projectId, userid);
     }
 

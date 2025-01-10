@@ -11,6 +11,7 @@ import java.util.List;
 @Mapper
 public interface ProjectBoardMapper {
     public boolean insertOrUpdate(String title, String content, String userid, int projectId, MultipartFile file);
+
     String getTaskCount(String userid, int projectId);
     int updateTask(String title, String content, String userid, int projectId, FileDTO taskFile, String category);
     int insertTask(String title, String content, String userid, String name, int projectId, FileDTO taskFile, String category);

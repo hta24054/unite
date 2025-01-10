@@ -1,30 +1,25 @@
 package com.hta2405.unite.controller;
 
-import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.PaginationResult;
 import com.hta2405.unite.domain.PostFile;
 import com.hta2405.unite.dto.*;
 import com.hta2405.unite.service.BoardPostService;
 import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.FlashMapManager;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.File;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024 * 5,   // 메모리 내 파일 크기 제한 (5MB)
@@ -51,25 +46,25 @@ public class BoardController {
 
     //sidebar 부서게시판 설정
     private void boardSidebar_dept(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String empId = authentication.getName();
-
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String empId = auth.getName();
         List<BoardHomeDeptDTO> BoardDeptList = boardPostService.getBoardListByEmpId(empId);
         model.addAttribute("boardScope", BoardDeptList);
     }
 
     @ResponseBody
     @GetMapping(value = "/homeProcess")
-    public List<BoardPostEmpDTO> boardProcess() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String empId = authentication.getName();
-
+    public Object boardProcess(@AuthenticationPrincipal UserDetails user) {
+        String empId = user.getUsername();
         List<BoardPostEmpDTO> boardPostEmpDTOList = boardPostService.getBoardListAll(empId);
 
         if (boardPostEmpDTOList.isEmpty()) {
-            return Collections.emptyList();
+            return null;
         }
-        return boardPostEmpDTOList;
+        HashMap<String, Object> ajaxMap = new HashMap<>();
+        ajaxMap.put("list", boardPostEmpDTOList);
+        ajaxMap.put("empMap", boardPostService.getIdToENameMap());
+        return ajaxMap;
     }
 
     @GetMapping("/boardList")
@@ -95,6 +90,7 @@ public class BoardController {
         model.addAttribute("limit", limit);
         model.addAttribute("boardName1", boardDTO.getBoardName1());
         model.addAttribute("boardName2", boardDTO.getBoardName2());
+        model.addAttribute("empMap", boardPostService.getIdToENameMap());
         return "board/boardList";
     }
 
@@ -125,6 +121,7 @@ public class BoardController {
             ajaxMap.put("limit", limit);
             ajaxMap.put("boardName1", boardDTO.getBoardName1());
             ajaxMap.put("boardName2", boardDTO.getBoardName2());
+            ajaxMap.put("empMap", boardPostService.getIdToENameMap());
         }
         return ajaxMap;
     }
@@ -132,15 +129,15 @@ public class BoardController {
     @ResponseBody
     @GetMapping("/searchAjax")
     public Object searchBoardListAjax(
-                                      @RequestParam(defaultValue = "1") int page,
-                                      @RequestParam(defaultValue = "10") int limit,
-                                      BoardDTO boardDTO,
-                                      Model model,
-                                      String category, String query) {
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int limit,
+            BoardDTO boardDTO,
+            Model model,
+            String category, String query) {
 
         boardSidebar_dept(model);
 
-        HashMap<String, Object> map = boardPostService.getSearchListCountByBoardId(page,limit,boardDTO,category,query);
+        HashMap<String, Object> map = boardPostService.getSearchListCountByBoardId(page, limit, boardDTO, category, query);
         PaginationResult result = new PaginationResult(page, limit, (int) map.get("listCount"));
 
         HashMap<String, Object> ajaxMap = new HashMap<>();
@@ -153,6 +150,7 @@ public class BoardController {
         ajaxMap.put("limit", limit);
         ajaxMap.put("boardName1", boardDTO.getBoardName1());
         ajaxMap.put("boardName2", boardDTO.getBoardName2());
+        ajaxMap.put("empMap", boardPostService.getIdToENameMap());
         return ajaxMap;
     }
 
@@ -164,35 +162,38 @@ public class BoardController {
 
     @ResponseBody
     @PostMapping(value = "/post/add")
-    public boolean boardPostAdd(
-            PostDTO postDTO,
+    public HashMap<String, Object> boardPostAdd(
+            PostAddDTO postAddDTO,
             BoardDTO boardDTO,
+            @AuthenticationPrincipal UserDetails user,
             @RequestParam(value = "attachFiles", required = false) List<MultipartFile> files) {
 
+        HashMap<String, Object> map = new HashMap<>();
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String postWriter = authentication.getName();
-            postDTO.setPostWriter(postWriter);
+            String postWriter = user.getUsername();
+            postAddDTO.setPostWriter(postWriter);
 
-            return boardPostService.addPost(boardDTO, postDTO, files);
+            map.put("postId", boardPostService.addPost(boardDTO, postAddDTO, files));
+            map.put("boardDTO", boardDTO);
+            return map;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return map;
         }
     }
 
     @GetMapping("/post/detail")
-    public String boardPostDetail(@RequestParam(defaultValue = "1") int page, BoardDTO boardDTO, Long no, Model model, RedirectAttributes rattr) {
+    public String boardPostDetail(@RequestParam(defaultValue = "1") int page, BoardDTO boardDTO,
+                                  Long no, Model model, RedirectAttributes rattr,
+                                  @AuthenticationPrincipal UserDetails user) {
         boardSidebar_dept(model);
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String id = authentication.getName();
+        String id = user.getUsername();
 
         boardPostService.setReadCountUpdate(no);
         PostDetailDTO postDetailDTO = boardPostService.getDetail(no);
-        System.out.println("boardDTO"+ boardDTO.getBoardName2());
 
-        if(postDetailDTO.getPostId() != null) {
+        if (postDetailDTO.getPostId() != null) {
+            model.addAttribute("empMap", boardPostService.getIdToENameMap());
             model.addAttribute("postDetailDTO", postDetailDTO);
             model.addAttribute("boardDTO", boardDTO);
             model.addAttribute("id", id);
@@ -207,12 +208,12 @@ public class BoardController {
     }
 
     @GetMapping("/post/modify")
-    public String boardModify(BoardDTO boardDTO, Long no, Model model, RedirectAttributes rattr) {
+    public String boardPostModify(BoardDTO boardDTO, Long no, Model model, RedirectAttributes rattr) {
         boardSidebar_dept(model);
 
         PostDetailDTO postDetailDTO = boardPostService.getDetail(no);
 
-        if(postDetailDTO.getPostId() != null) {
+        if (postDetailDTO.getPostId() != null) {
             model.addAttribute("postDetailDTO", postDetailDTO);
             model.addAttribute("boardDTO", boardDTO);
             return "post/postModify";
@@ -225,19 +226,15 @@ public class BoardController {
 
     @ResponseBody
     @PostMapping("/post/modifyProcess")
-    public Object boardModifyProcess(PostModifyDTO postModifyDTO,BoardDTO boardDTO,
-                                     @RequestParam(value = "addFiles", required = false) List<MultipartFile> addFiles,
-                                     @RequestParam(value = "deletedFiles", required = false) List<String> deletedFiles) {
-
-        System.out.println("addFiles=" + addFiles);
-        System.out.println("deleteFiles=" + deletedFiles);
-
-        boolean result = boardPostService.modifyPost(boardDTO,postModifyDTO,addFiles,deletedFiles);
+    public Object boardPostModifyProcess(PostModifyDTO postModifyDTO, BoardDTO boardDTO,
+                                         @RequestParam(value = "addFiles", required = false) List<MultipartFile> addFiles,
+                                         @RequestParam(value = "deletedFiles", required = false) List<String> deletedFiles) {
+        boolean result = boardPostService.modifyPost(boardDTO, postModifyDTO, addFiles, deletedFiles);
 
         HashMap<String, Object> map = new HashMap<>();
-        if(result) {
+        if (result) {
             map.put("modifyCheck", true);
-        }else{
+        } else {
             map.put("modifyCheck", false);
         }
         map.put("boardDTO", boardDTO);
@@ -253,7 +250,7 @@ public class BoardController {
     }
 
     @PostMapping("/post/delete")
-    public String BoardDelete(int no, RedirectAttributes rattr) {
+    public String boardPostDelete(int page, BoardDTO boardDTO, Long no, RedirectAttributes rattr) {
         boolean result = boardPostService.postDelete(no);
 
         if (result) {
@@ -263,10 +260,43 @@ public class BoardController {
         }
 
         // 리다이렉트 URL에 파라미터 추가
-        rattr.addAttribute("page", 4);
-        rattr.addAttribute("boardName1", "전사게시판");
-        rattr.addAttribute("boardName2", "공지사항");
+        rattr.addAttribute("page", page);
+        rattr.addAttribute("boardName1", boardDTO.getBoardName1());
+        rattr.addAttribute("boardName2", boardDTO.getBoardName2());
 
-        return "redirect:list";
+        return "redirect:../boardList";
+    }
+
+    @GetMapping("/post/reply")
+    public String boardPostReply(Long no, BoardDTO boardDTO, Model model, RedirectAttributes rattr) {
+        boardSidebar_dept(model);
+
+        HashMap<String, Object> map = boardPostService.selectPostInfo(no);
+        if (map == null) {
+            throw new RuntimeException("답글 불러오기 실패");
+        }
+        model.addAttribute("postMap", map);
+        model.addAttribute("boardDTO", boardDTO);
+        return "post/postReply";
+    }
+
+    @ResponseBody
+    @PostMapping("/post/replyProcess")
+    public HashMap<String, Object> replyProcess(PostReplyDTO postReplyDTO,
+                                                BoardDTO boardDTO,
+                                                @AuthenticationPrincipal UserDetails user,
+                                                @RequestParam(value = "attachFiles", required = false) List<MultipartFile> files) {
+        HashMap<String, Object> map = new HashMap<>();
+        try {
+            String postWriter = user.getUsername();
+            postReplyDTO.setPostWriter(postWriter);
+
+            map.put("postId", boardPostService.replyPost(boardDTO, postReplyDTO, files));
+            map.put("boardDTO", boardDTO);
+            return map;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return map;
+        }
     }
 }

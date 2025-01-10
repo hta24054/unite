@@ -18,11 +18,11 @@
     </delete>
     <update id="updateResource">
         UPDATE resc
-        SET RESC_TYPE = #{resourceType},
-            RESC_NAME =#{resourceName},
-            RESC_INFO =#{resourceInfo},
+        SET RESC_TYPE   = #{resourceType},
+            RESC_NAME   =#{resourceName},
+            RESC_INFO   =#{resourceInfo},
             RESC_USABLE =#{resourceUsable}
-        WHERE RESC_ID= #{resourceId}
+        WHERE RESC_ID = #{resourceId}
     </update>
 </mapper>
 

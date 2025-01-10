@@ -4,8 +4,8 @@
     <select id="getBoardListByDeptId" parameterType="Long" resultType="com.hta2405.unite.dto.BoardHomeDeptDTO">
         SELECT *
         FROM board
-        WHERE
-            (dept_id != 0) AND (
+        WHERE (dept_id != 0)
+          AND (
             #{deptId} IN (0000, 1000, 1001)
                 OR (#{deptId} = 1100 AND dept_id BETWEEN 1100 AND 1199)
                 OR (#{deptId} = 1200 AND dept_id BETWEEN 1200 AND 1299)
@@ -16,13 +16,18 @@
     </select>
 
     <select id="getBoardListAll" parameterType="Long" resultType="com.hta2405.unite.dto.BoardPostEmpDTO">
-        select post.*, board.*, IFNULL(postCommentCnt, 0) as postCommentCnt, emp.ename, emp.img_path, emp.img_original, emp.img_uuid, emp.img_type
+        select post.*,
+               board.*,
+               IFNULL(postCommentCnt, 0) as postCommentCnt,
+               emp.ename,
+               emp.img_path,
+               emp.img_original,
+               emp.img_uuid,
+               emp.img_type
         from post
-                 left join (
-            select post_id, count(*) as postCommentCnt
-            from post_comment
-            group by post_id
-        ) pc on post.post_id = pc.post_id
+                 left join (select post_id, count(*) as postCommentCnt
+                            from post_comment
+                            group by post_id) pc on post.post_id = pc.post_id
                  join board on board.board_id = post.board_id
                  join emp on emp.emp_id = post.post_writer
         where board.dept_id = 0
@@ -39,7 +44,7 @@
         SELECT BOARD_ID
         FROM board
         WHERE BOARD_NAME1 = #{boardName1}
-        And BOARD_NAME2 = #{boardName2}
+          And BOARD_NAME2 = #{boardName2}
     </select>
 
     <insert id="insertPost" parameterType="Post" useGeneratedKeys="true" keyProperty="postId">
@@ -80,18 +85,15 @@
 
     <select id="getPostListByBoardId" parameterType="map" resultType="Post">
         <![CDATA[
-            SELECT *
-            FROM (
-                 SELECT post.*, IFNULL(post_comment_cnt, 0) AS post_comment_cnt
-                 FROM post
-                          LEFT OUTER JOIN (
-                     SELECT post_id, COUNT(*) AS post_comment_cnt
-                     FROM post_comment
-                     GROUP BY post_id
-                 ) pc ON post.post_id = pc.post_id
-                 WHERE board_id = #{boardId}
-                 ORDER BY post_re_ref DESC, post_re_seq ASC
-                     LIMIT #{startRow}, #{endRow}  -- OFFSET, LIMIT 방식으로 수정
+        SELECT *
+        FROM (SELECT post.*, IFNULL(post_comment_cnt, 0) AS post_comment_cnt
+              FROM post
+                       LEFT OUTER JOIN (SELECT post_id, COUNT(*) AS post_comment_cnt
+                                        FROM post_comment
+                                        GROUP BY post_id) pc ON post.post_id = pc.post_id
+              WHERE board_id = #{boardId}
+              ORDER BY post_re_ref DESC, post_re_seq ASC
+                  LIMIT #{startRow}, #{endRow} -- OFFSET, LIMIT 방식으로 수정
              ) j;
         ]]>
     </select>
@@ -167,25 +169,18 @@
     </update>
 
     <select id="getDetail" resultType="com.hta2405.unite.dto.PostDetailDTO">
-        SELECT
-            post.*,
-            COALESCE(pc.cnt, 0) AS cnt,
-            emp.img_path,
-            emp.img_original,
-            emp.img_uuid,
-            emp.img_type
-        FROM
-            post
-                LEFT JOIN (
-                SELECT
-                    post_id,
-                    COUNT(*) AS cnt
-                FROM
-                    post_comment
-                GROUP BY
-                    post_id
-            ) pc ON post.post_id = pc.post_id
-                JOIN emp ON emp.emp_id = post.post_writer
+        SELECT post.*,
+               COALESCE(pc.cnt, 0) AS cnt,
+               emp.img_path,
+               emp.img_original,
+               emp.img_uuid,
+               emp.img_type
+        FROM post
+                 LEFT JOIN (SELECT post_id,
+                                   COUNT(*) AS cnt
+                            FROM post_comment
+                            GROUP BY post_id) pc ON post.post_id = pc.post_id
+                 JOIN emp ON emp.emp_id = post.post_writer
         WHERE post.post_id = #{postId}
     </select>
 
@@ -203,13 +198,11 @@
 
     <update id="updatePost">
         UPDATE post
-        SET
-            board_id = #{boardId},
-            post_subject = #{postSubject},
-            post_content = #{postContent},
+        SET board_id         = #{boardId},
+            post_subject     = #{postSubject},
+            post_content     = #{postContent},
             post_update_date = sysdate()
-        WHERE
-            post_id = #{postId}
+        WHERE post_id = #{postId}
     </update>
 
     <delete id="deletePostFile">
@@ -221,7 +214,7 @@
     </delete>
 
     <select id="selectPostInfo" resultType="map">
-        SELECT post_re_ref, post_re_lev, post_re_seq
+        SELECT *
         FROM post
         WHERE post_id = #{postId}
     </select>
@@ -229,28 +222,37 @@
     <!-- 게시글 삭제 -->
     <delete id="deletePost">
         <![CDATA[
-            DELETE FROM post
-            WHERE post_re_ref = #{postReRef}
-              AND post_re_lev >= #{postReLev}
-              AND post_re_seq >= #{postReSeq}
-              AND post_re_seq <= (
-                SELECT seq_boundary
-                FROM (
-                         SELECT
-                             IFNULL(
-                                     (SELECT MIN(post_re_seq) - 1
-                                      FROM post as post1
-                                      WHERE post1.post_re_ref = #{postReRef}
-                                        AND post1.post_re_lev = #{postReLev}
-                                        AND post1.post_re_seq > #{postReSeq}
-                                     ),
-                                     (SELECT MAX(post_re_seq)
-                                      FROM post as post2
-                                      WHERE post2.post_re_ref = #{postReRef}
-                                     )
-                             ) AS seq_boundary
-                     ) AS temp
-            )
-            ]]>
+        DELETE
+        FROM post
+        WHERE post_re_ref = #{postReRef}
+          AND post_re_lev >= #{postReLev}
+          AND post_re_seq >= #{postReSeq}
+          AND post_re_seq <= (SELECT seq_boundary
+                              FROM (SELECT IFNULL(
+                                                   (SELECT MIN(post_re_seq) - 1
+                                                    FROM post as post1
+                                                    WHERE post1.post_re_ref = #{postReRef}
+                                                      AND post1.post_re_lev = #{postReLev}
+                                                      AND post1.post_re_seq
+                                                        > #{postReSeq}),
+                                                   (SELECT MAX(post_re_seq)
+                                                    FROM post as post2
+                                                    WHERE post2.post_re_ref = #{postReRef})
+                                           ) AS seq_boundary) AS temp)
+        ]]>
     </delete>
+
+    <update id="updateReplySeq">
+        UPDATE post
+        SET post_re_seq = post_re_seq + 1
+        WHERE post_re_ref = #{postReRef}
+          AND post_re_seq > #{postReSeq}
+    </update>
+
+    <insert id="replyPostInsert" useGeneratedKeys="true" keyProperty="postId">
+        INSERT INTO post (BOARD_ID, POST_WRITER, POST_SUBJECT, POST_CONTENT,
+                          POST_DATE, POST_UPDATE_DATE, POST_RE_REF, POST_RE_LEV, POST_RE_SEQ)
+        VALUES (#{boardId}, #{postWriter}, #{postSubject}, #{postContent},
+                NOW(), NOW(), #{postReRef}, #{postReLev} + 1, #{postReSeq} + 1)
+    </insert>
 </mapper>

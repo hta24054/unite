@@ -4,13 +4,14 @@ import com.hta2405.unite.domain.Schedule;
 import com.hta2405.unite.domain.ScheduleShare;
 import com.hta2405.unite.dto.ScheduleDTO;
 import com.hta2405.unite.mybatis.mapper.ScheduleMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@Slf4j
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
 
@@ -52,31 +53,10 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("scheduleId", scheduleDTO.getSchedule().getScheduleId());
-        //hashMap.put("shareEmp", scheduleDTO.getShareEmp());
         hashMap.put("shareEmp", scheduleDTO.getScheduleShare().getShareEmp());
 
-        System.out.println("hashMap" + hashMap);
         return scheduleDAO.insertScheduleShareUsers(hashMap);
     }
-
-    /*
-    @Override
-    public List<Schedule> getSharedSchedule(String empId, ScheduleDTO scheduleDTO) {
-        ScheduleShare scheduleShare = scheduleDTO.getScheduleShare();
-
-        if (scheduleShare == null) {
-            return new ArrayList<>(); // scheduleShare가 null일 경우 빈 리스트 반환
-        }
-
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("shareEmp", scheduleShare.getShareEmp()); // getShareEmp() 호출 전에 null 체크 완료
-
-        // 로그 추가
-        System.out.println("shareEmp: " + scheduleShare.getShareEmp());
-
-        return scheduleDAO.getSharedSchedule(empId, hashMap);
-    }*/
-
 
     @Override
     public List<Schedule> getListSharedSchedule(String empId) {
@@ -88,4 +68,37 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleDAO.getScheduleSharesByScheduleId(scheduleId);
     }
 
+    @Override
+    public String getShareEmpNames(int scheduleId) {
+        return scheduleDAO.getShareEmpNames(scheduleId);
+    }
+
+    @Override
+    public String getEmpIdName(String empId) {
+        return scheduleDAO.getEmpIdName(empId);
+    }
+
+    public int insertScheduleDept(ScheduleDTO scheduleDTO) {
+        scheduleDAO.insertScheduleDept(scheduleDTO.getSchedule());
+
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("scheduleId", scheduleDTO.getSchedule().getScheduleId());
+        hashMap.put("deptId", scheduleDTO.getDept().getDeptId());
+
+        return scheduleDAO.insertScheduleShareWithDept(hashMap);
+    }
+
+    // 사용자의 부서 ID 조회
+    @Override
+    public String getDeptIdByEmpId(String empId) {
+        String deptId = scheduleDAO.getDeptIdByEmpId(empId);
+        System.out.println("\n *** Dept ID for empId 사용자의 부서 ID 조회 = " + empId + ": " + deptId);
+        return deptId;
+    }
+
+    @Override
+    public List<Schedule> getListDeptSchedule(String deptId, String empId) {
+        List<Schedule> deptSchedule = scheduleDAO.getScheduleForDept(deptId, empId);
+        return deptSchedule;
+    }
 }

@@ -71,10 +71,10 @@
 					</thead>
 					<tbody id="boardContent">
 					<th:block th:each="task, status : ${boardlist}">
-						<tr>
+						<tr th:onclick="|GoProjectComm('${task.taskId}')|">
 							<td th:text="${status.index + 1}">번호</td>
 							<td th:text="${task.toDo != null ? task.toDo : ''}">카테고리</td>
-							<td th:text="${task.taskContent}" th:onclick="|GoProjectComm('${task.taskId}')|">제목</td>
+							<td th:text="${task.taskContent}">제목</td>
 							<td th:text="${task.taskSubject}">내용</td>
 							<td th:text="${task.taskDate}">작성일</td>
 							<td th:text="${task.taskUpdateDate}">수정일</td>

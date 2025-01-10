@@ -131,9 +131,8 @@ public class ProjectBoardController {
 
 
     @PostMapping("/modifyProcess")
-    public String modifyProcess(ModelAndView mv, int projectId, String memberId, int taskId, MultipartFile file, @AuthenticationPrincipal UserDetails user) {
-        String userId = user.getUsername();
-
+    public String modifyProcess(ModelAndView mv, int projectId, String memberId, int taskId, MultipartFile board_file, String board_subject, String board_content) {
+        projectBoardService.modifyProcess(projectId, memberId, taskId, board_file, board_subject, board_content);
         return "redirect:/projectBoard/comm?projectId=" + projectId + "&memberId=" + memberId + "&taskId=" + taskId;
     }
 

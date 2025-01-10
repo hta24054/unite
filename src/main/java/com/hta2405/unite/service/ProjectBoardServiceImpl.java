@@ -62,6 +62,12 @@ public class ProjectBoardServiceImpl implements ProjectBoardService {
             fileService.downloadFile(FILE_DIR, fileuuid, originalFilename, response);
         }
     }
-
+    public void modifyProcess(int projectId, String memberId, int taskId, MultipartFile file, String board_subject, String board_content){
+        FileDTO taskFile = null;
+        if (file != null && !file.isEmpty()) {
+            taskFile = fileService.uploadFile(file, FILE_DIR);
+        }
+        dao.modifyProcess(projectId, memberId, taskId, taskFile, board_subject, board_content);
+    }
 
 }

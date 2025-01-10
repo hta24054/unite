@@ -68,47 +68,6 @@ function loadBoardHome() {
     });
 }
 
-// //board와 post를 가져와 boardHome html 출력
-// function AddHtmlBoardAndPost(data) {
-//
-//     let html = `<div class="board-container tr-post" data-no=${data.postId} data-name1='${data.boardName1}' data-name2='${data.boardName2}' data-page='1'>
-// 				    <div class="board-header">
-// 				    	${data.boardName1}`;
-//
-//     if (data.boardName2 !== '일반게시판') {
-//         html += ` > ${data.boardName2}`;
-//     }
-//
-//     const postContent = data.postContent;
-//     const truncatedContent = postContent.length > 500 ? postContent.substring(0, 500) + '...' : postContent;
-//
-//     const postSubject = data.postSubject;
-//     const truncatedSubject = postSubject.length > 50 ? postSubject.substring(0, 50) + '...' : postSubject;
-//
-//     // JavaScript에서 Date 객체로 변환하여 포맷
-//     let formattedDate = new Date(data.postDate).toLocaleString();
-//
-//
-//     html += `       </div>
-//
-// 				    <div class="board-title">
-// 				    	<span>` + truncatedSubject + `</span>
-// 				        <img src='/image/comments.png' alt="댓글 이미지" class="icon"/> <span>${data.postCommentCnt}</span>
-// 				    </div>
-//
-// 				    <div class="board-content" style="word-break: break-all;">` + truncatedContent + `</div>
-//
-// 				    <div class="board-footer">
-// 				        <img src="/emp/profile-image?empId=${data.postWriter}" alt="Profile Image">
-// 				        <div class="username">${empMap[data.postWriter]}</div>
-// 				        <div class="date">${formattedDate}</div>
-// 				    </div>
-// 				</div>
-// 				 `;
-//
-//     return html;
-// }
-
 // 로딩 오버레이 제어 함수
 function showLoadingOverlay() {
     document.getElementById("loading-overlay").style.display = "block";
@@ -124,11 +83,7 @@ function renderData(items) {
     items.forEach((data) => {
         let html = `<div class="board-container tr-post" data-no=${data.postId} data-name1='${data.boardName1}' data-name2='${data.boardName2}' data-page='1'>
                     <div class="board-header">
-                        ${data.boardName1}`;
-
-        if (data.boardName2 !== '일반게시판') {
-            html += ` > ${data.boardName2}`;
-        }
+                        ${data.boardName1} > ${data.boardName2}`;
 
         const postContent = data.postContent;
         const truncatedContent = postContent.length > 500 ? postContent.substring(0, 500) + '...' : postContent;

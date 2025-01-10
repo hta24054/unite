@@ -1,5 +1,6 @@
 package com.hta2405.unite.service;
 
+import com.hta2405.unite.domain.Board;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Post;
 import com.hta2405.unite.domain.PostFile;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
@@ -29,9 +31,39 @@ public class BoardPostService {
     private final BoardPostMapper boardPostMapper;
     private final EmpService empService;
     private final FileService fileService;
+    private final RestClient.Builder builder;
 
     public Map<String, String> getIdToENameMap() {
         return empService.getIdToENameMap();
+    }
+
+    public Board findBoardByBoardId(Long boardId) {
+        return boardPostMapper.findBoardByBoardId(boardId);
+    }
+
+    public HashMap<String, Object> getBoardNames(String empId) {
+        Emp emp = empService.getEmpById(empId);
+        Long deptId = emp.getDeptId();
+
+        List<Board> list = boardPostMapper.getBoardNamesByDeptId(deptId);
+        List<String> companyBoardList = new ArrayList<>();
+        List<String> generalBoardList = new ArrayList<>();
+        List<String> departmentBoardList = new ArrayList<>();
+        HashMap<String, Object> map = new HashMap<>();
+
+        for (Board board : list) {
+            if (board.getBoardName1().equals("전사게시판")) {
+                companyBoardList.add(board.getBoardName2());
+            } else if (board.getBoardName1().equals("일반게시판")) {
+                generalBoardList.add(board.getBoardName2());
+            } else {
+                departmentBoardList.add(board.getBoardName2());
+            }
+        }
+        map.put("전사게시판", companyBoardList);
+        map.put("일반게시판", generalBoardList);
+        map.put("부서게시판", departmentBoardList);
+        return map;
     }
 
     public List<BoardHomeDeptDTO> getBoardListByEmpId(String empId) {
@@ -160,12 +192,11 @@ public class BoardPostService {
                               List<MultipartFile> addFiles, List<String> deletedFiles) {
         Long postId = postModifyDTO.getPostId();
         PostDetailDTO postDetailDTO = getDetail(postId);
+        Long boardId = postDetailDTO.getBoardId();
 
-        postDetailDTO.setBoardId(boardPostMapper.findBoardIdByName1Name2(boardDTO));
+        postDetailDTO.setBoardId(boardId);
         postDetailDTO.setPostSubject(postModifyDTO.getPostSubject());
         postDetailDTO.setPostContent(postModifyDTO.getPostContent());
-
-        Long boardId = boardPostMapper.findBoardIdByName1Name2(boardDTO);
 
         Post post = Post.builder()
                 .postId(postId)

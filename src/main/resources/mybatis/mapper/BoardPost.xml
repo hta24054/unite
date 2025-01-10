@@ -47,6 +47,12 @@
           And BOARD_NAME2 = #{boardName2}
     </select>
 
+    <select id="findBoardByBoardId" resultType="Board">
+        SELECT *
+        FROM board
+        WHERE BOARD_ID = #{boardId}
+    </select>
+
     <insert id="insertPost" parameterType="Post" useGeneratedKeys="true" keyProperty="postId">
         INSERT INTO post (BOARD_ID, POST_WRITER, POST_SUBJECT, POST_CONTENT,
                           POST_DATE, POST_UPDATE_DATE, POST_RE_REF, POST_RE_LEV, POST_RE_SEQ)
@@ -255,4 +261,21 @@
         VALUES (#{boardId}, #{postWriter}, #{postSubject}, #{postContent},
                 NOW(), NOW(), #{postReRef}, #{postReLev} + 1, #{postReSeq} + 1)
     </insert>
+
+    <select id="getBoardNames" resultType="Board">
+        SELECT board_name1, board_name2
+        FROM board
+    </select>
+
+    <select id="getBoardNamesByDeptId" parameterType="Long" resultType="Board">
+        SELECT board_name1, board_name2
+        FROM board
+        WHERE board.dept_id = 0
+           or #{deptId} in (0000, 1000, 1001)
+           or (#{deptId} = 1100 and board.dept_id between 1100 and 1199)
+           or (#{deptId} = 1200 and board.dept_id between 1200 and 1299)
+           or (#{deptId} = 1300 and board.dept_id between 1300 and 1399)
+           or (#{deptId} = 1400 and board.dept_id between 1400 and 1499)
+           or (board.dept_id = #{deptId})
+    </select>
 </mapper>

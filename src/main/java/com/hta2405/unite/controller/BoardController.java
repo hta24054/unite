@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -155,8 +156,10 @@ public class BoardController {
     }
 
     @GetMapping(value = "/post/postWrite")
-    public String boardPostWrite(Model model) {
+    public String boardPostWrite(Model model, @AuthenticationPrincipal User user) {
         boardSidebar_dept(model);
+        HashMap<String, Object> map = boardPostService.getBoardNames(user.getUsername());
+        model.addAttribute("boardMap", map);
         return "post/postWrite";
     }
 
@@ -208,16 +211,19 @@ public class BoardController {
     }
 
     @GetMapping("/post/modify")
-    public String boardPostModify(BoardDTO boardDTO, Long no, Model model, RedirectAttributes rattr) {
+    public String boardPostModify(BoardDTO boardDTO, Long no, @AuthenticationPrincipal UserDetails user,
+                                  Model model, RedirectAttributes rattr) {
         boardSidebar_dept(model);
-
         PostDetailDTO postDetailDTO = boardPostService.getDetail(no);
 
         if (postDetailDTO.getPostId() != null) {
+            HashMap<String, Object> map = boardPostService.getBoardNames(user.getUsername());
+            model.addAttribute("boardMap", map);
             model.addAttribute("postDetailDTO", postDetailDTO);
             model.addAttribute("boardDTO", boardDTO);
             return "post/postModify";
         }
+
         rattr.addAttribute("boardName1", boardDTO.getBoardName1());
         rattr.addAttribute("boardName2", boardDTO.getBoardName2());
         rattr.addAttribute("no", no);
@@ -237,6 +243,11 @@ public class BoardController {
         } else {
             map.put("modifyCheck", false);
         }
+        if (boardDTO.getBoardName1() == null) {
+            boardDTO.setBoardName1(boardDTO.getBoardName1Hidden());
+            boardDTO.setBoardName2(boardDTO.getBoardName2Hidden());
+        }
+        System.out.println("boardDTO = " + boardDTO.toString());
         map.put("boardDTO", boardDTO);
         map.put("postId", postModifyDTO.getPostId());
         return map;
@@ -268,14 +279,18 @@ public class BoardController {
     }
 
     @GetMapping("/post/reply")
-    public String boardPostReply(Long no, BoardDTO boardDTO, Model model, RedirectAttributes rattr) {
+    public String boardPostReply(Long no, BoardDTO boardDTO,
+                                 @AuthenticationPrincipal UserDetails user, Model model) {
         boardSidebar_dept(model);
 
-        HashMap<String, Object> map = boardPostService.selectPostInfo(no);
-        if (map == null) {
+        HashMap<String, Object> postMap = boardPostService.selectPostInfo(no);
+        if (postMap == null) {
             throw new RuntimeException("답글 불러오기 실패");
         }
-        model.addAttribute("postMap", map);
+
+        HashMap<String, Object> boardMap = boardPostService.getBoardNames(user.getUsername());
+        model.addAttribute("boardMap", boardMap);
+        model.addAttribute("postMap", postMap);
         model.addAttribute("boardDTO", boardDTO);
         return "post/postReply";
     }
@@ -298,5 +313,11 @@ public class BoardController {
             e.printStackTrace();
             return map;
         }
+    }
+
+    @GetMapping("/create")
+    public String boardCreate(Model model) {
+        boardSidebar_dept(model);
+        return "board/boardCreate";
     }
 }

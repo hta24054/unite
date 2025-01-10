@@ -45,5 +45,8 @@ public class ProjectBoardServiceImpl implements ProjectBoardService {
         return dao.getTaskList(projectId, userid);
     }
 
+    public List<ProjectTask> getTask(int projectId, String userid, int taskId){
+        return dao.getTask(projectId, userid, taskId);
+    }
 
 }

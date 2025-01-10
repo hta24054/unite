@@ -53,7 +53,7 @@ $(document).ready(function () {
 	    const title = $("#postTitle").val();
 	    const content = $("#postContent").val();
 	    const file = $("#postFile")[0].files[0]; // 파일 가져오기 (수정된 부분)
-		const category = $("#todoCategory").val();
+		const category = $("#todoCategory").val() || "일반";
 		console.log(category);
 	    const formData = new FormData();
 		console.log("sdfsd",projectId);
@@ -292,7 +292,7 @@ $(document).ready(function () {
 				select.empty();  // 기존 옵션들 비우기
 
 				// 기본 옵션
-				select.append('<option value="" disabled selected>일반</option>');
+				select.append('<option value="" disabled selected>일반(투두리스트를 작성해주세요)</option>');
 
 				// 투두리스트 항목을 옵션으로 추가
 				todos.forEach(function(todo) {

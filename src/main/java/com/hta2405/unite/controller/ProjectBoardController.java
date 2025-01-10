@@ -6,13 +6,13 @@ import com.hta2405.unite.service.ProjectBoardService;
 import com.hta2405.unite.service.ProjectService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.config.Task;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -54,7 +54,7 @@ public class ProjectBoardController {
         return ResponseEntity.ok(response);
     }
 
-    //    @GetMapping("/lists")
+//    @GetMapping("/lists")
 //    @ResponseBody
 //    public Map<String, Object> list(@RequestParam int projectId) {
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -74,8 +74,22 @@ public class ProjectBoardController {
         mv.addObject("memberName", empService.getEmpById(memberId).getEname());
         mv.addObject("boardlist", projectBoardService.getTaskList(projectId, memberId));
         mv.addObject("message", "진행 과정 게시판");
+        mv.addObject("projectId", projectId);
+        mv.addObject("memberId", memberId);
         mv.setViewName("project/project_task_list");
         return mv;
+    }
+
+    @GetMapping("/comm")
+    public ModelAndView comm(ModelAndView mv, int projectId, String memberId, int taskId) {
+        mv.addObject("projectName", projectService.getProjectName(projectId));
+        mv.addObject("task", projectBoardService.getTask(projectId, memberId, taskId).get(0));
+        mv.setViewName("project/project_comm");
+        return mv;
+    }
+    @PostMapping("/modify")
+    public String modify(ModelAndView mv, int projectId, String memberId, int taskId) {
+        return "/project/project_modify";
     }
 
 }

@@ -22,7 +22,6 @@ public class TripDocEditViewer implements DocEditViewer {
     @Override
     public void prepareEditView(Doc doc, DocRole docRole, Model model) {
         docService.addCommonReadAttrToModel(doc, docRole, model);
-        model.addAttribute("itemList", docService.getBuyItemListByDocId(doc.getDocId()));
         model.addAttribute("docTrip", docService.getDocTripByDocId(doc.getDocId()));
     }
 

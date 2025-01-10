@@ -20,6 +20,8 @@ public interface DocMapper {
 
     void updateGeneralDoc(Doc doc);
 
+    void updateTripDoc(DocTrip docTrip);
+
     void insertSign(List<Sign> list);
 
     void deleteSign(Long docId);

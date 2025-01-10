@@ -118,6 +118,16 @@ public class DocService {
         docMapper.insertSign(list);
     }
 
+    @Transactional
+    public void updateTripDoc(Doc doc, DocTrip docTrip, List<String> signers) {
+        docMapper.updateGeneralDoc(doc);
+        docMapper.updateTripDoc(docTrip);
+
+        List<Sign> list = getSigns(doc, signers);
+        docMapper.deleteSign(doc.getDocId());
+        docMapper.insertSign(list);
+    }
+
     public int countVacation(LocalDate startDate, LocalDate endDate) {
         int allCount = (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
         int holidayCount = holidayService.getHolidayList(startDate, endDate).size();
@@ -282,6 +292,4 @@ public class DocService {
         }
         return docMapper.deleteDoc(docId) == 1;
     }
-
-
 }

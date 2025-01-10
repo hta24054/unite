@@ -6,10 +6,12 @@ import com.hta2405.unite.dto.ProjectTaskDTO;
 import com.hta2405.unite.mybatis.mapper.EmpMapper;
 import com.hta2405.unite.mybatis.mapper.ProjectBoardMapper;
 import com.hta2405.unite.util.ConfigUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ProjectBoardServiceImpl implements ProjectBoardService {
@@ -48,5 +50,18 @@ public class ProjectBoardServiceImpl implements ProjectBoardService {
     public List<ProjectTask> getTask(int projectId, String userid, int taskId){
         return dao.getTask(projectId, userid, taskId);
     }
+
+    public boolean deleteTask(int projectId, String memberId, int taskId){
+        return dao.deleteTask(projectId, memberId, taskId);
+    }
+
+    public void fileDown(String fileuuid, String originalFilename, HttpServletResponse response){
+        if (fileuuid == null || fileuuid.isEmpty()) {
+            fileService.downloadFile(FILE_DIR, fileuuid, originalFilename, response);
+        } else {
+            fileService.downloadFile(FILE_DIR, fileuuid, originalFilename, response);
+        }
+    }
+
 
 }

@@ -196,12 +196,6 @@ $(document).ready(function () {
             }
         });
     });
-    // tr 클릭 시 submitForm 호출
-    $('.clickable-row').on('click', function () {
-        const projectId = $("#projectId").val();
-        location.href = "../projectBoard/list?projectId=" + projectId;
-    });
-
     // 게시물 리스트 업데이트
     function updatePostList(posts) {
         const postListContainer = $("#postTable tbody");
@@ -292,7 +286,7 @@ $(document).ready(function () {
 				select.empty();  // 기존 옵션들 비우기
 
 				// 기본 옵션
-				select.append('<option value="" disabled selected>일반(투두리스트를 작성해주세요)</option>');
+				select.append('<option value="" disabled selected>일반(투두리스트를 선택해주세요)</option>');
 
 				// 투두리스트 항목을 옵션으로 추가
 				todos.forEach(function(todo) {

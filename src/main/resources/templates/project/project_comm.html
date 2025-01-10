@@ -2,132 +2,112 @@
 	<th:block th:fragment="content">
 		<!DOCTYPE html>
 		<html xmlns:th="http://www.thymeleaf.org">
-<head>
-	<title>Insert title here</title>
-<!--	<jsp:include page="../common/header.jsp"/>-->
-<!--	<jsp:include page="project_leftbar.jsp"/>-->
-	<link rel="stylesheet" th:href="@{/css/view.css}" type="text/css">
-	<script th:src="@{/js/project_view.js}"></script>
-	<script th:inline="javascript">
-    	const contextPath = "${pageContext.request.contextPath}";
-    	function submitModifyForm(taskNum, memberId) {
-    	    document.getElementById('hiddenTaskNum').value = taskNum;
-			console.log(taskNum);
-			console.log(memberId);
-    	    document.getElementById('hiddenMemberId').value = memberId;
-    	    document.getElementById('modifyForm').submit();
-    	}
-	    function submitForm(memberId) {
-	        // memberId 값을 hidden input에 설정
-	        document.getElementById('memberId').value = memberId;
-	        // 폼을 제출
-	        document.getElementById('postForm').submit();
-	    }
-    </script>
-</head>
-<body>
-	<input type="hidden" id="loginid" value="${task.memberId }" name="loginid">
-	<input type="hidden" name="num" value="${task.taskNum }" id="comment_board_num">
-	<div class="container">
-		<table class="table">
-			<tr>
-				<th colspan="2" th:text="${projectName}"></th>
-			</tr>
-			<tr>
-				<td><div>글쓴이</div></td>
-				<td><div th:text="${task.memberName}"></div></td>
-			</tr>
-			<tr>
-				<td><div>제목</div></td>
-				<td><span th:text="${task.taskSubject}"></span></td>
-			</tr>
-			<tr>
-				<td><div>내용</div></td>
-				<td style="padding-right: 0px">
-					<textarea class="form-control" rows="5" readonly th:text="${task.taskContent}"></textarea>
-				</td>
-			</tr>
+		<head>
+			<title>Insert title here</title>
+		<!--	<jsp:include page="../common/header.jsp"/>-->
+		<!--	<jsp:include page="project_leftbar.jsp"/>-->
+			<link rel="stylesheet" th:href="@{/css/view.css}" type="text/css">
+			<script th:src="@{/js/project_view.js}"></script>
+			<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+			<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+		</head>
+		<body>
+			<div class="container">
+				<table class="table">
+					<tr>
+						<th colspan="2" th:text="${projectName}"></th>
+					</tr>
+					<tr>
+						<td><div>글쓴이</div></td>
+						<td><div th:text="${task.memberName}"></div></td>
+					</tr>
+					<tr>
+						<td><div>제목</div></td>
+						<td><span th:text="${task.taskSubject}"></span></td>
+					</tr>
+					<tr>
+						<td><div>내용</div></td>
+						<td style="padding-right: 0px">
+							<textarea class="form-control" rows="5" readonly th:text="${task.taskContent}"></textarea>
+						</td>
+					</tr>
 
-<!--			<tr>-->
-<!--				<td><div>첨부파일</div></td>-->
-<!--				<th:block th:if="${not #strings.isEmpty(task.taskFileOriginal)}">-->
-<!--					<td><a th:href="@{/down(filename=${task.taskFileUuid}${task.taskFileType}&originalFilename=${task.taskFileOriginal})}"-->
-<!--						   th:title="${task.taskFileOriginal}">-->
-<!--						<img th:src="@{${pageContext.request.contextPath}/image/down.png}" width="10px">&nbsp;<span th:text="${task.taskFileOriginal}"></span></a>-->
-<!--					</td>-->
-<!--				</th:block>-->
-<!--				<th:block th:if="${#strings.isEmpty(task.taskFileOriginal)}">-->
-<!--					<td></td>-->
-<!--				</th:block>-->
-<!--			</tr>-->
-			<tr style="text-align: right;">
-				<td colspan="2" class="center" style="border-bottom-style: none;">
-					<th:block th:if="${task.memberId == #authentication.name or #authentication.name == 'admin'}">
-						<a href="javascript:void(0);" th:onclick="submitModifyForm(${task.taskId}+','+${task.memberId})">
-							<button class="btn btn-info">수정</button>
-						</a>
+					<tr>
+						<td><div>첨부파일</div></td>
+						<th:block th:if="${not #strings.isEmpty(task.taskFileOriginal)}">
+							<td>
+								<a th:href="@{/projectBoard/down(fileuuid=${task.taskFileUuid},originalFilename=${task.taskFileOriginal})}"
+								   th:title="${task.taskFileOriginal}">
+									<img th:src="@{/image/down.png}" width="10px">&nbsp;<span th:text="${task.taskFileOriginal}"></span>
+								</a>
+							</td>
+						</th:block>
+						<th:block th:if="${#strings.isEmpty(task.taskFileOriginal)}">
+							<td></td>
+						</th:block>
+					</tr>
+					<tr style="text-align: right;">
+						<td colspan="2" class="center" style="border-bottom-style: none;">
+							<th:block th:if="${task.memberId == #authentication.name or #authentication.name == 'admin'}">
+								<button class="btn btn-info" th:onclick="|location.href='@{/projectBoard/modify(memberId=${task.memberId},taskId=${task.taskId}, projectId=${projectId})}';|">수정</button>
 
-						<a href="#" data-toggle="modal" data-target="#myModal">
-							<button class="btn btn-danger">삭제</button>
-						</a>
-					</th:block>
-					<a href="javascript:void(0);" th:onclick="submitForm(${task.memberId})">
-						<button class="btn btn-warning">목록</button>
-					</a>
-				</td>
-			</tr>
-		</table>
-
-		<form id="postForm" th:action="@{/projectBoard/list}" method="GET" style="display:none;">
-		    <input type="hidden" name="memberId" id="memberId">
-		</form>
-		<form id="modifyForm" th:action="@{/modify}" method="POST" style="display: none;">
-		    <input type="hidden" name="taskNum" id="hiddenTaskNum">
-		    <input type="hidden" name="memberId" id="hiddenMemberId">
-		</form>
-		<div class="modal" id="myModal">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-body">
-						<form name="deleteForm" action="delete" method="post">
-							<div class="form-group">
-								<label for="board_pass">비밀번호</label>
-								<input type="password" class="form-control" placeholder="Enter password" name="board_pass" id="board_pass">
+								<a href="#" data-toggle="modal" data-target="#myModal">
+									<button class="btn btn-danger">삭제</button>
+								</a>
+							</th:block>
+							<a href="javascript:void(0);" th:onclick="|location.href='@{/projectBoard/list(memberId=${task.memberId}, projectId=${projectId})}';|">
+								<button class="btn btn-warning">목록</button>
+							</a>
+						</td>
+					</tr>
+				</table>
+				<div class="modal" id="myModal">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-body">
+								<form name="deleteForm" th:action="delete" method="post">
+									<input type="hidden" name="memberId" th:value="${memberId}">
+									<input type="hidden" name="projectId" th:value="${projectId}">
+									<input type="hidden" name="taskId" th:value="${task.taskId}">
+									<div class="form-group">
+										<label for="board_pass">비밀번호</label>
+										<input type="password" class="form-control" placeholder="Enter password" name="board_pass" id="board_pass">
+									</div>
+									<button type="submit" class="btn btn-primary">전송</button>
+									<button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>
+								</form>
 							</div>
-							<button type="submit" class="btn btn-primary">전송</button>
-							<button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>
-						</form>
+						</div>
+					</div>
+				</div>
+				<div class="comment-area">
+					<div class="comment-head">
+						<h3 class="comment-count">
+							댓글 <sup id="count"></sup>
+						</h3>
+						<div class="comment-order">
+							<ul class="comment-order-list">
+							</ul>
+						</div>
+					</div>
+					<ul class="comment-list">
+					</ul>
+					<div class="comment-write">
+						<div class="comment-write-area">
+							<b class="comment-write-area-name" th:text="${#authentication.name }"></b>
+							<span class="comment-write-area-count">0/200</span>
+							<textarea placeholder="댓글을 남겨보세요" rows="1" class="comment-write-area-text" maxlength="200"></textarea>
+
+						</div>
+						<div class="register-box">
+							<div class="button btn-cancel">취소</div>
+							<div class="button btn-register">등록</div>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="comment-area">
-			<div class="comment-head">
-				<h3 class="comment-count">
-					댓글 <sup id="count"></sup>
-				</h3>
-				<div class="comment-order">
-					<ul class="comment-order-list">
-					</ul>
-				</div>
-			</div>
-			<ul class="comment-list">
-			</ul>
-			<div class="comment-write">
-				<div class="comment-write-area">
-					<b class="comment-write-area-name" th:text="${#authentication.name }"></b>
-					<span class="comment-write-area-count">0/200</span>
-					<textarea placeholder="댓글을 남겨보세요" rows="1" class="comment-write-area-text" maxlength="200"></textarea>
-						
-				</div>
-				<div class="register-box">
-					<div class="button btn-cancel">취소</div>
-					<div class="button btn-register">등록</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</body>
-</html>
+		</body>
+		</html>
 	</th:block>
 </th:block>

@@ -41,7 +41,7 @@ $(document).ready(function () {
             },
             dataType: "json",
             success: function (data) {
-                data.holidayList.forEach(function (holiday) {
+                data.forEach(function (holiday) {
                     events.push({
                         title: holiday.holidayName,
                         start: holiday.holidayDate,
@@ -55,7 +55,7 @@ $(document).ready(function () {
                     });
                 });
 
-                // 공휴일 데이터가 로드되었음을 플래그로 저장
+                // 공휴일 데이터가 로드되면 플래그 저장
                 window.holidayDataLoaded = true;
 
                 // 캘린더 초기화

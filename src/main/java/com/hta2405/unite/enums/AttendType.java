@@ -12,7 +12,7 @@ public enum AttendType {
     SICK_VACATION("병가", VACATION),
     OFFICIAL_VACATION("공가", VACATION),
     EVENT_VACATION("경조", VACATION),
-    ETC_VACATION("기타)", VACATION),
+    ETC_VACATION("기타", VACATION),
     HOLIDAY("휴일"),
     ABSENT("결근");
 

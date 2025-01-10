@@ -1,9 +1,9 @@
-package com.hta2405.unite.strategy;
+package com.hta2405.unite.strategy.doc;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hta2405.unite.domain.Doc;
-import com.hta2405.unite.dto.DocSaveRequestDTO;
+import com.hta2405.unite.dto.DocRequestDTO;
 import com.hta2405.unite.dto.ProductDTO;
 import com.hta2405.unite.enums.DocType;
 import com.hta2405.unite.service.DocService;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class BuyDocSaver implements DocSaver {
+public class BuyDocWriter implements DocWriter {
     private final DocService docService;
 
     @Override
@@ -24,7 +24,7 @@ public class BuyDocSaver implements DocSaver {
     }
 
     @Override
-    public void save(String empId, DocSaveRequestDTO req) {
+    public void write(String empId, DocRequestDTO req) {
         ObjectMapper mapper = new ObjectMapper();
         List<String> signers = mapper.convertValue(req.getFormData().get("signers"), new TypeReference<>() {
         });

@@ -22,7 +22,11 @@
             (#{sign.empId}, #{sign.docId}, #{sign.signOrder}, #{sign.signTime})
         </foreach>
     </insert>
-    <insert id="insertProducts">
+    <delete id="deleteSign">
+        DELETE FROM sign
+        WHERE DOC_ID = #{docId}
+    </delete>
+    <insert id="insertBuyItem">
         insert into buy_item(doc_buy_id, product_name, standard, quantity, price) VALUES
         <foreach collection="items" item="item" separator=",">
             (#{docBuyId}, #{item.productName}, #{item.standard}, #{item.quantity}, #{item.price})
@@ -36,6 +40,47 @@
                 #{docVacation.vacationCount}, #{docVacation.vacationFilePath},
                 #{docVacation.vacationFileOriginal}, #{docVacation.vacationFileUUID}, #{docVacation.vacationFileType})
     </insert>
+    <update id="updateGeneralDoc">
+        UPDATE doc
+        SET DOC_WRITER      = #{docWriter},
+            DOC_TITLE       = #{docTitle},
+            DOC_CONTENT     = #{docContent},
+            DOC_CREATE_DATE = #{docCreateDate}
+        WHERE DOC_ID = #{docId}
+    </update>
+    <update id="updateTripDoc">
+        UPDATE doc_trip
+        SET doc_id      = #{docId},
+            trip_start = #{tripStart},
+            trip_end = #{tripEnd},
+            trip_loc = #{tripLoc},
+            trip_phone = #{tripPhone},
+            trip_info = #{tripInfo},
+            card_start = #{cardStart},
+            card_end = #{cardEnd},
+            card_return = #{cardReturn}
+        WHERE DOC_ID = #{docId}
+    </update>
+    <update id="updateVacationDoc">
+        update doc_vacation
+        set vacation_start         = #{vacationStart},
+            vacation_end           = #{vacationEnd},
+            vacation_type          = #{vacationType},
+            vacation_count         = #{vacationCount},
+            vacation_file_path     = #{vacationFilePath},
+            vacation_file_original = #{vacationFileOriginal},
+            vacation_file_uuid     = #{vacationFileUUID},
+            vacation_file_type     = #{vacationFileType}
+        where doc_id = #{docId}
+    </update>
+    <select id="getDocBuyByDocId">
+        select * from doc_buy
+        where doc_id = #{docId}
+    </select>
+    <delete id="deleteBuyItem">
+        delete from buy_item
+        where doc_buy_id = #{docBuyId}
+    </delete>
     <select id="getInProgressDocsByEmpId">
         SELECT doc.doc_id      as docId,
                doc.doc_writer  as writer,
@@ -155,5 +200,31 @@
         SET SIGN_FINISH = 1
         WHERE doc_id = #{docId}
     </update>
+    <select id="getDeptDocListByEmpId">
+        SELECT doc.doc_id      as docId,
+               emp.ename  as writer,
+               doc_create_date as createDate,
+               doc.doc_type    as docType,
+               doc.doc_title   as docTitle,
+               null
+        FROM doc
+                 join emp on doc.doc_writer = emp.emp_id
+        where dept_id = (select dept_id from emp where emp_id = #{empId})
+          and sign_finish = 1
+        order by createDate desc
+    </select>
+    <select id="getSignedDocListByEmpId">
+        select d.doc_id      as docId,
+               e.ename       as writer,
+               d.doc_create_date as createDate,
+               d.doc_type    as docType,
+               d.doc_title   as docTitle,
+               null
+        from doc d JOIN sign s ON d.DOC_ID = s.DOC_ID
+        join emp e on doc_writer = e.emp_id
+        WHERE s.EMP_ID = #{empId}
+          and SIGN_FINISH = 1
+        order by doc_create_date desc
+    </select>
 </mapper>
 

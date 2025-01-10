@@ -46,6 +46,94 @@
         </form>
         <!-- Navbar-->
         <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+            <!-- 알림 -->
+            <li class="nav-item dropdown no-arrow mx-1">
+                <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-bs-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-bell fa-fw"></i>
+                    <!-- Counter - Alerts -->
+                    <span class="badge badge-danger badge-counter">3+</span>
+                </a>
+                <!-- Dropdown - Alerts -->
+                <div class="dropdown-list dropdown-menu dropdown-menu-end shadow animated--grow-in"
+                     aria-labelledby="alertsDropdown">
+                    <h6 class="dropdown-header">
+                        알림 센터
+                    </h6>
+                    <a class="dropdown-item d-flex align-items-center" href="#">
+                        <div class="me-3">
+                            <div class="icon-circle bg-primary">
+                                <i class="fas fa-file-alt text-white"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="small text-gray-500">2025년 1월 10일</div>
+                            <span class="font-weight-bold">새로운 보고서가 준비되었습니다!</span>
+                        </div>
+                    </a>
+                    <a class="dropdown-item d-flex align-items-center" href="#">
+                        <div class="me-3">
+                            <div class="icon-circle bg-success">
+                                <i class="fas fa-donate text-white"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="small text-gray-500">2025년 1월 9일</div>
+                            $290.29이 계정에 입금되었습니다!
+                        </div>
+                    </a>
+                    <a class="dropdown-item d-flex align-items-center" href="#">
+                        <div class="me-3">
+                            <div class="icon-circle bg-warning">
+                                <i class="fas fa-exclamation-triangle text-white"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="small text-gray-500">2025년 1월 8일</div>
+                            계정에 비정상적인 지출이 감지되었습니다.
+                        </div>
+                    </a>
+                    <a class="dropdown-item text-center small text-gray-500" href="#">모든 알림 보기</a>
+                </div>
+            </li>
+
+            <!-- 메시지 -->
+            <li class="nav-item dropdown no-arrow mx-1">
+                <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-bs-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-envelope fa-fw"></i>
+                    <!-- Counter - Messages -->
+                    <span class="badge badge-danger badge-counter">7</span>
+                </a>
+                <!-- Dropdown - Messages -->
+                <div class="dropdown-list dropdown-menu dropdown-menu-end shadow animated--grow-in"
+                     aria-labelledby="messagesDropdown">
+                    <h6 class="dropdown-header">
+                        메시지 센터
+                    </h6>
+                    <a class="dropdown-item d-flex align-items-center" href="#">
+                        <div class="dropdown-list-image me-3">
+                            <img class="rounded-circle" src="img/undraw_profile_1.svg" alt="...">
+                            <div class="status-indicator bg-success"></div>
+                        </div>
+                        <div class="font-weight-bold">
+                            <div class="text-truncate">안녕하세요! 도와주실 수 있을까요?</div>
+                            <div class="small text-gray-500">홍길동 · 58분 전</div>
+                        </div>
+                    </a>
+                    <a class="dropdown-item d-flex align-items-center" href="#">
+                        <div class="dropdown-list-image me-3">
+                            <img class="rounded-circle" src="img/undraw_profile_2.svg" alt="...">
+                            <div class="status-indicator"></div>
+                        </div>
+                        <div>
+                            <div class="text-truncate">지난달 주문했던 사진 준비 완료되었습니다!</div>
+                            <div class="small text-gray-500">김철수 · 1일 전</div>
+                        </div>
+                    </a>
+                    <a class="dropdown-item text-center small text-gray-500" href="#">모든 메시지 보기</a>
+                </div>
+            </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
                    aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>

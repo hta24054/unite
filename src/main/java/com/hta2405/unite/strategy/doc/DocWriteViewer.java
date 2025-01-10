@@ -1,12 +1,12 @@
-package com.hta2405.unite.strategy;
+package com.hta2405.unite.strategy.doc;
 
 import com.hta2405.unite.enums.DocType;
 import org.springframework.ui.Model;
 
-public interface DocWriter {
+public interface DocWriteViewer {
     DocType getType();
 
-    void prepareWriter(String empId, Model model);
+    void prepareWriteView(String empId, Model model);
 
     String getView();
 }

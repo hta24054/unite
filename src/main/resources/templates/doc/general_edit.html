@@ -1,0 +1,154 @@
+<th:block th:replace="layout :: setContent(~{this::content})">
+    <th:block th:fragment="content">
+        <!DOCTYPE html>
+        <html xmlns:th="http://www.thymeleaf.org" lang="en">
+        <head>
+            <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.css" rel="stylesheet">
+            <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
+            <link th:href="@{/css/doc.css}" rel="stylesheet">
+            <meta charset="UTF-8">
+            <title>일반 문서 작성</title>
+        </head>
+        <body>
+        <form id="doc_form">
+            <div class="container mt-4">
+                <div class="document-wrapper">
+                    <!-- 기안용지 제목 -->
+                    <div class="text-center mb-4">
+                        <h1 class="header-cell">기안용지</h1>
+                    </div>
+
+                    <!-- 문서 정보 및 결재자 테이블을 좌우로 배치 -->
+                    <div class="row">
+                        <!-- 문서 정보 테이블 -->
+                        <div class="col-md-6 mb-3">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td class="table-secondary font-weight-bold text-center">문서번호</td>
+                                    <td><input type="text" name="docId" th:value="${doc.docId}" readonly></td>
+                                </tr>
+                                <tr>
+                                    <td class="table-secondary font-weight-bold text-center">부&nbsp;&nbsp;&nbsp;서</td>
+                                    <td th:text="${dept.deptName}">부서명</td>
+                                </tr>
+                                <tr>
+                                    <td class="table-secondary font-weight-bold text-center">기 안 자</td>
+                                    <td th:text="${writer.ename}">기안자</td>
+                                    <input type="hidden" name="writer" th:value="${writer.empId}">
+                                </tr>
+                                <tr>
+                                    <td class="table-secondary font-weight-bold text-center">작 성 일</td>
+                                    <td th:text="${doc.docCreateDate.toLocalDate()}"></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <!-- 결재자 테이블 -->
+                        <div class="col-md-6">
+                            <th:block th:include="doc/sign_edit.html"/>
+                        </div>
+                    </div>
+
+                    <!-- 기타 정보 테이블 -->
+                    <table class="table table-bordered mt-4">
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">제&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;목</td>
+                            <td><input type="text" class="form-control title-input" name="title"
+                                       placeholder="제목을 입력하세요."
+                                       data-name="제목" th:value="${doc.docTitle}" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="table-secondary font-weight-bold text-center">상&nbsp;&nbsp;세&nbsp;&nbsp;내&nbsp;&nbsp;용</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                    <textarea class="summernote form-control" id="content" name="content" data-name="상세내용"
+                              required>[[${doc.docContent}]]</textarea>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- 버튼 영역 -->
+                </div>
+                <div class="button-container">
+                    <button type="button" form="doc_form" class="btn btn-success" id="submit-button">수정완료</button>
+                    <button type="reset" form="doc_form" class="btn btn-secondary">초기화</button>
+                </div>
+            </div>
+        </form>
+        <script th:inline="javascript">
+            $(document).ready(function () {
+                $('.summernote').summernote({
+                    height: 500, // set editor height
+                    minHeight: 500, // set minimum height of editor
+                    maxHeight: null, // set maximum height of editor
+                    focus: true // set focus to editable area after initializing summernote
+                });
+
+                //제출버튼 눌리는 경우
+                $('#submit-button').on('click', function (event) {
+                    // 모든 required 필드가 채워졌는지 검사
+                    let isValid = true;
+                    $('#doc_form [required]').each(function () {
+                        if ($(this).val() === '') {
+                            const errorMessage = $(this).data('name'); // data-error 속성 값 가져오기
+                            alert(errorMessage + '을(를) 입력해 주세요');
+                            $(this).focus();
+                            isValid = false;
+                            return false;
+                        }
+                    });
+
+                    if (!isValid) return;
+
+                    event.preventDefault();
+
+                    const additionalSigners = $('input[name="sign[]"]').length - 1;
+                    if (additionalSigners < 1) {
+                        alert("본인 이외에 최소 1명의 결재자를 추가해야 합니다.");
+                        return;
+                    }
+
+                    const confirmSubmission = confirm("문서를 수정하시겠습니까?");
+                    if (!confirmSubmission) return;
+
+                    // 폼 데이터 수집
+                    const formData = new FormData();
+                    formData.append("formData", new Blob([JSON.stringify({
+                        docId: $('input[name="docId"]').val(),
+                        title: $('input[name="title"]').val(),
+                        content: $('textarea[name="content"]').val(),
+                        writer: $('input[name="writer"]').val(),
+                        signers: $('input[name="sign[]"]').map(function () {
+                            return $(this).val();
+                        }).get()
+                    })], { type: "application/json" }));
+
+                    // 파일 추가
+                    const fileInput = $('input[name="files"]')[0];
+                    if (fileInput && fileInput.files.length > 0) {
+                        for (let i = 0; i < fileInput.files.length; i++) {
+                            formData.append("files", fileInput.files[i]);
+                        }
+                    }
+
+                    $.ajax({
+                        url: /*[[@{/doc}]]*/'',
+                        type: "PATCH",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function () {
+                            alert("문서 수정이 완료되었습니다.");
+                            window.location.href = /*[[@{/doc/inProgress}]]*/'';
+                        },
+                        error: function () {
+                            alert("문서 수정 중 오류가 발생했습니다.");
+                        }
+                    });
+                });
+            });
+        </script>
+        </body>
+        </html>
+    </th:block>
+</th:block>

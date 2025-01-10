@@ -1,0 +1,100 @@
+<th:block th:replace="layout :: setContent(~{this::content})">
+    <th:block th:fragment="content">
+        <!DOCTYPE html>
+        <html xmlns:th="http://www.thymeleaf.org" lang="en">
+        <head>
+            <title>table</title>
+            <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css" rel="stylesheet"
+                  type="text/css">
+            <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js" type="text/javascript"></script>
+        </head>
+        <body>
+        <main>
+            <div class="container-fluid px-4">
+                <h1 class="mt-4" style="color: #334466; font-weight: bold">결재 대기 문서</h1>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        현재 사용자의 결재순번이 도래한 결재 대기 문서입니다.<br><br>
+                        문서 제목을 클릭 시 세부 정보 조회가 가능합니다.
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-table me-1"></i>
+                        결재 대기 문서
+                    </div>
+                    <div class="card-body">
+                        <table id="docInProgressTable" class="display">
+                            <thead>
+                            <tr>
+                                <th>번호</th>
+                                <th>문서 제목</th>
+                                <th>기안자</th>
+                                <th>문서 구분</th>
+                                <th>기안일</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <th:block th:each="dto : ${list}">
+                                <tr>
+                                    <td th:text="${dto.docId}">문서번호</td>
+                                    <td><a th:href="@{/doc(docId=${dto.docId})}">[[${dto.docTitle}]]</a></td>
+                                    <td th:text="${dto.writer}">기안자</td>
+                                    <td th:text="${dto.docType.getTypeKor()}">문서구분</td>
+                                    <td th:text="${dto.createDate}">기안일시</td>
+                                </tr>
+                            </th:block>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <script>
+            $(document).ready(function () {
+                const lang_kor = {
+                    "decimal": "",
+                    "emptyTable": "데이터가 없습니다.",
+                    "info": "_START_-_END_ (총 _TOTAL_개 문서)",
+                    "infoEmpty": "0개 문서",
+                    "infoFiltered": "(전체 _MAX_개 문서 중 검색 결과)",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "_MENU_개씩 보기",
+                    "loadingRecords": "로딩중...",
+                    "processing": "처리중...",
+                    "search": "검색:",
+                    "zeroRecords": "검색된 데이터가 없습니다.",
+                    "paginate": {"first": "첫 페이지", "last": "마지막 페이지", "next": "다음", "previous": "이전"},
+                    "aria": {"sortAscending": ":오름차순 정렬", "sortDescending": ":내림차순 정렬"}
+                };
+                $('#docInProgressTable').DataTable({
+                    language: lang_kor,
+                    columns: [
+                        {data: "docId", className: "text-center"},
+                        {data: "docTitle"},
+                        {data: "docType", className: "text-center"},
+                        {
+                            data: "createDate",
+                            render: function (data, type, row) {
+                                // 데이터에서 'T'를 줄바꿈으로 대체
+                                return data ? data.replace('T', '<br>') : '';
+                            }
+                            , className: "text-center"
+                        },
+                        {data: "currSignerName", className: "text-center"}
+                    ],
+                    columnDefs: [
+                        {width: "10%", targets: 0}, // 첫 번째 열의 폭
+                        {width: "40%", targets: 1}, // 두 번째 열의 폭
+                        {width: "15%", targets: 2}, // 세 번째 열의 폭
+                        {width: "15%", targets: 3}, // 네 번째 열의 폭
+                        {width: "20%", targets: 4}  // 다섯 번째 열의 폭
+                    ]
+                });
+            });
+        </script>
+        </body>
+        </html>
+    </th:block>
+</th:block>

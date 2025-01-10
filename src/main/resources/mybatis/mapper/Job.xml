@@ -7,8 +7,10 @@
         WHERE job_id = (SELECT job_id FROM emp WHERE emp_id = #{empId})
     </select>
     <select id="getAllJob">
-        SELECT * FROM job
-        WHERE JOB_NAME!='관리자' OR JOB_RANK!=99
+        SELECT *
+        FROM job
+        WHERE JOB_NAME != '관리자'
+           OR JOB_RANK != 99
         ORDER BY JOB_RANK
     </select>
 </mapper>

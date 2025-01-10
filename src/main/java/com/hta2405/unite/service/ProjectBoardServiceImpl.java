@@ -18,7 +18,7 @@ public class ProjectBoardServiceImpl implements ProjectBoardService {
     private final EmpMapper empMapper;
     private final FileService fileService;
 
-    public ProjectBoardServiceImpl(FileService fileService,ProjectBoardMapper dao, EmpMapper empMapper) {
+    public ProjectBoardServiceImpl(FileService fileService, ProjectBoardMapper dao, EmpMapper empMapper) {
         this.dao = dao;
         this.fileService = fileService;
         this.empMapper = empMapper;

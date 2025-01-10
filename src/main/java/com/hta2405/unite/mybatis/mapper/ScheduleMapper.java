@@ -27,17 +27,27 @@ public interface ScheduleMapper {
     public int deleteSchedule(int scheduleId);
 
     // 공유 일정 등록
-    public int insertScheduleShareUsers(HashMap<String, Object> hashMap);
-
-    // 공유 일정 등록
     public void insertScheduleShare(Schedule schedule);
 
-    //public List<Schedule> getSharedSchedule(String empId, HashMap<String, Object> hashMap);
+    public int insertScheduleShareUsers(HashMap<String, Object> hashMap);
 
     // 공유 일정 리스트
     public List<Schedule> getListSharedSchedule(String empId);
 
     public List<ScheduleShare> getScheduleSharesByScheduleId(int scheduleId);
+
+    public String getShareEmpNames(int scheduleId);
+
+    public String getEmpIdName(String empId);
+
+    // 부서 일정 등록
+    public int insertScheduleDept(Schedule schedule);
+
+    public int insertScheduleShareWithDept(HashMap<String, Object> hashMap);
+
+    public String getDeptIdByEmpId(String empId);
+
+    public List<Schedule> getScheduleForDept(String deptId, String empId);
 
     // 공휴일 리스트
     // public List<Holiday> getHoliday(LocalDate startDate, LocalDate endDate);

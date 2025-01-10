@@ -1,28 +1,49 @@
-.table { width: 70%; margin-left: 400px; }
-
-table, td, th { border-collapse: collapse; text-align: center;  vertical-align: bottom; }
-
-h2 { text-align: left; color: black; margin: 0; }
-
-caption { caption-side: top; margin-bottom: 30px; }
-
-select.form-control{
-	width: auto;
-	margin-bottom: 2em;
-	display: inline-block;
+.table {
+    width: 70%;
+    margin-left: 400px;
 }
+
+table, td, th {
+    border-collapse: collapse;
+    text-align: center;
+    vertical-align: bottom;
+}
+
+h2 {
+    text-align: left;
+    color: black;
+    margin: 0;
+}
+
+caption {
+    caption-side: top;
+    margin-bottom: 30px;
+}
+
+select.form-control {
+    width: auto;
+    margin-bottom: 2em;
+    display: inline-block;
+}
+
 .sidebar {
-	position: fixed;  /* 왼쪽에 고정 */
-	top: 0;
-	left: 0;
-	width: 250px;      /* leftbar의 너비 */
-	height: 100vh;     /* 전체 높이 */
-	background-color: #f8f9fa;
-	padding-top: 20px; /* 위쪽 여백 */
+    position: fixed; /* 왼쪽에 고정 */
+    top: 0;
+    left: 0;
+    width: 250px; /* leftbar의 너비 */
+    height: 100vh; /* 전체 높이 */
+    background-color: #f8f9fa;
+    padding-top: 20px; /* 위쪽 여백 */
 }
-.rows{text-align: right; margin-right: 130px;}
 
-.gray{color: gray;}
+.rows {
+    text-align: right;
+    margin-right: 130px;
+}
+
+.gray {
+    color: gray;
+}
 
 .project_main:hover {
     background-color: lightgray; /* 회색 배경 */

@@ -3,19 +3,21 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.hta2405.unite.mybatis.mapper.ScheduleMapper">
-
+    <!-- 일정 목록 조회 -->
     <select id="getListSchedule" resultType="schedule">
         select *
         from schedule
         where emp_id = #{empId}
     </select>
 
+    <!-- 일정 등록 -->
     <insert id="insertSchedule" parameterType="com.hta2405.unite.domain.Schedule">
         INSERT INTO schedule
         (emp_id, schedule_name, schedule_content, schedule_start, schedule_end, schedule_color, schedule_allDay)
         VALUES (#{empId}, #{scheduleName}, #{scheduleContent}, #{scheduleStart}, #{scheduleEnd}, #{scheduleColor}, #{scheduleAllDay})
     </insert>
 
+    <!-- 일정 수정 -->
     <update id="updateSchedule">
         UPDATE schedule
         SET    schedule_name = #{scheduleName}, schedule_start = #{scheduleStart}, schedule_end = #{scheduleEnd},
@@ -23,6 +25,7 @@
         WHERE  schedule_id = #{scheduleId} AND emp_id = #{empId}
     </update>
 
+    <!-- 일정 드래그 앤 드롭 수정 -->
     <update id="dragUpdateSchedule">
         UPDATE schedule
         SET    schedule_start = #{scheduleStart}, schedule_end = #{scheduleEnd},
@@ -30,6 +33,7 @@
         WHERE  schedule_id = #{scheduleId} AND emp_id = #{empId}
     </update>
 
+    <!-- 일정 삭제 -->
     <delete id="deleteSchedule">
         DELETE FROM schedule
         WHERE schedule_id = #{scheduleId}
@@ -47,12 +51,14 @@
         </selectKey>
     </insert>
 
+    <!-- 일정 공유 직원 등록 -->
     <insert id="insertScheduleShareUsers" parameterType="map">
         INSERT INTO schedule_share
-        (share_emp, schedule_id)
+            (share_emp, schedule_id)
         VALUES (#{shareEmp}, #{scheduleId});
     </insert>
 
+    <!-- 공유 일정 목록 조회 -->
     <select id="getListSharedSchedule" resultType="schedule">
         SELECT
             s.schedule_id,
@@ -63,14 +69,83 @@
             s.schedule_end,
             s.schedule_color,
             s.schedule_allDay,
-            GROUP_CONCAT(ss.share_emp) AS share_emp -- 공유 직원 목록
+            (SELECT ename FROM emp WHERE emp_id = #{empId}) AS empIdName, -- 로그인한 사용자의 이름을 가져옵니다.
+            GROUP_CONCAT(ss.share_emp) AS share_emp, -- 공유된 직원들의 emp_id
+            GROUP_CONCAT(e.ename) AS share_emp_names -- 공유된 직원들의 이름
         FROM schedule s
                  JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
-        WHERE s.emp_id = #{empId}
-           OR ss.share_emp LIKE CONCAT('%', #{shareEmp}, '%') -- shareEmp를 LIKE로 처리
-        GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
-                 s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay
+                 LEFT JOIN emp e ON ss.share_emp REGEXP CONCAT('(^|,)', e.emp_id, '(,|$)') -- share_emp와 일치하는 emp_id 이름
+        WHERE
+            (s.emp_id = #{empId}
+           OR ss.share_emp LIKE CONCAT('%', #{shareEmp}, '%'))
+          AND (
+            ss.dept_id IS NULL -- 부서 정보가 없거나
+           OR ss.dept_id = (SELECT dept_id FROM emp WHERE emp_id = #{empId}) -- 로그인한 사용자의 부서와 동일한 부서 ID
+            )
+        GROUP BY
+            s.schedule_id,
+            s.emp_id,
+            s.schedule_name,
+            s.schedule_content,
+            s.schedule_start,
+            s.schedule_end,
+            s.schedule_color,
+            s.schedule_allDay;
     </select>
+
+
+    <!--    <select id="getListSharedSchedule" resultType="schedule">-->
+<!--        SELECT-->
+<!--            s.schedule_id,-->
+<!--            s.emp_id,-->
+<!--            s.schedule_name,-->
+<!--            s.schedule_content,-->
+<!--            s.schedule_start,-->
+<!--            s.schedule_end,-->
+<!--            s.schedule_color,-->
+<!--            s.schedule_allDay,-->
+<!--            (SELECT ename FROM emp WHERE emp_id = #{empId}) AS empIdName, &#45;&#45; 로그인한 사용자의 이름을 가져옵니다.-->
+<!--            GROUP_CONCAT(ss.share_emp) AS share_emp, &#45;&#45; 공유된 직원들의 emp_id-->
+<!--            GROUP_CONCAT(e.ename) AS share_emp_names &#45;&#45; 공유된 직원들의 이름-->
+<!--        FROM schedule s-->
+<!--                 JOIN schedule_share ss ON s.schedule_id = ss.schedule_id-->
+<!--                 LEFT JOIN emp e ON ss.share_emp REGEXP CONCAT('(^|,)', e.emp_id, '(,|$)') &#45;&#45; share_emp와 일치하는 emp_id 이름-->
+<!--        WHERE (s.emp_id = #{empId}  &#45;&#45; 로그인한 사용자 본인의 일정-->
+<!--           OR ss.share_emp LIKE CONCAT('%', #{shareEmp}, '%')  &#45;&#45; 공유된 일정-->
+<!--            )-->
+<!--          AND EXISTS (  &#45;&#45; 로그인한 사용자가 해당 부서에 속한 경우만-->
+<!--            SELECT 1-->
+<!--            FROM emp emp_check-->
+<!--            WHERE emp_check.emp_id = #{empId}  &#45;&#45; 로그인한 사용자 emp_id-->
+<!--          AND emp_check.dept_id = ss.dept_id  &#45;&#45; 로그인한 사용자가 해당 부서에 속하는지 확인-->
+<!--            )-->
+<!--          AND ss.dept_id IS NULL &#45;&#45; 부서 제외 (원하는 부서 제외 조건)-->
+<!--        GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,-->
+<!--            s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay;-->
+<!--    </select>-->
+
+<!--        <select id="getListSharedSchedule" resultType="schedule">-->
+<!--            SELECT-->
+<!--                s.schedule_id,-->
+<!--                s.emp_id,-->
+<!--                s.schedule_name,-->
+<!--                s.schedule_content,-->
+<!--                s.schedule_start,-->
+<!--                s.schedule_end,-->
+<!--                s.schedule_color,-->
+<!--                s.schedule_allDay,-->
+<!--                (SELECT ename FROM emp WHERE emp_id = #{empId}) AS empIdName, &#45;&#45; 로그인한 사용자의 이름을 가져옵니다.-->
+<!--                GROUP_CONCAT(ss.share_emp) AS share_emp, &#45;&#45; 공유된 직원들의 emp_id-->
+<!--                GROUP_CONCAT(e.ename) AS share_emp_names &#45;&#45; 공유된 직원들의 이름-->
+<!--            FROM schedule s-->
+<!--                     JOIN schedule_share ss ON s.schedule_id = ss.schedule_id-->
+<!--                     LEFT JOIN emp e ON ss.share_emp REGEXP CONCAT('(^|,)', e.emp_id, '(,|$)') &#45;&#45; share_emp와 일치하는 emp_id 이름-->
+<!--            WHERE s.emp_id = #{empId}-->
+<!--               OR ss.share_emp LIKE CONCAT('%', #{shareEmp}, '%')-->
+<!--               AND ss.dept_id IS NULL &#45;&#45; 부서 제외-->
+<!--            GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,-->
+<!--                s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay;-->
+<!--        </select>-->
 
     <!-- 공유 직원 조회 -->
     <select id="getScheduleSharesByScheduleId" resultType="com.hta2405.unite.domain.ScheduleShare">
@@ -79,4 +154,75 @@
         WHERE schedule_id = #{scheduleId}
     </select>
 
+    <!-- 공유 직원 이름 조회 -->
+    <select id="getShareEmpNames" resultType="string">
+        SELECT GROUP_CONCAT(e.ename)
+        FROM emp e
+                 JOIN schedule_share ss ON FIND_IN_SET(e.emp_id, ss.share_emp) > 0
+        WHERE ss.schedule_id = #{scheduleId}
+    </select>
+
+    <!-- 직원 이름 조회 -->
+    <select id="getEmpIdName" resultType="string">
+        SELECT e.ename
+        FROM emp e
+        WHERE e.emp_id = #{empId}
+    </select>
+
+    <!-- 부서 일정 등록 -->
+    <insert id="insertScheduleDept" parameterType="schedule">
+        INSERT INTO schedule
+        (emp_id, schedule_name, schedule_content, schedule_start, schedule_end, schedule_color, schedule_allDay)
+        VALUES (#{empId}, #{scheduleName}, #{scheduleContent},
+        #{scheduleStart}, #{scheduleEnd},
+        COALESCE(#{scheduleColor}, '#1d4ed8'), #{scheduleAllDay})
+
+        <selectKey resultType="int" keyProperty="scheduleId" keyColumn="schedule_id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <!-- 부서 내 모든 직원에게 일정 공유 -->
+    <insert id="insertScheduleShareWithDept" parameterType="map">
+        INSERT INTO schedule_share (schedule_id, share_emp, dept_id)
+        SELECT #{scheduleId}, emp_id, #{deptId}
+        FROM emp
+        WHERE dept_id = #{deptId}
+    </insert>
+
+    <!-- 부서 ID에 해당하는 직원 ID 조회 -->
+    <select id="getEmpIdByDeptId" resultType="String">
+        SELECT emp_id
+        FROM emp
+        WHERE dept_id = #{deptId}
+    </select>
+
+    <!-- 부서 일정 조회 (등록자는 제외) -->
+    <select id="getScheduleForDept" resultType="schedule">
+        SELECT
+            s.schedule_id,
+            s.schedule_name,
+            s.schedule_content,
+            s.schedule_start,
+            s.schedule_end,
+            s.schedule_color,
+            s.schedule_allDay,
+            GROUP_CONCAT(e.emp_id) AS share_emp_ids, -- 공유된 직원들의 emp_id
+            e.dept_id  -- 해당 일정과 관련된 직원의 부서 ID
+        FROM schedule s
+                 JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
+                 LEFT JOIN emp e ON FIND_IN_SET(e.emp_id, ss.share_emp) > 0  -- 공유된 직원들의 emp_id
+        WHERE ss.dept_id = #{deptId}  -- 특정 부서 ID
+          AND FIND_IN_SET(#{empId}, ss.share_emp) = 0  -- 로그인한 사용자가 공유한 일정은 제외
+          AND ss.share_emp IS NOT NULL -- 부서와 관련된 직원만 공유
+        GROUP BY s.schedule_id, s.schedule_name, s.schedule_content, s.schedule_start,
+                 s.schedule_end, s.schedule_color, s.schedule_allDay, e.dept_id;
+    </select>
+
+    <!-- 직원의 부서 ID 조회 -->
+    <select id="getDeptIdByEmpId" resultType="String">
+        SELECT dept_id
+        FROM emp
+        WHERE emp_id = #{empId}
+    </select>
 </mapper>

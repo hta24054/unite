@@ -1,0 +1,137 @@
+<th:block th:fragment="boardSidebarFragment">
+
+    <style>
+        .layoutSidenav_nav_board {
+            left: 225px !important;
+            float: left;
+            width: 250px !important;
+        }
+
+        .layoutSidenav_nav_board .sb-sidenav-dark_board {
+            background-color: gray;
+        }
+
+        .nav .sb-sidenav-menu-heading-board {
+            padding-top: 10px !important;
+        }
+
+        .nav .nav-link-board-title {
+            font-size: 22px;
+            padding-top: 1rem !important;
+        }
+    </style>
+    <div class="layoutSidenav_nav_board" id="layoutSidenav_nav">
+        <nav class="sb-sidenav accordion sb-sidenav-dark sb-sidenav-dark_board" id="sidenavAccordion">
+            <div class="sb-sidenav-menu sb-sidenav-menu-board">
+                <div class="nav">
+                    <!--            <div class="sb-sidenav-menu-heading"></div>-->
+                    <a class="nav-link nav-link-board nav-link-board-title" href="index.html">
+                        <!--                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>-->
+                        게시판
+                    </a>
+                    <div class="sb-sidenav-menu-heading sb-sidenav-menu-heading-board">
+                        <a th:href="'/board/post/postWrite' + ( ${boardName2 != null} ? '?boardName2=' + ${boardName2} : '')">
+                            <button class="writeBtn">글쓰기</button>
+                        </a>
+                    </div>
+
+                    <div class="sb-sidenav-menu-heading">Addons</div>
+                    -->
+                    <a class="nav-link" href="charts.html">
+                        <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                        Charts
+                    </a>
+                    <a class="nav-link" href="tables.html">
+                        <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                        Tables
+                    </a>
+
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                       data-bs-target="#collapsePages11"
+                       aria-expanded="false" aria-controls="collapsePages11">
+                        <div class="sb-nav-link-icon"><i class="fa-solid fa-comments"></i></div>
+                        게시판
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapsePages11" aria-labelledby="headingTwo"
+                         data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages11">
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                               data-bs-target="#pagesCollapseAuth11" aria-expanded="false"
+                               aria-controls="pagesCollapseAuth11">
+                                전사게시판
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="pagesCollapseAuth11" aria-labelledby="headingOne"
+                                 data-bs-parent="#sidenavAccordionPages11">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" th:href="@{/board/home}">공지사항</a>
+                                    <a class="nav-link" th:href="@{/board/home}">주간식단표</a>
+                                    <a class="nav-link" th:href="@{/board/home}">FAQ</a>
+                                    <a class="nav-link" th:href="@{/board/home}">구매 신청</a>
+                                </nav>
+                            </div>
+                        </nav>
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" th:href="@{/project/main}">일반게시판</a>
+                            <a class="nav-link" th:href="@{/project/complete}">부서게시판</a>
+                        </nav>
+                    </div>
+
+
+                    <!--                    이중메뉴!!-->
+                    <!--                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages"-->
+                    <!--                       aria-expanded="false" aria-controls="collapsePages">-->
+                    <!--                        <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>-->
+                    <!--                        Pages-->
+                    <!--                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>-->
+                    <!--                    </a>-->
+                    <!--                    <div class="collapse" id="collapsePages" aria-labelledby="headingTwo"-->
+                    <!--                         data-bs-parent="#sidenavAccordion">-->
+                    <!--                        <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">-->
+                    <!--                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"-->
+                    <!--                               data-bs-target="#pagesCollapseAuth" aria-expanded="false"-->
+                    <!--                               aria-controls="pagesCollapseAuth">-->
+                    <!--                                Authentication-->
+                    <!--                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>-->
+                    <!--                            </a>-->
+                    <!--                            <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne"-->
+                    <!--                                 data-bs-parent="#sidenavAccordionPages">-->
+                    <!--                                <nav class="sb-sidenav-menu-nested nav">-->
+                    <!--                                    <a class="nav-link" href="login.html">Login</a>-->
+                    <!--                                    <a class="nav-link" href="register.html">Register</a>-->
+                    <!--                                    <a class="nav-link" href="password.html">Forgot Password</a>-->
+                    <!--                                </nav>-->
+                    <!--                            </div>-->
+                    <!--                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"-->
+                    <!--                               data-bs-target="#pagesCollapseError" aria-expanded="false"-->
+                    <!--                               aria-controls="pagesCollapseError">-->
+                    <!--                                Error-->
+                    <!--                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>-->
+                    <!--                            </a>-->
+                    <!--                            <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne"-->
+                    <!--                                 data-bs-parent="#sidenavAccordionPages">-->
+                    <!--                                <nav class="sb-sidenav-menu-nested nav">-->
+                    <!--                                    <a class="nav-link" href="401.html">401 Page</a>-->
+                    <!--                                    <a class="nav-link" href="404.html">404 Page</a>-->
+                    <!--                                    <a class="nav-link" href="500.html">500 Page</a>-->
+                    <!--                                </nav>-->
+                    <!--                            </div>-->
+                    <!--                        </nav>-->
+                    <!--                    </div>-->
+
+                    <!--                    바로가기 단건메뉴!!-->
+                    <!--                    <div class="sb-sidenav-menu-heading">Addons</div>-->
+                    <!--                    <a class="nav-link" href="charts.html">-->
+                    <!--                        <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>-->
+                    <!--                        Charts-->
+                    <!--                    </a>-->
+                    <!--                    <a class="nav-link" href="tables.html">-->
+                    <!--                        <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>-->
+                    <!--                        Tables-->
+                    <!--                    </a>-->
+                </div>
+            </div>
+        </nav>
+    </div>
+</th:block>

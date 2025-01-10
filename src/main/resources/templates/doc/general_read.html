@@ -1,0 +1,68 @@
+<th:block th:replace="layout :: setContent(~{this::content})">
+    <th:block th:fragment="content">
+        <!DOCTYPE html>
+        <html xmlns:th="http://www.thymeleaf.org" lang="en">
+        <head>
+            <link th:href="@{/css/doc.css}" rel="stylesheet">
+            <meta charset="UTF-8">
+            <title>일반 문서</title>
+        </head>
+        <body>
+        <div class="container mt-4">
+            <div class="document-wrapper">
+                <!-- 기안용지 제목 -->
+                <div class="text-center mb-4">
+                    <h1 class="header-cell">일반 문서</h1>
+                </div>
+                <!-- 테이블 묶음 컨테이너 -->
+                <!-- 문서 정보 및 결재자 테이블을 좌우로 배치 -->
+                <div class="row">
+                    <!-- 문서 정보 테이블 -->
+                    <div class="col-md-6 mb-3">
+                        <table class="table table-bordered">
+                            <tr>
+                                <td class="table-secondary font-weight-bold text-center">문서번호</td>
+                                <td th:text="${doc.docId}">문서번호</td>
+                            </tr>
+                            <tr>
+                                <td class="table-secondary font-weight-bold text-center">부&nbsp;&nbsp;&nbsp;서</td>
+                                <td th:text="${dept.deptName}">부서</td>
+                            </tr>
+                            <tr>
+                                <td class="table-secondary font-weight-bold text-center">기 안 자</td>
+                                <td th:text="${writer.ename}">기안자</td>
+                            </tr>
+                            <tr>
+                                <td class="table-secondary font-weight-bold text-center">작 성 일</td>
+                                <td th:text="${doc.docCreateDate.toLocalDate()}">작성일</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <!-- 결재자 테이블 -->
+                    <div class="col-md-6">
+                        <th:block th:include="doc/sign_read.html"/>
+                    </div>
+                </div>
+
+                <!-- 기타 정보 테이블 -->
+                <table class="table table-bordered mt-4">
+                    <tr>
+                        <td class="table-secondary font-weight-bold text-center">
+                            제&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;목
+                        </td>
+                        <td th:text="${doc.docTitle}">문서제목</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="table-secondary font-weight-bold text-center">상&nbsp;&nbsp;세&nbsp;&nbsp;내&nbsp;&nbsp;용</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="min-height: 400px;" th:utext="${doc.docContent}">문서내용</td>
+                    </tr>
+                </table>
+            </div>
+            <th:block th:include="doc/read_button"/>
+        </div>
+        </body>
+        </html>
+    </th:block>
+</th:block>

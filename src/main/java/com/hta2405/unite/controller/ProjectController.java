@@ -160,7 +160,8 @@ public class ProjectController {
         }
         return response; // JSON 형태로 반환
     }
- @PostMapping("/saveProjectColor")
+
+    @PostMapping("/saveProjectColor")
     public String saveColorSettings(
             @RequestParam int projectId,
             @RequestParam String bgColor,
@@ -194,8 +195,12 @@ public class ProjectController {
         }
         return response;
     }
+
     @GetMapping("/cancel")
-    public String cancel() {return "project/project_cancel";}
+    public String cancel() {
+        return "project/project_cancel";
+    }
+
     @GetMapping("/cancelList")
     @ResponseBody
     public Map<String, Object> cancel(@RequestParam(defaultValue = "1") int page, @AuthenticationPrincipal UserDetails user) {
@@ -220,8 +225,11 @@ public class ProjectController {
 
         return response;
     }
+
     @GetMapping("/complete")
-    public String complete() {return "project/project_complete";}
+    public String complete() {
+        return "project/project_complete";
+    }
 
     @GetMapping("/detail")
     public ModelAndView detail(int projectId, ModelAndView mv, @AuthenticationPrincipal UserDetails user) {

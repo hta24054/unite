@@ -7,7 +7,7 @@ $(document).ready(function () {
     // 서버에서 editable-field 데이터를 가져옴
     function fetchEditableFields() {
         return $.ajax({
-            url: contextPath+'/emp/editable-field',
+            url: contextPath + '/emp/editable-field',
             method: 'GET',
             success: function (data) {
                 editableFields = data.field; // 수정 가능한 필드 목록
@@ -211,7 +211,7 @@ $(document).ready(function () {
         if (fileChange === 0) {
             const fileName = $('#fileName').text().trim();
             if (fileName) {
-                dto['beforeFileName']=(fileName);
+                dto['beforeFileName'] = (fileName);
             }
         }
 

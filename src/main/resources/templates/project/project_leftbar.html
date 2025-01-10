@@ -1,61 +1,63 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-<style>
-.sidebar {
-position: fixed;  /* 왼쪽에 고정 */
-top: 0;
-left: 0;
-width: 250px;      /* leftbar의 너비 */
-height: 100vh;     /* 전체 높이 */
-background-color: #f8f9fa;
-padding-top: 20px; /* 위쪽 여백 */
-}
+    <style>
+        .sidebar {
+            position: fixed; /* 왼쪽에 고정 */
+            top: 0;
+            left: 0;
+            width: 250px; /* leftbar의 너비 */
+            height: 100vh; /* 전체 높이 */
+            background-color: #f8f9fa;
+            padding-top: 20px; /* 위쪽 여백 */
+        }
 
-/* 오른쪽 콘텐츠 스타일 */
-.content {
-margin-left: 250px;  /* leftbar 너비만큼 마진을 주어 오른쪽에 콘텐츠 배치 */
-padding: 20px;
-}
+        /* 오른쪽 콘텐츠 스타일 */
+        .content {
+            margin-left: 250px; /* leftbar 너비만큼 마진을 주어 오른쪽에 콘텐츠 배치 */
+            padding: 20px;
+        }
 
-/* 화면 크기에 따라 leftbar 너비와 margin-left를 적절히 조정할 수 있도록 */
-@media (max-width: 768px) {
-.sidebar {
-width: 200px;
-}
-.content {
-margin-left: 200px;
-}
-}
-</style>
+        /* 화면 크기에 따라 leftbar 너비와 margin-left를 적절히 조정할 수 있도록 */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .content {
+                margin-left: 200px;
+            }
+        }
+    </style>
 </head>
 
 <th:block th:fragment="leftbar">
-	<div class="sidebar">
-		<br><br>
-		<h3 style="color:rgb(51, 68, 102)">프로젝트</h3><br>
-		<ul class="list-group" style="list-style-type: disc; padding-left: 20px;">
-			<li class="left" style="border: none;">
-				<a th:href="@{/project/main}">진행 중 프로젝트</a>
-			</li>
-			<th:block th:if="${not #lists.isEmpty(left)}"> <!-- 진행 중 프로젝트 밑에 프로젝트 이름 표시 -->
-				<p id="currentProjectName" style="font-weight: bold; color: rgb(51, 68, 102);">
-					<a th:href="@{/project/detail(projectId=${projectId})}"
-					   style="color: rgb(51, 68, 102)"
-					   th:text="${left}"></a>
-				</p>
-			</th:block>
-			<li class="left" style="border: none;">
-				<a th:href="@{/project/complete}">완료 프로젝트</a>
-			</li>
-			<li class="left" style="border: none;">
-				<a th:href="@{/project/cancel}">취소 프로젝트</a>
-			</li>
-			<a th:href="@{/project/create}" style="text-decoration: none;">
-				<li class="left" style="border: none; background-color: gray; color: white;border-radius: 5px; width: 200px; height: 50px; text-align: center;">
-					<span style="color: white; line-height: 50px;">프로젝트 추가</span>
-				</li>
-			</a>
-		</ul>
-	</div>
+    <div class="sidebar">
+        <br><br>
+        <h3 style="color:rgb(51, 68, 102)">프로젝트</h3><br>
+        <ul class="list-group" style="list-style-type: disc; padding-left: 20px;">
+            <li class="left" style="border: none;">
+                <a th:href="@{/project/main}">진행 중 프로젝트</a>
+            </li>
+            <th:block th:if="${not #lists.isEmpty(left)}"> <!-- 진행 중 프로젝트 밑에 프로젝트 이름 표시 -->
+                <p id="currentProjectName" style="font-weight: bold; color: rgb(51, 68, 102);">
+                    <a th:href="@{/project/detail(projectId=${projectId})}"
+                       style="color: rgb(51, 68, 102)"
+                       th:text="${left}"></a>
+                </p>
+            </th:block>
+            <li class="left" style="border: none;">
+                <a th:href="@{/project/complete}">완료 프로젝트</a>
+            </li>
+            <li class="left" style="border: none;">
+                <a th:href="@{/project/cancel}">취소 프로젝트</a>
+            </li>
+            <a th:href="@{/project/create}" style="text-decoration: none;">
+                <li class="left"
+                    style="border: none; background-color: gray; color: white;border-radius: 5px; width: 200px; height: 50px; text-align: center;">
+                    <span style="color: white; line-height: 50px;">프로젝트 추가</span>
+                </li>
+            </a>
+        </ul>
+    </div>
 </th:block>

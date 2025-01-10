@@ -55,6 +55,6 @@ public class TipDocEditor implements DocEditor {
                 .cardReturn(LocalDate.parse(formData.get("card_return").toString()))
                 .build();
 
-        docService.updateTripDoc(doc, docTrip, signers);
+        docService.updateTripDoc(updateDoc, docTrip, signers);
     }
 }

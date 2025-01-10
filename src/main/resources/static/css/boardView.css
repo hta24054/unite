@@ -384,3 +384,7 @@ a:hover {
     background: #dadada;
     opacity: 1;
 }
+
+.fileList {
+    color: #212529;
+}

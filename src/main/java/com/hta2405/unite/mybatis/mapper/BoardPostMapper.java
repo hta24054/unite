@@ -1,5 +1,6 @@
 package com.hta2405.unite.mybatis.mapper;
 
+import com.hta2405.unite.domain.Board;
 import com.hta2405.unite.domain.Post;
 import com.hta2405.unite.domain.PostFile;
 import com.hta2405.unite.dto.*;
@@ -53,4 +54,8 @@ public interface BoardPostMapper {
     void updateReplySeq(Long postReRef, Long postReSeq);
 
     int replyPostInsert(Post postData);
+
+    Board findBoardByBoardId(Long boardId);
+
+    List<Board> getBoardNamesByDeptId(Long deptId);
 }

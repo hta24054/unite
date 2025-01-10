@@ -58,19 +58,15 @@ public class DocService {
 
     @Transactional
     public void saveTripDoc(Doc doc, DocTrip docTrip, List<String> signers) {
-        docMapper.insertGeneralDoc(doc);
+        saveGeneralDoc(doc, signers);
         docMapper.insertTripDoc(doc.getDocId(), docTrip);
-
-        List<Sign> list = getSigns(doc, signers);
-        docMapper.insertSign(list);
     }
 
     @Transactional
     public void saveBuyDoc(Doc doc, List<String> signers, List<ProductDTO> products) {
-        docMapper.insertGeneralDoc(doc);
+        saveGeneralDoc(doc, signers);
         DocBuy docBuy = DocBuy.builder().docId(doc.getDocId()).build();
         docMapper.insertBuyDoc(docBuy);
-
         List<BuyItem> buyItems = products.stream()
                 .map(product -> BuyItem.builder()
                         .docBuyId(docBuy.getDocBuyId())
@@ -81,9 +77,6 @@ public class DocService {
                         .build())
                 .toList();
         docMapper.insertProducts(docBuy.getDocBuyId(), buyItems);
-
-        List<Sign> list = getSigns(doc, signers);
-        docMapper.insertSign(list);
     }
 
     @Transactional
@@ -91,8 +84,7 @@ public class DocService {
                                 DocVacation.DocVacationBuilder docVacationBuilder,
                                 List<String> signers,
                                 List<MultipartFile> files) {
-        docMapper.insertGeneralDoc(doc);
-
+        saveGeneralDoc(doc, signers);
         if (files != null && !files.isEmpty()) {
             //어차피 일단 정책상 아직 첨부파일 최대 1개
             FileDTO fileDTO = fileService.uploadFile(files.get(0), FILE_DIR);
@@ -102,11 +94,7 @@ public class DocService {
                     .vacationFileType(fileDTO.getFileType());
         }
         DocVacation docVacation = docVacationBuilder.build();
-
         docMapper.insertVacationDoc(doc.getDocId(), docVacation);
-
-        List<Sign> list = getSigns(doc, signers);
-        docMapper.insertSign(list);
     }
 
     @Transactional
@@ -120,12 +108,8 @@ public class DocService {
 
     @Transactional
     public void updateTripDoc(Doc doc, DocTrip docTrip, List<String> signers) {
-        docMapper.updateGeneralDoc(doc);
+        updateGeneralDoc(doc, signers);
         docMapper.updateTripDoc(docTrip);
-
-        List<Sign> list = getSigns(doc, signers);
-        docMapper.deleteSign(doc.getDocId());
-        docMapper.insertSign(list);
     }
 
     public int countVacation(LocalDate startDate, LocalDate endDate) {
@@ -230,7 +214,6 @@ public class DocService {
     public DocVacation getDocVacationByDocId(Long docId) {
         return docMapper.getDocVacationByDocId(docId);
     }
-
 
     public void downloadFile(String fileUUID, String fileName, HttpServletResponse response) {
         fileService.downloadFile(FILE_DIR, fileUUID, fileName, response);

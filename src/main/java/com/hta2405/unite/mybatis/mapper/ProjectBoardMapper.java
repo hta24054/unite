@@ -20,4 +20,5 @@ public interface ProjectBoardMapper {
     List<ProjectTask> getTaskList(int projectId, String userid);
     List<ProjectTask> getTask(int projectId, String userid, int taskId);
     boolean deleteTask(int projectId, String memberId, int taskId);
+    void modifyProcess(int projectId, String memberId, int taskId, FileDTO taskFile, String board_subject, String board_content);
 }

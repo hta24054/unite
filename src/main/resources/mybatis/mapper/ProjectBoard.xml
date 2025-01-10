@@ -62,4 +62,11 @@
     <delete id="deleteTask">
         delete from task where project_id=#{projectId} and emp_id=#{memberId} and task_id=#{taskId}
     </delete>
+    <update id="modifyProcess" parameterType="map">
+        update task set task_subject=#{board_subject}, task_content=#{board_content}
+                    <if test="taskFile != null">
+                            ,task_file_path = #{taskFile.filePath}, task_file_original = #{taskFile.fileOriginal}, task_file_uuid = #{taskFile.fileUUID}, task_file_type = #{taskFile.fileType}
+                    </if>
+                    where project_id=#{projectId} and emp_id=#{memberId} and task_id=#{taskId}
+    </update>
 </mapper>

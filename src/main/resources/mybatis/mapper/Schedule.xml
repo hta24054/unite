@@ -5,9 +5,15 @@
 <mapper namespace="com.hta2405.unite.mybatis.mapper.ScheduleMapper">
     <!-- 일정 목록 조회 -->
     <select id="getListSchedule" resultType="schedule">
-        select *
-        from schedule
-        where emp_id = #{empId}
+        SELECT *
+        FROM schedule s
+        WHERE s.emp_id = #{empId}  -- 로그인한 사용자가 등록한 개인 일정
+          AND NOT EXISTS (
+            SELECT 1
+            FROM schedule_share ss
+            WHERE ss.schedule_id = s.schedule_id
+              AND ss.dept_id IS NOT NULL  -- 부서 일정 제외
+        );
     </select>
 
     <!-- 일정 등록 -->
@@ -17,12 +23,27 @@
         VALUES (#{empId}, #{scheduleName}, #{scheduleContent}, #{scheduleStart}, #{scheduleEnd}, #{scheduleColor}, #{scheduleAllDay})
     </insert>
 
-    <!-- 일정 수정 -->
+    <!-- 일정 수정(개인 + 부서) -->
     <update id="updateSchedule">
         UPDATE schedule
-        SET    schedule_name = #{scheduleName}, schedule_start = #{scheduleStart}, schedule_end = #{scheduleEnd},
-               schedule_color = #{scheduleColor}, schedule_content = #{scheduleContent}, schedule_allDay = #{scheduleAllDay}
-        WHERE  schedule_id = #{scheduleId} AND emp_id = #{empId}
+        SET    schedule_name = #{scheduleName},
+               schedule_start = #{scheduleStart},
+               schedule_end = #{scheduleEnd},
+               schedule_content = #{scheduleContent},
+               schedule_allDay = #{scheduleAllDay},
+               schedule_color = CASE
+                   -- 부서일정의 경우 (부서 일정을 확인하고, 색상은 기본값으로 유지)
+                    WHEN EXISTS (
+                        SELECT 1
+                        FROM schedule_share ss
+                                 JOIN emp e ON e.emp_id = #{empId}
+                        WHERE ss.schedule_id = #{scheduleId}
+                          AND ss.dept_id = e.dept_id  -- 부서 일정을 확인
+                          AND ss.share_emp IS NOT NULL
+                    ) THEN COALESCE(#{scheduleColor}, '#1d4ed8') -- 부서일정의 색상은 변경되지 않음
+                    ELSE #{scheduleColor} -- 개인일정의 색상 변경
+               END
+        WHERE  schedule_id = #{scheduleId}
     </update>
 
     <!-- 일정 드래그 앤 드롭 수정 -->
@@ -77,11 +98,8 @@
                  LEFT JOIN emp e ON ss.share_emp REGEXP CONCAT('(^|,)', e.emp_id, '(,|$)') -- share_emp와 일치하는 emp_id 이름
         WHERE
             (s.emp_id = #{empId}
-           OR ss.share_emp LIKE CONCAT('%', #{shareEmp}, '%'))
-          AND (
-            ss.dept_id IS NULL -- 부서 정보가 없거나
-           OR ss.dept_id = (SELECT dept_id FROM emp WHERE emp_id = #{empId}) -- 로그인한 사용자의 부서와 동일한 부서 ID
-            )
+            OR ss.share_emp LIKE CONCAT('%', #{shareEmp}, '%'))
+            AND ss.dept_id IS NULL -- 부서 정보가 없거나
         GROUP BY
             s.schedule_id,
             s.emp_id,
@@ -92,60 +110,6 @@
             s.schedule_color,
             s.schedule_allDay;
     </select>
-
-
-    <!--    <select id="getListSharedSchedule" resultType="schedule">-->
-<!--        SELECT-->
-<!--            s.schedule_id,-->
-<!--            s.emp_id,-->
-<!--            s.schedule_name,-->
-<!--            s.schedule_content,-->
-<!--            s.schedule_start,-->
-<!--            s.schedule_end,-->
-<!--            s.schedule_color,-->
-<!--            s.schedule_allDay,-->
-<!--            (SELECT ename FROM emp WHERE emp_id = #{empId}) AS empIdName, &#45;&#45; 로그인한 사용자의 이름을 가져옵니다.-->
-<!--            GROUP_CONCAT(ss.share_emp) AS share_emp, &#45;&#45; 공유된 직원들의 emp_id-->
-<!--            GROUP_CONCAT(e.ename) AS share_emp_names &#45;&#45; 공유된 직원들의 이름-->
-<!--        FROM schedule s-->
-<!--                 JOIN schedule_share ss ON s.schedule_id = ss.schedule_id-->
-<!--                 LEFT JOIN emp e ON ss.share_emp REGEXP CONCAT('(^|,)', e.emp_id, '(,|$)') &#45;&#45; share_emp와 일치하는 emp_id 이름-->
-<!--        WHERE (s.emp_id = #{empId}  &#45;&#45; 로그인한 사용자 본인의 일정-->
-<!--           OR ss.share_emp LIKE CONCAT('%', #{shareEmp}, '%')  &#45;&#45; 공유된 일정-->
-<!--            )-->
-<!--          AND EXISTS (  &#45;&#45; 로그인한 사용자가 해당 부서에 속한 경우만-->
-<!--            SELECT 1-->
-<!--            FROM emp emp_check-->
-<!--            WHERE emp_check.emp_id = #{empId}  &#45;&#45; 로그인한 사용자 emp_id-->
-<!--          AND emp_check.dept_id = ss.dept_id  &#45;&#45; 로그인한 사용자가 해당 부서에 속하는지 확인-->
-<!--            )-->
-<!--          AND ss.dept_id IS NULL &#45;&#45; 부서 제외 (원하는 부서 제외 조건)-->
-<!--        GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,-->
-<!--            s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay;-->
-<!--    </select>-->
-
-<!--        <select id="getListSharedSchedule" resultType="schedule">-->
-<!--            SELECT-->
-<!--                s.schedule_id,-->
-<!--                s.emp_id,-->
-<!--                s.schedule_name,-->
-<!--                s.schedule_content,-->
-<!--                s.schedule_start,-->
-<!--                s.schedule_end,-->
-<!--                s.schedule_color,-->
-<!--                s.schedule_allDay,-->
-<!--                (SELECT ename FROM emp WHERE emp_id = #{empId}) AS empIdName, &#45;&#45; 로그인한 사용자의 이름을 가져옵니다.-->
-<!--                GROUP_CONCAT(ss.share_emp) AS share_emp, &#45;&#45; 공유된 직원들의 emp_id-->
-<!--                GROUP_CONCAT(e.ename) AS share_emp_names &#45;&#45; 공유된 직원들의 이름-->
-<!--            FROM schedule s-->
-<!--                     JOIN schedule_share ss ON s.schedule_id = ss.schedule_id-->
-<!--                     LEFT JOIN emp e ON ss.share_emp REGEXP CONCAT('(^|,)', e.emp_id, '(,|$)') &#45;&#45; share_emp와 일치하는 emp_id 이름-->
-<!--            WHERE s.emp_id = #{empId}-->
-<!--               OR ss.share_emp LIKE CONCAT('%', #{shareEmp}, '%')-->
-<!--               AND ss.dept_id IS NULL &#45;&#45; 부서 제외-->
-<!--            GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,-->
-<!--                s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay;-->
-<!--        </select>-->
 
     <!-- 공유 직원 조회 -->
     <select id="getScheduleSharesByScheduleId" resultType="com.hta2405.unite.domain.ScheduleShare">

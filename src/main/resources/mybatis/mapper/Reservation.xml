@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hta2405.unite.mybatis.mapper.ReservationMapper">
+    <!-- 자원 선택 시 해당 자원명 불러오기 -->
+<!--    <select id="resourceSelectChange">-->
+<!--        SELECT MIN(resc_id) AS resc_id, resc_type, resc_name, resc_usable-->
+<!--        FROM resc-->
+<!--        WHERE resc_type = #{rescType} AND resc_usable = 1-->
+<!--        GROUP BY resc_type, resc_name, resc_usable-->
+<!--        ORDER BY resc_id ASC-->
+<!--    </select>-->
+
+    <select id="resourceSelectChange">
+        SELECT *
+        FROM resc
+        WHERE resc_type = #{rescType} AND resc_usable = 1
+        GROUP BY resc_type, resc_name, resc_usable
+        ORDER BY resc_id ASC
+    </select>
+
+
+
+
+</mapper>

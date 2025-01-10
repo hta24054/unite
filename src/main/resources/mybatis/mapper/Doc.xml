@@ -26,7 +26,7 @@
         DELETE FROM sign
         WHERE DOC_ID = #{docId}
     </delete>
-    <insert id="insertProducts">
+    <insert id="insertBuyItem">
         insert into buy_item(doc_buy_id, product_name, standard, quantity, price) VALUES
         <foreach collection="items" item="item" separator=",">
             (#{docBuyId}, #{item.productName}, #{item.standard}, #{item.quantity}, #{item.price})
@@ -61,6 +61,14 @@
             card_return = #{cardReturn}
         WHERE DOC_ID = #{docId}
     </update>
+    <select id="getDocBuyByDocId">
+        select * from doc_buy
+        where doc_id = #{docId}
+    </select>
+    <delete id="deleteBuyItem">
+        delete from buy_item
+        where doc_buy_id = #{docBuyId}
+    </delete>
     <select id="getInProgressDocsByEmpId">
         SELECT doc.doc_id      as docId,
                doc.doc_writer  as writer,

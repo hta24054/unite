@@ -14,7 +14,7 @@ public interface DocMapper {
 
     void insertBuyDoc(DocBuy docBuy);
 
-    void insertProducts(Long docBuyId, List<BuyItem> items);
+    void insertBuyItem(Long docBuyId, List<BuyItem> items);
 
     void insertVacationDoc(Long docId, DocVacation docVacation);
 
@@ -54,4 +54,7 @@ public interface DocMapper {
 
     int setSignFinished(Long docId);
 
+    DocBuy getDocBuyByDocId(Long docId);
+
+    void deleteBuyItem(Long docBuyId);
 }

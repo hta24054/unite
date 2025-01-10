@@ -83,10 +83,17 @@
                     font-size: 18px;
                     width: 300px;
                     border: 1px solid #ccc;
+                    border-radius: 7px;
                 }
 
                 .form-control2 {
                     width: 85%;
+                }
+
+                .form-group2-title {
+                    background: #343a40bf;
+                    height: 60px;
+                    color: white;
                 }
 
                 .form-group-btn {
@@ -123,13 +130,14 @@
                     display: block;
                 }
             </style>
-            <script>
+            <script th:inline="javascript">
                 var fileNo = 0;
                 var filesArr = [];
                 var deletedFiles = [];
                 var maxFileCnt = 5;   // 첨부파일 최대 개수
 
-                var companyBulletinBoards = ['공지사항', '주간식단표', 'FAQ'];
+                let boardMap = /*[[${boardMap}]]*/ {};
+                // var companyBulletinBoards = ['공지사항', '주간식단표', 'FAQ'];
 
                 /* 첨부파일 추가 */
                 function addFiles(files) {
@@ -276,48 +284,44 @@
                 }
 
                 //boardName2를 boardName1에 맞게 바꿈
-                function changeBoardName2(boardName1Value, departmentBoards) {
+                function changeBoardName2(boardName1Value, companyBoards, generalBoards, departmentBoards) {
                     let $boardName2 = $('#boardName2'); // 두 번째 select 초기화
                     $boardName2.empty();
 
                     if (boardName1Value === '전사게시판') {
-                        $.each(companyBulletinBoards, function (index, companyBulletinBoard) {
-                            $boardName2.append('<option value="' + companyBulletinBoard + '">' + companyBulletinBoard + '</option>');
+                        $.each(companyBoards, function (index, companyBoard) {
+                            $boardName2.append('<option value="' + companyBoard + '">' + companyBoard + '</option>');
                         });
                     } else if (boardName1Value === '일반게시판') {
-                        $boardName2.append('<option value="' + '일반게시판' + '">' + '일반게시판' + '</option>');
+                        $.each(generalBoards, function (index, generalBoard) {
+                            $boardName2.append('<option value="' + generalBoard + '">' + generalBoard + '</option>');
+                        });
                     } else if (boardName1Value === '부서게시판') {
                         $.each(departmentBoards, function (index, departmentBoard) {
                             $boardName2.append('<option value="' + departmentBoard + '">' + departmentBoard + '</option>');
                         });
                     }
-
                 }
 
-                function filterBoardName2() {
-                    const excludedValues = ['공지사항', '주간식단표', 'FAQ', '일반게시판']; // 제외할 값들
+                function filterBoardName2(boardName1) {
                     let filteredArray = []; // 결과를 담을 배열
-
-                    $('.boardName2').each(function () {
-                        const value = $(this).text(); // .boardName2 요소의 값 가져오기
-                        if (!excludedValues.includes(value)) { // 제외할 값에 포함되지 않으면 추가
-                            filteredArray.push(value);
-                        }
-                    });
-
-                    return filteredArray; // 필터링된 배열 반환
+                    for (const value of boardMap[boardName1]) {
+                        console.log("value = ", value)
+                        filteredArray.push(value);
+                    }
+                    return filteredArray;
                 }
 
                 $(function () {
-                    var departmentBoards = filterBoardName2();
-                    console.log("depart=", departmentBoards);
+                    let companyBoards = filterBoardName2('전사게시판');
+                    let generalBoards = filterBoardName2('일반게시판');
+                    let departmentBoards = filterBoardName2('부서게시판');
 
                     var BoardName2Value = $('#boardName2Hidden').val();
-                    console.log("BoardName2Value=", BoardName2Value);
                     let boardName1Value;
 
                     // BoardName2Text의 따라 BoardName1 구하기
-                    if (companyBulletinBoards.includes(BoardName2Value)) {
+                    if (companyBoards.includes(BoardName2Value)) {
                         boardName1Value = '전사게시판';
                     } else if (departmentBoards.includes(BoardName2Value)) {
                         boardName1Value = '부서게시판';
@@ -325,12 +329,11 @@
                         boardName1Value = '일반게시판';
                     }
 
-                    changeBoardName2(boardName1Value, departmentBoards);//boardName2를 boardName1에 맞게 바꿈
+                    changeBoardName2(boardName1Value, companyBoards, generalBoards, departmentBoards);//boardName2를 boardName1에 맞게 바꿈
                     $('#boardName1').val(boardName1Value);
                     $('#boardName2').val(BoardName2Value);
 
-                    $(".boardName2,.left a").removeClass('menuActive');
-
+                    // $(".boardName2,.left a").removeClass('menuActive');
 
                     // 게시글에 올려둔 첨부파일 배열에 추가 및 출력
                     $('.filesHidden').each(function () {
@@ -353,7 +356,7 @@
                     $('#boardName1').change(function () {
                         let boardName1Value = $(this).val();  // 첫 번째 select의 선택 값
 
-                        changeBoardName2(boardName1Value);//boardName2를 boardName1에 맞게 바꿈
+                        changeBoardName2(boardName1Value, companyBoards, generalBoards, departmentBoards);//boardName2를 boardName1에 맞게 바꿈
                     });
 
                     // dragover 이벤트: 드래그한 파일이 attachFlie 영역에 있을 때
@@ -397,7 +400,7 @@
                 <div class="boardContent">
                     <form method="post" enctype="multipart/form-data"
                           name="boardform" onsubmit="event.preventDefault(); submitForm();">
-                        <div class="form-group2">
+                        <div class="form-group2 form-group2-title">
                             <input type="hidden" name="postId" th:value='${postDetailDTO.postId}'/>
                             <input type="hidden" id="boardName1Hidden" name="boardName1Hidden"
                                    th:value='${boardDTO.getBoardName1()}'/>
@@ -405,12 +408,14 @@
                                    th:value='${boardDTO.getBoardName2()}'/>
                             <label class="labelName">
                                 To.
-                                <select id="boardName1" name="boardName1" class="boardName">
+                                <select id="boardName1" name="boardName1" class="boardName"
+                                        th:disabled="${postDetailDTO.postReLev > 0}">
                                     <option value="전사게시판">전사게시판</option>
                                     <option value="일반게시판">일반게시판</option>
                                     <option value="부서게시판">부서게시판</option>
                                 </select>
-                                <select id="boardName2" name="boardName2" class="boardName">
+                                <select id="boardName2" name="boardName2" class="boardName"
+                                        th:disabled="${postDetailDTO.postReLev > 0}">
                                     <option value="공지사항">공지사항</option>
                                     <option value="주간식단표">주간식단표</option>
                                     <option value="FAQ">FAQ</option>

@@ -224,36 +224,12 @@
                         </div>
 
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
-                           data-bs-target="#collapsePages1"
+                           data-bs-target="#collapsePages1" onclick="location.href='/board/home'"
                            aria-expanded="false" aria-controls="collapsePages1">
                             <div class="sb-nav-link-icon"><i class="fa-solid fa-comments"></i></div>
                             게시판
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
-                        <div class="collapse" id="collapsePages1" aria-labelledby="headingTwo"
-                             data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages1">
-                                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
-                                   data-bs-target="#pagesCollapseAuth1" aria-expanded="false"
-                                   aria-controls="pagesCollapseAuth1">
-                                    전사게시판
-                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                                </a>
-                                <div class="collapse" id="pagesCollapseAuth1" aria-labelledby="headingOne"
-                                     data-bs-parent="#sidenavAccordionPages1">
-                                    <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link" th:href="@{/board/home}">공지사항</a>
-                                        <a class="nav-link" th:href="@{/board/home}">주간식단표</a>
-                                        <a class="nav-link" th:href="@{/board/home}">FAQ</a>
-                                        <a class="nav-link" th:href="@{/board/home}">구매 신청</a>
-                                    </nav>
-                                </div>
-                            </nav>
-                            <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" th:href="@{/project/main}">일반게시판</a>
-                                <a class="nav-link" th:href="@{/project/complete}">부서게시판</a>
-                            </nav>
-                        </div>
 
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
                            data-bs-target="#collapsePages2"

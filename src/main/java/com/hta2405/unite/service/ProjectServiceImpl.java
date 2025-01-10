@@ -148,4 +148,12 @@ public class ProjectServiceImpl implements ProjectService {
     public boolean todoProgressRate(int projectId, String userid, int todoId, int memberProgressRate){
         return dao.updateTodoProgressRate(projectId, userid, todoId, memberProgressRate);
     }
+
+    public boolean todoUpdate(int projectId, String userid, int todoId, String newSubject) {
+        return dao.todoUpdate(projectId, userid, todoId, newSubject);
+    }
+
+    public boolean deleteTodo(int todoId) {
+        return dao.deleteTodo(todoId);
+    }
 }

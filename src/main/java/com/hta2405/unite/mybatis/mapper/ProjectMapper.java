@@ -54,4 +54,6 @@ public interface ProjectMapper {
     void insertToDo(String task, String userid, int projectId);
     List<ProjectTodoDTO> getTodoList(int projectId, String userid);
     boolean updateTodoProgressRate(int projectId, String userid, int todoId, int memberProgressRate);
+    boolean todoUpdate(int projectId, String userid, int todoId, String newSubject);
+    boolean deleteTodo(int todoId);
 }

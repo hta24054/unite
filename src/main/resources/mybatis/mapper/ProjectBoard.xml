@@ -2,62 +2,58 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hta2405.unite.mybatis.mapper.ProjectBoardMapper">
     <select id="getTaskCount" resultType="String">
-        select task_subject
-        from task
-        where project_id = #{projectId}
-          and emp_id = #{userid}
-        ORDER BY COALESCE(task_update_date, task_date) DESC LIMIT 1;
+        select task_subject from task where project_id = #{projectId} and emp_id = #{userid} ORDER BY COALESCE(task_update_date, task_date) DESC LIMIT 1;
     </select>
     <insert id="insertTask">
-        insert into task (emp_id, project_id, task_subject, task_content, task_date, task_file_path, task_file_original,
-                          task_file_uuid, task_file_type, member_name)
-        values (#{userid}, #{projectId}, #{title}, #{content}, sysdate(), #{taskFile.filePath},
-                #{taskFile.fileOriginal}, #{taskFile.fileUUID}, #{taskFile.fileType}, #{name})
+        insert into task (emp_id, project_id, task_subject, task_content, task_date, task_file_path, task_file_original, task_file_uuid, task_file_type, member_name, todo)
+        values (#{userid}, #{projectId}, #{title}, #{content}, sysdate(), #{taskFile.filePath}, #{taskFile.fileOriginal}, #{taskFile.fileUUID}, #{taskFile.fileType}, #{name}, #{category})
     </insert>
 
     <update id="updateTask">
-        update task
-        set task_subject       = #{title},
-            task_content       = #{content},
-            task_date          = sysdate(),
-            task_file_path     = #{taskFile.filePath},
-            task_file_original = #{taskFile.fileOriginal},
-            task_file_uuid     = #{taskFile.fileUUID},
-            task_file_type     = #{taskFile.fileType}
-        where emp_id = #{userid}
-          and project_id = #{projectId}
+        update task set task_subject = #{title}, task_content = #{content}, task_date = sysdate(), todo = #{category},
+                        task_file_path = #{taskFile.filePath}, task_file_original = #{taskFile.fileOriginal}, task_file_uuid = #{taskFile.fileUUID}, task_file_type = #{taskFile.fileType}
+            where emp_id = #{userid} and project_id = #{projectId}
     </update>
     <select id="getRecentPosts" resultType="com.hta2405.unite.dto.ProjectTaskDTO">
-        SELECT t.member_name                                               AS taskWriter,
-               IFNULL(t.task_subject, '글을 작성해주세요')                         AS taskSubject,
-               SUBSTRING(COALESCE(t.task_update_date, t.task_date), 1, 10) AS taskDate,
-               m.member_id                                                 AS memberId
-        FROM project p
-                 JOIN
-             project_member m ON p.project_id = m.project_id
-                 LEFT JOIN (SELECT task_subject,
-                                   task_content,
-                                   project_id,
-                                   emp_id,
-                                   task_date,
-                                   task_update_date,
-                                   member_name,
-                                   ROW_NUMBER() OVER (
-                                       PARTITION BY emp_id
-                                       ORDER BY
-                                           (CASE WHEN task_update_date IS NULL THEN 1 ELSE 0 END),
-                                           task_update_date DESC,
-                                           (CASE WHEN task_date IS NULL THEN 1 ELSE 0 END),
-                                           task_date DESC
-                                       ) AS rn
-                            FROM task
-                            WHERE project_id = #{projectId}) t ON p.project_id = t.project_id
-            AND m.member_id = t.emp_id
-            AND t.rn = 1
-        WHERE p.project_id = #{projectId}
-        ORDER BY t.member_name;
+        SELECT
+            t.member_name AS taskWriter,
+            IFNULL(t.task_subject, '글을 작성해주세요') AS taskSubject,
+            SUBSTRING(COALESCE(t.task_update_date, t.task_date), 1, 10) AS taskDate,
+            m.member_id AS memberId
+        FROM
+            project p
+                JOIN
+            project_member m ON p.project_id = m.project_id
+                LEFT JOIN (
+                SELECT
+                    task_subject,
+                    task_content,
+                    project_id,
+                    emp_id,
+                    task_date,
+                    task_update_date,
+                    member_name,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY emp_id
+                        ORDER BY
+                            (CASE WHEN task_update_date IS NULL THEN 1 ELSE 0 END),
+                            task_update_date DESC,
+                            (CASE WHEN task_date IS NULL THEN 1 ELSE 0 END),
+                            task_date DESC
+                        ) AS rn
+                FROM
+                    task
+                WHERE
+                    project_id = #{projectId}
+            ) t ON p.project_id = t.project_id
+                AND m.member_id = t.emp_id
+                AND t.rn = 1
+        WHERE
+            p.project_id = #{projectId}
+        ORDER BY
+            t.member_name;
     </select>
     <select id="getTaskList" resultType="ProjectTask">
-        select task_id taskId, emp_id memberId, project_id projectId, task_subject taskSubject, task_content taskContent, task_date taskDate, task_update_date taskUpdateDate, task_file_path taskFilePath, task_file_original taskFileOriginal, task_file_uuid taskFileUuid, task_file_type taskFileType, member_name memberName from task where project_id = #{projectId} and emp_id = #{userid} order by coalesce(task_update_date, task_date) desc
+        select todo toDo, task_id taskId, emp_id memberId, project_id projectId, task_subject taskSubject, task_content taskContent, task_date taskDate, task_update_date taskUpdateDate, task_file_path taskFilePath, task_file_original taskFileOriginal, task_file_uuid taskFileUuid, task_file_type taskFileType, member_name memberName from task where project_id = #{projectId} and emp_id = #{userid} order by coalesce(task_update_date, task_date) desc
     </select>
 </mapper>

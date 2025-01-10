@@ -253,6 +253,7 @@ public class ProjectController {
         mv.addObject("project2", project);
         mv.addObject("role", role);
         mv.addObject("projectId", projectId);
+        mv.addObject("memberId", userid);
 
         return mv;
     }
@@ -318,5 +319,15 @@ public class ProjectController {
         boolean success = projectService.todoProgressRate(projectId, userid, todoId, memberProgressRate);
         sendJsonResponse(success, resp);
     }
-
+    @PostMapping("/updateTodo")
+    public void updateTodo(int projectId, int todoId, String newSubject, @AuthenticationPrincipal UserDetails user, HttpServletResponse resp) throws IOException {
+        String userid = user.getUsername();
+        boolean success = projectService.todoUpdate(projectId, userid, todoId, newSubject);
+        sendJsonResponse(success, resp);
+    }
+    @PostMapping("/deleteTodo")
+    public void deleteTodo(int todoId, HttpServletResponse resp) throws IOException {
+        boolean success = projectService.deleteTodo(todoId);
+        sendJsonResponse(success, resp);
+    }
 }

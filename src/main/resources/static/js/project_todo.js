@@ -79,4 +79,79 @@ $(document).ready(function() {
 			}
 		});
 	});
+
+	$(".edit-btn").on("click", function () {
+		var todoId = $(this).data("todoid");
+		var todoSubject = $(this).data("todo-subject");
+		var projectId = $(this).data("projectid");
+
+		// 모달에 기존 제목 표시
+		$("#todoSubject").val(todoSubject);
+
+		// 모달을 열기
+		$("#editTodoModal").modal("show");
+
+		// 저장 버튼 클릭 시
+		$("#saveTodoBtn").on("click", function () {
+			var newSubject = $("#todoSubject").val();
+
+			if (newSubject.trim() !== "") {
+				$.ajax({
+					url: "/project/updateTodo",
+					method: "POST",
+					data: {
+						todoId: todoId,
+						newSubject: newSubject,
+						projectId: projectId
+					},
+					success: function (response) {
+						if (response.success) {
+							$("span[data-todoid='" + todoId + "']").text(newSubject); // .todoSubject로 텍스트 수정
+
+							// 모달 닫기
+							$("#editTodoModal").modal("hide");
+
+							alert("할 일이 수정되었습니다.");
+						} else {
+							alert("수정 실패");
+						}
+					},
+					error: function () {
+						alert("서버 오류가 발생했습니다.");
+					}
+				});
+			} else {
+				alert("제목을 입력해주세요.");
+			}
+		});
+	});
+
+	$(".delete-btn").on("click", function () {
+		var todoId = $(this).data("todo-id");
+		var projectId = $(this).data("projectid");
+		// 삭제 확인 메시지
+		if (confirm("정말 이 할 일을 삭제하시겠습니까?")) {
+			$.ajax({
+				url: "/project/deleteTodo", // 삭제 요청 URL (서버에서 처리하는 경로)
+				method: "POST", // HTTP 메서드 (삭제는 보통 POST로 처리)
+				data: {
+					todoId: todoId
+				},
+				success: function (response) {
+					if (response.success) {
+						// 삭제 성공 시 해당 할 일을 UI에서 제거
+						$("span[data-todoid='" + todoId + "']").closest("li").remove();
+						alert("할 일이 삭제되었습니다.");
+						location.href="/project/todo?projectId="+projectId;
+					} else {
+						alert("삭제 실패");
+					}
+				},
+				error: function () {
+					alert("서버 오류가 발생했습니다.");
+				}
+			});
+		}
+	});
+
 });

@@ -11,26 +11,25 @@
         <body>
         <main>
             <div class="container-fluid px-4">
-                <h1 class="mt-4" style="color: #334466; font-weight: bold">결재 대기 문서</h1>
+                <h1 class="mt-4" style="color: #334466; font-weight: bold">[[${title}]]</h1>
                 <div class="card mb-4">
                     <div class="card-body">
-                        현재 사용자의 결재순번이 도래한 결재 대기 문서입니다.<br><br>
-                        문서 제목을 클릭 시 세부 정보 조회가 가능합니다.
+                        [[${message}]]
                     </div>
                 </div>
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-table me-1"></i>
-                        결재 대기 문서
+                        문서 목록
                     </div>
                     <div class="card-body">
-                        <table id="docInProgressTable" class="display">
+                        <table id="docTable" class="display">
                             <thead>
                             <tr>
                                 <th>번호</th>
                                 <th>문서 제목</th>
-                                <th>기안자</th>
                                 <th>문서 구분</th>
+                                <th>기안자</th>
                                 <th>기안일</th>
                             </tr>
                             </thead>
@@ -39,8 +38,8 @@
                                 <tr>
                                     <td th:text="${dto.docId}">문서번호</td>
                                     <td><a th:href="@{/doc(docId=${dto.docId})}">[[${dto.docTitle}]]</a></td>
-                                    <td th:text="${dto.writer}">기안자</td>
                                     <td th:text="${dto.docType.getTypeKor()}">문서구분</td>
+                                    <td th:text="${dto.writer}">기안자</td>
                                     <td th:text="${dto.createDate}">기안일시</td>
                                 </tr>
                             </th:block>
@@ -68,12 +67,13 @@
                     "paginate": {"first": "첫 페이지", "last": "마지막 페이지", "next": "다음", "previous": "이전"},
                     "aria": {"sortAscending": ":오름차순 정렬", "sortDescending": ":내림차순 정렬"}
                 };
-                $('#docInProgressTable').DataTable({
+                $('#docTable').DataTable({
                     language: lang_kor,
                     columns: [
                         {data: "docId", className: "text-center"},
                         {data: "docTitle"},
                         {data: "docType", className: "text-center"},
+                        {data: "docWriter", className: "text-center"},
                         {
                             data: "createDate",
                             render: function (data, type, row) {
@@ -81,8 +81,7 @@
                                 return data ? data.replace('T', '<br>') : '';
                             }
                             , className: "text-center"
-                        },
-                        {data: "currSignerName", className: "text-center"}
+                        }
                     ],
                     columnDefs: [
                         {width: "10%", targets: 0}, // 첫 번째 열의 폭

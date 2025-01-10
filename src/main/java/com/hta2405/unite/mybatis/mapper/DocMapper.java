@@ -10,8 +10,6 @@ import java.util.List;
 public interface DocMapper {
     void insertGeneralDoc(Doc doc);
 
-    void insertSign(List<Sign> list);
-
     void insertTripDoc(Long docId, DocTrip docTrip);
 
     void insertBuyDoc(DocBuy docBuy);
@@ -19,6 +17,12 @@ public interface DocMapper {
     void insertProducts(Long docBuyId, List<BuyItem> items);
 
     void insertVacationDoc(Long docId, DocVacation docVacation);
+
+    void updateGeneralDoc(Doc doc);
+
+    void insertSign(List<Sign> list);
+
+    void deleteSign(Long docId);
 
     List<DocListDTO> getInProgressDocsByEmpId(String empId);
 
@@ -47,4 +51,5 @@ public interface DocMapper {
     boolean checkSignFinished(Long docId);
 
     int setSignFinished(Long docId);
+
 }

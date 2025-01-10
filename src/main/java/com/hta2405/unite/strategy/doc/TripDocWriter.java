@@ -1,10 +1,10 @@
-package com.hta2405.unite.strategy;
+package com.hta2405.unite.strategy.doc;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hta2405.unite.domain.Doc;
 import com.hta2405.unite.domain.DocTrip;
-import com.hta2405.unite.dto.DocSaveRequestDTO;
+import com.hta2405.unite.dto.DocRequestDTO;
 import com.hta2405.unite.enums.DocType;
 import com.hta2405.unite.service.DocService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class TripDocSaver implements DocSaver {
+public class TripDocWriter implements DocWriter {
     private final DocService docService;
 
     @Override
@@ -26,7 +26,7 @@ public class TripDocSaver implements DocSaver {
     }
 
     @Override
-    public void save(String empId, DocSaveRequestDTO req) {
+    public void write(String empId, DocRequestDTO req) {
         Map<String, Object> formData = req.getFormData();
         Doc doc = Doc.builder().docWriter(empId)
                 .docType(DocType.TRIP)

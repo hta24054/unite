@@ -22,6 +22,10 @@
             (#{sign.empId}, #{sign.docId}, #{sign.signOrder}, #{sign.signTime})
         </foreach>
     </insert>
+    <delete id="deleteSign">
+        DELETE FROM sign
+        WHERE DOC_ID = #{docId}
+    </delete>
     <insert id="insertProducts">
         insert into buy_item(doc_buy_id, product_name, standard, quantity, price) VALUES
         <foreach collection="items" item="item" separator=",">
@@ -36,6 +40,14 @@
                 #{docVacation.vacationCount}, #{docVacation.vacationFilePath},
                 #{docVacation.vacationFileOriginal}, #{docVacation.vacationFileUUID}, #{docVacation.vacationFileType})
     </insert>
+    <update id="updateGeneralDoc">
+        UPDATE doc
+        SET DOC_WRITER      = #{docWriter},
+            DOC_TITLE       = #{docTitle},
+            DOC_CONTENT     = #{docContent},
+            DOC_CREATE_DATE = #{docCreateDate}
+        WHERE DOC_ID = #{docId}
+    </update>
     <select id="getInProgressDocsByEmpId">
         SELECT doc.doc_id      as docId,
                doc.doc_writer  as writer,

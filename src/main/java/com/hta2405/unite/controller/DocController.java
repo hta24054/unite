@@ -4,16 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hta2405.unite.domain.Doc;
-import com.hta2405.unite.dto.DocSaveRequestDTO;
+import com.hta2405.unite.dto.DocRequestDTO;
 import com.hta2405.unite.enums.DocRole;
 import com.hta2405.unite.enums.DocType;
-import com.hta2405.unite.factory.DocReaderFactory;
-import com.hta2405.unite.factory.DocSaverFactory;
-import com.hta2405.unite.factory.DocWriterFactory;
+import com.hta2405.unite.factory.*;
 import com.hta2405.unite.service.DocService;
-import com.hta2405.unite.strategy.DocReader;
-import com.hta2405.unite.strategy.DocSaver;
-import com.hta2405.unite.strategy.DocWriter;
+import com.hta2405.unite.strategy.doc.*;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,9 +32,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DocController {
     private final DocService docService;
+    private final DocWriterViewFactory docWriterViewFactory;
     private final DocWriterFactory docWriterFactory;
-    private final DocSaverFactory docSaverFactory;
     private final DocReaderFactory docReaderFactory;
+    private final DocEditorViewFactory docEditorViewFactory;
+    private final DocEditorFactory docEditorFactory;
 
     @GetMapping
     public String readDoc(@AuthenticationPrincipal UserDetails user, Long docId, Model model) {
@@ -59,30 +57,76 @@ public class DocController {
     public String showWritePage(@PathVariable String type,
                                 @AuthenticationPrincipal UserDetails user,
                                 Model model) {
-        DocWriter writer = docWriterFactory.getWriter(DocType.fromString(type));
-        writer.prepareWriter(user.getUsername(), model);
+        DocWriteViewer writeViewer = docWriterViewFactory.getWriteViewer(DocType.fromString(type));
+        writeViewer.prepareWriteView(user.getUsername(), model);
 
-        return writer.getView();
+        return writeViewer.getView();
     }
 
     @PostMapping(value = "/{type}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseBody
     public ResponseEntity<String> writeDoc(@PathVariable String type,
                                            @RequestPart("formData") String formDataJson,
                                            @RequestPart(value = "files", required = false) List<MultipartFile> files,
                                            @AuthenticationPrincipal UserDetails user) throws JsonProcessingException {
         // JSON 데이터를 Map으로 변환
+        Map<String, Object> formData = makeMapFromJson(formDataJson);
+
+        // DTO 생성
+        DocRequestDTO docRequestDTO = new DocRequestDTO(formData, files);
+
+        // 저장 처리
+        DocWriter writer = docWriterFactory.getWriter(DocType.fromString(type));
+        writer.write(user.getUsername(), docRequestDTO);
+
+        return ResponseEntity.ok("문서 작성(저장) 완료");
+    }
+
+    @GetMapping("/edit")
+    public String showEditPage(Long docId,
+                               @AuthenticationPrincipal UserDetails user,
+                               Model model) {
+        DocRole docRole = docService.checkRole(user.getUsername(), docId);
+        if (!docRole.equals(DocRole.PRE_SIGNED_WRITER)) {
+            model.addAttribute("errorMessage", "문서 수정 권한이 없습니다.");
+            return "error/error";
+        }
+
+        Doc doc = docService.getDocById(docId);
+        DocEditViewer editViewer = docEditorViewFactory.getEditViewer(doc.getDocType());
+        editViewer.prepareEditView(doc, docRole, model);
+        return editViewer.getView();
+    }
+
+    @PatchMapping
+    @ResponseBody
+    public ResponseEntity<String> editDoc(@RequestPart("formData") String formDataJson,
+                                          @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                                          @AuthenticationPrincipal UserDetails user) throws JsonProcessingException {
+        Map<String, Object> formData = makeMapFromJson(formDataJson);
+        long docId = Long.parseLong(formData.get("docId").toString());
+
+        DocRole docRole = docService.checkRole(user.getUsername(), docId);
+        if (!docRole.equals(DocRole.PRE_SIGNED_WRITER)) {
+            return ResponseEntity.badRequest().body("문서 수정 불가");
+        }
+
+        Doc doc = docService.getDocById(docId);
+
+        DocRequestDTO docRequestDTO = new DocRequestDTO(formData, files);
+
+        DocEditor editor = docEditorFactory.getEditor(doc.getDocType());
+        editor.edit(doc, docRequestDTO);
+
+        return ResponseEntity.ok("문서 수정 완료");
+    }
+
+    private static Map<String, Object> makeMapFromJson(String formDataJson) throws JsonProcessingException {
+        // JSON 데이터를 Map으로 변환
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> formData = objectMapper.readValue(formDataJson, new TypeReference<>() {
         });
-
-        // DTO 생성
-        DocSaveRequestDTO docSaveRequestDTO = new DocSaveRequestDTO(formData, files);
-
-        // 저장 처리
-        DocSaver saver = docSaverFactory.getSaver(DocType.fromString(type));
-        saver.save(user.getUsername(), docSaveRequestDTO);
-
-        return ResponseEntity.ok("문서 작성(저장) 완료");
+        return formData;
     }
 
     @GetMapping("/countVacation")

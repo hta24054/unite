@@ -34,7 +34,7 @@
                     <span th:text="${iterStat.index + 1}"></span> <!-- 번호 -->
                 </div>
                 <div class="col-5">
-                    <span th:text="${todo.todoSubject}"></span> <!-- 할 일 제목 -->
+                    <span class="todoSubject" th:text="${todo.todoSubject}" th:data-todoid="${todo.todoId}"></span> <!-- 할 일 제목 -->
                 </div>
                 <div class="col-3">
                    <span class="progress-btn" role="button" data-toggle="modal" data-target="#progressModal"
@@ -46,10 +46,10 @@
                     </span>
                 </div>
                 <div class="col-1">
-                    <button type="button" class="btn btn-warning edit-btn" th:data-todo-id="${todo.todoId}">수정</button>
+                    <button type="button" class="btn btn-warning edit-btn" th:data-todoid="${todo.todoId}" th:data-todo-subject="${todo.todoSubject}" th:data-projectid="${projectId}">수정</button>
                 </div>
                 <div class="col-1">
-                    <button type="button" class="btn btn-danger delete-btn" th:data-todo-id="${todo.todoId}">삭제</button>
+                    <button type="button" class="btn btn-danger delete-btn" th:data-todo-id="${todo.todoId}" th:data-projectid="${projectId}">삭제</button>
                 </div>
             </div>
         </li>
@@ -71,6 +71,28 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
                 <button type="button" class="btn btn-primary" id="saveProgressBtn">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editTodoModal" tabindex="-1" role="dialog" aria-labelledby="editTodoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editTodoModalLabel">TODO 수정</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="todoSubject">할 일 제목</label>
+                    <input type="text" class="form-control" id="todoSubject" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" id="saveTodoBtn">저장</button>
             </div>
         </div>
     </div>

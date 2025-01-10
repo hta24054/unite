@@ -76,7 +76,7 @@ public class DocService {
                         .price(product.getPrice())
                         .build())
                 .toList();
-        docMapper.insertProducts(docBuy.getDocBuyId(), buyItems);
+        docMapper.insertBuyItem(docBuy.getDocBuyId(), buyItems);
     }
 
     @Transactional
@@ -110,6 +110,27 @@ public class DocService {
     public void updateTripDoc(Doc doc, DocTrip docTrip, List<String> signers) {
         updateGeneralDoc(doc, signers);
         docMapper.updateTripDoc(docTrip);
+    }
+
+    @Transactional
+    public void updateBuyDoc(Doc doc, List<String> signers, List<ProductDTO> products) {
+        updateGeneralDoc(doc, signers);
+        DocBuy docBuy = getDocBuyByDocId(doc.getDocId());
+        docMapper.deleteBuyItem(docBuy.getDocBuyId());
+
+        List<BuyItem> buyItems = products.stream()
+                .map(product -> BuyItem.builder()
+                        .productName(product.getProductName())
+                        .standard(product.getStandard())
+                        .quantity(product.getQuantity())
+                        .price(product.getPrice())
+                        .build())
+                .toList();
+        docMapper.insertBuyItem(docBuy.getDocBuyId(), buyItems);
+    }
+
+    public DocBuy getDocBuyByDocId(Long docId) {
+        return docMapper.getDocBuyByDocId(docId);
     }
 
     public int countVacation(LocalDate startDate, LocalDate endDate) {

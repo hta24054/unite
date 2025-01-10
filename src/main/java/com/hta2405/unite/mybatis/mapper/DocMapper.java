@@ -60,4 +60,7 @@ public interface DocMapper {
 
     void deleteBuyItem(Long docBuyId);
 
+    List<DocListDTO> getDeptDocListByEmpId(String empId);
+
+    List<DocListDTO> getSignedDocListByEmpId(String empId);
 }

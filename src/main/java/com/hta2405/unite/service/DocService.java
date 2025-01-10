@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -344,5 +345,21 @@ public class DocService {
             return false;
         }
         return docMapper.deleteDoc(docId) == 1;
+    }
+
+    public ModelAndView showDocList(ModelAndView mv, String title, String message, List<DocListDTO> docList) {
+        mv.addObject("title", title);
+        mv.addObject("message", message);
+        mv.addObject("list", docList);
+        mv.setViewName("/doc/list");
+        return mv;
+    }
+
+    public List<DocListDTO> getDeptDocs(String empId) {
+        return docMapper.getDeptDocListByEmpId(empId);
+    }
+
+    public List<DocListDTO> getSignedDocs(String empId) {
+        return docMapper.getSignedDocListByEmpId(empId);
     }
 }

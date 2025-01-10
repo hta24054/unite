@@ -200,5 +200,31 @@
         SET SIGN_FINISH = 1
         WHERE doc_id = #{docId}
     </update>
+    <select id="getDeptDocListByEmpId">
+        SELECT doc.doc_id      as docId,
+               emp.ename  as writer,
+               doc_create_date as createDate,
+               doc.doc_type    as docType,
+               doc.doc_title   as docTitle,
+               null
+        FROM doc
+                 join emp on doc.doc_writer = emp.emp_id
+        where dept_id = (select dept_id from emp where emp_id = #{empId})
+          and sign_finish = 1
+        order by createDate desc
+    </select>
+    <select id="getSignedDocListByEmpId">
+        select d.doc_id      as docId,
+               e.ename       as writer,
+               d.doc_create_date as createDate,
+               d.doc_type    as docType,
+               d.doc_title   as docTitle,
+               null
+        from doc d JOIN sign s ON d.DOC_ID = s.DOC_ID
+        join emp e on doc_writer = e.emp_id
+        WHERE s.EMP_ID = #{empId}
+          and SIGN_FINISH = 1
+        order by doc_create_date desc
+    </select>
 </mapper>
 

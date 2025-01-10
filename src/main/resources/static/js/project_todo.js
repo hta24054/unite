@@ -80,6 +80,7 @@ $(document).ready(function() {
 		});
 	});
 
+	//투두 수정
 	$(".edit-btn").on("click", function () {
 		var todoId = $(this).data("todoid");
 		var todoSubject = $(this).data("todo-subject");
@@ -91,8 +92,8 @@ $(document).ready(function() {
 		// 모달을 열기
 		$("#editTodoModal").modal("show");
 
-		// 저장 버튼 클릭 시
-		$("#saveTodoBtn").on("click", function () {
+		// 저장 버튼 클릭 시 이벤트 핸들러는 한 번만 바인딩
+		$("#saveTodoBtn").off("click").on("click", function () { // 기존 핸들러 제거 후 새로 바인딩
 			var newSubject = $("#todoSubject").val();
 
 			if (newSubject.trim() !== "") {
@@ -125,6 +126,7 @@ $(document).ready(function() {
 			}
 		});
 	});
+
 
 	$(".delete-btn").on("click", function () {
 		var todoId = $(this).data("todo-id");

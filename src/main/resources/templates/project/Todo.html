@@ -15,7 +15,7 @@
 </head>
 <body>
 <div class="container mt-5">
-    <h1 class="text-center mb-4">TODO 리스트</h1>
+    <h1 class="text-center mb-4"><span th:text="${projectName}"></span> - TODO 리스트</h1>
     <form  th:action="@{/project/todoForm(projectId=${projectId})}" method="POST" class="mb-4">
         <div class="input-group">
             <input type="text" id="task" name="task" class="form-control" placeholder="할 일을 입력하세요" required>
@@ -27,7 +27,9 @@
 
     <h2>할 일 목록</h2>
     <ul id="todoList" class="list-group">
-        <!-- TODO 항목은 서버에서 가져와 동적으로 추가 -->
+        <li th:if="${#lists.isEmpty(todos)}" class="list-group-item text-center">
+            투두리스트를 추가해주세요.
+        </li>
         <li th:each="todo, iterStat : ${todos}" class="list-group-item">
             <div class="row">
                 <div class="col-1">
@@ -37,13 +39,13 @@
                     <span class="todoSubject" th:text="${todo.todoSubject}" th:data-todoid="${todo.todoId}"></span> <!-- 할 일 제목 -->
                 </div>
                 <div class="col-3">
-                   <span class="progress-btn" role="button" data-toggle="modal" data-target="#progressModal"
-                         th:data-todo-id="${todo.todoId}" th:data-progress-rate="${todo.progressRate}" th:data-projectid="${projectId}">
-                        <span class="progress-bar" role="progressbar"
-                              th:style="'width:' + ${todo.progressRate} + '%' + 'color:white;'">
-                            <span th:text="${todo.progressRate} + '%'"></span>
-                        </span>
+               <span class="progress-btn" role="button" data-toggle="modal" data-target="#progressModal"
+                     th:data-todo-id="${todo.todoId}" th:data-progress-rate="${todo.progressRate}" th:data-projectid="${projectId}">
+                    <span class="progress-bar" role="progressbar"
+                          th:style="'width:' + ${todo.progressRate} + '%' + 'color:white;'">
+                        <span th:text="${todo.progressRate} + '%'"></span>
                     </span>
+                </span>
                 </div>
                 <div class="col-1">
                     <button type="button" class="btn btn-warning edit-btn" th:data-todoid="${todo.todoId}" th:data-todo-subject="${todo.todoSubject}" th:data-projectid="${projectId}">수정</button>
@@ -54,6 +56,7 @@
             </div>
         </li>
     </ul>
+
 </div>
 <div class="modal fade" id="progressModal" tabindex="-1" role="dialog" aria-labelledby="progressModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">

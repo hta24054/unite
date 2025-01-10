@@ -35,7 +35,7 @@ public class VacationDocWriter implements DocWriter {
         model.addAttribute("deptName", dept.getDeptName());
         model.addAttribute("date", LocalDate.now());
         model.addAttribute("usedCount",
-                attendService.getUsedAnnualVacationCount(empId, LocalDate.now().getYear()));
+                attendService.getAnnualAppliedVacationCount(empId, LocalDate.now().getYear()));
     }
 
     @Override

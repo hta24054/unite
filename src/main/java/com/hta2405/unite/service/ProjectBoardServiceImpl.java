@@ -23,8 +23,7 @@ public class ProjectBoardServiceImpl implements ProjectBoardService {
         this.fileService = fileService;
         this.empMapper = empMapper;
     }
-
-    public boolean insertOrUpdate(String title, String content, String userId, int projectId, MultipartFile file) {
+    public boolean insertOrUpdate(String title, String content, String userId, int projectId, MultipartFile file, String category) {
         String isNull = dao.getTaskCount(userId, projectId);
         String name = empMapper.getEmpById(userId).getEname();
         int num;
@@ -32,8 +31,8 @@ public class ProjectBoardServiceImpl implements ProjectBoardService {
         if (file != null && !file.isEmpty()) {
             taskFile = fileService.uploadFile(file, FILE_DIR);
         }
-        if (isNull == null) num = dao.updateTask(title, content, userId, projectId, taskFile);
-        else num = dao.insertTask(title, content, userId, name, projectId, taskFile);
+        if (isNull == null)  num = dao.updateTask(title, content, userId, projectId, taskFile, category);
+        else num = dao.insertTask(title, content, userId, name, projectId, taskFile, category);
 
         return num == 1;
     }

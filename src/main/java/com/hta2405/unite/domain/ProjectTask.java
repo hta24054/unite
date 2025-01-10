@@ -9,6 +9,7 @@ import lombok.*;
 @ToString
 @Builder
 public class ProjectTask {
+    private String toDo;
     private long taskId;
     private String memberId;
     private int projectId;

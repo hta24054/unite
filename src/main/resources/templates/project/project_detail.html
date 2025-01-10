@@ -127,23 +127,23 @@
 							th:data-memberid="${project.memberId}"
 							class="clickable-participant"></td> <!-- 클릭 이벤트 추가 -->
 						<td>
-                <span th:classappend="${project.isManager} ? 'task-content clickable' : 'task-content'"
-					  th:data-id="${project.projectId}"
-					  th:data-memberid="${project.memberId}"
-					  th:data-content="${project.memberDesign}">
-                    <span th:text="${project.memberDesign == null ? '업무를 지정해주세요' : project.memberDesign}"></span>
-                </span>
-						</td>
-						<td>
-                <span th:classappend="${project.memberId == #authentication.name} ? 'progress-rate clickable' : 'progress-rate'"
-					  th:data-id="${project.projectId}"
-					  th:data-memberid="${project.memberId}"
-					  th:data-rate="${project.memberProgressRate}">
-                    <span class="progress-bar" role="progressbar"
-						  th:style="'width:' + ${project.memberProgressRate} + '%'">
-                        <span th:text="${project.memberProgressRate} + '%'"></span>
-                    </span>
-                </span>
+							<span th:classappend="${project.isManager} ? 'task-content clickable' : 'task-content'"
+								  th:data-id="${project.projectId}"
+								  th:data-memberid="${project.memberId}"
+								  th:data-content="${project.memberDesign}">
+								<span th:text="${project.memberDesign == null ? '업무를 지정해주세요' : project.memberDesign}"></span>
+							</span>
+									</td>
+									<td>
+							<span th:classappend="${project.memberId == #authentication.name} ? 'progress-rate clickable' : 'progress-rate'"
+								  th:data-id="${project.projectId}"
+								  th:data-memberid="${project.memberId}"
+								  th:data-rate="${project.memberProgressRate}">
+								<span class="progress-bar" role="progressbar"
+									  th:style="'width:' + ${project.memberProgressRate} + '%'">
+									<span th:text="${project.memberProgressRate} + '%'"></span>
+								</span>
+							</span>
 						</td>
 					</tr>
 					</tbody>
@@ -153,6 +153,7 @@
 				    <caption>
 				        <div class="d-flex justify-content-between align-items-center">
 				            <h5>진행 과정</h5>
+							<input type="hidden" th:value="${memberId}" id="userid">
 							<button type="button"
 									class="btn btn-primary btn-sm float-right"
 									th:if="${#strings.replace(role, '[', '').replace(']', '') != 'VIEWER'}"
@@ -161,36 +162,36 @@
 								글 작성
 							</button>
 
-                                <!-- 글 작성 버튼 (VIEWER일 때) -->
-                                <button type="button"
-                                        class="btn btn-primary btn-sm float-right"
-                                        th:if="${#strings.replace(role, '[', '').replace(']', '') == 'VIEWER'}"
-                                        style="display:none;"
-                                        disabled>
-                                    글 작성
-                                </button>
-                            </div>
-                        </caption>
-                        <thead>
-                        <tr>
-                            <th>작성자</th>
-                            <th>제목</th>
-                            <th>작성일자</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="project : ${project2}" class="clickable-row"
-                            th:data-member-id="${project.memberId}">
-                            <td>
-                                <span th:text="${project.taskWriter}"></span>
-                            </td>
-                            <td>
-                                <span th:text="${project.taskSubject}"></span>
-                            </td>
-                            <td>
-                                <span th:text="${project.taskDate}"></span>
-                            </td>
-                        </tr>
+							<!-- 글 작성 버튼 (VIEWER일 때) -->
+							<button type="button"
+									class="btn btn-primary btn-sm float-right"
+									th:if="${#strings.replace(role, '[', '').replace(']', '') == 'VIEWER'}"
+									th:data-memberid="${memberId}"
+									style="display:none;"
+									disabled>
+								글 작성
+							</button>
+						</div>
+				    </caption>
+				    <thead>
+				        <tr>
+				            <th>작성자</th>
+				            <th>제목</th>
+				            <th>작성일자</th>
+				        </tr>
+				    </thead>
+				    <tbody>
+						<tr th:each="project : ${project2}" class="clickable-row" th:data-member-id="${project.memberId}">
+							<td>
+								<span th:text="${project.taskWriter}"></span>
+							</td>
+							<td>
+								<span th:text="${project.taskSubject}"></span>
+							</td>
+							<td>
+								<span th:text="${project.taskDate}"></span>
+							</td>
+						</tr>
 
 					</tbody>
 				</table>
@@ -249,12 +250,19 @@
 	<div class="modal fade" id="writeModal" tabindex="-1" role="dialog" aria-labelledby="writeModalLabel" aria-hidden="true">
 	    <div class="modal-dialog" role="document">
 	        <div class="modal-content">
-	            <div class="modal-header">
+
+				<div class="modal-header">
 	                <h5 class="modal-title" id="writeModalLabel">글 작성</h5>
 	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 	                    <span aria-hidden="true">&times;</span>
 	                </button>
 	            </div>
+				<div class="form-group">
+					<label for="todoCategory">카테고리</label>
+					<select class="form-control" id="todoCategory" name="category">
+						<option value="" disabled selected>투두리스트에서 카테고리 선택</option>
+					</select>
+				</div>
 	            <div class="modal-body">
 	                <form id="writeForm" th:action="@{../projectBorad/write}" method="post" enctype="multipart/form-data">
 

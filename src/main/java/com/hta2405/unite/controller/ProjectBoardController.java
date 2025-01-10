@@ -36,14 +36,14 @@ public class ProjectBoardController {
 
     @PostMapping("/write")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> write(int projectId, String title, String content, MultipartFile file, @AuthenticationPrincipal UserDetails user) {
+    public ResponseEntity<Map<String, Object>> write(int projectId, String title, String content, MultipartFile file, String category, @AuthenticationPrincipal UserDetails user) {
         String userId = user.getUsername();
 
         if (file == null || file.isEmpty()) {
             System.out.println("첨부 파일이 없습니다.");
         }
 
-        projectBoardService.insertOrUpdate(title, content, userId, projectId, file);
+        projectBoardService.insertOrUpdate(title, content, userId, projectId, file, category);
 
         List<ProjectTaskDTO> recentPosts = projectBoardService.getRecentPosts(projectId);
 

@@ -53,4 +53,6 @@ public interface ProjectService {
     void insertToDo(String task, String userid, int projectId);
     List<ProjectTodoDTO> getTodoList(int projectId, String userid);
     boolean todoProgressRate(int projectId, String userid, int todoId, int memberProgressRate);
+    boolean todoUpdate(int projectId, String userid, int todoId, String newSubject);
+    boolean deleteTodo(int todoId);
 }

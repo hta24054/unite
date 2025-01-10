@@ -20,31 +20,30 @@
         <th:block th:replace="~{project/project_leftbar :: leftbar}"/>
         <body>
         <div style="margin: 80px 0px 80px 200px;">
-            <h2>즐겨찾기
-                <button id="toggle-favorite" class="btn btn-link" style="font-size: 1.5rem; padding: 0;">
-                    <span id="toggle-icon-f" style="font-size: 40px; color: black; text-decoration: none;">∨</span>
-                </button>
-            </h2>
-            <div id="project-favorite" style="display: block;"></div> <!-- 프로젝트 카드가 들어갈 곳 -->
+		<h2>즐겨찾기
+			<button id="toggle-favorite" class="btn btn-link" style="font-size: 1.5rem; padding: 0;">
+				<span id="toggle-icon-f" style="font-size: 40px; color: black; text-decoration: none;">∨</span>
+			</button>
+		</h2>
+		<div id="project-favorite" style="display: block;"></div> <!-- 프로젝트 카드가 들어갈 곳 -->
 
-            <button id="favorite-toggle-text" style="margin-left: calc(50% - 175px);">+ 펼쳐보기</button>
-        </div>
+	</div>
 
-        <div style="margin-left: 200px;">
-            <h2>진행 중 프로젝트
-                <button id="toggle-projects" class="btn btn-link" style="font-size: 1.5rem; padding: 0;">
-                    <span id="toggle-icon-p" style="font-size: 40px; color: black; text-decoration: none;">∨</span>
-                </button>
-            </h2>
-            <div id="project-container" style="display: block;"></div>
-            <button id="project-toggle-text" style="margin-left: calc(50% - 175px);">+ 펼쳐보기</button>
-        </div>
+	<div style="margin-left: 200px;">
+		<h2>진행 중 프로젝트
+			<button id="toggle-projects" class="btn btn-link" style="font-size: 1.5rem; padding: 0;">
+				<span id="toggle-icon-p" style="font-size: 40px; color: black; text-decoration: none;">∨</span>
+			</button>
+		</h2>
+		<div id="project-container" style="display: block;"></div>
+	</div>
 
 
-        <!--		<th:block th:replace="~{project/page :: page}"/>-->
-        <th:block th:if="${listcount == 0}">
-            <h3 style="text-align:center">등록된 글이 없습니다</h3>
-        </th:block>
+
+	<!--		<th:block th:replace="~{project/page :: page}"/>-->
+	<th:block th:if="${listcount == 0}">
+		<h3 style="text-align:center">등록된 글이 없습니다</h3>
+	</th:block>
 
         <div id="fileModal" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog">

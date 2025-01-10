@@ -1,7 +1,7 @@
 package com.hta2405.unite.factory;
 
 import com.hta2405.unite.enums.DocType;
-import com.hta2405.unite.strategy.DocReader;
+import com.hta2405.unite.strategy.doc.DocReader;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;

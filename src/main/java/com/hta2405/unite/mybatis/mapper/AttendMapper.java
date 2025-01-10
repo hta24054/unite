@@ -17,7 +17,7 @@ public interface AttendMapper {
 
     int attendOut(String empId);
 
-    int getUsedAnnualVacationCount(String empId, int year);
+    int getAnnualAppliedVacationCount(String empId, int year);
 
     void insertVacation(String empId, List<LocalDate> list, AttendType vacationType);
 

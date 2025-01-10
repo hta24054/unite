@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Data
 @AllArgsConstructor
-public class DocSaveRequestDTO {
+public class DocRequestDTO {
     private Map<String, Object> formData;
     private List<MultipartFile> files;
 }

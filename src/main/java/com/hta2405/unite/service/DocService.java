@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -58,19 +59,15 @@ public class DocService {
 
     @Transactional
     public void saveTripDoc(Doc doc, DocTrip docTrip, List<String> signers) {
-        docMapper.insertGeneralDoc(doc);
+        saveGeneralDoc(doc, signers);
         docMapper.insertTripDoc(doc.getDocId(), docTrip);
-
-        List<Sign> list = getSigns(doc, signers);
-        docMapper.insertSign(list);
     }
 
     @Transactional
     public void saveBuyDoc(Doc doc, List<String> signers, List<ProductDTO> products) {
-        docMapper.insertGeneralDoc(doc);
+        saveGeneralDoc(doc, signers);
         DocBuy docBuy = DocBuy.builder().docId(doc.getDocId()).build();
         docMapper.insertBuyDoc(docBuy);
-
         List<BuyItem> buyItems = products.stream()
                 .map(product -> BuyItem.builder()
                         .docBuyId(docBuy.getDocBuyId())
@@ -80,10 +77,7 @@ public class DocService {
                         .price(product.getPrice())
                         .build())
                 .toList();
-        docMapper.insertProducts(docBuy.getDocBuyId(), buyItems);
-
-        List<Sign> list = getSigns(doc, signers);
-        docMapper.insertSign(list);
+        docMapper.insertBuyItem(docBuy.getDocBuyId(), buyItems);
     }
 
     @Transactional
@@ -91,22 +85,102 @@ public class DocService {
                                 DocVacation.DocVacationBuilder docVacationBuilder,
                                 List<String> signers,
                                 List<MultipartFile> files) {
-        docMapper.insertGeneralDoc(doc);
-
+        saveGeneralDoc(doc, signers);
         if (files != null && !files.isEmpty()) {
             //어차피 일단 정책상 아직 첨부파일 최대 1개
             FileDTO fileDTO = fileService.uploadFile(files.get(0), FILE_DIR);
-            docVacationBuilder.vacationFilePath(fileDTO.getFilePath())
-                    .vacationFileOriginal(fileDTO.getFileOriginal())
-                    .vacationFileUUID(fileDTO.getFileUUID())
-                    .vacationFileType(fileDTO.getFileType());
+            setFileData(docVacationBuilder, fileDTO);
         }
         DocVacation docVacation = docVacationBuilder.build();
-
         docMapper.insertVacationDoc(doc.getDocId(), docVacation);
+    }
+
+    @Transactional
+    public void updateGeneralDoc(Doc doc, List<String> signers) {
+        docMapper.updateGeneralDoc(doc);
 
         List<Sign> list = getSigns(doc, signers);
+        docMapper.deleteSign(doc.getDocId());
         docMapper.insertSign(list);
+    }
+
+    @Transactional
+    public void updateTripDoc(Doc doc, DocTrip docTrip, List<String> signers) {
+        updateGeneralDoc(doc, signers);
+        docMapper.updateTripDoc(docTrip);
+    }
+
+    @Transactional
+    public void updateBuyDoc(Doc doc, List<String> signers, List<ProductDTO> products) {
+        updateGeneralDoc(doc, signers);
+        DocBuy docBuy = getDocBuyByDocId(doc.getDocId());
+        docMapper.deleteBuyItem(docBuy.getDocBuyId());
+
+        List<BuyItem> buyItems = products.stream()
+                .map(product -> BuyItem.builder()
+                        .productName(product.getProductName())
+                        .standard(product.getStandard())
+                        .quantity(product.getQuantity())
+                        .price(product.getPrice())
+                        .build())
+                .toList();
+        docMapper.insertBuyItem(docBuy.getDocBuyId(), buyItems);
+    }
+
+    @Transactional
+    public void updateVacationDoc(Doc updateDoc,
+                                  DocVacation beforeDocVacation,
+                                  DocVacation.DocVacationBuilder docVacationBuilder,
+                                  List<String> signers,
+                                  List<MultipartFile> files,
+                                  boolean fileChange) {
+        updateGeneralDoc(updateDoc, signers);
+
+        /*
+           파일 변경
+            1. 기존X -> 이후 O -> 새로 업로드 + DB 저장
+            2. 기존O -> 이후 다른파일 -> 기존파일 삭제 + 새로 업로드 + DB 저장
+            3. 기존O -> 이후 X -> 기존파일 삭제 + DB null로 업데이트
+        */
+        //파일 변경된 경우
+        if (fileChange) {
+            //기존에 파일이 있었다면 파일 삭제
+            if (beforeDocVacation.getVacationFileOriginal() != null) {
+                fileService.deleteFile(beforeDocVacation.getVacationFileUUID(),
+                        FILE_DIR,
+                        beforeDocVacation.getVacationFileOriginal());
+                clearFileData(docVacationBuilder);
+            }
+            //새로운 파일이 있다면
+
+            if (files != null && !files.isEmpty()) {
+                FileDTO fileDTO = fileService.uploadFile(files.get(0), FILE_DIR);
+                setFileData(docVacationBuilder, fileDTO);
+            }
+
+        }
+        DocVacation updatedDocVacation = docVacationBuilder.build();
+        docMapper.updateVacationDoc(updatedDocVacation);
+    }
+
+    private static void clearFileData(DocVacation.DocVacationBuilder docVacationBuilder) {
+        docVacationBuilder
+                .vacationFilePath(null)
+                .vacationFileOriginal(null)
+                .vacationFileUUID(null)
+                .vacationFileType(null);
+    }
+
+    private static void setFileData(DocVacation.DocVacationBuilder docVacationBuilder, FileDTO fileDTO) {
+        docVacationBuilder
+                .vacationFilePath(fileDTO.getFilePath())
+                .vacationFileOriginal(fileDTO.getFileOriginal())
+                .vacationFileUUID(fileDTO.getFileUUID())
+                .vacationFileType(fileDTO.getFileType());
+    }
+
+    public DocBuy getDocBuyByDocId(Long docId) {
+        return docMapper.getDocBuyByDocId(docId);
     }
 
     public int countVacation(LocalDate startDate, LocalDate endDate) {
@@ -212,7 +286,6 @@ public class DocService {
         return docMapper.getDocVacationByDocId(docId);
     }
 
-
     public void downloadFile(String fileUUID, String fileName, HttpServletResponse response) {
         fileService.downloadFile(FILE_DIR, fileUUID, fileName, response);
     }
@@ -272,5 +345,21 @@ public class DocService {
             return false;
         }
         return docMapper.deleteDoc(docId) == 1;
+    }
+
+    public ModelAndView showDocList(ModelAndView mv, String title, String message, List<DocListDTO> docList) {
+        mv.addObject("title", title);
+        mv.addObject("message", message);
+        mv.addObject("list", docList);
+        mv.setViewName("/doc/list");
+        return mv;
+    }
+
+    public List<DocListDTO> getDeptDocs(String empId) {
+        return docMapper.getDeptDocListByEmpId(empId);
+    }
+
+    public List<DocListDTO> getSignedDocs(String empId) {
+        return docMapper.getSignedDocListByEmpId(empId);
     }
 }

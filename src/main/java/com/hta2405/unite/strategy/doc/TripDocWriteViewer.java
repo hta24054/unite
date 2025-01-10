@@ -1,4 +1,4 @@
-package com.hta2405.unite.strategy;
+package com.hta2405.unite.strategy.doc;
 
 import com.hta2405.unite.domain.Dept;
 import com.hta2405.unite.domain.Emp;
@@ -13,17 +13,17 @@ import java.time.LocalDate;
 
 @Component
 @RequiredArgsConstructor
-public class BuyDocWriter implements DocWriter {
+public class TripDocWriteViewer implements DocWriteViewer {
     private final EmpService empService;
     private final DeptService deptService;
 
     @Override
     public DocType getType() {
-        return DocType.BUY;
+        return DocType.TRIP;
     }
 
     @Override
-    public void prepareWriter(String empId, Model model) {
+    public void prepareWriteView(String empId, Model model) {
         Emp emp = empService.getEmpById(empId);
         Dept dept = deptService.getDeptByEmpId(emp.getEmpId());
 
@@ -35,6 +35,6 @@ public class BuyDocWriter implements DocWriter {
 
     @Override
     public String getView() {
-        return "/doc/buy_write";
+        return "/doc/trip_write";
     }
 }

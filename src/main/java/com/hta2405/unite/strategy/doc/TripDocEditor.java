@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class TipDocEditor implements DocEditor {
+public class TripDocEditor implements DocEditor {
 
     private final DocService docService;
 

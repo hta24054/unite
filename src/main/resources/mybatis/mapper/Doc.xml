@@ -61,6 +61,18 @@
             card_return = #{cardReturn}
         WHERE DOC_ID = #{docId}
     </update>
+    <update id="updateVacationDoc">
+        update doc_vacation
+        set vacation_start         = #{vacationStart},
+            vacation_end           = #{vacationEnd},
+            vacation_type          = #{vacationType},
+            vacation_count         = #{vacationCount},
+            vacation_file_path     = #{vacationFilePath},
+            vacation_file_original = #{vacationFileOriginal},
+            vacation_file_uuid     = #{vacationFileUUID},
+            vacation_file_type     = #{vacationFileType}
+        where doc_id = #{docId}
+    </update>
     <select id="getDocBuyByDocId">
         select * from doc_buy
         where doc_id = #{docId}

@@ -124,9 +124,8 @@ public class DocController {
     private static Map<String, Object> makeMapFromJson(String formDataJson) throws JsonProcessingException {
         // JSON 데이터를 Map으로 변환
         ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> formData = objectMapper.readValue(formDataJson, new TypeReference<>() {
+        return objectMapper.readValue(formDataJson, new TypeReference<>() {
         });
-        return formData;
     }
 
     @GetMapping("/countVacation")

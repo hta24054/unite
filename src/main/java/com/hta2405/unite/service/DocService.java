@@ -88,10 +88,7 @@ public class DocService {
         if (files != null && !files.isEmpty()) {
             //어차피 일단 정책상 아직 첨부파일 최대 1개
             FileDTO fileDTO = fileService.uploadFile(files.get(0), FILE_DIR);
-            docVacationBuilder.vacationFilePath(fileDTO.getFilePath())
-                    .vacationFileOriginal(fileDTO.getFileOriginal())
-                    .vacationFileUUID(fileDTO.getFileUUID())
-                    .vacationFileType(fileDTO.getFileType());
+            setFileData(docVacationBuilder, fileDTO);
         }
         DocVacation docVacation = docVacationBuilder.build();
         docMapper.insertVacationDoc(doc.getDocId(), docVacation);
@@ -127,6 +124,58 @@ public class DocService {
                         .build())
                 .toList();
         docMapper.insertBuyItem(docBuy.getDocBuyId(), buyItems);
+    }
+
+    @Transactional
+    public void updateVacationDoc(Doc updateDoc,
+                                  DocVacation beforeDocVacation,
+                                  DocVacation.DocVacationBuilder docVacationBuilder,
+                                  List<String> signers,
+                                  List<MultipartFile> files,
+                                  boolean fileChange) {
+        updateGeneralDoc(updateDoc, signers);
+
+        /*
+           파일 변경
+            1. 기존X -> 이후 O -> 새로 업로드 + DB 저장
+            2. 기존O -> 이후 다른파일 -> 기존파일 삭제 + 새로 업로드 + DB 저장
+            3. 기존O -> 이후 X -> 기존파일 삭제 + DB null로 업데이트
+        */
+        //파일 변경된 경우
+        if (fileChange) {
+            //기존에 파일이 있었다면 파일 삭제
+            if (beforeDocVacation.getVacationFileOriginal() != null) {
+                fileService.deleteFile(beforeDocVacation.getVacationFileUUID(),
+                        FILE_DIR,
+                        beforeDocVacation.getVacationFileOriginal());
+                clearFileData(docVacationBuilder);
+            }
+            //새로운 파일이 있다면
+
+            if (files != null && !files.isEmpty()) {
+                FileDTO fileDTO = fileService.uploadFile(files.get(0), FILE_DIR);
+                setFileData(docVacationBuilder, fileDTO);
+            }
+
+        }
+        DocVacation updatedDocVacation = docVacationBuilder.build();
+        docMapper.updateVacationDoc(updatedDocVacation);
+    }
+
+    private static void clearFileData(DocVacation.DocVacationBuilder docVacationBuilder) {
+        docVacationBuilder
+                .vacationFilePath(null)
+                .vacationFileOriginal(null)
+                .vacationFileUUID(null)
+                .vacationFileType(null);
+    }
+
+    private static void setFileData(DocVacation.DocVacationBuilder docVacationBuilder, FileDTO fileDTO) {
+        docVacationBuilder
+                .vacationFilePath(fileDTO.getFilePath())
+                .vacationFileOriginal(fileDTO.getFileOriginal())
+                .vacationFileUUID(fileDTO.getFileUUID())
+                .vacationFileType(fileDTO.getFileType());
     }
 
     public DocBuy getDocBuyByDocId(Long docId) {

@@ -22,6 +22,8 @@ public interface DocMapper {
 
     void updateTripDoc(DocTrip docTrip);
 
+    void updateVacationDoc(DocVacation docVacation);
+
     void insertSign(List<Sign> list);
 
     void deleteSign(Long docId);
@@ -57,4 +59,5 @@ public interface DocMapper {
     DocBuy getDocBuyByDocId(Long docId);
 
     void deleteBuyItem(Long docBuyId);
+
 }

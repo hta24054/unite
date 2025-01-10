@@ -23,12 +23,27 @@
         VALUES (#{empId}, #{scheduleName}, #{scheduleContent}, #{scheduleStart}, #{scheduleEnd}, #{scheduleColor}, #{scheduleAllDay})
     </insert>
 
-    <!-- 일정 수정 -->
+    <!-- 일정 수정(개인 + 부서) -->
     <update id="updateSchedule">
         UPDATE schedule
-        SET    schedule_name = #{scheduleName}, schedule_start = #{scheduleStart}, schedule_end = #{scheduleEnd},
-               schedule_color = #{scheduleColor}, schedule_content = #{scheduleContent}, schedule_allDay = #{scheduleAllDay}
-        WHERE  schedule_id = #{scheduleId} AND emp_id = #{empId}
+        SET    schedule_name = #{scheduleName},
+               schedule_start = #{scheduleStart},
+               schedule_end = #{scheduleEnd},
+               schedule_content = #{scheduleContent},
+               schedule_allDay = #{scheduleAllDay},
+               schedule_color = CASE
+                   -- 부서일정의 경우 (부서 일정을 확인하고, 색상은 기본값으로 유지)
+                    WHEN EXISTS (
+                        SELECT 1
+                        FROM schedule_share ss
+                                 JOIN emp e ON e.emp_id = #{empId}
+                        WHERE ss.schedule_id = #{scheduleId}
+                          AND ss.dept_id = e.dept_id  -- 부서 일정을 확인
+                          AND ss.share_emp IS NOT NULL
+                    ) THEN COALESCE(#{scheduleColor}, '#1d4ed8') -- 부서일정의 색상은 변경되지 않음
+                    ELSE #{scheduleColor} -- 개인일정의 색상 변경
+               END
+        WHERE  schedule_id = #{scheduleId}
     </update>
 
     <!-- 일정 드래그 앤 드롭 수정 -->

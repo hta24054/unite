@@ -59,6 +59,7 @@ CREATE TABLE schedule_share
     schedule_share_id bigINT AUTO_INCREMENT PRIMARY KEY,
     share_emp         VARCHAR(100) NOT NULL,
     schedule_id       bigINT       NOT NULL,
+    dept_id           bigINT       NOT NULL,
     CONSTRAINT FK_schedule FOREIGN KEY (schedule_id) REFERENCES schedule (schedule_id) ON DELETE CASCADE
 );
 
@@ -286,29 +287,77 @@ SELECT
 FROM schedule s
          JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
          LEFT JOIN emp e ON FIND_IN_SET(e.emp_id, ss.share_emp) > 0  -- 공유된 직원들의 emp_id
-WHERE ss.dept_id = '1230' -- 특정 부서 ID
-  AND FIND_IN_SET('241001', ss.share_emp) = 0  -- 로그인한 사용자가 공유한 일정은 제외
-  AND EXISTS (  -- 로그인한 사용자가 해당 부서에 속한 경우만
+WHERE ss.dept_id = 1400 -- 특정 부서 ID
+  AND FIND_IN_SET(241401, ss.share_emp) = 0  -- 로그인한 사용자가 공유한 일정은 제외
+        AND ss.share_emp IS NOT NULL -- 부서와 관련된 직원만 공유
+        GROUP BY s.schedule_id, s.schedule_name, s.schedule_content, s.schedule_start,
+        s.schedule_end, s.schedule_color, s.schedule_allDay, e.dept_id;
+
+
+
+
+UPDATE schedule
+SET    schedule_name = 'R&D본부 수정 테스트',
+       schedule_start = '2025-01-11 00:00:00',
+       schedule_end = '2025-01-11 00:00:00',
+       schedule_color = CASE
+                            WHEN EXISTS (
+                                SELECT 1
+                                FROM schedule_share ss
+                                         JOIN emp e ON e.emp_id = '241401'
+                                WHERE ss.schedule_id = 168
+                                  AND ss.dept_id = e.dept_id  -- 부서 일정을 확인
+                                  AND ss.share_emp IS NOT NULL
+                            ) THEN COALESCE(schedule_color, '#1d4ed8') -- 부서 일정은 색상 변경 불가, 기본값 #1d4ed8
+                                    ELSE '#facc15' -- 개인 일정은 색상 변경 가능
+                                    END,
+                                    schedule_content = '수정',
+                                    schedule_allDay = 1
+                                    WHERE  schedule_id = 168
+                                        AND    EXISTS (
+                                            SELECT 1
+                                            FROM schedule_share ss
+                                                     JOIN emp e ON e.emp_id = '241401'
+                                            WHERE ss.schedule_id = 168
+                                              AND ss.dept_id = e.dept_id  -- 부서 일정을 확인
+                                              AND ss.share_emp IS NOT NULL
+                                        );
+
+
+UPDATE schedule
+SET    schedule_name = 'R&D본부 수정 테스트123',
+       schedule_start = '2025-01-11 00:00:00',
+       schedule_end = '2025-01-11 00:00:00',
+       schedule_color = CASE
+           -- 부서일정의 경우 (부서 일정을 확인하고, 색상은 기본값으로 유지)
+                            WHEN EXISTS (
+                                SELECT 1
+                                FROM schedule_share ss
+                                         JOIN emp e ON e.emp_id = '241401'
+                                WHERE ss.schedule_id = 168
+                                  AND ss.dept_id = e.dept_id  -- 부서 일정을 확인
+                                  AND ss.share_emp IS NOT NULL
+                            ) THEN COALESCE(schedule_color, '#1d4ed8') -- 부서일정의 색상은 변경되지 않음
+           -- 개인일정의 경우 (부서와 무관한 개인 일정, 색상 변경 가능)
+                            ELSE '#facc15' -- 개인 일정의 경우 색상 변경 가능
+           END,
+       schedule_content = '수정',
+       schedule_allDay = 1
+WHERE  schedule_id = 168
+  AND EXISTS (
+    -- 개인 일정이 아닌 경우만 업데이트
     SELECT 1
-    FROM emp emp_check
-    WHERE emp_check.emp_id = '241001'  -- 로그인한 사용자 emp_id
-      AND emp_check.dept_id = ss.dept_id  -- 로그인한 사용자와 같은 부서에 속한 경우
-)
-GROUP BY s.schedule_id, s.schedule_name, s.schedule_content, s.schedule_start,
-         s.schedule_end, s.schedule_color, s.schedule_allDay, e.dept_id;
+    FROM schedule_share ss
+             JOIN emp e ON e.emp_id = '241401'
+    WHERE ss.schedule_id = 168
+      AND ss.dept_id = e.dept_id -- 부서 일정을 확인
+      AND ss.share_emp IS NOT NULL
+);
 
 
 
 
-SELECT emp_id
-FROM emp
-WHERE dept_id ='1230';
+select * from schedule;
 
-SELECT dept_id
-FROM emp
-WHERE emp_id = '241217';
-
-
-
-# 241214, 241215, 241216, 241217
-
+select * from schedule where schedule_id = 164;
+select * from schedule where schedule_id = 168;

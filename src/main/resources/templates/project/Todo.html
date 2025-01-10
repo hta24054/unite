@@ -49,6 +49,7 @@
                 </div>
                 <div class="col-1">
                     <button type="button" class="btn btn-warning edit-btn" th:data-todoid="${todo.todoId}" th:data-todo-subject="${todo.todoSubject}" th:data-projectid="${projectId}">수정</button>
+                    <span th:text="${todo.todoId}"></span>
                 </div>
                 <div class="col-1">
                     <button type="button" class="btn btn-danger delete-btn" th:data-todo-id="${todo.todoId}" th:data-projectid="${projectId}">삭제</button>

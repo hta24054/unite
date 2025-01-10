@@ -57,6 +57,9 @@
         select todo toDo, task_id taskId, emp_id memberId, project_id projectId, task_subject taskSubject, task_content taskContent, task_date taskDate, task_update_date taskUpdateDate, task_file_path taskFilePath, task_file_original taskFileOriginal, task_file_uuid taskFileUuid, task_file_type taskFileType, member_name memberName from task where project_id = #{projectId} and emp_id = #{userid} order by coalesce(task_update_date, task_date) desc
     </select>
     <select id="getTask" resultType="ProjectTask">
-        select todo toDo, emp_id memberId, project_id projectId, task_subject taskSubject, task_content taskContent, task_date taskDate, task_update_date taskUpdateDate, task_file_path taskFilePath, task_file_original taskFileOriginal, task_file_uuid taskFileUuid, task_file_type taskFileType, member_name memberName from task where project_id = #{projectId} and emp_id = #{userid} and task_id = #{taskId}
+        select todo toDo, task_id taskId, emp_id memberId, project_id projectId, task_subject taskSubject, task_content taskContent, task_date taskDate, task_update_date taskUpdateDate, task_file_path taskFilePath, task_file_original taskFileOriginal, task_file_uuid taskFileUuid, task_file_type taskFileType, member_name memberName from task where project_id = #{projectId} and emp_id = #{userid} and task_id = #{taskId}
     </select>
+    <delete id="deleteTask">
+        delete from task where project_id=#{projectId} and emp_id=#{memberId} and task_id=#{taskId}
+    </delete>
 </mapper>

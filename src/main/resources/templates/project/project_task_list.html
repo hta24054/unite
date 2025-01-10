@@ -18,7 +18,17 @@
     
 </head>
 <body>
+<div th:if="${delete_message}" class="alert alert-success" style="display: none;">
+	<script th:inline="javascript">
+		alert([[${delete_message}]]);
+	</script>
+</div>
 
+<div th:if="${delete_error}" class="alert alert-danger" style="display: none;">
+	<script th:inline="javascript">
+		alert([[${delete_error}]]);
+	</script>
+</div>
 <main>
 	<div class="container-fluid px-4">
 		<h1 class="mt-4" style="color: #334466; font-weight: bold">[[${projectName}]]</h1>
@@ -36,6 +46,7 @@
 				<i class="fas fa-table me-1"></i>
 				[[${memberName}]] 게시글
 			</div>
+
 			<div class="card-body">
 <!--				<input type="hidden" id="listType" value="list">-->
 <!--				   <c:if test="${listcount > 0}">  -->

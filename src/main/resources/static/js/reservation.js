@@ -5,7 +5,9 @@ $(document).ready(function () {
     const $resourceType = $("#resourceType");
     const $resourceName = $("#resourceName");
 
-    getResourceList();
+    initCalendar();
+    // getReservationList();
+    // getResourceList();
 
     // 자원 목록 불러오기
     function getResourceList() {
@@ -464,6 +466,5 @@ $(document).ready(function () {
         calendar.render();
     }
 
-    initCalendar();
-    getReservationList();
+
 });

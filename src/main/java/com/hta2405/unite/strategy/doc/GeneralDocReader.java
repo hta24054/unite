@@ -1,4 +1,4 @@
-package com.hta2405.unite.strategy;
+package com.hta2405.unite.strategy.doc;
 
 import com.hta2405.unite.domain.Doc;
 import com.hta2405.unite.enums.DocRole;
@@ -10,23 +10,22 @@ import org.springframework.ui.Model;
 
 @Component
 @RequiredArgsConstructor
-public class VacationDocReader implements DocReader {
+public class GeneralDocReader implements DocReader {
 
     private final DocService docService;
 
     @Override
     public DocType getType() {
-        return DocType.VACATION;
+        return DocType.GENERAL;
     }
 
     @Override
     public void prepareRead(Doc doc, DocRole docRole, Model model) {
         docService.addCommonReadAttrToModel(doc, docRole, model);
-        model.addAttribute("docVacation", docService.getDocVacationByDocId(doc.getDocId()));
     }
 
     @Override
     public String getView() {
-        return "/doc/vacation_read";
+        return "/doc/general_read";
     }
 }

@@ -111,7 +111,27 @@
 		<div class="row">
 			<div class="col-md-8">
 				<table class="table">
-					<caption><h5>진행률</h5></caption>
+					<caption>
+						<div class="d-flex justify-content-between align-items-center">
+							<h5>진행률</h5>
+							<button type="button" class="btn btn-primary btn-sm float-right"
+									th:if="${#strings.replace(role, '[', '').replace(']', '') != 'VIEWER'}"
+									th:onclick="|location.href='@{/project/todo(projectId=${projectId})}';|">
+								투두리스트
+							</button>
+
+						</div>
+					</caption>
+					<button type="button"
+							class="btn btn-primary btn-sm float-right"
+							th:if="${#strings.replace(role, '[', '').replace(']', '') == 'VIEWER'}"
+							th:href="@{/project/todo(projectId=${projectId})}"
+							th:data-memberid="${memberId}"
+							th:onclick="|location.href='@{/project/todo(projectId=${projectId})}';|"
+							style="display:none;"
+							disabled>
+						투두
+					</button>
 					<thead>
 					<tr>
 						<th>참여자</th>
@@ -196,9 +216,6 @@
 					</tbody>
 				</table>
 			</div>
-			<a th:href="@{/project/todo(projectId=${projectId})}">투두</a>
-
-
 
 			<!--			<jsp:include page="project_notice.jsp"/>-->
 		</div>

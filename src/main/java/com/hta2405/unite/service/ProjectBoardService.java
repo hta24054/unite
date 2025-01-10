@@ -12,4 +12,5 @@ public interface ProjectBoardService {
     boolean insertOrUpdate(String title, String content, String userid, int projectId, MultipartFile file, String category);
     List<ProjectTaskDTO> getRecentPosts(int projectId);
     List<ProjectTask> getTaskList(int projectId, String userid);
+    List<ProjectTask> getTask(int projectId, String userid, int taskId);
 }

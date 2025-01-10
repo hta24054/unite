@@ -151,9 +151,12 @@ $(document).ready(function () {
         });
     }
 
+    let isDeptSchedule = false; // 부서 일정 체크박스
     // 체크박스 클릭 시 부서 일정 리스트 불러오기
     $('#departmentScheduleCheckbox').on('change', function() {
-        if ($(this).prop('checked')) {
+        isDeptSchedule = $(this).prop('checked');
+
+        if (isDeptSchedule) {
             fetchDeptListData();
         } else {
             // 부서 일정 제거
@@ -265,6 +268,11 @@ $(document).ready(function () {
             success: function (data) {
                 fetchAllData();
                 $("#scheduleModal").modal("hide");
+
+                // 부서 일정 체크
+                if (isDeptSchedule) {
+                    fetchDeptListData();
+                }
             },
             error: function (error) {
                 console.log("일정 수정 오류", error);
@@ -390,9 +398,12 @@ $(document).ready(function () {
             }
 	    } else if(event.extendedProps.isDept === true) { // 부서 일정
             $(".modal-header").find("h5").text("부서 일정");
-            $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] textarea").prop("disabled", true);
+            //$("form[name='scheduleEvent'] input, form[name='scheduleEvent'] textarea").prop("disabled", true);
             $(".modal-body").find(".form-group.color-group").remove();
-            $(".modal-body").find(".btn_wrap").remove();
+            $(".modal-body").find(".btn_wrap").html(`
+	            <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
+	            <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
+	        `);
 
         } else {
 	        $(".modal-header").find("h5").text("상세 일정");

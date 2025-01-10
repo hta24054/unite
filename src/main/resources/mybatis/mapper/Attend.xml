@@ -23,13 +23,10 @@
         where emp_id = #{empId}
           and attend_date = CURRENT_DATE
     </update>
-    <select id="getUsedAnnualVacationCount">
-        SELECT ifnull(SUM(vacation_count), 0)
-        FROM doc
-                 left join doc_vacation on doc.doc_id = doc_vacation.doc_id
-        WHERE DOC_WRITER = 'admin'
-          AND VACATION_TYPE = '연차'
-          AND YEAR(VACATION_START) = '2024'
+    <select id="getAnnualAppliedVacationCount">
+        select ifnull(SUM(vacation_count), 0) from doc join doc_vacation
+                                                            on doc.doc_id = doc_vacation.doc_id
+        where doc.doc_writer = #{empId} and year(vacation_start) = year(now())
     </select>
 
     <insert id="insertVacation">

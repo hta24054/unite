@@ -1,5 +1,7 @@
 package com.hta2405.unite.controller;
 
+import com.hta2405.unite.domain.Resource;
+import com.hta2405.unite.dto.ReservationDTO;
 import com.hta2405.unite.service.ReservationService;
 import com.hta2405.unite.service.ResourceService;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @Slf4j
@@ -24,6 +32,35 @@ public class ReservationController {
     @GetMapping("/reservationCalender")
     public String reservationCalender() {
         return "/reservation/reservationCalender";
+    }
+
+    @ResponseBody
+    @GetMapping("/getResourceList")
+    public List<Resource> getResourceList() {
+        return resourceService.getResourceList();
+    }
+
+    @ResponseBody
+    @GetMapping("/resourceSelectChange")
+    public List<ReservationDTO> resourceSelectChange(@RequestParam("resourceType") String resourceType) {
+
+        List<Resource> resources = reservationService.resourceSelectChange(resourceType);
+        List<ReservationDTO> reservationDTOList = new ArrayList<>();
+
+        // 리소스마다 DTO 생성하여 리스트에 추가
+        for (Resource resource : resources) {
+            ReservationDTO reservationDTO = new ReservationDTO();
+            reservationDTO.setResourceId(resource.getResourceId());
+            reservationDTO.setResourceType(resource.getResourceType());
+            reservationDTO.setResourceName(resource.getResourceName());
+            reservationDTO.setResourceUsable(resource.isResourceUsable());
+
+            reservationDTOList.add(reservationDTO);
+        }
+
+        System.out.println("\n ***** reservationDTOList ===== " + reservationDTOList);
+
+        return reservationDTOList;
     }
 
 }

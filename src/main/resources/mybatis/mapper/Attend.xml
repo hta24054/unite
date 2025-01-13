@@ -28,7 +28,22 @@
                                                             on doc.doc_id = doc_vacation.doc_id
         where doc.doc_writer = #{empId} and year(vacation_start) = year(now())
     </select>
-
+    <select id="getAnnualUsedVacationCount">
+        select ifnull(SUM(vacation_count), 0)
+        from doc
+                 join doc_vacation
+                      on doc.doc_id = doc_vacation.doc_id
+        where doc.doc_writer = #{empId}
+          and year(vacation_start) = #{year}
+          and doc.sign_finish = 1
+    </select>
+    <select id="getVacationDTOList">
+        SELECT VACATION_COUNT, VACATION_TYPE, DOC_CREATE_DATE, DOC_CONTENT, VACATION_START, VACATION_END
+        FROM doc JOIN doc_vacation on doc.doc_id = doc_vacation.doc_id
+        WHERE DOC_WRITER = #{empId}
+          AND year(VACATION_START) = #{year}
+        order by DOC_CREATE_DATE
+    </select>
     <insert id="insertVacation">
         INSERT INTO attend(EMP_ID, ATTEND_DATE, ATTEND_TYPE) VALUES
         <foreach collection="list" item="date" separator=",">
@@ -49,5 +64,18 @@
             #{date}
         </foreach>
     </delete>
+    <update id="updateVacationCount">
+        UPDATE emp
+        SET VACATION_COUNT = CASE
+                                 WHEN TIMESTAMPDIFF(MONTH, HIREDATE, CURDATE()) >= 36
+                                     THEN GREATEST(0, LEAST(25, 15 +
+                                                                FLOOR((TIMESTAMPDIFF(MONTH, HIREDATE, CURDATE()) / 12 - 2) / 2)))
+                                 WHEN TIMESTAMPDIFF(MONTH, HIREDATE, CURDATE()) >= 12
+                                     THEN 15
+                                 ELSE
+                                     GREATEST(0, FLOOR(TIMESTAMPDIFF(MONTH, HIREDATE, CURDATE())))
+            END
+        WHERE 1 = 1;
+    </update>
 </mapper>
 

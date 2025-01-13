@@ -15,4 +15,6 @@ public interface ReservationService {
     public List<ReservationDTO> getAllReservation();
 
     public int checkReservationOverlap(ReservationDTO reservationDTO);
+
+    public int getReservationModal(Long reservationId);
 }

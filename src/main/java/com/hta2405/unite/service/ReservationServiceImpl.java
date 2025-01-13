@@ -42,4 +42,9 @@ public class ReservationServiceImpl implements ReservationService {
     public int checkReservationOverlap(ReservationDTO reservationDTO) {
         return reservationDAO.checkReservationOverlap(reservationDTO);
     }
+
+    @Override
+    public int getReservationModal(Long reservationId) {
+        return reservationDAO.getReservationModal(reservationId);
+    }
 }

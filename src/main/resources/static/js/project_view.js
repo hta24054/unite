@@ -6,7 +6,7 @@ function getList(state) {
     option = state;
     $.ajax({
         type: "get",
-        url: contextPath + "/projectb/commentlist",
+        url: "/projectBoard/commentlist",
         data: {
             "comment_board_num": $("#comment_board_num").val(),
             state: state,
@@ -113,11 +113,11 @@ $(function () {
             return;
         }
         $.ajax({
-            url: contextPath + "/projectb/commentadd",
+            url: "/projectBoard/commentadd",
             data: {
-                userid: $("#loginid").val(),
                 content: content,
-                comment_board_num: $("#comment_board_num").val(),
+                projectId: $("#projectId").val(),
+                taskId: $("#taskId").val(),
                 comment_re_lev: 0, //원문인 경우 comment_re_seq는 0, comment_re_ref는 댓글의 원문 글번호
                 comment_re_seq: 0
             },
@@ -126,6 +126,10 @@ $(function () {
                 if (rdata == 1) {
                     getList(option);
                 }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX 오류 발생:", status, error);
+                alert("오류가 발생했습니다. 다시 시도해 주세요.");
             }
         })
         $('.comment-write-area-text').val('');//textarea 초기화

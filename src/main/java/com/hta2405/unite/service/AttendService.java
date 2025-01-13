@@ -3,9 +3,12 @@ package com.hta2405.unite.service;
 import com.hta2405.unite.domain.*;
 import com.hta2405.unite.dto.AttendDTO;
 import com.hta2405.unite.dto.AttendInfoDTO;
+import com.hta2405.unite.dto.VacationDTO;
+import com.hta2405.unite.dto.VacationInfoDTO;
 import com.hta2405.unite.enums.AttendType;
 import com.hta2405.unite.mybatis.mapper.AttendMapper;
 import com.hta2405.unite.mybatis.mapper.HolidayMapper;
+import com.hta2405.unite.mybatis.mapper.JobMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +32,7 @@ import static com.hta2405.unite.enums.AttendType.*;
 public class AttendService {
     private final HolidayMapper holidayMapper;
     private final AttendMapper attendMapper;
+    private final JobMapper jobMapper;
 
     public AttendInfoDTO getAttendInfoDTO(int year, int month, Emp targetEmp) {
         LocalDate startDate = LocalDate.of(year, month, 1);
@@ -171,11 +175,19 @@ public class AttendService {
             return response;
         }
 
+
+
         if (attend.getOutTime() == null) {
             status = "checkIn";
             response.put("status", status);
         } else {
             status = "checkOut";
+            response.put("status", status);
+        }
+
+        //출 퇴근기록이 없어도 휴가나 출장일 수도 있음
+        if (attend.getInTime() == null) {
+            status = "etc";
             response.put("status", status);
         }
         response.put("attend", attend);
@@ -210,12 +222,14 @@ public class AttendService {
     @Transactional
     public void insertVacation(String empId, DocVacation docVacation) {
         List<LocalDate> dates = getDateList(docVacation.getVacationStart(), docVacation.getVacationEnd());
+        attendMapper.deleteAllAttend(empId, dates);
         attendMapper.insertVacation(empId, dates, docVacation.getVacationType());
     }
 
     @Transactional
     public void insertTrip(String empId, DocTrip docTrip) {
         List<LocalDate> dates = getDateList(docTrip.getTripStart(), docTrip.getTripEnd());
+        attendMapper.deleteAllAttend(empId, dates);
         attendMapper.insertTrip(empId, dates);
     }
 
@@ -223,5 +237,25 @@ public class AttendService {
         return Stream.iterate(startDate, date -> date.plusDays(1))
                 .limit(ChronoUnit.DAYS.between(startDate, endDate) + 1)
                 .collect(Collectors.toList());
+    }
+
+    public VacationInfoDTO getVacationInfoDTO(int year, Emp emp) {
+        String jobName = jobMapper.getJobByEmpId(emp.getEmpId()).getJobName();
+        //year 파라미터 년도에 따른 휴가 DTO 반환
+        List<VacationDTO> dtoList = attendMapper.getVacationDTOList(emp.getEmpId(), year);
+
+        //조회 하는 년도 사용 횟수만 반환
+        int usedCount = attendMapper.getVacationDTOList(emp.getEmpId(), LocalDate.now().getYear())
+                .stream()
+                .filter(v -> v.getVacationType().equals(ANNUAL_VACATION))
+                .mapToInt(VacationDTO::getVacationCount)
+                .sum();
+
+        return VacationInfoDTO.builder()
+                .targetEmpName(emp.getEname())
+                .jobName(jobName)
+                .vacationCount(emp.getVacationCount())
+                .usedCount(usedCount)
+                .vacationDTOList(dtoList).build();
     }
 }

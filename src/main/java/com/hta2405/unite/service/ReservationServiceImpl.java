@@ -39,4 +39,14 @@ public class ReservationServiceImpl implements ReservationService {
         System.out.println("자원 예약 중복 아니면 예약" + reservationDAO.resourceReservation(reservationDTO));
         return reservationDAO.resourceReservation(reservationDTO);
     }
+
+    @Override
+    public List<ReservationDTO> getReservationByResourceIdAndName(Long resourceId, String resourceName) {
+        return reservationDAO.getReservationByResourceIdAndName(resourceId, resourceName);
+    }
+
+    @Override
+    public List<ReservationDTO> getAllReservation() {
+        return reservationDAO.getAllReservation();
+    }
 }

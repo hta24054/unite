@@ -7,12 +7,8 @@ import com.hta2405.unite.service.ResourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,10 +53,15 @@ public class ReservationController {
 
             reservationDTOList.add(reservationDTO);
         }
-
-        System.out.println("\n ***** reservationDTOList ===== " + reservationDTOList);
-
         return reservationDTOList;
+    }
+
+    @ResponseBody
+    @PostMapping("/resourceReservation")
+    public int resourceReservation(@RequestBody ReservationDTO reservationDTO) {
+        System.out.println("\n ***** reservationDTO ===== " + reservationDTO.getReservationStart());
+        int reservation = reservationService.resourceReservation(reservationDTO);
+        return reservation;
     }
 
 }

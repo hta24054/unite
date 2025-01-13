@@ -20,6 +20,30 @@
         ORDER BY resc_id ASC
     </select>
 
+    <!-- 중복 예약 여부 체크 -->
+    <select id="checkReservationOverlap" resultType="int">
+        SELECT COUNT(*)
+        FROM reservation
+        WHERE resource_id = #{resourceId}
+        AND (
+            <!-- 종일 예약과 새 예약이 중복되는지 검사 -->
+            (reservation_allDay = 1 AND
+            reservation_start &lt;= #{reservationEnd} AND reservation_end &gt;= #{reservationStart})
+            OR
+            <!-- 시간 기반 예약과 새 예약이 중복되는지 검사 -->
+            (reservation_allDay = 0 AND
+            #{reservationStart} &lt; reservation_end AND #{reservationEnd} &gt; reservation_start)
+        )
+    </select>
+
+    <!-- 예약 추가 -->
+    <insert id="resourceReservation" parameterType="com.hta2405.unite.dto.ReservationDTO">
+        INSERT INTO reservation
+        (resource_id, emp_id, reservation_start, reservation_end, reservation_info, reservation_allDay)
+        VALUES
+            (#{resourceId}, #{empId}, #{reservationStart}, #{reservationEnd}, #{reservationInfo}, #{reservationAllDay})
+    </insert>
+
 
 
 

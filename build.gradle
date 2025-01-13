@@ -60,6 +60,15 @@ dependencies {
     //jackson-datatype
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2'
 
+    //spring boot websocket
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '3.4.1'
+
+    //sockjs
+    implementation group: 'org.webjars', name: 'sockjs-client', version: '1.5.1'
+
+    //stomp-websocket
+    implementation group: 'org.webjars', name: 'stomp-websocket', version: '2.3.4'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.4'
     testImplementation 'org.springframework.security:spring-security-test'

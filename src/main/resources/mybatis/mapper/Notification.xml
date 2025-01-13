@@ -1,0 +1,25 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hta2405.unite.mybatis.mapper.NotificationMapper">
+    <insert id="insertNotification" parameterType="Notification">
+        INSERT INTO notification (title, category, message, recipient_id, target_url, is_read, created_at)
+        VALUES (#{title}, #{category}, #{message}, #{recipientId}, #{targetUrl}, #{isRead}, #{createdAt})
+    </insert>
+    <select id="selectNotificationsByRecipientId" resultType="Notification">
+        SELECT id, category, title, message, recipient_id, target_url, is_read, created_at
+        FROM notification
+        WHERE recipient_id = #{recipientId}
+        ORDER BY created_at DESC
+    </select>
+    <update id="markAsRead" parameterType="long">
+        UPDATE notification
+        SET is_read = TRUE
+        WHERE id = #{id}
+    </update>
+    <delete id="deleteOldNotifications">
+        DELETE FROM notification
+        WHERE is_read = TRUE
+        AND created_at &lt; NOW() - INTERVAL 7 DAY
+    </delete>
+</mapper>
+

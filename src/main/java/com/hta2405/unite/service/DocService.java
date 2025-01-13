@@ -3,9 +3,11 @@ package com.hta2405.unite.service;
 import com.hta2405.unite.domain.*;
 import com.hta2405.unite.dto.DocListDTO;
 import com.hta2405.unite.dto.FileDTO;
+import com.hta2405.unite.dto.NotificationDTO;
 import com.hta2405.unite.dto.ProductDTO;
 import com.hta2405.unite.enums.DocRole;
 import com.hta2405.unite.enums.DocType;
+import com.hta2405.unite.enums.NotificationCategory;
 import com.hta2405.unite.mybatis.mapper.DocMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +34,7 @@ public class DocService {
     private final FileService fileService;
     private final String FILE_DIR;
     private final AttendService attendService;
+    private final NotificationService notificationService;
 
     public DocService(HolidayService holidayService,
                       EmpService empService,
@@ -39,7 +42,7 @@ public class DocService {
                       DocMapper docMapper,
                       FileService fileService,
                       AttendService attendService,
-                      @Value("${doc.upload.directory}") String FILE_DIR) {
+                      @Value("${doc.upload.directory}") String FILE_DIR, NotificationService notificationService) {
         this.holidayService = holidayService;
         this.empService = empService;
         this.deptService = deptService;
@@ -47,6 +50,7 @@ public class DocService {
         this.fileService = fileService;
         this.attendService = attendService;
         this.FILE_DIR = FILE_DIR;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -55,6 +59,16 @@ public class DocService {
 
         List<Sign> list = getSigns(doc, signers);
         docMapper.insertSign(list);
+
+        NotificationDTO notification = NotificationDTO.builder()
+                .category(NotificationCategory.DOC)
+                .title("[전자문서 결재]")
+                .message(doc.getDocTitle() + " 문서가 결재 대기중입니다.")
+                .recipientId(list.get(1).getEmpId())
+                .targetUrl("/doc?docId=" + doc.getDocId())
+                .isRead(false)
+                .createdAt(LocalDateTime.now().toString()).build();
+        notificationService.sendNotification(notification);
     }
 
     @Transactional

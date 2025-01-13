@@ -25,18 +25,6 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public int resourceReservation(ReservationDTO reservationDTO) {
-
-        // 자원 예약 중복 체크
-        int overlapCount = reservationDAO.checkReservationOverlap(reservationDTO);
-        System.out.println("자원 예약 중복 체크" + overlapCount);
-
-        if (overlapCount > 0) {
-            System.out.println("이미 예약된 자원입니다.");
-            return 0;
-        }
-
-        // 자원 예약 중복 아니면 예약
-        System.out.println("자원 예약 중복 아니면 예약" + reservationDAO.resourceReservation(reservationDTO));
         return reservationDAO.resourceReservation(reservationDTO);
     }
 
@@ -48,5 +36,10 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<ReservationDTO> getAllReservation() {
         return reservationDAO.getAllReservation();
+    }
+
+    @Override
+    public int checkReservationOverlap(ReservationDTO reservationDTO) {
+        return reservationDAO.checkReservationOverlap(reservationDTO);
     }
 }

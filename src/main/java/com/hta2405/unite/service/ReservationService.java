@@ -13,4 +13,6 @@ public interface ReservationService {
     public List<ReservationDTO> getReservationByResourceIdAndName(Long resourceId, String resourceName);
 
     public List<ReservationDTO> getAllReservation();
+
+    public int checkReservationOverlap(ReservationDTO reservationDTO);
 }

@@ -41,5 +41,13 @@
             (#{empId}, #{date}, 'TRIP')
         </foreach>
     </insert>
+    <delete id="deleteAllAttend">
+        delete
+        from attend
+        where emp_id = #{empId} and attend_date in
+        <foreach collection="list" item="date" open="(" separator="," close=")">
+            #{date}
+        </foreach>
+    </delete>
 </mapper>
 

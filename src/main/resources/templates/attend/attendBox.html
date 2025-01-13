@@ -70,29 +70,46 @@
                 method: "GET",
                 dataType: "json",
                 success: function (data) {
-                    // 서버에서 반환된 출근 기록이 있을 경우 화면에 표시
-                    console.log(data.status)
+                    console.log(data.status);
 
-                    if (data.status === 'empty') {//출근 안한경우
+                    if (data.status === 'empty') { // 출근 안한 경우
                         $("#workType").prop("disabled", false);
-                    } else if (data.status === 'checkIn') { //출근상태
+                    } else if (data.status === 'checkIn') { // 출근 상태
                         const inTime = getLocalTimeToString(data.attend.inTime);
                         $("#startTime").text(inTime);
                         $("#startButton").addClass("button-inactive").removeClass("button-active");
                         $("#endButton").addClass("button-active").removeClass("button-inactive");
-                        // 서버에서 받아온 근무 구분 값을 선택
                         $("#workType").val(data.type).prop("disabled", true);
                         setWorkType(data.attend.attendType);
-                    } else if (data.status === 'checkOut') { //퇴근까지 마친 상태
+                    } else if (data.status === 'checkOut') { // 퇴근까지 마친 상태
                         const inTime = getLocalTimeToString(data.attend.inTime);
                         const outTime = getLocalTimeToString(data.attend.outTime);
                         $("#startTime").text(inTime);
                         $("#endTime").text(outTime);
                         $("#startButton").addClass("button-inactive").removeClass("button-active");
                         $("#endButton").addClass("button-inactive").removeClass("button-active");
-                        // 서버에서 받아온 근무 구분 값을 선택
                         $("#workType").val(data.type).prop("disabled", true);
                         setWorkType(data.attend.attendType);
+                    } else if (data.status === 'etc') { // 휴가나 출장 상태
+                        $("#startButton, #endButton").addClass("button-inactive").removeClass("button-active");
+
+                        // 서버에서 전달된 `attendType`을 텍스트로 표시 (이미 typeName이 반환됨)
+                        const workTypeText = data.attend.attendType || "근무 유형 없음"; // 값이 없으면 기본 텍스트로 설정
+
+                        // 선택박스를 텍스트로 대체
+                        const customWorkTypeText = $('<span>')
+                            .attr('id', 'customWorkType')
+                            .text(workTypeText) // 서버에서 받은 근무 유형 텍스트
+                            .css({
+                                display: 'inline-block',
+                                marginLeft: '10px',
+                                padding: '5px',
+                                border: '1px solid #ccc',
+                                borderRadius: '5px',
+                                backgroundColor: '#f9f9f9'
+                            });
+
+                        $("#workType").replaceWith(customWorkTypeText);
                     }
                 },
                 error: function () {

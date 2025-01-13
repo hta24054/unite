@@ -9,4 +9,8 @@ public interface ReservationService {
     public List<Resource> resourceSelectChange(String resourceType);
 
     public int resourceReservation(ReservationDTO reservationDTO);
+
+    public List<ReservationDTO> getReservationByResourceIdAndName(Long resourceId, String resourceName);
+
+    public List<ReservationDTO> getAllReservation();
 }

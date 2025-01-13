@@ -10,7 +10,7 @@ $(document).ready(function () {
 
     initCalendar();
     getResourceList();
-    // getReservationList();
+    getReservationList();
 
     // 자원 목록 불러오기
     function getResourceList() {
@@ -70,6 +70,18 @@ $(document).ready(function () {
         });
     });
 
+    // 자원 선택 시 해당 자원에 대한 예약 목록 불러오기
+    $resourceNameCategory.on("change", function () {
+        const selectedResourceId = $(this).val(); // 선택된 자원 ID
+        const selectedResourceName = $("#resourceNameCategory option:selected").text(); // 선택된 자원 이름
+
+        if (selectedResourceId && selectedResourceName) {
+            getReservationList(selectedResourceId, selectedResourceName); // 자원 ID와 자원 이름에 맞는 예약 목록을 불러오기
+        } else {
+            getReservationList(); // 자원 ID나 이름이 선택되지 않으면 모든 예약 목록을 불러오기
+        }
+    });
+
     // 자원 선택 시 해당 자원명 불러오기
     $resourceType.on("change", function () {
         const $selectedVal = $(this).val();
@@ -98,25 +110,29 @@ $(document).ready(function () {
     });
 
     // 자원 예약 목록 불러오기
-    function getReservationList() {
+    function getReservationList(resourceId = null, resourceName = null) {
         $.ajax({
             url: "getReservationList",
             type: "get",
             dataType: "json",
+            data: {
+                resourceId: resourceId,   // 자원 ID
+                resourceName: resourceName // 자원 이름
+            },
             success: function (data) {
                 events = [];
                 if (data != null && data.length > 0) {
 
                     for (let i = 0; i < data.length; i++) {
                         events.push({
-                            id: data[i].reservation_id,
-                            allDay: data[i].reservation_allDay,
-                            start: data[i].reservation_start,
-                            end: data[i].reservation_end,
+                            id: data[i].reservationId,
+                            allDay: data[i].reservationAllDay,
+                            start: data[i].reservationStart,
+                            end: data[i].reservationEnd,
                             extendedProps: {
-                                reservationInfo: data[i].reservation_info,
-                                resourceId: data[i].resource_id,
-                                empId: data[i].emp_id
+                                reservationInfo: data[i].reservationInfo,
+                                resourceId: data[i].resourceId,
+                                empId: data[i].empId
                             }
                         });
                     }
@@ -137,7 +153,7 @@ $(document).ready(function () {
             type: "post",
             dataType: "json",
             headers: {
-                'Content-Type': 'application/json', // JSON 데이터 형식
+                'Content-Type': 'application/json',
             },
             data: JSON.stringify({
                 empId: $("#emp_id").val(),

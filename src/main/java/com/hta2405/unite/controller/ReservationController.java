@@ -64,4 +64,17 @@ public class ReservationController {
         return reservation;
     }
 
+    @ResponseBody
+    @GetMapping("/getReservationList")
+    public List<ReservationDTO> getReservationByResourceIdAndName(@RequestParam(required = false) Long resourceId,  @RequestParam(required = false) String resourceName) {
+        if (resourceId != null && resourceName != null) {
+            // 선택된 자원 예약 목록 불러오기
+            return reservationService.getReservationByResourceIdAndName(resourceId, resourceName);
+        } else {
+            // 자원 ID가 없으면 모든 예약 목록 불러오기
+            return reservationService.getAllReservation();
+        }
+    }
+
+
 }

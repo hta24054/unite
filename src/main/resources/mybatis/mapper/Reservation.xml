@@ -44,7 +44,19 @@
             (#{resourceId}, #{empId}, #{reservationStart}, #{reservationEnd}, #{reservationInfo}, #{reservationAllDay})
     </insert>
 
+    <select id="getReservationByResourceIdAndName" resultType="com.hta2405.unite.dto.ReservationDTO">
+        SELECT r.*, s.resc_name
+        FROM reservation r
+                 JOIN resc s ON r.resource_id = s.resc_id
+        WHERE r.resource_id = #{resourceId}
+          AND s.resc_name = #{resourceName};
+    </select>
 
+
+    <select id="getAllReservation" resultType="com.hta2405.unite.dto.ReservationDTO">
+        SELECT *
+        FROM reservation
+    </select>
 
 
 </mapper>

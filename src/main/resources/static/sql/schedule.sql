@@ -114,12 +114,21 @@ VALUES
 
 select * from reservation;
 
+SELECT *
+FROM resc
+where resc_id = 1
+AND resc_name = '회의실1';
 
 
+select * from resc;
 
+SELECT r.*, s.resc_name
+FROM reservation r
+         JOIN resc s ON r.resource_id = s.resc_id
+WHERE r.resource_id = 1
+  AND s.resc_name = '회의실1';
 
-
-
+SHOW COLUMNS FROM resc;
 
 
 

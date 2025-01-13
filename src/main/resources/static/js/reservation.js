@@ -136,16 +136,21 @@ $(document).ready(function () {
             url: "resourceReservation",
             type: "post",
             dataType: "json",
-            data: {
-                emp_id: $("#emp_id").val(),
-                allDay: eventData.allDay ? 1 : 0,
-                startAt: moment(eventData.startAt).format('YYYY-MM-DD HH:mm'),
-                endAt: moment(eventData.endAt).format('YYYY-MM-DD HH:mm'),
-                resourceId: $("#resourceName").val(), // 선택된 자원의 ID,
-                resourceName: $("#resourceName option:selected").text(), // 자원 이름
-                reservationInfo: $("#reservationInfo").val()
+            headers: {
+                'Content-Type': 'application/json', // JSON 데이터 형식
             },
+            data: JSON.stringify({
+                empId: $("#emp_id").val(),
+                reservationAllDay: eventData.allDay ? 1 : 0, // reservationAllDay로 변경
+                reservationStart: moment(eventData.startAt).format('YYYY-MM-DD HH:mm'), // reservationStart로 변경
+                reservationEnd: moment(eventData.endAt).format('YYYY-MM-DD HH:mm'), // reservationEnd로 변경
+                resourceId: $("#resourceName").val(),
+                resourceName: $("#resourceName option:selected").text(),
+                reservationInfo: $("#reservationInfo").val()
+            }),
             success: function (data) {
+                console.log(data)
+
                 if (data === 0) {
                     alert('이미 예약된 자원입니다.');
                     return;  // 이미 예약된 자원이면 예약을 진행하지 않음

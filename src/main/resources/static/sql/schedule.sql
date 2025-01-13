@@ -28,6 +28,8 @@ commit; /*INSERT 하고나서 항상 커밋!!!*/
 
 
 
+select * from schedule;
+
 CREATE TABLE schedule_share
 (
     schedule_share_id bigINT AUTO_INCREMENT PRIMARY KEY,
@@ -87,11 +89,30 @@ ORDER BY resc_id ASC;
 
 
 desc resc;
+select * from resc;
 
+SELECT COUNT(*)
+FROM reservation
+WHERE resource_id = 1
+  AND (
+    (reservation_allDay = 1 AND
+    reservation_start <= '2025-01-13 00:00' AND reservation_end >= '2025-01-13 00:00')
+    OR
+    (reservation_allDay = 0 AND
+     '2025-01-13 00:00' < reservation_end AND '2025-01-13 00:00' > reservation_start)
+    );
 
+INSERT INTO reservation
+(resource_id, emp_id, reservation_start, reservation_end, reservation_info, reservation_allDay)
+VALUES
+    (1,
+     '241001',
+     '2025-01-13 00:00',
+     '2025-01-13 00:00',
+     '회의 예약',
+     1);
 
-
-
+select * from reservation;
 
 
 

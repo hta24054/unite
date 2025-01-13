@@ -28,6 +28,8 @@ commit; /*INSERT 하고나서 항상 커밋!!!*/
 
 
 
+select * from schedule;
+
 CREATE TABLE schedule_share
 (
     schedule_share_id bigINT AUTO_INCREMENT PRIMARY KEY,
@@ -87,15 +89,81 @@ ORDER BY resc_id ASC;
 
 
 desc resc;
+select * from resc;
+
+SELECT COUNT(*)
+FROM reservation
+WHERE resource_id = 1
+  AND (
+    (reservation_allDay = 1 AND
+    reservation_start <= '2025-01-13 00:00' AND reservation_end >= '2025-01-13 00:00')
+    OR
+    (reservation_allDay = 0 AND
+     '2025-01-13 00:00' < reservation_end AND '2025-01-13 00:00' > reservation_start)
+    );
+
+INSERT INTO reservation
+(resource_id, emp_id, reservation_start, reservation_end, reservation_info, reservation_allDay)
+VALUES
+    (1,
+     '241001',
+     '2025-01-13 00:00',
+     '2025-01-13 00:00',
+     '회의 예약',
+     1);
+
+select * from reservation;
+
+SELECT *
+FROM resc
+where resc_id = 1
+AND resc_name = '회의실1';
 
 
+select * from resc;
+
+SELECT r.*, s.resc_name
+FROM reservation r
+         JOIN resc s ON r.resource_id = s.resc_id
+WHERE r.resource_id = 1
+  AND s.resc_name = '회의실1';
+
+SHOW COLUMNS FROM resc;
+
+SHOW COLUMNS FROM reservation;
 
 
+SELECT
+    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable,
+    reservation.reservation_id,
+    reservation.emp_id,
+    reservation.reservation_start,
+    reservation.reservation_end,
+    reservation.reservation_info,
+    reservation.reservation_allDay
+FROM reservation
+         LEFT JOIN resc resc
+                   ON reservation.resource_id = resc.resc_id
+WHERE reservation.reservation_id = 18;
 
 
-
-
-
+SELECT
+    resc.resc_id,
+    resc.resc_type,
+    resc.resc_name,
+    resc.resc_info,
+    resc.resc_usable,
+    reservation.reservation_id,
+    reservation.emp_id,
+    reservation.reservation_start,
+    reservation.reservation_end,
+    reservation.reservation_info,
+    reservation.reservation_allDay,
+    emp.ename  -- emp 테이블에서 ename 컬럼을 가져옵니다.
+FROM reservation
+         LEFT JOIN resc resc ON reservation.resource_id = resc.resc_id
+         LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id  -- emp 테이블과 JOIN
+WHERE reservation.reservation_id = 18;
 
 
 

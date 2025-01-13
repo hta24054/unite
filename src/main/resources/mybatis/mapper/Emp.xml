@@ -117,5 +117,9 @@
         SELECT emp_id, ename
         FROM emp
     </select>
+    <update id="changePassword">
+        update emp set password = #{encodedPassword}
+        where emp_id = #{empId}
+    </update>
 </mapper>
 

@@ -30,4 +30,6 @@ public interface EmpMapper {
     List<Map<String, Object>> getIdToENameMap();
 
     void updateVacationCount();
+
+    int changePassword(String empId, String encodedPassword);
 }

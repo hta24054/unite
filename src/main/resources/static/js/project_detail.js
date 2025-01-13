@@ -155,47 +155,6 @@ $(document).ready(function () {
         });
     });
 
-    $("#writeForm").submit(function (event) {
-        event.preventDefault(); // 폼 기본 제출 방지
-        const projectId = $("#projectId").val();
-        const title = $("#postTitle").val();
-        const content = $("#postContent").val();
-        const file = $("#postFile")[0].files[0]; // 파일 가져오기 (수정된 부분)
-        const formData = new FormData();
-        console.log("sdfsd", projectId);
-        formData.append("title", title);
-        formData.append("content", content);
-        formData.append("projectId", projectId);
-        if (file) {
-            formData.append("file", file);
-        }
-
-        $.ajax({
-            url: "../projectBoard/write", // 서버 경로
-            type: "POST", // HTTP 메서드
-            data: formData, // FormData 객체로 전송
-            contentType: false, // jQuery가 자동으로 Content-Type을 설정하지 않도록 설정
-            processData: false, // 데이터를 쿼리 문자열로 변환하지 않도록 설정
-            success: function (response) {
-                console.log("Response from server:", response);
-
-                if (response.success) {
-                    updatePostList(response.posts); // 새로 고친 게시물 리스트 업데이트
-                    $("#writeModal").modal("hide"); // 모달 창 닫기
-                    $(".modal-backdrop").remove(); // 모달 배경 흐림 제거
-                    window.location.reload();
-                } else {
-                    alert("저장 실패. 다시 시도해 주세요.");
-                }
-
-            },
-            error: function (xhr, status, error) {
-                console.error("AJAX 오류 발생:", status, error);
-                console.error("서버 응답:", xhr.responseText);
-                alert("오류가 발생했습니다. 다시 시도해 주세요.");
-            }
-        });
-    });
     // 게시물 리스트 업데이트
     function updatePostList(posts) {
         const postListContainer = $("#postTable tbody");

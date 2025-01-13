@@ -5,6 +5,7 @@ import com.hta2405.unite.dto.FileDTO;
 import com.hta2405.unite.dto.ProjectTaskDTO;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -21,4 +22,8 @@ public interface ProjectBoardMapper {
     List<ProjectTask> getTask(int projectId, String userid, int taskId);
     boolean deleteTask(int projectId, String memberId, int taskId);
     void modifyProcess(int projectId, String memberId, int taskId, FileDTO taskFile, String board_subject, String board_content);
+    int getTaskCommentId(int taskId);
+    int getParentSeq(int taskId, int parentCommentId);
+    int getMaxSeq(int taskId, int ref);
+    int insertComment(String userid, int taskId, String content, int ref, int lev, int seq);
 }

@@ -172,7 +172,13 @@ $(document).ready(function () {
                     return;  // 이미 예약된 자원이면 예약을 진행하지 않음
                 }
 
-                getReservationList();
+                // 자원 등록 후, 해당 자원의 예약 목록을 불러옴
+                const selectedResourceId = $("#resourceName").val(); // 선택된 자원 ID
+                const selectedResourceName = $("#resourceName option:selected").text(); // 선택된 자원 이름
+
+                // 등록한 자원의 예약 목록을 불러옴
+                getReservationList(selectedResourceId, selectedResourceName);
+
                 $("#reservationModal").modal("hide");
             },
             error: function () {

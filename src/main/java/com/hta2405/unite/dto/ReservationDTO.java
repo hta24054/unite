@@ -21,7 +21,7 @@ public class ReservationDTO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime reservationEnd;  // 예약종료일시
     private String reservationInfo; // 예약내용
-    private boolean reservationAllDay; // 종일
+    private int reservationAllDay; // 종일
     private String resourceType; // 자원 종류
     private String resourceName; // 자원 이름
     private boolean resourceUsable; // 자원 사용 가능 여부

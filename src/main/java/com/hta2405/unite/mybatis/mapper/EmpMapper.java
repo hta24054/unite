@@ -28,4 +28,6 @@ public interface EmpMapper {
     List<EmpListDTO> getEmpListDTO(List<Dept> list);
 
     List<Map<String, Object>> getIdToENameMap();
+
+    void updateVacationCount();
 }

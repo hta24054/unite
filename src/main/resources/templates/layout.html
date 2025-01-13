@@ -33,22 +33,41 @@
     <body class="sb-nav-fixed">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
         <!-- Navbar Brand-->
-        <a class="navbar-brand ps-3" th:href="@{/home}" style="font-weight:bold"><img th:src="@{/image/logo_white.png}"
-                                                                                      width="30px"> Unite
+        <a class="navbar-brand ps-3" th:href="@{/home}" style="font-weight:bold">
+            <img th:src="@{/image/logo_white.png}" width="30px"> Unite
         </a>
+        <!-- Sidebar Toggle -->
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!">
+            <i class="fas fa-bars"></i>
+        </button>
 
-        <!-- Sidebar Toggle-->
-        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i
-                class="fas fa-bars"></i></button>
-        <!-- Navbar Search-->
-        <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-            <div class="input-group">
-                <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..."
-                       aria-describedby="btnNavbarSearch"/>
-                <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i>
-                </button>
+        <!-- Navbar Content Wrapper -->
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+            <!-- 날씨 정보 -->
+            <div id="weatherInfo" style="display: flex; align-items: center; margin-right: 20px;">
+                <img id="weatherIcon" alt="Weather Icon" style="width: 40px; height: 40px; margin-right: 8px;" />
+                <div style="color: white; font-size: 12px;">
+                    <div>
+                        <span id="currentTemp" style="font-size: 14px; font-weight: bold;"></span>°C
+                    </div>
+                    <div>
+                        <span id="maxTemp"></span>°C / <span id="minTemp"></span>°C
+                    </div>
+                </div>
             </div>
-        </form>
+
+            <!-- Navbar Search -->
+            <form class="d-none d-md-inline-block form-inline ms-auto me-3 my-2 my-md-0" style="width: 300px;">
+                <div class="input-group">
+                    <input class="form-control" type="text" placeholder="통합검색" aria-label="Search for..."
+                           aria-describedby="btnNavbarSearch"/>
+                    <button class="btn btn-secondary" id="btnNavbarSearch" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
         <!-- Navbar-->
         <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
             <!-- 알림 -->
@@ -61,11 +80,11 @@
                 </a>
                 <!-- Dropdown - Alerts -->
                 <div class="dropdown-list dropdown-menu dropdown-menu-end shadow animated--grow-in"
-                     aria-labelledby="alertsDropdown" style="max-height: 300px; overflow-y: auto;">
+                     aria-labelledby="alertsDropdown" style="max-height: 300px; overflow-y: auto; min-width: 250px;">
                     <h6 class="dropdown-header">알림 센터</h6>
-                    <div id="notificationList">
+                    <div id="notificationList" style="padding: 10px;">
                         <!-- 알림 항목이 동적으로 추가됩니다 -->
-                        <p id="noNotificationsMessage" class="text-center text-muted">새로운 알림이 없습니다.</p>
+                        <p id="noNotificationsMessage" class="text-center text-muted" style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">새로운 알림이 없습니다.</p>
                     </div>
                     <button id="loadMoreButton" class="btn btn-link text-center small text-gray-500 w-100">더 보기</button>
                 </div>
@@ -108,8 +127,8 @@
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" th:href="@{/attend/info}">나의 근태관리</a>
                                 <a class="nav-link" th:href="@{/manager/attendInfoList}">부서원 근태관리</a>
-                                <a class="nav-link" th:href="@{/attend/vacation/my}">휴가 관리</a>
-                                <a class="nav-link" th:href="@{/attend/vacation/empList}">휴가 관리(인사)</a>
+                                <a class="nav-link" th:href="@{/attend/vacation}">휴가 관리</a>
+                                <a class="nav-link" th:href="@{/manager/vacationInfoList}">부서원 휴가 관리</a>
                             </nav>
                         </div>
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"

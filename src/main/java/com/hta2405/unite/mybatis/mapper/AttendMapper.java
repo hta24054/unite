@@ -1,6 +1,7 @@
 package com.hta2405.unite.mybatis.mapper;
 
 import com.hta2405.unite.domain.Attend;
+import com.hta2405.unite.dto.VacationDTO;
 import com.hta2405.unite.enums.AttendType;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -19,7 +20,13 @@ public interface AttendMapper {
 
     int getAnnualAppliedVacationCount(String empId, int year);
 
+    int getAnnualUsedVacationCount(String empId, int year);
+
     void insertVacation(String empId, List<LocalDate> list, AttendType vacationType);
 
     void insertTrip(String empId, List<LocalDate> list);
+
+    void deleteAllAttend(String empId, List<LocalDate> list);
+
+    List<VacationDTO> getVacationDTOList(String empId, int year);
 }

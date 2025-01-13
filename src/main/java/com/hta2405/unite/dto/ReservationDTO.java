@@ -15,7 +15,8 @@ import java.time.LocalDateTime;
 public class ReservationDTO {
     private int reservationId; // 자원예약id
     private Long resourceId; // 자원id
-    private String empId; // 예약자
+    private String empId; // 예약자id
+    private String empName; // 예약자명
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime reservationStart;  // 예약시작일시
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")

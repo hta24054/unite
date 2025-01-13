@@ -58,5 +58,24 @@
         FROM reservation
     </select>
 
+    <select id="getReservationModal">
+        SELECT
+            resc.resc_id,
+            resc.resc_type,
+            resc.resc_name,
+            resc.resc_info,
+            resc.resc_usable,
+            reservation.reservation_id,
+            reservation.emp_id,
+            reservation.reservation_start,
+            reservation.reservation_end,
+            reservation.reservation_info,
+            reservation.reservation_allDay,
+            emp.ename  -- emp 테이블에서 ename 컬럼을 가져옵니다.
+        FROM reservation
+                 LEFT JOIN resc resc ON reservation.resource_id = resc.resc_id
+                 LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id  -- emp 테이블과 JOIN
+        WHERE reservation.reservation_id = #{reservationId}
+    </select>
 
 </mapper>

@@ -181,7 +181,7 @@
         where project_id = #{projectId}
     </select>
     <select id="getProjectDetail1" resultType="com.hta2405.unite.dto.ProjectDetailDTO">
-        select p.project_id as projectId, m.member_id as memberId, p.manager_id as managerId, m.member_name as participantNames, m.member_designated as memberDesign, (select round(coalesce(avg(t.progress_rate),0)) from todo t where t.member_id = m.member_id) as memberProgressRate,  CASE WHEN p.manager_id = #{userid} THEN true ELSE false END as isManager
+        select p.project_id as projectId, m.member_id as memberId, p.manager_id as managerId, m.member_name as participantNames, m.member_designated as memberDesign, (select round(coalesce(avg(t.progress_rate),0)) from todo t where t.member_id = m.member_id and t.project_id = p.project_id) as memberProgressRate,  CASE WHEN p.manager_id = #{userid} THEN true ELSE false END as isManager
         from project_member m join project p on m.project_id = p.project_id where p.project_id=#{projectId} and m.member_role != 'VIEWER'
 
     </select>
@@ -244,6 +244,7 @@
     </insert>
     <select id="getTodoList" resultType="com.hta2405.unite.dto.ProjectTodoDTO">
         select todo_id todoId, todo_subject todoSubject, progress_rate progressRate from todo where project_id = #{projectId} and member_id = #{userid}
+        order by progressRate;
     </select>
     <update id="updateTodoProgressRate">
         update todo set progress_rate = #{memberProgressRate} where project_id = #{projectId} and member_id = #{userid} and todo_id = #{todoId}

@@ -1,7 +1,6 @@
 package com.hta2405.unite.controller;
 
 import com.hta2405.unite.domain.Emp;
-import com.hta2405.unite.dto.LoginDTO;
 import com.hta2405.unite.dto.ProjectTaskDTO;
 import com.hta2405.unite.service.EmpService;
 import com.hta2405.unite.service.ProjectBoardService;
@@ -9,14 +8,10 @@ import com.hta2405.unite.service.ProjectService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.config.Task;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -80,7 +75,7 @@ public class ProjectBoardController {
         mv.addObject("projectId", projectId);
         mv.addObject("memberName", empService.getEmpById(memberId).getEname());
         mv.addObject("memberId", memberId);
-
+        mv.addObject("taskId", taskId);
         if (taskId != null) {
             mv.addObject("task", projectBoardService.getTask(projectId, memberId, taskId).get(0));
         }
@@ -136,4 +131,17 @@ public class ProjectBoardController {
         return "redirect:/projectBoard/comm?projectId=" + projectId + "&memberId=" + memberId + "&taskId=" + taskId;
     }
 
+    @PostMapping("/commentadd")
+    public ResponseEntity<Integer> commentAdd(String content,
+                                              int projectId,
+                                              int taskId,
+                                              @RequestParam(required = false, defaultValue = "0") int parentCommentId,
+                                              @AuthenticationPrincipal UserDetails user){
+        String userid = user.getUsername();
+        log.info("content={}", content);
+        log.info("projectId={}", projectId);
+        log.info("taskId={}", taskId);
+        int result = projectBoardService.commentAdd(userid, projectId, taskId, content, parentCommentId);
+        return ResponseEntity.ok(result);
+    }
 }

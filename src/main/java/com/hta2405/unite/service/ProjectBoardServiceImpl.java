@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class ProjectBoardServiceImpl implements ProjectBoardService {
@@ -70,4 +69,17 @@ public class ProjectBoardServiceImpl implements ProjectBoardService {
         dao.modifyProcess(projectId, memberId, taskId, taskFile, board_subject, board_content);
     }
 
+    public int commentAdd(String userid, int projectId, int taskId, String content, int parentCommentId){
+        int ref, lev, seq, taskCommentId;
+        if (parentCommentId == 0) {
+            taskCommentId = dao.getTaskCommentId(taskId);
+            ref = taskCommentId;
+            lev = 0;
+            seq = 0;
+        } else {
+            ref = dao.getParentSeq(taskId, parentCommentId);
+            lev = 1; seq = dao.getMaxSeq(taskId, ref) + 1;
+        }
+        return dao.insertComment(userid, taskId, content, lev, seq, ref);
+    }
 }

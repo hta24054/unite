@@ -122,6 +122,19 @@ public class EmpController {
         return "인사정보 수정 성공";
     }
 
+    @GetMapping("/password")
+    public String showChangePassword() {
+        return "emp/changePassword";
+    }
+
+    @PostMapping("/password")
+    @ResponseBody
+    public String changePassword(@AuthenticationPrincipal UserDetails user,
+                                 String currentPassword,
+                                 String newPassword) {
+        return empService.changePassword(user.getUsername(), currentPassword, newPassword);
+    }
+
     @GetMapping("/empTree")
     @ResponseBody
     public List<EmpTreeDTO> getEmpListByDeptId(Long deptId) {

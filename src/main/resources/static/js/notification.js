@@ -55,7 +55,7 @@ $(document).ready(function () {
     function showNotifications() {
         const nextNotifications = notifications.slice(currentIndex, currentIndex + limit); // 다음 5개
         nextNotifications.forEach(function (notification) {
-            addNotification(notification, notification.isRead);
+            addNotification(notification, notification.isRead, true); // appendToBottom을 true로 설정
         });
         currentIndex += nextNotifications.length; // 표시된 알림 인덱스 업데이트
 
@@ -75,7 +75,6 @@ $(document).ready(function () {
     function addNotification(notification, isRead = false, appendToBottom = false) {
         const formattedDate = formatDateTime(notification.createdAt); // 날짜 포맷 함수
         const iconClass = categoryIcons[notification.category] || categoryIcons.default; // 카테고리 아이콘 선택
-
         const newNotification = $(`
         <a class="dropdown-item d-flex align-items-center ${isRead ? 'text-muted' : ''}" href="${notification.targetUrl}" data-id="${notification.id}">
             <div class="me-3">

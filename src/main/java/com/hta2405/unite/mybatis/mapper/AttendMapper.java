@@ -22,4 +22,6 @@ public interface AttendMapper {
     void insertVacation(String empId, List<LocalDate> list, AttendType vacationType);
 
     void insertTrip(String empId, List<LocalDate> list);
+
+    void deleteAllAttend(String empId, List<LocalDate> list);
 }

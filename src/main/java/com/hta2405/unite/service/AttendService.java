@@ -171,11 +171,19 @@ public class AttendService {
             return response;
         }
 
+
+
         if (attend.getOutTime() == null) {
             status = "checkIn";
             response.put("status", status);
         } else {
             status = "checkOut";
+            response.put("status", status);
+        }
+
+        //출 퇴근기록이 없어도 휴가나 출장일 수도 있음
+        if (attend.getInTime() == null) {
+            status = "etc";
             response.put("status", status);
         }
         response.put("attend", attend);
@@ -210,12 +218,14 @@ public class AttendService {
     @Transactional
     public void insertVacation(String empId, DocVacation docVacation) {
         List<LocalDate> dates = getDateList(docVacation.getVacationStart(), docVacation.getVacationEnd());
+        attendMapper.deleteAllAttend(empId, dates);
         attendMapper.insertVacation(empId, dates, docVacation.getVacationType());
     }
 
     @Transactional
     public void insertTrip(String empId, DocTrip docTrip) {
         List<LocalDate> dates = getDateList(docTrip.getTripStart(), docTrip.getTripEnd());
+        attendMapper.deleteAllAttend(empId, dates);
         attendMapper.insertTrip(empId, dates);
     }
 

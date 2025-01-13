@@ -6,6 +6,7 @@ $(document).ready(function () {
 	// 개인/공유/부서 일정, 공휴일 불러오기
 	function fetchAllData() {
 	    events = []; // 배열 초기화
+
 	    Promise.all([
 			fetchListData(),
 			fetchSharedListData()
@@ -24,7 +25,6 @@ $(document).ready(function () {
     function fetchHolidayData(data) {
         const startMonth = data.startStr.substring(0, 7);
         let endMonth = data.endStr.substring(0, 7);
-
         const nextMonth = moment(endMonth).add(1, 'month').format('YYYY-MM');
 
         // 공휴일 데이터가 로드되었는지 확인하기 위한 flag
@@ -240,8 +240,14 @@ $(document).ready(function () {
                     }
                 }
 
+                window.holidayDataLoaded = false;
                 fetchAllData();
                 $("#scheduleModal").modal("hide");
+
+                // 부서 일정 체크
+                if (isDeptSchedule) {
+                    fetchDeptListData();
+                }
             },
             error: function () {
                 console.log("일정 등록 오류");
@@ -266,6 +272,7 @@ $(document).ready(function () {
                 scheduleAllDay: eventData.allDay ? 1 : 0
             },
             success: function (data) {
+                window.holidayDataLoaded = false;
                 fetchAllData();
                 $("#scheduleModal").modal("hide");
 
@@ -301,7 +308,13 @@ $(document).ready(function () {
                 scheduleAllDay: info.event.allDay ? 1 : 0
             },
             success: function () {
+                window.holidayDataLoaded = false;
                 fetchAllData();
+
+                // 부서 일정 체크
+                if (isDeptSchedule) {
+                    fetchDeptListData();
+                }
             },
             error: function () {
                 alert("drag 일정 업데이트 중 오류가 발생했습니다.");
@@ -320,8 +333,14 @@ $(document).ready(function () {
                     scheduleId: eventData.schedule_id,
                 },
                 success: function (data) {
+                    window.holidayDataLoaded = false;
                     fetchAllData();
                     $("#scheduleModal").modal("hide");
+
+                    // 부서 일정 체크
+                    if (isDeptSchedule) {
+                        fetchDeptListData();
+                    }
                 },
                 error: function (error) {
                     alert("일정 삭제 중 오류가 발생했습니다.");
@@ -571,10 +590,6 @@ $(document).ready(function () {
         }
     });
 
-    // $('#bgColor').on("change", function () {
-	//     $(this).css('color', $(this).val());
-	// });
-
     // 캘린더 생성
     function initCalendar() {
         const calendarEl = document.getElementById('calendar');
@@ -653,9 +668,9 @@ $(document).ready(function () {
             eventDidMount: function (info) {
                 //console.log("info.event.extendedProps", info.event.extendedProps);
             },
-            eventDrop: function (info) {
-                updateDragEvent(info);
-            }
+            // eventDrop: function (info) {
+            //     updateDragEvent(info);
+            // }
         });
 
         //선택 상태 해제
@@ -664,5 +679,4 @@ $(document).ready(function () {
     }
 
     fetchAllData();
-    initCalendar();
 });

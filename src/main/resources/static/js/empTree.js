@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    const contextPath = document.getElementById('contextPath').value;
+    const contextPath = /*[[@{}]]*/ '';
     // 검색 버튼 클릭 이벤트
     $('#searchButton').on('click', function (event) {
         event.preventDefault(); // 폼 제출 막기
@@ -99,7 +99,7 @@ $(document).ready(function () {
             return;
         }
         $.each(data, function (index, emp) {
-            const profileImageUrl = contextPath + "emp/profile-image?empId=" + emp.empId;
+            const profileImageUrl = contextPath + "/emp/profile-image?empId=" + emp.empId;
             //                         <th>이름</th>
             //                         <th>직급</th>
             //                         <th>휴대전화</th>

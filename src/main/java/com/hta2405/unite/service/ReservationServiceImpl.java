@@ -44,7 +44,9 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public int getReservationModal(Long reservationId) {
+    public ReservationDTO getReservationModal(Long reservationId) {
         return reservationDAO.getReservationModal(reservationId);
     }
+
+
 }

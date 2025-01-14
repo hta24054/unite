@@ -92,30 +92,14 @@ public class ReservationController {
 
     @ResponseBody
     @GetMapping("/getReservationModal")
-    public int getReservationModal(Long reservationId){
-        System.out.println("reservationService.getReservationModal(reservationId)" + reservationService.getReservationModal(reservationId));
-        return reservationService.getReservationModal(reservationId);
+    public ReservationDTO getReservationModal(@RequestParam Long reservationId) {
+        // 서비스 메서드 호출
+        ReservationDTO reservation = reservationService.getReservationModal(reservationId);
+
+        // 반환된 reservationDTO 객체 반환
+        return reservation;
     }
 
-//    @ResponseBody
-//    @GetMapping("/getReservationModal")
-//    public ReservationDTO getReservationModal(@RequestParam("reservationId") Long reservationId) {
-//        // 예약 정보를 가져오는 서비스 호출
-//        ReservationDTO reservationDTO = reservationService.getReservationById(reservationId);
-//
-//        // reservationDTO 데이터
-//        if (reservationDTO != null) {
-//            // 예약자 이름을 추가
-//            String empName = reservationService.getEmpNameById(reservationDTO.getEmpId());
-//            reservationDTO.setEmpName(empName);
-//
-//            // 자원 정보 추가
-//            Resource resource = reservationService.getResourceById(reservationDTO.getResourceId());
-//            reservationDTO.setResourceInfo(resource.getResourceInfo());
-//        }
-//
-//        return reservationDTO;
-//    }
 
 
 

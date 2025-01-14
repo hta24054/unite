@@ -8,7 +8,10 @@
     </select>
 
     <insert id="insertEmp" parameterType="Emp">
-        INSERT INTO emp
+        INSERT INTO emp(emp_id, password, ename, role, dept_id, job_id, gender, email, tel, mobile,
+                        mobile2, img_path, img_original, img_uuid, img_type, hiredate, hiretype,
+                        birthday, birthday_type, school, major, bank, account, address, married,
+                        child, etype, vacation_count, hired)
         VALUES (#{empId},
                 #{password},
                 #{ename},
@@ -37,7 +40,7 @@
                 #{child},
                 #{etype},
                 #{vacationCount},
-                #{hired})
+                1)
     </insert>
     <update id="updateEmp" parameterType="Emp">
         update emp
@@ -109,7 +112,7 @@
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item.deptId}
         </foreach>
-        and e.hired = 1 and emp_id != 'admin'
+        and e.hired = 1 and e.role != 'ROLE_ADMIN'
         order by e.job_id, e.emp_id
     </select>
 

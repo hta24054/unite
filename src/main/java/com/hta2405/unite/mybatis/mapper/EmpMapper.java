@@ -17,15 +17,15 @@ public interface EmpMapper {
 
     String getImgOriginal(String fileUUID);
 
-    List<EmpTreeDTO> getHiredEmpListByDeptId(Long deptId);
+    List<EmpListDTO> getHiredEmpListByDeptId(Long deptId);
 
-    List<EmpTreeDTO> getHiredEmpListByName(String ename);
+    List<EmpListDTO> getHiredEmpListByName(String ename);
 
     int insertEmp(Emp emp);
 
     void resignEmp(String empId);
 
-    List<EmpListDTO> getEmpListDTO(List<Dept> list);
+    List<EmpListDTO> getHiredEmpListDTO(List<Dept> list);
 
     List<Map<String, Object>> getIdToENameMap();
 

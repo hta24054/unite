@@ -119,11 +119,11 @@ public class EmpService {
         }
     }
 
-    public List<EmpTreeDTO> getEmpListByDeptId(Long deptId) {
+    public List<EmpListDTO> getEmpListByDeptId(Long deptId) {
         return empMapper.getHiredEmpListByDeptId(deptId);
     }
 
-    public List<EmpTreeDTO> getEmpListByName(String ename) {
+    public List<EmpListDTO> getEmpListByName(String ename) {
         return empMapper.getHiredEmpListByName(ename);
     }
 
@@ -136,7 +136,7 @@ public class EmpService {
     }
 
     public List<EmpListDTO> getEmpListDTO(List<Dept> list) {
-        return empMapper.getEmpListDTO(list);
+        return empMapper.getHiredEmpListDTO(list);
     }
 
     /**

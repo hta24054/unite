@@ -1,6 +1,7 @@
 <th:block th:fragment="setContent(content)">
     <!DOCTYPE html>
-    <html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <html xmlns:th="http://www.thymeleaf.org"
+          xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
     <head>
         <meta charset="utf-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -45,7 +46,7 @@
         <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
             <!-- 날씨 정보 -->
             <div id="weatherInfo" style="display: flex; align-items: center; margin-right: 20px;">
-                <img id="weatherIcon" alt="Weather Icon" style="width: 40px; height: 40px; margin-right: 8px;" />
+                <img id="weatherIcon" alt="Weather Icon" style="width: 40px; height: 40px; margin-right: 8px;"/>
                 <div style="color: white; font-size: 12px;">
                     <div>
                         <span id="currentTemp" style="font-size: 14px; font-weight: bold;"></span>°C
@@ -84,14 +85,17 @@
                     <h6 class="dropdown-header">알림 센터</h6>
                     <div id="notificationList" style="padding: 10px;">
                         <!-- 알림 항목이 동적으로 추가됩니다 -->
-                        <p id="noNotificationsMessage" class="text-center text-muted" style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">새로운 알림이 없습니다.</p>
+                        <p id="noNotificationsMessage" class="text-center text-muted"
+                           style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">새로운 알림이
+                            없습니다.</p>
                     </div>
                     <button id="loadMoreButton" class="btn btn-link text-center small text-gray-500 w-100">더 보기</button>
                 </div>
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
-                   aria-expanded="false"><img th:src="@{/emp/profile-image(empId=${#authentication.name})}" width="30px"></a>
+                   aria-expanded="false"><img th:src="@{/emp/profile-image(empId=${#authentication.name})}"
+                                              width="30px"></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" th:href="@{/emp/password}">비밀번호 변경</a></li>
                     <li><a class="dropdown-item" href="#!">Activity Log</a></li>
@@ -126,9 +130,15 @@
                              data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" th:href="@{/attend/info}">근태현황</a>
-                                <a class="nav-link" th:href="@{/manager/attendInfoList}">부서 근태현황</a>
+                                <a class="nav-link"
+                                   sec:authorize="hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN') or principal.deptId == 1120"
+                                   th:href="@{/manager/attendInfoList}">부서 근태현황
+                                </a>
                                 <a class="nav-link" th:href="@{/attend/vacation}">휴가 현황</a>
-                                <a class="nav-link" th:href="@{/manager/vacationInfoList}">부서 휴가 현황</a>
+                                <a class="nav-link"
+                                   sec:authorize="hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN') or principal.deptId == 1120"
+                                   th:href="@{/manager/vacationInfoList}">부서 휴가현황
+                                </a>
                             </nav>
                         </div>
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
@@ -142,8 +152,10 @@
                              data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" th:href="@{/emp/info}">나의 인사정보</a>
-                                <a class="nav-link" th:href="@{/manager/empInfoList}">부서 인사정보</a>
-                                <a class="nav-link" th:href="@{/emp/Info/alldept}">전 부서 인사정보</a>
+                                <a class="nav-link"
+                                   sec:authorize="hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN') or principal.deptId == 1120"
+                                   th:href="@{/manager/empInfoList}">부서 인사정보
+                                </a>
                             </nav>
                         </div>
 
@@ -265,12 +277,13 @@
                              data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" th:href="@{/reservation/reservationCalender}">자원예약</a>
-                                <a class="nav-link" th:href="@{/reservation/reservationCalender/myReservationList?emp_id=${id}}">나의 예약 목록</a>
+                                <a class="nav-link"
+                                   th:href="@{/reservation/reservationCalender/myReservationList?emp_id=${id}}">나의 예약
+                                    목록</a>
                             </nav>
                         </div>
 
-
-                        <th:block th:if="${#authentication.name}=='admin'">
+                        <th:block sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
                                data-bs-target="#collapseCustomMenu10" aria-expanded="false"
                                aria-controls="collapseCustomMenu10">

@@ -50,8 +50,9 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
                 .findFirst()
                 .map(GrantedAuthority::getAuthority)
                 .orElse("ROLE_MEMBER");
+        Long deptId = userDetails.getDeptId();
 
-        String token = jwtUtil.generateToken(username, role);
+        String token = jwtUtil.generateToken(username, role, deptId);
 
         // JWT를 쿠키에 저장
         Cookie jwtCookie = new Cookie("jwtToken", token);

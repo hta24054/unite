@@ -1,16 +1,19 @@
 package com.hta2405.unite.security;
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-@RequiredArgsConstructor
 @Builder
+@RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
     private final String empId;
+    @Getter
+    private final Long deptId;
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
 

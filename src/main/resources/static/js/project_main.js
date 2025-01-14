@@ -43,69 +43,80 @@ function go(page) {
 function updateBoardList(data) {
     let ongoingProjectsHtml = '';
     let favoriteProjectsHtml = '';
+    if (data.listCount == 0) {
+        let notice = `<span>진행 중인 프로젝트가 없습니다. 프로젝트를 생성해주세요</span>`;
+        $("#favorite").css('display', 'none');
+        $("#ongoing").css('margin', '80px 80px 800px 80px');
+        $("#toggle-icon-p").css('display', 'none');
+        $('#none').css({
+            'margin-top': '60px',
+            'margin-left': '10px',
+            'font-size': '20px'
+        }).html(notice);
+    }else {
+        $(data.boardlist).each(function (index, project) {
+            if (project.projectFavorite == 0) {
+                // 참여자 처리
+                let participantsText = '없음';
+                if (project.participants) {
+                    const participantsArray = project.participants.split(','); // ','로 구분된 참여자 이름 목록
+                    if (participantsArray.length === 1) {
+                        participantsText = participantsArray[0];
+                    } else {
+                        participantsText = `${participantsArray[0]} 외 ${participantsArray.length - 1}명`;
+                    }
+                }
 
-    $(data.boardlist).each(function (index, project) {
-        if(project.projectFavorite == 0){
-        // 참여자 처리
-        let participantsText = '없음';
-        if (project.participants) {
-            const participantsArray = project.participants.split(','); // ','로 구분된 참여자 이름 목록
-            if (participantsArray.length === 1) {
-                participantsText = participantsArray[0];
-            } else {
-                participantsText = `${participantsArray[0]} 외 ${participantsArray.length - 1}명`;
-            }
-        }
+                // 열람자 처리
+                let viewersText = '없음';
+                if (project.viewers) {
+                    const viewersArray = project.viewers.split(','); // ','로 구분된 열람자 이름 목록
+                    if (viewersArray.length === 1) {
+                        viewersText = viewersArray[0];
+                    } else {
+                        viewersText = `${viewersArray[0]} 외 ${viewersArray.length - 1}명`;
+                    }
+                }
 
-        // 열람자 처리
-        let viewersText = '없음';
-        if (project.viewers) {
-            const viewersArray = project.viewers.split(','); // ','로 구분된 열람자 이름 목록
-            if (viewersArray.length === 1) {
-                viewersText = viewersArray[0];
-            } else {
-                viewersText = `${viewersArray[0]} 외 ${viewersArray.length - 1}명`;
-            }
-        }
-
-        // 프로젝트 카드 생성
-        const projectCard = `
-            <div class="project-card" data-project-id="${project.projectId}" data-manager-id="${project.managerId}">
-                 <span><img src="../image/gear.png" style="width:30px; height: 30px; float:right;"></span>
-                 <h5 style="padding-bottom: 15px">
-                    <span style="float: left;">No.${project.projectId}</span>
-                    <span>&nbsp;${project.projectName}</span>
-                    <span 
-                        class="favorite-icon ${project.projectFavorite == 1 ? 'favorite' : 'unfavorite'}" 
-                        style="float: right; cursor: pointer; font-size: 1.5rem;" 
-                        data-project-id="${project.projectId}" 
-                        onclick="toggleFavorite(${project.projectId}, this)"
-                    >
-                        ${project.projectFavorite == 1 ? '★' : '☆'}
+                // 프로젝트 카드 생성
+                const projectCard = `
+                <div class="project-card" data-project-id="${project.projectId}" data-manager-id="${project.managerId}">
+                     <span><img src="../image/gear.png" style="width:30px; height: 30px; float:right;"></span>
+                     <h5 style="padding-bottom: 15px">
+                        <span style="float: left;">No.${project.projectId}</span>
+                        <span>&nbsp;${project.projectName}</span>
+                        <span 
+                            class="favorite-icon ${project.projectFavorite == 1 ? 'favorite' : 'unfavorite'}" 
+                            style="float: right; cursor: pointer; font-size: 1.5rem;" 
+                            data-project-id="${project.projectId}" 
+                            onclick="toggleFavorite(${project.projectId}, this)"
+                        >
+                            ${project.projectFavorite == 1 ? '★' : '☆'}
+                        </span>
+                    </h5>
+                    <span class="project-detail-link" onclick="goToProjectDetail(${project.projectId})">
+                        <p><strong>책임자:</strong> ${project.managerName}</p>
+                        <p><strong>참여자:</strong> ${participantsText}</p>
+                        <p><strong>열람자:</strong> ${viewersText}</p>
+                        <p><strong>마감일:</strong> ${project.projectEndDate}</p>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: ${project.avgProgress}%">${project.avgProgress}%</div>
+                        </div>
                     </span>
-                </h5>
-                <span class="project-detail-link" onclick="goToProjectDetail(${project.projectId})">
-                    <p><strong>책임자:</strong> ${project.managerName}</p>
-                    <p><strong>참여자:</strong> ${participantsText}</p>
-                    <p><strong>열람자:</strong> ${viewersText}</p>
-                    <p><strong>마감일:</strong> ${project.projectEndDate}</p>
-                    <div class="progress">
-                        <div class="progress-bar" style="width: ${project.avgProgress}%">${project.avgProgress}%</div>
-                    </div>
-                </span>
-            </div>
-        `;
+                </div>
+            `;
 
-        // 즐겨찾기와 진행 중 프로젝트 분리
-        if (project.projectFavorite === 1) {
-            favoriteProjectsHtml += projectCard;
-            $('#project-favorite').html(favoriteProjectsHtml);
-        } else {
-            ongoingProjectsHtml += projectCard;
-            $('#project-container').html(ongoingProjectsHtml);
-        }
-        }
-    });
+                // 즐겨찾기와 진행 중 프로젝트 분리
+                if (project.projectFavorite === 1) {
+                    favoriteProjectsHtml += projectCard;
+                    $('#project-favorite').html(favoriteProjectsHtml);
+                } else {
+                    ongoingProjectsHtml += projectCard;
+                    $('#project-container').html(ongoingProjectsHtml);
+                }
+            }
+        });
+    }
     updateProjectColor(data.boardlist);
 }
 
@@ -334,62 +345,74 @@ function loadProjects(favorite) {
 
 function updateFavoriteProjects(data) {
     let favoriteProjectsHtml = '';
-    $(data.boardlist).each(function (index, project) {
-        if(project.projectFavorite == 1){
-        // 참여자 처리
-        let participantsText = '없음';
-        if (project.participants) {
-            const participantsArray = project.participants.split(','); // ','로 구분된 참여자 이름 목록
-            if (participantsArray.length === 1) {
-                participantsText = participantsArray[0];
-            } else {
-                participantsText = `${participantsArray[0]} 외 ${participantsArray.length - 1}명`;
-            }
-        }
+    if (data.listCount == 0) {
+        let notice = `<span>진행 중인 프로젝트가 없습니다. 프로젝트를 생성해주세요</span>`;
+        $("#favorite").css('display', 'none');
+        $("#ongoing").css('margin', '80px 80px 800px 80px');
+        $("#toggle-icon-p").css('display', 'none');
+        $('#none').css({
+            'margin-top': '60px',
+            'margin-left': '10px',
+            'font-size': '20px'
+        }).html(notice);
+    }else{
+        $(data.boardlist).each(function (index, project) {
+            if(project.projectFavorite == 1){
+                // 참여자 처리
+                let participantsText = '없음';
+                if (project.participants) {
+                    const participantsArray = project.participants.split(','); // ','로 구분된 참여자 이름 목록
+                    if (participantsArray.length === 1) {
+                        participantsText = participantsArray[0];
+                    } else {
+                        participantsText = `${participantsArray[0]} 외 ${participantsArray.length - 1}명`;
+                    }
+                }
 
-        // 열람자 처리
-        let viewersText = '없음';
-        if (project.viewers) {
-            const viewersArray = project.viewers.split(','); // ','로 구분된 열람자 이름 목록
-            if (viewersArray.length === 1) {
-                viewersText = viewersArray[0];
-            } else {
-                viewersText = `${viewersArray[0]} 외 ${viewersArray.length - 1}명`;
-            }
-        }
+                // 열람자 처리
+                let viewersText = '없음';
+                if (project.viewers) {
+                    const viewersArray = project.viewers.split(','); // ','로 구분된 열람자 이름 목록
+                    if (viewersArray.length === 1) {
+                        viewersText = viewersArray[0];
+                    } else {
+                        viewersText = `${viewersArray[0]} 외 ${viewersArray.length - 1}명`;
+                    }
+                }
 
-        // 프로젝트 카드 생성
-        const projectCard = `
-            <div class="project-card" data-project-id="${project.projectId}" data-manager-id="${project.managerId}">
-                 <span><img src="../image/gear.png" style="width:30px; height: 30px; float:right;"></span>
-                 <h5 style="padding-bottom: 15px">
-                    <span style="float: left;">No.${project.projectId}</span>
-                    <span>&nbsp;${project.projectName}</span>
-                    <span 
-                        class="favorite-icon ${project.projectFavorite == 1 ? 'favorite' : 'unfavorite'}" 
-                        style="float: right; cursor: pointer; font-size: 1.5rem;" 
-                        data-project-id="${project.projectId}" 
-                        onclick="toggleFavorite(${project.projectId}, this)"
-                    >
-                        ${project.projectFavorite == 1 ? '★' : '☆'}
-                    </span>
-                </h5>
-                <span class="project-detail-link" onclick="goToProjectDetail(${project.projectId})">
-					<p><strong>책임자:</strong> ${project.managerName}</p>
-					<p><strong>참여자:</strong> ${participantsText}</p>
-					<p><strong>열람자:</strong> ${viewersText}</p>
-					<p><strong>마감일:</strong> ${project.projectEndDate}</p>
-					
-					<strong>진행률</strong>
-					<div class="progress">    
-						<div class="progress-bar" style="width: ${project.avgProgress}%">${project.avgProgress}%</div>
-					</div>
-				</span>
-            </div>
-        `;
-        favoriteProjectsHtml += projectCard;
-        }
-    });
+                // 프로젝트 카드 생성
+                const projectCard = `
+                    <div class="project-card" data-project-id="${project.projectId}" data-manager-id="${project.managerId}">
+                         <span><img src="../image/gear.png" style="width:30px; height: 30px; float:right;"></span>
+                         <h5 style="padding-bottom: 15px">
+                            <span style="float: left;">No.${project.projectId}</span>
+                            <span>&nbsp;${project.projectName}</span>
+                            <span 
+                                class="favorite-icon ${project.projectFavorite == 1 ? 'favorite' : 'unfavorite'}" 
+                                style="float: right; cursor: pointer; font-size: 1.5rem;" 
+                                data-project-id="${project.projectId}" 
+                                onclick="toggleFavorite(${project.projectId}, this)"
+                            >
+                                ${project.projectFavorite == 1 ? '★' : '☆'}
+                            </span>
+                        </h5>
+                        <span class="project-detail-link" onclick="goToProjectDetail(${project.projectId})">
+                            <p><strong>책임자:</strong> ${project.managerName}</p>
+                            <p><strong>참여자:</strong> ${participantsText}</p>
+                            <p><strong>열람자:</strong> ${viewersText}</p>
+                            <p><strong>마감일:</strong> ${project.projectEndDate}</p>
+                            
+                            <strong>진행률</strong>
+                            <div class="progress">    
+                                <div class="progress-bar" style="width: ${project.avgProgress}%">${project.avgProgress}%</div>
+                            </div>
+                        </span>
+                    </div>
+                `;
+                favoriteProjectsHtml += projectCard;
+            }
+        });
+    }
     $('#project-favorite').html(favoriteProjectsHtml); // 즐겨찾기 목록 업데이트
     updateProjectColors(data.boardlist);
 }

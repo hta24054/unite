@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hta2405.unite.domain.Emp;
-import com.hta2405.unite.dto.EmpAdminUpdateDTO;
-import com.hta2405.unite.dto.EmpInfoDTO;
-import com.hta2405.unite.dto.EmpSelfUpdateDTO;
-import com.hta2405.unite.dto.EmpTreeDTO;
+import com.hta2405.unite.dto.*;
 import com.hta2405.unite.service.AuthService;
 import com.hta2405.unite.service.EmpService;
 import com.hta2405.unite.service.ProfileImgService;
@@ -137,13 +134,13 @@ public class EmpController {
 
     @GetMapping("/empTree")
     @ResponseBody
-    public List<EmpTreeDTO> getEmpListByDeptId(Long deptId) {
+    public List<EmpListDTO> getEmpListByDeptId(Long deptId) {
         return empService.getEmpListByDeptId(deptId);
     }
 
     @GetMapping("/empTree-search")
     @ResponseBody
-    public List<EmpTreeDTO> getEmpListByName(String query) {
+    public List<EmpListDTO> getEmpListByName(String query) {
         query = "%" + query + "%";
         return empService.getEmpListByName(query);
     }

@@ -85,7 +85,7 @@
         WHERE IMG_UUID = #{fileUUID}
     </select>
     <select id="getHiredEmpListByDeptId">
-        SELECT emp_id, ename, tel, job_name, dept_name
+        SELECT e.emp_id, e.ename, d.dept_name, j.job_name, e.email, e.tel, e.mobile
         FROM emp e
                  left join job j on e.job_id = j.job_id
                  left join dept d on e.dept_id = d.dept_id
@@ -95,7 +95,7 @@
         order by e.job_id, e.emp_id
     </select>
     <select id="getHiredEmpListByName">
-        SELECT emp_id, ename, tel, job_name, dept_name
+        SELECT e.emp_id, e.ename, d.dept_name, j.job_name, e.email, e.tel, e.mobile
         FROM emp e
                  left join job j on e.job_id = j.job_id
                  left join dept d on e.dept_id = d.dept_id
@@ -104,7 +104,7 @@
           and e.hired = 1
         order by e.job_id, e.emp_id
     </select>
-    <select id="getEmpListDTO">
+    <select id="getHiredEmpListDTO">
         select e.emp_id, e.ename, d.dept_name, j.job_name, e.email, e.tel, e.mobile
         from emp e left join dept d on e.dept_id = d.dept_id
         left join job j on e.job_id = j.job_id

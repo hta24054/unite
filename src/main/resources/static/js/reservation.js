@@ -118,26 +118,31 @@ $(document).ready(function () {
             data: {
                 resourceId: resourceId,   // 자원 ID
                 resourceName: resourceName, // 자원 이름
+                empId: $("#emp_id").val(), // 로그인한 사용자의 empId
             },
             success: function (data) {
+                console.log(data);
+
                 events = [];
                 if (data != null && data.length > 0) {
                     for (let i = 0; i < data.length; i++) {
                         // 본인 예약 여부 확인
-                        let isMyReservation = data[i].isMyReservation;
+                        let isReservation = data[i].isMyReservation;
 
-                        // 예약 색상 설정: 본인 예약은 'green', 다른 예약은 'blue'
-                        let reservationColor = isMyReservation ? 'green' : 'blue';
+                        // 예약 색상 : 본인 예약은 '#29aeff', 다른 예약은 '#0e4377'
+                        let reservationColor = isReservation ? '#29aeff' : '#0e4377';
 
                         events.push({
                             id: data[i].reservationId,
                             allDay: data[i].reservationAllDay,
                             start: data[i].reservationStart,
                             end: data[i].reservationEnd,
+                            backgroundColor: reservationColor, // 색상 적용
                             extendedProps: {
                                 reservationInfo: data[i].reservationInfo,
                                 resourceId: data[i].resourceId,
-                                empId: data[i].empId
+                                empId: data[i].empId,
+                                isMyReservation: isReservation
                             }
                         });
                     }

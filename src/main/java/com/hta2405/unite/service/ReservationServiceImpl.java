@@ -29,8 +29,8 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<ReservationDTO> getReservationByResourceIdAndName(Long resourceId, String resourceName) {
-        return reservationDAO.getReservationByResourceIdAndName(resourceId, resourceName);
+    public List<ReservationDTO> getReservationByResourceIdAndName(Long resourceId, String resourceName, String name) {
+        return reservationDAO.getReservationByResourceIdAndName(resourceId, resourceName, name);
     }
 
     @Override

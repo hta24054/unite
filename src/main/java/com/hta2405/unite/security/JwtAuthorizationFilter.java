@@ -11,8 +11,6 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -24,6 +22,7 @@ import java.util.Collections;
 @Component
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
+
 
     public JwtAuthorizationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
@@ -47,10 +46,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
                 String empId = claims.get("empId", String.class);
                 String role = claims.get("role", String.class);
+                Long deptId = claims.get("deptId", Long.class);
 
                 if (empId != null) {
                     CustomUserDetails userDetails = CustomUserDetails.builder()
                             .empId(empId)
+                            .deptId(deptId)
                             .password("")
                             .authorities(Collections.singleton(() -> role))
                             .build();

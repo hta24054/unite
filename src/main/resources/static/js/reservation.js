@@ -268,7 +268,7 @@ $(document).ready(function () {
                 type: "post",
                 dataType: "json",
                 data: {
-                    reservation_id: event.id,  // 예약 ID
+                    reservationId: event.id,  // 예약 ID
                     emp_id: $("#emp_id").val(), //예약자 emp_id
                 },
                 success: function (data) {

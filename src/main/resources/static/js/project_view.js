@@ -1,17 +1,16 @@
 let option = 1; //선택한 등록순과 최신순을 수정, 삭제, 추가 후에도 유지되도록 하기 위한 변수로 사용
 
 function getList(state) {
-    const tasknum = $('#comment_board_num').val();
+    const tasknum = $('#taskId').val();
+    const loginId = $('#loginId').val();
     console.log(state);
     option = state;
     $.ajax({
         type: "get",
         url: "/projectBoard/commentlist",
         data: {
-            "comment_board_num": $("#comment_board_num").val(),
             state: state,
-            num: tasknum,
-            memberId: $('#loginid').val()
+            taskId: tasknum
         },
         dataType: "json",
         success: function (rdata) {
@@ -34,21 +33,21 @@ function getList(state) {
 
             if (rdata.commentlist.length) {
                 rdata.commentlist.forEach(comment => {
-                    let lev = comment.task_comment_re_lev;
+                    let lev = comment.taskCommentReLev;
                     let replyClass = (lev == 1) ? 'comment-list-item--reply lev1' : (lev == 2) ? 'comment-list-item--reply lev2' : '';
                     let src = comment.img_original ? `../memberupload/${comment.img_original}` : '../img/profile.png'
-                    let replyButton = (lev < 2) ? `<a href='javascript:replyform(${comment.task_comment_id}, ${lev}, ${comment.task_comment_re_seq}, ${comment.task_comment_re_ref})' class='comment-info-button'>답글쓰기</a>` : '';
+                    let replyButton = (lev < 2) ? `<a href='javascript:replyform(${comment.taskCommentId}, ${lev}, ${comment.taskCommentReSeq}, ${comment.taskCommentReRef})' class='comment-info-button'>답글쓰기</a>` : '';
 
-                    let toolButtons = rdata.id == comment.task_comment_writer ? `
+                    let toolButtons = loginId == comment.taskCommentWriter ? `
 						<div class='comment-tool'>
 							<div title='더보기' class='comment-tool-button'>
 								<div>&#46;&#46;&#46;</div>
 							</div>
-							<div id='comment-list-item-layer${comment.task_comment_id}' class='LayerMore'>
+							<div id='comment-list-item-layer${comment.taskCommentId}' class='LayerMore'>
 								<ul class='layer-list'>
 									<li class='layer-item'>
-										<a href='javascript:updateForm(${comment.task_comment_id})' class='layer-button'>수정</a>
-										<a href='javascript:del(${comment.task_comment_id})' class='layer-button'>삭제</a>
+										<a href='javascript:updateForm(${comment.taskCommentId})' class='layer-button'>수정</a>
+										<a href='javascript:del(${comment.taskCommentId})' class='layer-button'>삭제</a>
 									</li>
 								</ul>
 							</div>
@@ -56,9 +55,9 @@ function getList(state) {
 					` : '';
 
                     output += `
-						<li id='${comment.task_comment_id}' class='comment-list-item ${replyClass}'>
+						<li id='${comment.taskCommentId}' class='comment-list-item ${replyClass}'>
 							<div class='comment-nick-area'>
-								<img src="${contextPath}/emp/profile-image?UUID=${rdata.emp[comment.task_comment_writer]}"style="width:30px; height: 30px;">
+                                <img src="/emp/profile-image?empId=${comment.taskCommentWriter}"style="width:30px; height: 30px;">
 								<div class='comment-box'>
 									<div class='comment-nick-box'>
 										<div class='comment-nick-info'>
@@ -67,11 +66,11 @@ function getList(state) {
 									</div>
 									<div class='comment-text-box'>
 										<p class='comment-text-view'>
-											<span class='text-comment'>${comment.task_comment_content}</span>
+											<span class='text-comment'>${comment.taskCommentContent}</span>
 										</p>
 									</div>
 									<div class='comment-info-box'>
-										<span class='comment-info-date'>${comment.task_comment_date}</span>
+										<span class='comment-info-date'>${comment.taskCommentDate}</span>
 										${replyButton}
 									</div>
 									${toolButtons}
@@ -85,6 +84,9 @@ function getList(state) {
             if (!rdata.commentlist.length) {
                 $('.comment-list, .comment-order-list').empty();
             }
+        },error: function(xhr, status, error) {
+            console.error("오류 발생:", status, error);
+            alert("오류가 발생했습니다. 다시 시도해 주세요.");
         }
     });
 }
@@ -152,8 +154,8 @@ $(function () {
         }
         const num = $(this).attr('data-id');
         $.ajax({
-            url: contextPath + '/projectb/update',
-            data: {num: num, content: content},
+            url: '/projectBoard/update',
+            data: {taskId: num, content: content},
             success: function (rdata) {
                 if (rdata == 1) {
                     getList(option);
@@ -187,11 +189,10 @@ $(function () {
         }
         $.ajax({
             type: 'post',
-            url: contextPath + "/projectb/reply",
+            url: "/projectBoard/reply",
             data: {
-                id: $("#loginid").val(),
                 content: content,
-                comment_board_num: $("#comment_board_num").val(),
+                taskId: $("#taskId").val(),
                 comment_re_lev: $(this).attr('data-lev'),
                 comment_re_ref: $(this).attr('data-ref'),
                 comment_re_seq: $(this).attr('data-seq')
@@ -259,11 +260,12 @@ function del(num) {
         return;
     }
     $.ajax({
-        url: contextPath + '/projectb/commentdelete',
-        data: {num: num},
+        url: '/projectBoard/delete',
+        data: {taskId: num},
         success: function (rdata) {
             console.log('aaaa');
             if (rdata == 1) {
+                alert("댓글을 삭제하였습니다");
                 getList(option);
             }
         }

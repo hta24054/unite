@@ -1,5 +1,6 @@
 package com.hta2405.unite.service;
 
+import com.hta2405.unite.domain.ProjectComment;
 import com.hta2405.unite.domain.ProjectTask;
 import com.hta2405.unite.dto.ProjectTaskDTO;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,5 +18,10 @@ public interface ProjectBoardService {
     boolean deleteTask(int projectId, String memberId, int taskId);
     void fileDown(String fileuuid, String originalFilename, HttpServletResponse response);
     void modifyProcess(int projectId, String memberId, int taskId, MultipartFile file, String board_subject, String board_content);
-    int commentAdd(String userid, int projectId, int taskNum, String content, int parentCommentId);
+    int commentAdd(ProjectComment.ProjectCommentBuilder projectCommentBuilder);
+    int replyAdd(ProjectComment.ProjectCommentBuilder projectCommentBuilder);
+    int getListCount(int taskId);
+    List<ProjectComment> getCommentList(int taskId, int state);
+    int updateComment(ProjectComment.ProjectCommentBuilder projectCommentBuilder);
+    int deleteComment(int taskId);
 }

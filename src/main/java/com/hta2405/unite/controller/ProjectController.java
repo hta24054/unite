@@ -125,20 +125,10 @@ public class ProjectController {
             @AuthenticationPrincipal UserDetails user
            ) {
         String userid = user.getUsername();
-        int limit = 100;
-        int listcount = projectService.mainCountList(userid, favorite);
-        List<Project> mainList = projectService.getmainList(userid, favorite, page, limit);
-
-        PaginationResult result = new PaginationResult(page, limit, listcount);
+        List<Project> mainList = projectService.getmainList(userid);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("page", page);
-        response.put("maxpage", result.getMaxpage());
-        response.put("startpage", result.getStartpage());
-        response.put("endpage", result.getEndpage());
-        response.put("listcount", listcount);
         response.put("boardlist", mainList);
-        response.put("limit", limit);
         return response;
     }
 
@@ -234,6 +224,7 @@ public class ProjectController {
         String userid = user.getUsername();
 
         String left = projectService.getProjectName(projectId);
+        String projectContent = projectService.getProjectContent(projectId);
         List<ProjectDetailDTO> detail_Progress = projectService.getProjectDetail1(projectId, userid);
         for (ProjectDetailDTO projectDetail : detail_Progress) {
             if (projectDetail.getManagerId() != null && projectDetail.getManagerId().equals(userid)) {
@@ -252,6 +243,7 @@ public class ProjectController {
         mv.addObject("role", role);
         mv.addObject("projectId", projectId);
         mv.addObject("memberId", userid);
+        mv.addObject("projectContent", projectContent);
 
         return mv;
     }

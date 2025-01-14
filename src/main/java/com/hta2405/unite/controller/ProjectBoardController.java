@@ -1,24 +1,27 @@
 package com.hta2405.unite.controller;
 
-import com.google.gson.*;
 import com.hta2405.unite.domain.Emp;
+import com.hta2405.unite.domain.ProjectComment;
 import com.hta2405.unite.dto.ProjectTaskDTO;
 import com.hta2405.unite.service.EmpService;
 import com.hta2405.unite.service.ProjectBoardService;
 import com.hta2405.unite.service.ProjectService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,53 +136,91 @@ public class ProjectBoardController {
         return "redirect:/projectBoard/comm?projectId=" + projectId + "&memberId=" + memberId + "&taskId=" + taskId;
     }
 
+    @Builder
     @PostMapping("/commentadd")
     public ResponseEntity<Integer> commentAdd(String content,
-                                              int projectId,
                                               int taskId,
-                                              @RequestParam(required = false, defaultValue = "0") int parentCommentId,
+                                              int comment_re_lev,
+                                              int comment_re_seq,
                                               @AuthenticationPrincipal UserDetails user){
         String userid = user.getUsername();
-        log.info("content={}", content);
-        log.info("projectId={}", projectId);
-        log.info("taskId={}", taskId);
-        int result = projectBoardService.commentAdd(userid, projectId, taskId, content, parentCommentId);
+
+        ProjectComment.ProjectCommentBuilder projectCommentBuilder = ProjectComment.builder()
+                .taskCommentWriter(userid)
+                .taskId(taskId)
+                .taskCommentContent(content)
+                .taskCommentReLev(comment_re_lev)
+                .taskCommentReSeq(comment_re_seq);
+
+        int result = projectBoardService.commentAdd(projectCommentBuilder);
+
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/commentlist")
-    public ResponseEntity<JsonObject> getComments(
-            @AuthenticationPrincipal UserDetails user, int projectId, int taskNum,
-            @RequestParam("comment_board_num") int commentBoardNum, int state) {
+    public ResponseEntity<Map<String, Object>> getComments(
+            @AuthenticationPrincipal UserDetails user, int taskId, int state) {
+
+        // 사용자 정보와 요청 파라미터 로그
         String userid = user.getUsername();
         log.info("userid: " + userid);
-        log.info("projectid: " + projectId);
-        log.info("taskNum: " + taskNum);
-        log.info("comment_board_num: " + commentBoardNum);
+        log.info("taskNum: " + taskId);
         log.info("state: " + state);
 
-        // 댓글 목록의 개수 가져오기
-//        int listCount = projectBoardService.getListCount(commentBoardNum);
-//        log.info("listcount: " + listCount);
+        int listCount = projectBoardService.getListCount(taskId);
+        log.info("listCount={}", listCount);
 
-        // 댓글 목록 가져오기
-//        JsonArray commentList = projectBoardService.getCommentList(commentBoardNum, state);
+        List<ProjectComment> commentList = projectBoardService.getCommentList(taskId, state);
 
-        // JSON 응답 객체 준비
-        JsonObject responseObject = new JsonObject();
-//        responseObject.addProperty("listcount", listCount);
-//        responseObject.add("commentlist", new Gson().toJsonTree(commentList));
-        responseObject.addProperty("id", userid);
+        // 응답 데이터를 하나의 Map으로 묶기
+        Map<String, Object> response = new HashMap<>();
+        response.put("listcount", listCount);
+        response.put("commentlist", commentList);
+        //response.put("emp", empService.getEmpById(userid));
 
-        // 직원 정보 가져오기
-//        Gson gson = new GsonBuilder()
-//                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-//                .create();
-//        JsonElement empUuidMap = gson.toJsonTree(empService.getIdToENameUUIDMap());
-//        responseObject.add("emp", empUuidMap);
-//
-//        System.out.println("emp: " + empUuidMap);
+        if (commentList != null && !commentList.isEmpty()) {
+            return ResponseEntity.ok(response);
+        }
+        return ResponseEntity.noContent().build();
+    }
 
-        return ResponseEntity.ok(responseObject);
+    @PostMapping("/reply")
+    public ResponseEntity<Integer> replyAdd(String content,
+                                              int taskId,
+                                              int comment_re_lev,
+                                              int comment_re_seq,
+                                              int comment_re_ref,
+                                              @AuthenticationPrincipal UserDetails user){
+        String userid = user.getUsername();
+
+        ProjectComment.ProjectCommentBuilder projectCommentBuilder = ProjectComment.builder()
+                .taskCommentWriter(userid)
+                .taskId(taskId)
+                .taskCommentContent(content)
+                .taskCommentReLev(comment_re_lev + 1)
+                .taskCommentReSeq(comment_re_seq + 1)
+                .taskCommentReRef(comment_re_ref);
+
+        int result = projectBoardService.replyAdd(projectCommentBuilder);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/update")
+    public ResponseEntity<Integer> update(String content, int taskId){
+        ProjectComment.ProjectCommentBuilder projectCommentBuilder = ProjectComment.builder()
+                .taskId(taskId)
+                .taskCommentContent(content);
+        log.info("taskId: " + taskId);
+        log.info("content: " + content);
+        int result = projectBoardService.updateComment(projectCommentBuilder);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/delete")
+    public ResponseEntity<Integer> delete(int taskId){
+        int result = projectBoardService.deleteComment(taskId);
+        return ResponseEntity.ok(result);
     }
 }

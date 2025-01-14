@@ -41,13 +41,13 @@ public class SecurityConfig {
                 .formLogin(FormLoginConfigurer::disable)
                 .httpBasic(HttpBasicConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new JwtAuthenticationFilter("/login", authenticationManager(configuration), jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter("/auth/login/process", authenticationManager(configuration), jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtAuthorizationFilter(jwtUtil), JwtAuthenticationFilter.class);
 
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**", "/css/**", "/js/**", "/image/**", "/error").permitAll()
                 .requestMatchers("/admin/**", "/emp/admin/**").hasAuthority("ROLE_ADMIN")
-                .requestMatchers("/manager/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
+                .requestMatchers("/manager/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER", "ROLE_HR")
                 .anyRequest().authenticated()
         );
 

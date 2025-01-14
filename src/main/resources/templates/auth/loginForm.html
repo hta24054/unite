@@ -11,17 +11,16 @@
             $('#loginForm').on('submit', function (event) {
                 event.preventDefault();
 
-                const username = $('#username').val();
-                console.log(username);
+                const empId = $('#empId').val();
                 const password = $('#password').val();
-                console.log(password);
 
                 $.ajax({
-                    url: /*[[@{/auth/login}]]*/ '',
+                    url: /*[[@{/auth/login/process}]]*/ '',
                     method: 'POST',
                     contentType: 'application/json',
-                    data: JSON.stringify({username: username, password: password}),
+                    data: JSON.stringify({empId: empId, password: password}),
                     success: function () {
+                        alert("로그인 성공")
                         window.location.href = '/home';
                     },
                     error: function () {
@@ -40,7 +39,7 @@
             <img th:src="@{/image/logo_black.png}" alt="logo">
         </div>
         <form name="loginForm" id="loginForm">
-            <input type="text" placeholder="아이디를 입력해주세요" name='username' id="username" required autocomplete="username">
+            <input type="text" placeholder="아이디를 입력해주세요" name='empId' id="empId" required autocomplete="username">
             <span class="idText"></span>
             <input type="password" placeholder="비밀번호를 입력해주세요" name='password' id="password" required
                    autocomplete="current-password">

@@ -48,5 +48,10 @@ public class ReservationServiceImpl implements ReservationService {
         return reservationDAO.getReservationModal(reservationId);
     }
 
+    @Override
+    public int cancelReservation(Long reservationId, String empId) {
+        return reservationDAO.cancelReservation(reservationId, empId);
+    }
+
 
 }

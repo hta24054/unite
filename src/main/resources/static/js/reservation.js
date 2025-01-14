@@ -325,6 +325,8 @@ $(document).ready(function () {
         $("form").each(function () {
             this.reset();
         });
+
+        $("#charCount").text("0/100");
     });
 
     $("#reservationModal").on("hidden.bs.modal", function () {
@@ -473,6 +475,7 @@ $(document).ready(function () {
                     $resourceType.val("");
                     $resourceName.hide().empty().append('<option value="">자원명</option>');
                     $("#reservationInfo").val("");
+                    $("#charCount").text("0/100");
 
                     $("#reservationModal").modal("show");
 

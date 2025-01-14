@@ -52,6 +52,14 @@
                 .btn_wrap button {
                     margin: 0 5px;
                 }
+
+                .form-group > label {
+                    margin-bottom: 5px;
+                }
+
+                textarea {
+                    resize: none;
+                }
             </style>
         </head>
         <body class="sb-nav-fixed">
@@ -84,25 +92,25 @@
                             <input type="hidden" id="emp_id" name="emp_id" th:value="${#authentication.name}">
                             <input type="hidden" id="share_emp" name="share_emp" th:value="${share_emp}">
 
-                            <div class="form-group">
+                            <div class="form-group mb-3">
                                 <label for="schedule_name">일정명</label>
                                 <input type="text"
                                        class="form-control" placeholder="일정명을 입력하세요"
                                        name="schedule_name" id="schedule_name">
                             </div>
-                            <div class="form-group custom-control custom-checkbox">
+                            <div class="form-group custom-control custom-checkbox mb-3">
                                 <input type="checkbox" name="allDay" id="allDay" class="custom-control-input" th:value="${allDay}">
                                 <label for="allDay" class="custom-control-label">하루종일</label>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group mb-3">
                                 <label for="startAt">시작날짜/시간</label>
                                 <input type="datetime-local" name="startAt" id="startAt" class="form-control">
                             </div>
-                            <div class="form-group">
+                            <div class="form-group mb-3">
                                 <label for="endAt">종료날짜/시간</label>
                                 <input type="datetime-local" name="endAt" id="endAt" class="form-control">
                             </div>
-                            <div class="form-group color-group">
+                            <div class="form-group color-group mb-3">
                                 <div>
                                     <p>색상</p>
                                     <select name="bgColor" id="bgColor">
@@ -118,7 +126,7 @@
                                 </div>
                             </div>
                             <div>
-                                <p>내용</p>
+                                <p style="margin-bottom: 5px;">내용</p>
                                 <textarea rows="10" name="description" id="description"></textarea>
                             </div>
 

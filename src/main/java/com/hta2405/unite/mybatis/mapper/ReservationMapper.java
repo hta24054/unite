@@ -19,4 +19,6 @@ public interface ReservationMapper {
     public List<ReservationDTO> getReservationByResourceIdAndName(Long resourceId, String resourceName, String name);
 
     public ReservationDTO getReservationModal(Long reservationId);
+
+    public int cancelReservation(Long reservationId, String empId);
 }

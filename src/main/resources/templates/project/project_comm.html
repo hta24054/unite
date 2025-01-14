@@ -17,6 +17,7 @@
 			<div class="container">
 				<input type="hidden" th:value="${projectId}" id="projectId">
 				<input type="hidden" th:value="${taskId}" id="taskId">
+				<input type="hidden" th:value="${#authentication.name}" id="loginId">
 				<table class="table">
 					<tr>
 						<th colspan="2" th:text="${projectName}"></th>

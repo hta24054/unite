@@ -69,22 +69,41 @@
                     </if>
                     where project_id=#{projectId} and emp_id=#{memberId} and task_id=#{taskId}
     </update>
-
-    <select id="getTaskCommentId" resultType="int">
-        select task_comment_id from task_comment where task_id = #{taskId} order by task_comment_date limit 1;
-    </select>
-
-    <select id="getParentSeq" parameterType="int" resultType="int">
-        select task_comment_re_seq from task_comment where task_id = #{taskId} and task_comment_id = #{parentCommentId};
-    </select>
-
-    <select id="getMaxSeq" parameterType="map" resultType="int">
-        SELECT MAX(task_comment_re_seq) FROM task_comment WHERE task_id = #{taskNum} AND task_comment_re_ref = #{ref}
-    </select>
-
-    <insert id="insertComment" parameterType="map">
+    <insert id="insertComment" parameterType="map" useGeneratedKeys="true" keyProperty="taskCommentId">
+        INSERT INTO task_comment (task_comment_writer, task_id, task_comment_content,
+                                  task_comment_date, task_comment_re_lev, task_comment_re_seq)
+        VALUES (#{taskCommentWriter}, #{taskId}, #{taskCommentContent}, sysdate(), #{taskCommentReLev}, #{taskCommentReSeq})
+    </insert>
+    <insert id="replyAdd" parameterType="map" useGeneratedKeys="true" keyProperty="taskCommentId">
         INSERT INTO task_comment (task_comment_writer, task_id, task_comment_content,
                                   task_comment_date, task_comment_re_lev, task_comment_re_seq, task_comment_re_ref)
-        VALUES (#{userId}, #{taskNum}, #{content}, sysdate(), #{lev}, #{seq}, #{ref})
+        VALUES (#{taskCommentWriter}, #{taskId}, #{taskCommentContent}, sysdate(), #{taskCommentReLev}, #{taskCommentReSeq}, #{taskCommentReRef})
     </insert>
+    <update id="updateRef">
+        update task_comment set task_comment_re_ref = #{ref} where task_comment_id = #{ref}
+    </update>
+    <select id="getListCount">
+        select count(*) from task_comment where task_id = #{taskId}
+    </select>
+    <select id="getCommentList">
+        select task_comment_id, task_comment_writer, task_comment_content, task_comment_date,
+        task_comment_re_lev, task_comment_re_seq, task_comment_re_ref, emp.img_original, emp.ename eName
+        from task_comment
+        join emp on task_comment.task_comment_writer = emp.emp_id
+        where task_id = #{taskId}
+        <choose>
+            <when test="state != 1">
+                order by task_comment_re_ref desc, task_comment_re_seq
+            </when>
+            <otherwise>
+                order by task_comment_re_ref, task_comment_re_seq
+            </otherwise>
+        </choose>
+    </select>
+    <update id="updateComment">
+        update task_comment set task_comment_content = #{taskCommentContent} where task_comment_id = #{taskId}
+    </update>
+    <delete id="deleteComment">
+        delete from task_comment where task_comment_id = #{taskId}
+    </delete>
 </mapper>

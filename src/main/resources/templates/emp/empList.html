@@ -7,6 +7,7 @@
             <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css" rel="stylesheet"
                   type="text/css">
             <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js" type="text/javascript"></script>
+            <script th:src="@{/js/empList.js}" type="text/javascript"></script>
         </head>
         <body>
         <main>
@@ -43,6 +44,7 @@
                                     <td th:text="${emp.email}">이메일</td>
                                     <td th:text="${emp.tel}">내선번호</td>
                                     <td th:text="${emp.mobile}">휴대전화</td>
+                                    <td style = "display: none" th:text="${emp.jobId}">직책번호</td>
                                 </tr>
                             </th:block>
                             </tbody>
@@ -51,29 +53,6 @@
                 </div>
             </div>
         </main>
-        <script>
-            $(document).ready(function () {
-                const lang_kor = {
-                    "decimal": "",
-                    "emptyTable": "데이터가 없습니다.",
-                    "info": "_START_-_END_ (총 _TOTAL_명)",
-                    "infoEmpty": "0명",
-                    "infoFiltered": "(전체 _MAX_명 중 검색 결과)",
-                    "infoPostFix": "",
-                    "thousands": ",",
-                    "lengthMenu": "_MENU_개씩 보기",
-                    "loadingRecords": "로딩중...",
-                    "processing": "처리중...",
-                    "search": "검색:",
-                    "zeroRecords": "검색된 데이터가 없습니다.",
-                    "paginate": {"first": "첫 페이지", "last": "마지막 페이지", "next": "다음", "previous": "이전"},
-                    "aria": {"sortAscending": ":오름차순 정렬", "sortDescending": ":내림차순 정렬"}
-                };
-                $('#empListTable').DataTable({
-                    language: lang_kor
-                });
-            });
-        </script>
         </body>
         </html>
     </th:block>

@@ -45,11 +45,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             try {
                 Claims claims = jwtUtil.validateToken(token);
 
-                String username = claims.get("username", String.class);
+                String empId = claims.get("empId", String.class);
                 String role = claims.get("role", String.class);
-                if (username != null) {
-                    UserDetails userDetails = User.builder()
-                            .username(username)
+
+                if (empId != null) {
+                    CustomUserDetails userDetails = CustomUserDetails.builder()
+                            .empId(empId)
                             .password("")
                             .authorities(Collections.singleton(() -> role))
                             .build();

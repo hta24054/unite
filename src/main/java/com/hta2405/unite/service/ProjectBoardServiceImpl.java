@@ -1,5 +1,8 @@
 package com.hta2405.unite.service;
 
+import com.google.gson.JsonArray;
+import com.hta2405.unite.domain.PostComment;
+import com.hta2405.unite.domain.ProjectComment;
 import com.hta2405.unite.domain.ProjectTask;
 import com.hta2405.unite.dto.FileDTO;
 import com.hta2405.unite.dto.ProjectTaskDTO;
@@ -69,17 +72,27 @@ public class ProjectBoardServiceImpl implements ProjectBoardService {
         dao.modifyProcess(projectId, memberId, taskId, taskFile, board_subject, board_content);
     }
 
-    public int commentAdd(String userid, int projectId, int taskId, String content, int parentCommentId){
-        int ref, lev, seq, taskCommentId;
-        if (parentCommentId == 0) {
-            taskCommentId = dao.getTaskCommentId(taskId);
-            ref = taskCommentId;
-            lev = 0;
-            seq = 0;
-        } else {
-            ref = dao.getParentSeq(taskId, parentCommentId);
-            lev = 1; seq = dao.getMaxSeq(taskId, ref) + 1;
-        }
-        return dao.insertComment(userid, taskId, content, lev, seq, ref);
+    public int commentAdd(ProjectComment.ProjectCommentBuilder projectCommentBuilder){
+        int insert = dao.insertComment(projectCommentBuilder);
+        int update = dao.updateRef(projectCommentBuilder.build().getTaskCommentId());
+        return insert > 0 && update > 0 ? 1 : 0;
+    }
+    public int replyAdd(ProjectComment.ProjectCommentBuilder projectCommentBuilder){
+        return dao.replyAdd(projectCommentBuilder);
+    }
+    public int getListCount(int taskId){
+        return dao.getListCount(taskId);
+    }
+
+    public List<ProjectComment> getCommentList(int taskId, int state){
+        return dao.getCommentList(taskId, state);
+    }
+
+    public int updateComment(ProjectComment.ProjectCommentBuilder projectCommentBuilder){
+        return dao.updateComment(projectCommentBuilder);
+    }
+
+    public int deleteComment(int taskId){
+        return dao.deleteComment(taskId);
     }
 }

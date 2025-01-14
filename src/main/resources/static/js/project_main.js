@@ -45,6 +45,7 @@ function updateBoardList(data) {
     let favoriteProjectsHtml = '';
 
     $(data.boardlist).each(function (index, project) {
+        if(project.projectFavorite == 0){
         // 참여자 처리
         let participantsText = '없음';
         if (project.participants) {
@@ -83,13 +84,15 @@ function updateBoardList(data) {
                         ${project.projectFavorite == 1 ? '★' : '☆'}
                     </span>
                 </h5>
-                <p><strong>책임자:</strong> ${project.managerName}</p>
-                <p><strong>참여자:</strong> ${participantsText}</p>
-                <p><strong>열람자:</strong> ${viewersText}</p>
-                <p><strong>마감일:</strong> ${project.projectEndDate}</p>
-                <div class="progress">
-                    <div class="progress-bar" style="width: ${project.avgProgress}%">${project.avgProgress}%</div>
-                </div>
+                <span class="project-detail-link" onclick="goToProjectDetail(${project.projectId})">
+                    <p><strong>책임자:</strong> ${project.managerName}</p>
+                    <p><strong>참여자:</strong> ${participantsText}</p>
+                    <p><strong>열람자:</strong> ${viewersText}</p>
+                    <p><strong>마감일:</strong> ${project.projectEndDate}</p>
+                    <div class="progress">
+                        <div class="progress-bar" style="width: ${project.avgProgress}%">${project.avgProgress}%</div>
+                    </div>
+                </span>
             </div>
         `;
 
@@ -100,6 +103,7 @@ function updateBoardList(data) {
         } else {
             ongoingProjectsHtml += projectCard;
             $('#project-container').html(ongoingProjectsHtml);
+        }
         }
     });
     updateProjectColor(data.boardlist);
@@ -331,6 +335,7 @@ function loadProjects(favorite) {
 function updateFavoriteProjects(data) {
     let favoriteProjectsHtml = '';
     $(data.boardlist).each(function (index, project) {
+        if(project.projectFavorite == 1){
         // 참여자 처리
         let participantsText = '없음';
         if (project.participants) {
@@ -374,13 +379,16 @@ function updateFavoriteProjects(data) {
 					<p><strong>참여자:</strong> ${participantsText}</p>
 					<p><strong>열람자:</strong> ${viewersText}</p>
 					<p><strong>마감일:</strong> ${project.projectEndDate}</p>
-					<div class="progress">
+					
+					<strong>진행률</strong>
+					<div class="progress">    
 						<div class="progress-bar" style="width: ${project.avgProgress}%">${project.avgProgress}%</div>
 					</div>
 				</span>
             </div>
         `;
         favoriteProjectsHtml += projectCard;
+        }
     });
     $('#project-favorite').html(favoriteProjectsHtml); // 즐겨찾기 목록 업데이트
     updateProjectColors(data.boardlist);

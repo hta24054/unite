@@ -24,6 +24,10 @@ public class ProjectServiceImpl implements ProjectService {
         this.notificationService = notificationService;
     }
 
+    public List<Project> getmainList(String userid) {
+        return dao.getMainList(userid);
+    }
+
     public List<Emp> getHiredEmpByDeptId(long deptId) {
         return dao.getHiredEmpByDeptId(deptId);
     }
@@ -65,24 +69,9 @@ public class ProjectServiceImpl implements ProjectService {
         dao.createTask(projectId, empId, memberName);
     }
 
-    public int mainCountList(String userid, int favorite) {
-        return dao.mainCountList(userid, favorite);
-    }
 
     public int doneCountList(String userid, int finish, int cancel) {
         return dao.doneCountList(userid, finish, cancel);
-    }
-
-    @Override
-    public List<Project> getmainList(String userid, int favorite, int page, int limit) {
-        HashMap<String, Object> map = new HashMap<>();
-        int startrow = (page - 1) * limit;
-        int endrow = startrow + limit;
-        map.put("favorite", favorite);
-        map.put("userid", userid);
-        map.put("start", startrow);
-        map.put("end", endrow);
-        return dao.getmainList(map);
     }
 
     public void projectFavorite(int projectId, String userid) {
@@ -116,6 +105,7 @@ public class ProjectServiceImpl implements ProjectService {
     public String getProjectName(int projectId) {
         return dao.getProjectName(projectId);
     }
+    public String getProjectContent(int projectId){return dao.getProjectContent(projectId);}
 
     public List<ProjectDetailDTO> getProjectDetail1(int projectId, String userid) {
         return dao.getProjectDetail1(projectId, userid);

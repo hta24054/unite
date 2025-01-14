@@ -1,5 +1,7 @@
 package com.hta2405.unite.mybatis.mapper;
 
+import com.google.gson.JsonArray;
+import com.hta2405.unite.domain.ProjectComment;
 import com.hta2405.unite.domain.ProjectTask;
 import com.hta2405.unite.dto.FileDTO;
 import com.hta2405.unite.dto.ProjectTaskDTO;
@@ -20,5 +22,11 @@ public interface ProjectBoardMapper {
     int getTaskCommentId(int taskId);
     int getParentSeq(int taskId, int parentCommentId);
     int getMaxSeq(int taskId, int ref);
-    int insertComment(String userid, int taskId, String content, int ref, int lev, int seq);
+    int insertComment(ProjectComment.ProjectCommentBuilder projectCommentBuilder);
+    int replyAdd(ProjectComment.ProjectCommentBuilder projectCommentBuilder);
+    int updateRef(long ref);
+    int getListCount(int taskId);
+    List<ProjectComment> getCommentList(int taskId, int state);
+    int updateComment(ProjectComment.ProjectCommentBuilder projectCommentBuilder);
+    int deleteComment(int taskId);
 }

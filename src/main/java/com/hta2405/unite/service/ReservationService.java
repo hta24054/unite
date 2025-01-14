@@ -10,7 +10,7 @@ public interface ReservationService {
 
     public int resourceReservation(ReservationDTO reservationDTO);
 
-    public List<ReservationDTO> getReservationByResourceIdAndName(Long resourceId, String resourceName);
+    public List<ReservationDTO> getReservationByResourceIdAndName(Long resourceId, String resourceName, String name);
 
     public List<ReservationDTO> getAllReservation();
 

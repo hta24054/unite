@@ -45,7 +45,7 @@
     </insert>
 
     <select id="getReservationByResourceIdAndName" resultType="com.hta2405.unite.dto.ReservationDTO">
-        SELECT r.*, s.resc_name
+        SELECT r.*, s.resc_name, r.emp_id
         FROM reservation r
                  JOIN resc s ON r.resource_id = s.resc_id
         WHERE r.resource_id = #{resourceId}

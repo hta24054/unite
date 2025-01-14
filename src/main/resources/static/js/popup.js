@@ -1,8 +1,8 @@
 $(document).ready(function () {
-    const contextPath = document.getElementById('contextPath').value;
+    const contextPath = /*[[@{}]]*/ '';
     console.log(contextPath)
     $.ajax({
-        url: contextPath + "home/notice",
+        url: contextPath + "/home/notice",
         type: "GET",
         dataType: "json",
         success: function (notices) {

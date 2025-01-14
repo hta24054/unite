@@ -3,12 +3,26 @@
         <!DOCTYPE html>
         <html lang="en">
         <head>
-            <title>Unite</title></head>
+            <title>Unite</title>
+            <link th:href="@{/css/popup.css}" rel="stylesheet"/>
+            <script th:src="@{/js/popup.js}"></script>
+        </head>
         <body class="sb-nav-fixed">
+        <input type="hidden" id="contextPath" th:value="@{/}"/>
         <div>(임시) 홈화면입니다. 로그인 한 사용자 : [[${#authentication.name}]] 프로필사진 : <img
                 th:src="@{/emp/profile-image(empId=${#authentication.name})}" width="30px"></div>
         <div th:replace="attend/attendBox.html">
         </div>
+        <!-- 팝업 컨테이너 -->
+        <div id="popup-container">
+            <p id="popup-content"></p>
+            <div class="button-container">
+                <button id="popup-close" class="btn btn-sm btn-light" style="font-size: 10px">닫기</button>
+                <button id="popup-dont-show" class="btn btn-sm btn-secondary" style="font-size: 10px">모든 공지사항 하루 보지 않기
+                </button>
+            </div>
+        </div>
+        <!--팝업 컨테이너 끝-->
         </body>
         </html>
     </th:block>

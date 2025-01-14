@@ -119,16 +119,13 @@ public class ProjectController {
 
     @GetMapping("/getProjects")
     @ResponseBody
-    public Map<String, Object> getProjects(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "0") int favorite,
-            @AuthenticationPrincipal UserDetails user
-           ) {
+    public Map<String, Object> getProjects(@AuthenticationPrincipal UserDetails user) {
         String userid = user.getUsername();
         List<Project> mainList = projectService.getmainList(userid);
-
+        logger.info("mainList={}", mainList.size());
         Map<String, Object> response = new HashMap<>();
         response.put("boardlist", mainList);
+        response.put("listCount", mainList.size());
         return response;
     }
 

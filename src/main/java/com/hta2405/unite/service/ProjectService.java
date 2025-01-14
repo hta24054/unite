@@ -25,11 +25,9 @@ public interface ProjectService {
 
     void createTask(int projectId, String empId, String memberName);
 
-    int mainCountList(String userid, int favorite);
-
     int doneCountList(String userid, int finish, int cancel);
 
-    List<Project> getmainList(String userid, int favorite, int page, int limit);
+    List<Project> getmainList(String userid);
 
     List<Project> getDoneList(String userid, int page, int limit);
 
@@ -40,6 +38,7 @@ public interface ProjectService {
     boolean updateProjectStatus(int projectId, String status);
 
     String getProjectName(int projectId);
+    String getProjectContent(int projectId);
 
     List<ProjectDetailDTO> getProjectDetail1(int projectId, String userid);
 

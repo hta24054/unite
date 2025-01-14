@@ -5,10 +5,6 @@
 		<head>
 			<meta charset="UTF-8">
 			<title>Insert title here</title>
-			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-			<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-			<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-			<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 			<script th:src="@{/js/project_detail.js}"></script>
 			<script>
 				var contextPath = "${pageContext.request.contextPath}";
@@ -142,16 +138,15 @@
 							<caption>
 								<div class="d-flex justify-content-between align-items-center">
 									<h5>진행률</h5>
-									<button type="button" class="btn btn-primary btn-sm float-right"
+									<button type="button" class="btn btn-primary btn-sm float-end"
 											th:if="${#strings.replace(role, '[', '').replace(']', '') != 'VIEWER'}"
 											th:onclick="|location.href='@{/project/todo(projectId=${projectId})}';|">
 										투두리스트
 									</button>
-
 								</div>
 							</caption>
 							<button type="button"
-									class="btn btn-primary btn-sm float-right"
+									class="btn btn-primary btn-sm float-end"
 									th:if="${#strings.replace(role, '[', '').replace(']', '') == 'VIEWER'}"
 									th:href="@{/project/todo(projectId=${projectId})}"
 									th:data-memberid="${memberId}"
@@ -161,39 +156,39 @@
 								투두
 							</button>
 							<thead>
-							<tr>
-								<th>참여자</th>
-								<th>업무내용</th>
-								<th>진행률</th>
-							</tr>
+								<tr>
+									<th>참여자</th>
+									<th>업무내용</th>
+									<th>진행률</th>
+								</tr>
 							</thead>
 							<tbody>
-							<tr th:each="project : ${project}">
-								<input type="hidden" th:value="${project.projectId}" id="projectId">
-								<td th:text="${project.participantNames}"
-									th:data-id="${project.projectId}"
-									th:data-memberid="${project.memberId}"
-									class="clickable-participant"></td> <!-- 클릭 이벤트 추가 -->
-								<td>
-									<span th:classappend="${project.isManager} ? 'task-content clickable' : 'task-content'"
-										  th:data-id="${project.projectId}"
-										  th:data-memberid="${project.memberId}"
-										  th:data-content="${project.memberDesign}">
-										<span th:text="${project.memberDesign == null ? '업무를 지정해주세요' : project.memberDesign}"></span>
-									</span>
-											</td>
-											<td>
-									<span th:classappend="${project.memberId == #authentication.name} ? 'progress-rate clickable' : 'progress-rate'"
-										  th:data-id="${project.projectId}"
-										  th:data-memberid="${project.memberId}"
-										  th:data-rate="${project.memberProgressRate}">
-										<span class="progress-bar" role="progressbar"
-											  th:style="'width:' + ${project.memberProgressRate} + '%'">
-											<span th:text="${project.memberProgressRate} + '%'"></span>
+								<tr th:each="project : ${project}">
+									<input type="hidden" th:value="${project.projectId}" id="projectId">
+									<td th:text="${project.participantNames}"
+										th:data-id="${project.projectId}"
+										th:data-memberid="${project.memberId}"
+										class="clickable-participant"></td> <!-- 클릭 이벤트 추가 -->
+									<td>
+										<span th:classappend="${project.isManager} ? 'task-content clickable' : 'task-content'"
+											  th:data-id="${project.projectId}"
+											  th:data-memberid="${project.memberId}"
+											  th:data-content="${project.memberDesign}">
+											<span th:text="${project.memberDesign == null ? '업무를 지정해주세요' : project.memberDesign}"></span>
 										</span>
-									</span>
-								</td>
-							</tr>
+														</td>
+														<td>
+										<span th:classappend="${project.memberId == #authentication.name} ? 'progress-rate clickable' : 'progress-rate'"
+											  th:data-id="${project.projectId}"
+											  th:data-memberid="${project.memberId}"
+											  th:data-rate="${project.memberProgressRate}">
+											<span class="progress-bar" role="progressbar"
+												  th:style="'width:' + ${project.memberProgressRate} + '%'">
+												<span th:text="${project.memberProgressRate} + '%'"></span>
+											</span>
+										</span>
+									</td>
+								</tr>
 							</tbody>
 						</table>
 
@@ -203,22 +198,22 @@
 									<h5>진행 과정</h5>
 									<input type="hidden" th:value="${memberId}" id="userid">
 									<button type="button"
-											class="btn btn-primary btn-sm float-right"
+											class="btn btn-primary btn-sm float-end"
 											th:if="${#strings.replace(role, '[', '').replace(']', '') != 'VIEWER'}"
-											data-toggle="modal"
-											data-target="#writeModal">
+											data-bs-toggle="modal"
+											data-bs-target="#writeModal">
 										글 작성
 									</button>
 
-									<!-- 글 작성 버튼 (VIEWER일 때) -->
 									<button type="button"
-											class="btn btn-primary btn-sm float-right"
+											class="btn btn-primary btn-sm float-end"
 											th:if="${#strings.replace(role, '[', '').replace(']', '') == 'VIEWER'}"
 											th:data-memberid="${memberId}"
 											style="display:none;"
 											disabled>
 										글 작성
 									</button>
+
 								</div>
 							</caption>
 							<thead>
@@ -250,79 +245,54 @@
 			</div>
 
 			<!-- 업무 내용 입력 모달 -->
-			<div class="modal fade" id="taskContentModal" tabindex="-1" role="dialog" aria-labelledby="taskContentModalLabel" aria-hidden="true">
+			<div class="modal fade" id="taskContentModal" tabindex="-1" aria-labelledby="taskContentModalLabel" aria-hidden="true">
 				<div class="modal-dialog" role="document">
 					<div class="modal-content">
 						<div class="modal-header">
 							<h5 class="modal-title" id="taskContentModalLabel">업무 내용 수정</h5>
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-								<span aria-hidden="true">&times;</span>
-							</button>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 						</div>
 						<div class="modal-body">
 							<input type="text" id="taskContentInput" class="form-control" placeholder="업무 내용을 입력하세요" />
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
 							<button type="button" class="btn btn-primary" id="saveTaskContentBtn">저장</button>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			<!-- 진행률 입력 모달 -->
-			<div class="modal fade" id="progressModal" tabindex="-1" role="dialog" aria-labelledby="progressModalLabel" aria-hidden="true">
-				<div class="modal-dialog" role="document">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title" id="progressModalLabel">진행률 수정</h5>
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-								<span aria-hidden="true">&times;</span>
-							</button>
-						</div>
-						<div class="modal-body">
-							<input type="number" id="progressInput" class="form-control" min="0" max="100" placeholder="진행률을 입력하세요 (0-100)" />
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-							<button type="button" class="btn btn-primary" id="saveProgressBtn">저장</button>
-						</div>
-					</div>
-				</div>
-			</div>
-
 			<!-- 글 작성 모달 -->
-			<div class="modal fade" id="writeModal" tabindex="-1" role="dialog" aria-labelledby="writeModalLabel" aria-hidden="true">
-				<div class="modal-dialog" role="document">
+			<div class="modal fade" id="writeModal" tabindex="-1" aria-labelledby="writeModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
 					<div class="modal-content">
 						<div class="modal-header">
 							<h5 class="modal-title" id="writeModalLabel">글 작성</h5>
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-								<span aria-hidden="true">&times;</span>
-							</button>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 						</div>
 						<div class="modal-body">
 							<form id="writeForm" action="${pageContext.request.contextPath}/projectb/write" method="post" enctype="multipart/form-data">
-								<div class="form-group">
-									<label for="todoCategory">카테고리</label>
-									<select class="form-control" id="todoCategory" name="category">
+								<div class="mb-3">
+									<label for="todoCategory" class="form-label">카테고리</label>
+									<select class="form-select" id="todoCategory" name="category" required>
 										<option value="" disabled selected>투두리스트에서 카테고리 선택</option>
 									</select>
 								</div>
-								<div class="form-group">
-									<label for="postTitle">제목</label>
+								<div class="mb-3">
+									<label for="postTitle" class="form-label">제목</label>
 									<input type="text" class="form-control" id="postTitle" name="title" placeholder="제목을 입력하세요" required>
 								</div>
-								<div class="form-group">
-									<label for="postContent">내용</label>
+								<div class="mb-3">
+									<label for="postContent" class="form-label">내용</label>
 									<textarea class="form-control" id="postContent" name="content" rows="4" placeholder="내용을 입력하세요" required></textarea>
 								</div>
-								<div class="form-group">
-									<label for="postFile">첨부파일</label>
-									<input type="file" class="form-control-file" id="postFile" name="file">
+								<div class="mb-3">
+									<label for="postFile" class="form-label">첨부파일</label>
+									<input type="file" class="form-control" id="postFile" name="file">
 								</div>
 								<div class="modal-footer">
-									<button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
 									<button type="submit" class="btn btn-primary">저장</button>
 								</div>
 							</form>
@@ -339,6 +309,7 @@
 					<iframe th:src="@{/image/help.pdf}" style="width: 100%; height: calc(100% - 40px); border: none;" title="도움말 PDF"></iframe>
 				</div>
 			</div>
+
 			<script>
 				function openHelpModal() { document.getElementById("helpModal").style.display = "block"; }
 				function closeHelpModal() { document.getElementById("helpModal").style.display = "none"; }

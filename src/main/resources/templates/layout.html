@@ -125,10 +125,10 @@
                         <div class="collapse" id="collapseCustomMenu1" aria-labelledby="heading1"
                              data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" th:href="@{/attend/info}">나의 근태관리</a>
-                                <a class="nav-link" th:href="@{/manager/attendInfoList}">부서원 근태관리</a>
-                                <a class="nav-link" th:href="@{/attend/vacation}">휴가 관리</a>
-                                <a class="nav-link" th:href="@{/manager/vacationInfoList}">부서원 휴가 관리</a>
+                                <a class="nav-link" th:href="@{/attend/info}">근태현황</a>
+                                <a class="nav-link" th:href="@{/manager/attendInfoList}">부서 근태현황</a>
+                                <a class="nav-link" th:href="@{/attend/vacation}">휴가 현황</a>
+                                <a class="nav-link" th:href="@{/manager/vacationInfoList}">부서 휴가 현황</a>
                             </nav>
                         </div>
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
@@ -369,9 +369,22 @@
             </footer>
         </div>
     </div>
+
+    <!-- 팝업 컨테이너 -->
+    <div id="popup-container">
+        <p id="popup-content"></p>
+        <div class="button-container">
+            <button id="popup-close" class="btn btn-sm btn-light" style="font-size: 10px">닫기</button>
+            <button id="popup-dont-show" class="btn btn-sm btn-secondary" style="font-size: 10px">모든 공지사항 하루 보지 않기</button>
+        </div>
+    </div>
+
+    <!--토스트 컨테이너-->
     <div id="toastContainer" style="position: fixed; bottom: 10px; right: 10px; z-index: 9999;"></div>
+
     <script th:src="@{/js/layout.js}"></script>
     <script th:src="@{/js/notification.js}"></script>
+    <script th:src="@{/js/homeNotice.js}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
     </body>
     </html>

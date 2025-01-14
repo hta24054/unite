@@ -85,29 +85,29 @@
         WHERE IMG_UUID = #{fileUUID}
     </select>
     <select id="getHiredEmpListByDeptId">
-        SELECT e.emp_id, e.ename, d.dept_name, j.job_name, e.email, e.tel, e.mobile
+        SELECT e.emp_id, e.ename, d.dept_name, j.job_name, j.job_id, e.email, e.tel, e.mobile
         FROM emp e
-                 left join job j on e.job_id = j.job_id
-                 left join dept d on e.dept_id = d.dept_id
+                 join job j on e.job_id = j.job_id
+                 join dept d on e.dept_id = d.dept_id
         WHERE e.dept_id = #{deptId}
           and e.emp_id != 'admin'
           and e.hired = 1
         order by e.job_id, e.emp_id
     </select>
     <select id="getHiredEmpListByName">
-        SELECT e.emp_id, e.ename, d.dept_name, j.job_name, e.email, e.tel, e.mobile
+        SELECT e.emp_id, e.ename, d.dept_name, j.job_name, j.job_id, e.email, e.tel, e.mobile
         FROM emp e
-                 left join job j on e.job_id = j.job_id
-                 left join dept d on e.dept_id = d.dept_id
+                 join job j on e.job_id = j.job_id
+                 join dept d on e.dept_id = d.dept_id
         WHERE e.ename like #{ename}
           and e.emp_id != 'admin'
           and e.hired = 1
         order by e.job_id, e.emp_id
     </select>
     <select id="getHiredEmpListDTO">
-        select e.emp_id, e.ename, d.dept_name, j.job_name, e.email, e.tel, e.mobile
-        from emp e left join dept d on e.dept_id = d.dept_id
-        left join job j on e.job_id = j.job_id
+        select e.emp_id, e.ename, d.dept_name, j.job_name, j.job_id, e.email, e.tel, e.mobile
+        from emp e join dept d on e.dept_id = d.dept_id
+        join job j on e.job_id = j.job_id
         where d.dept_id in
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item.deptId}

@@ -203,30 +203,12 @@ $(document).ready(function () {
                 empId: $("#emp_id").val(),
             },
             success: function (data) {
-                console.log(data);
-
-                events = [];
-                if (data != null && data.length > 0) {
-                    for (let i = 0; i < data.length; i++) {
-                        events.push({
-                            id: data[i].reservation_id,
-                            allDay: data[i].reservationAllDay,
-                            start: data[i].reservationStart,
-                            end: data[i].reservationEnd,
-                            reservationInfo: data[i].reservationInfo,
-                            resourceType: data[i].resourceType,
-                            resourceName: data[i].resourceName,
-                            empName: data[i].empName
-                        });
-                    }
-                }
-
                 if (data) {
                     $("#reservationDetailModal").find(".modal-header").find("h5").text("예약 정보");
 
                     let _html = "<ul class='deatail_list'>" +
-                        "<li>분류명: " + (event.resourceType) + "</li>" +
-                        "<li>자원명: " + (event.resourceName) + "</li>" +
+                        "<li>분류명: " + data.resourceType + "</li>" +
+                        "<li>자원명: " + data.resourceName + "</li>" +
                         "<li>시작시간: " + moment(event.start).format("YYYY-MM-DD HH:mm") + "</li>";
 
                     // 종료시간 설정 (시작시간과 동일한 경우)
@@ -234,13 +216,12 @@ $(document).ready(function () {
                         moment(event.end && !moment(event.start).isSame(event.end) ? event.end : event.start).format("YYYY-MM-DD HH:mm") +
                         "</li>";
 
-                    _html += "<li>예약자: " + (event.empName) + "</li>" +
-                        "<li>사용용도: " + (event.reservationInfo || "") + "</li>";
-
+                    _html += "<li>예약자: " + data.ename + "</li>" +
+                        "<li>사용용도: " + data.reservationInfo || "" + "</li>";
 
                     // 자원정보 존재할 경우
-                    if (event.resourceInfo) {
-                        _html += "<li>자원정보: " + event.resourceInfo + "</li>";
+                    if (data.resourceInfo) {
+                        _html += "<li>자원정보: " + data.resourceInfo + "</li>";
                     }
 
                     _html += "</ul>" +

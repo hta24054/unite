@@ -134,20 +134,7 @@ SHOW COLUMNS FROM reservation;
 
 
 SELECT
-    resc.resc_id, resc.resc_type, resc.resc_name, resc.resc_info, resc.resc_usable,
-    reservation.reservation_id,
-    reservation.emp_id,
-    reservation.reservation_start,
-    reservation.reservation_end,
-    reservation.reservation_info,
-    reservation.reservation_allDay
-FROM reservation
-         LEFT JOIN resc resc
-                   ON reservation.resource_id = resc.resc_id
-WHERE reservation.reservation_id = 18;
-
-
-SELECT
+    emp.ename,
     resc.resc_id,
     resc.resc_type,
     resc.resc_name,
@@ -158,16 +145,77 @@ SELECT
     reservation.reservation_start,
     reservation.reservation_end,
     reservation.reservation_info,
-    reservation.reservation_allDay,
-    emp.ename  -- emp 테이블에서 ename 컬럼을 가져옵니다.
+    reservation.reservation_allDay
 FROM reservation
          LEFT JOIN resc resc ON reservation.resource_id = resc.resc_id
-         LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id  -- emp 테이블과 JOIN
+         LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id
+WHERE reservation.reservation_id = 18;
+
+
+-- 해당 예약에 대한 데이터가 존재하는지 확인
+SELECT * FROM reservation WHERE reservation_id = 18;
+
+-- 해당 예약에 연결된 resource_id 값 확인
+SELECT * FROM resc WHERE resc_id = (SELECT resource_id FROM reservation WHERE reservation_id = 18);
+
+-- 해당 예약에 연결된 emp_id 값 확인
+SELECT * FROM emp WHERE emp_id = (SELECT emp_id FROM reservation WHERE reservation_id = 18);
+
+
+SHOW COLUMNS FROM reservation;
+SHOW COLUMNS FROM resc;
+SHOW COLUMNS FROM emp;
+
+
+SELECT resc.resc_type, resc.resc_name
+FROM reservation
+         LEFT JOIN resc ON reservation.resource_id = resc.resc_id
 WHERE reservation.reservation_id = 18;
 
 
 
+SELECT
+    -- 자원 정보 서브쿼리
+    (SELECT resc.resc_type FROM resc resc WHERE resc.resc_id = reservation.resource_id) AS resourceType,
+    (SELECT resc.resc_name FROM resc resc WHERE resc.resc_id = reservation.resource_id) AS resourceName,
+    (SELECT resc.resc_info FROM resc resc WHERE resc.resc_id = reservation.resource_id) AS resourceInfo,
+    (SELECT resc.resc_usable FROM resc resc WHERE resc.resc_id = reservation.resource_id) AS resourceUsable,
+
+    -- 예약 정보
+    reservation.reservation_id,
+    reservation.emp_id,
+    reservation.reservation_start,
+    reservation.reservation_end,
+    reservation.reservation_info,
+    reservation.reservation_allDay,
+
+    -- 예약자 정보 서브쿼리
+    (SELECT emp.ename FROM emp emp WHERE emp.emp_id = reservation.emp_id) AS empName
+FROM reservation
+WHERE reservation.reservation_id = 18;
 
 
 
+SELECT
+    -- 자원 정보 서브쿼리
+    resc.resc_type AS resourceType,
+    resc.resc_name AS resourceName,
+    resc.resc_info AS resourceInfo,
+    resc.resc_usable AS resourceUsable,
 
+    -- 예약 정보
+    reservation.reservation_id,
+    reservation.emp_id,
+    reservation.reservation_start,
+    reservation.reservation_end,
+    reservation.reservation_info,
+    reservation.reservation_allDay,
+
+    -- 예약자 정보 (emp 테이블에서 직접 가져옴)
+    emp.ename
+FROM reservation
+-- 자원 정보와 결합
+         LEFT JOIN resc resc ON reservation.resource_id = resc.resc_id
+-- 예약자 정보와 결합
+         LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id
+WHERE reservation.reservation_id = 18;

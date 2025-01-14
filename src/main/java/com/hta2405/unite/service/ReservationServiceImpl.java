@@ -29,8 +29,8 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<ReservationDTO> getReservationByResourceIdAndName(Long resourceId, String resourceName) {
-        return reservationDAO.getReservationByResourceIdAndName(resourceId, resourceName);
+    public List<ReservationDTO> getReservationByResourceIdAndName(Long resourceId, String resourceName, String name) {
+        return reservationDAO.getReservationByResourceIdAndName(resourceId, resourceName, name);
     }
 
     @Override
@@ -44,7 +44,14 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public int getReservationModal(Long reservationId) {
+    public ReservationDTO getReservationModal(Long reservationId) {
         return reservationDAO.getReservationModal(reservationId);
     }
+
+    @Override
+    public int cancelReservation(Long reservationId, String empId) {
+        return reservationDAO.cancelReservation(reservationId, empId);
+    }
+
+
 }

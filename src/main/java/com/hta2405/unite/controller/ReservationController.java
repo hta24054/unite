@@ -6,6 +6,8 @@ import com.hta2405.unite.service.ReservationService;
 import com.hta2405.unite.service.ResourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,43 +82,52 @@ public class ReservationController {
 
     @ResponseBody
     @GetMapping("/getReservationList")
-    public List<ReservationDTO> getReservationByResourceIdAndName(@RequestParam(required = false) Long resourceId, @RequestParam(required = false) String resourceName) {
+    public List<ReservationDTO> getReservationByResourceIdAndName(@RequestParam(required = false) Long resourceId,
+                                                                  @RequestParam(required = false) String resourceName,
+                                                                  @AuthenticationPrincipal UserDetails user
+    ) {
+        List<ReservationDTO> reservations;
+        String empId = user.getUsername();
+
+
         if (resourceId != null && resourceName != null) {
             // 선택된 자원 예약 목록 불러오기
-            return reservationService.getReservationByResourceIdAndName(resourceId, resourceName);
+            reservations = reservationService.getReservationByResourceIdAndName(resourceId, resourceName, empId);
         } else {
             // 자원 ID가 없으면 모든 예약 목록 불러오기
-            return reservationService.getAllReservation();
+            reservations = reservationService.getAllReservation();
         }
+
+        // 예약 목록을 순회하면서 로그인한 사용자의 예약 여부를 설정
+        for (ReservationDTO reservation : reservations) {
+            // 예약을 추가한 사용자가 로그인한 사용자와 동일하면 isMyReservation을 true로 설정
+            if (reservation.getEmpId().equals(empId)) {
+                reservation.setIsMyReservation(true);  // 본인 예약
+            } else {
+                reservation.setIsMyReservation(false);
+            }
+        }
+
+        return reservations;
     }
 
     @ResponseBody
     @GetMapping("/getReservationModal")
-    public int getReservationModal(Long reservationId){
-        System.out.println("reservationService.getReservationModal(reservationId)" + reservationService.getReservationModal(reservationId));
-        return reservationService.getReservationModal(reservationId);
+    public ReservationDTO getReservationModal(@RequestParam Long reservationId) {
+        // 서비스 메서드 호출
+        ReservationDTO reservation = reservationService.getReservationModal(reservationId);
+
+        // 반환된 reservationDTO 객체 반환
+        return reservation;
     }
 
-//    @ResponseBody
-//    @GetMapping("/getReservationModal")
-//    public ReservationDTO getReservationModal(@RequestParam("reservationId") Long reservationId) {
-//        // 예약 정보를 가져오는 서비스 호출
-//        ReservationDTO reservationDTO = reservationService.getReservationById(reservationId);
-//
-//        // reservationDTO 데이터
-//        if (reservationDTO != null) {
-//            // 예약자 이름을 추가
-//            String empName = reservationService.getEmpNameById(reservationDTO.getEmpId());
-//            reservationDTO.setEmpName(empName);
-//
-//            // 자원 정보 추가
-//            Resource resource = reservationService.getResourceById(reservationDTO.getResourceId());
-//            reservationDTO.setResourceInfo(resource.getResourceInfo());
-//        }
-//
-//        return reservationDTO;
-//    }
-
+    @ResponseBody
+    @PostMapping("/cancelReservation")
+    public int cancelReservation(@RequestParam Long reservationId, @AuthenticationPrincipal UserDetails user) {
+        String empId = user.getUsername();
+        int result = reservationService.cancelReservation(reservationId, empId);
+        return result;
+    }
 
 
 }

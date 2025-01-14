@@ -8,7 +8,10 @@
     </select>
 
     <insert id="insertEmp" parameterType="Emp">
-        INSERT INTO emp
+        INSERT INTO emp(emp_id, password, ename, role, dept_id, job_id, gender, email, tel, mobile,
+                        mobile2, img_path, img_original, img_uuid, img_type, hiredate, hiretype,
+                        birthday, birthday_type, school, major, bank, account, address, married,
+                        child, etype, vacation_count, hired)
         VALUES (#{empId},
                 #{password},
                 #{ename},
@@ -37,7 +40,7 @@
                 #{child},
                 #{etype},
                 #{vacationCount},
-                #{hired})
+                1)
     </insert>
     <update id="updateEmp" parameterType="Emp">
         update emp
@@ -82,7 +85,7 @@
         WHERE IMG_UUID = #{fileUUID}
     </select>
     <select id="getHiredEmpListByDeptId">
-        SELECT emp_id, ename, tel, job_name, dept_name
+        SELECT e.emp_id, e.ename, d.dept_name, j.job_name, e.email, e.tel, e.mobile
         FROM emp e
                  left join job j on e.job_id = j.job_id
                  left join dept d on e.dept_id = d.dept_id
@@ -92,7 +95,7 @@
         order by e.job_id, e.emp_id
     </select>
     <select id="getHiredEmpListByName">
-        SELECT emp_id, ename, tel, job_name, dept_name
+        SELECT e.emp_id, e.ename, d.dept_name, j.job_name, e.email, e.tel, e.mobile
         FROM emp e
                  left join job j on e.job_id = j.job_id
                  left join dept d on e.dept_id = d.dept_id
@@ -101,7 +104,7 @@
           and e.hired = 1
         order by e.job_id, e.emp_id
     </select>
-    <select id="getEmpListDTO">
+    <select id="getHiredEmpListDTO">
         select e.emp_id, e.ename, d.dept_name, j.job_name, e.email, e.tel, e.mobile
         from emp e left join dept d on e.dept_id = d.dept_id
         left join job j on e.job_id = j.job_id
@@ -109,7 +112,7 @@
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item.deptId}
         </foreach>
-        and e.hired = 1 and emp_id != 'admin'
+        and e.hired = 1 and e.role != 'ROLE_ADMIN'
         order by e.job_id, e.emp_id
     </select>
 
@@ -117,5 +120,9 @@
         SELECT emp_id, ename
         FROM emp
     </select>
+    <update id="changePassword">
+        update emp set password = #{encodedPassword}
+        where emp_id = #{empId}
+    </update>
 </mapper>
 

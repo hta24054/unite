@@ -10,7 +10,9 @@ import lombok.ToString;
 public class EmpTreeDTO {
     private String empId;
     private String ename;
-    private String tel;
     private String jobName;
+    private String mobile;
+    private String tel;
+    private String email;
     private String deptName;
 }

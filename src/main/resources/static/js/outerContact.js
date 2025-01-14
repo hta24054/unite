@@ -18,12 +18,11 @@ $(document).ready(function () {
     };
 
     // DataTable 초기화
-    const resourceTable = $('#resourceTable').DataTable({
+    const contactTable = $('#contactTable').DataTable({
         language: lang_kor,
         ajax: {
-            url: contextPath + "/admin/resource/list",
+            url: contextPath + "/contact/outer/list",
             dataSrc: 'data',
-
         },
         columns: [
             {
@@ -31,32 +30,30 @@ $(document).ready(function () {
                 orderable: false,
                 render: function (data, type, row) {
                     return `
-                        <input type="checkbox" width="30px" id="checkbox-${row.resourceId}" class="checkbox" name="resourceId" value="${row.resourceId}">
+                        <input type="checkbox" width="30px" id="checkbox-${row.id}" class="checkbox" name="id" value="${row.id}">
                     `;
                 }
             },
-            {data: 'resourceType'},
-            {data: 'resourceName'},
-            {data: 'resourceInfo'},
-            {
-                data: 'resourceUsable',
-                render: function (data) {
-                    return data ? '가능' : '불가';
-                }
-            }
+            {data: 'name'},
+            {data: 'position'},
+            {data: 'company'},
+            {data: 'mobile'},
+            {data: 'tel'},
+            {data: 'email'},
+            {data: 'info'}
         ]
     });
 
     // 등록 처리
-    $("#insertResource").submit(function (event) {
+    $("#insertContact").submit(function (event) {
         event.preventDefault();
         $.post({
-            url: contextPath + "/admin/resource",
+            url: contextPath + "/contact/outer",
             data: $(this).serialize(),
             success: function () {
                 alert("등록 성공");
-                $('#addResourceModal').modal('hide');
-                resourceTable.ajax.reload();
+                $('#addContactModal').modal('hide');
+                contactTable.ajax.reload();
             },
             error: function () {
                 alert("등록 실패");
@@ -65,16 +62,16 @@ $(document).ready(function () {
     });
 
     // 수정 처리
-    $("#updateResource").submit(function (event) {
+    $("#updateContact").submit(function (event) {
         event.preventDefault();
         $.ajax({
-            url: contextPath + "/admin/resource",
+            url: contextPath + "/contact/outer",
             type: "PATCH",
             data: $(this).serialize(),
             success: function () {
                 alert("수정 성공");
-                $('#editResourceModal').modal('hide');
-                resourceTable.ajax.reload();
+                $('#editContactModal').modal('hide');
+                contactTable.ajax.reload();
             },
             error: function () {
                 alert("수정 실패");
@@ -94,14 +91,14 @@ $(document).ready(function () {
         }
 
         if (confirm("선택한 자원을 삭제하시겠습니까?")) {
-            $('#deleteResourceIds').val(selectedIds.join(','));
+            $('#deleteContactIds').val(selectedIds.join(','));
             $.ajax({
-                url: "../admin/resource",
+                url: contextPath + "/contact/outer",
                 type: "DELETE",
                 data: {selectedIds},
                 success: function (data) {
                     alert(data);
-                    resourceTable.ajax.reload();
+                    contactTable.ajax.reload();
                 },
                 error: function () {
                     alert("삭제에 실패했습니다.");
@@ -110,47 +107,50 @@ $(document).ready(function () {
         }
     });
 
-    $('#editResourceModal').attr('aria-hidden', 'true');
+    $('#editContactModal').attr('aria-hidden', 'true');
     document.querySelectorAll('button, input, select, textarea').forEach(element => {
         element.blur();
     });
-    $('#addResourceModal').attr('aria-hidden', 'true');
+    $('#addContactModal').attr('aria-hidden', 'true');
     document.querySelectorAll('button, input, select, textarea').forEach(element => {
         element.blur();
     });
-    $('#editClose').click(function () {
-        console.log("눌렸다")
-    })
 });
 
 // 수정 모달 열기
 function openEditModal() {
-    const selectedCheckbox = $('.checkbox:checked');
+    const selectedCheckbox = $('#contactTable .checkbox:checked');
 
     if (selectedCheckbox.length !== 1) {
-        alert("수정할 자원을 하나 선택해주세요.");
+        alert("수정할 주소록을 하나 선택해주세요.");
         return;
     }
 
     // 선택한 자원의 ID를 가져옴
-    const resourceId = $('.checkbox:checked').val();
+    const contactId = selectedCheckbox.val();
 
     // 선택한 자원의 행(row) 가져오기
-    const $row = $('.checkbox:checked').closest("tr");
+    const $row = selectedCheckbox.closest("tr");
 
     // 행에서 각 정보 추출
-    const resourceType = $row.find("td:nth-child(2)").text().trim();
-    const resourceName = $row.find("td:nth-child(3)").text().trim();
-    const resourceInfo = $row.find("td:nth-child(4)").text().trim();
-    const resourceUsable = $row.find("td:nth-child(5)").text().trim() === '가능';
+    const contactName = $row.find("td:nth-child(2)").text().trim();
+    const contactPosition = $row.find("td:nth-child(3)").text().trim();
+    const contactCompany = $row.find("td:nth-child(4)").text().trim();
+    const contactMobile = $row.find("td:nth-child(5)").text().trim();
+    const contactTel = $row.find("td:nth-child(6)").text().trim();
+    const contactEmail = $row.find("td:nth-child(7)").text().trim();
+    const contactInfo = $row.find("td:nth-child(8)").text().trim();
 
     // 수정 모달에 데이터를 설정
-    $('#editResourceId').val(resourceId);
-    $('#editResourceType').val(resourceType);
-    $('#editResourceName').val(resourceName);
-    $('#editResourceInfo').val(resourceInfo);
-    $('#editResourceUsable').val(resourceUsable ? 'true' : 'false');
+    $('#editContactId').val(contactId);
+    $('#editPosition').val(contactPosition);
+    $('#editName').val(contactName);
+    $('#editCompany').val(contactCompany);
+    $('#editMobile').val(contactMobile);
+    $('#editTel').val(contactTel);
+    $('#editEmail').val(contactEmail);
+    $('#editInfo').val(contactInfo);
 
     // 모달 표시
-    $('#editResourceModal').modal('show');
+    $('#editContactModal').modal('show');
 }

@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    const contextPath = /*[[@{}]]*/ '';
     // 검색 버튼 클릭 이벤트
     $('#searchButton').on('click', function (event) {
         event.preventDefault(); // 폼 제출 막기
@@ -98,11 +99,19 @@ $(document).ready(function () {
             return;
         }
         $.each(data, function (index, emp) {
+            const profileImageUrl = contextPath + "/emp/profile-image?empId=" + emp.empId;
+            //                         <th>이름</th>
+            //                         <th>직급</th>
+            //                         <th>휴대전화</th>
+            //                         <th>내선번호</th>
+            //                         <th>이메일</th>
             let html = "<tr>";
             html += "<td style='display: none;'>" + emp.empId + "</td>"; // 숨긴 empId 열
-            html += "<td>" + emp.ename + "</td>";
-            html += "<td>" + emp.tel + "</td>";
+            html += "<td> <img src='" + profileImageUrl + "' width='30px'>&nbsp;&nbsp;" + emp.ename + "</td>";
             html += "<td>" + emp.jobName + "</td>"; // emp 객체의 jobName 사용
+            html += "<td>" + emp.mobile + "</td>";
+            html += "<td>" + emp.tel + "</td>";
+            html += "<td>" + emp.email + "</td>";
             html += "</tr>";
             tableBody.append(html);
         });

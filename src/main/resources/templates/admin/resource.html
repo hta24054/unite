@@ -13,21 +13,17 @@
         <body>
         <main>
             <div class="container-fluid px-4">
-                <h1 class="mt-4" style="color: #334466; font-weight: bold">자원 관리</h1>
-                <ol class="breadcrumb mb-4">
-                    <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Tables</li>
-                </ol>
+                <h1 class="mt-4 mb-4" style="color: #334466; font-weight: bold">자원 관리</h1>
                 <div class="card mb-4">
-                    <div class="card-header">
-                        <i class="fas fa-table me-1"></i>
-                        자원 목록
-                        <button type="button" class="btn btn-success btn-sm mr-2" data-bs-toggle="modal"
-                                data-bs-target="#addResourceModal">등록
-                        </button>
-                        <button type="button" class="btn btn-secondary btn-sm mr-2" onclick="openEditModal()">수정
-                        </button>
-                        <button type="button" class="btn btn-danger btn-sm" id="deleteButton">삭제</button>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-success btn-sm me-2" data-bs-toggle="modal" data-bs-target="#addResourceModal">등록</button>
+                            <button type="button" class="btn btn-secondary btn-sm me-2" onclick="openEditModal()">수정</button>
+                            <button type="button" class="btn btn-danger btn-sm" id="deleteButton">삭제</button>
+                        </div>
                     </div>
                     <div class="card-body">
                         <table id="resourceTable" class="display">
@@ -53,33 +49,36 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="addResourceModalLabel">자원 등록</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form id="insertResource">
-                            <div class="form-group">
-                                <label for="resourceType">분류명</label>
-                                <input type="text" class="form-control" id="resourceType" name="resourceType" required>
+                            <div class="form-group mb-3">
+                                <label for="resourceType" class="form-label">분류명</label>
+                                <input type="text" class="form-control" id="resourceType" name="resourceType"
+                                       placeholder="분류명을 입력하세요" required>
                             </div>
-                            <div class="form-group">
-                                <label for="resourceName">자원명</label>
-                                <input type="text" class="form-control" id="resourceName" name="resourceName" required>
+                            <div class="form-group mb-3">
+                                <label for="resourceName" class="form-label">자원명</label>
+                                <input type="text" class="form-control" id="resourceName" name="resourceName"
+                                       placeholder="자원명을 입력하세요" required>
                             </div>
-                            <div class="form-group">
-                                <label for="resourceInfo">자원정보</label>
-                                <textarea class="form-control" id="resourceInfo" name="resourceInfo"
-                                          rows="3"></textarea>
+                            <div class="form-group mb-3">
+                                <label for="resourceInfo" class="form-label">자원정보</label>
+                                <textarea class="form-control" id="resourceInfo" name="resourceInfo" rows="3"
+                                          placeholder="자원정보를 입력하세요"></textarea>
                             </div>
-                            <div class="form-group">
-                                <label for="resourceUsable">가용상태</label>
+                            <div class="form-group mb-3">
+                                <label for="resourceUsable" class="form-label">가용상태</label>
                                 <select class="form-control" id="resourceUsable" name="resourceUsable" required>
                                     <option value="true">가능</option>
                                     <option value="false">불가</option>
                                 </select>
                             </div>
-                            <button type="submit" class="btn btn-primary">저장</button>
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">취소</button>
+                                <button type="submit" class="btn btn-primary">저장</button>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -93,36 +92,37 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="editResourceModalLabel">자원 수정</h5>
-                        <button type="button" id="editClose" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form id="updateResource">
                             <input type="hidden" id="editResourceId" name="resourceId">
-                            <div class="form-group">
-                                <label for="editResourceType">분류명</label>
+                            <div class="form-group mb-3">
+                                <label for="editResourceType" class="form-label">분류명</label>
                                 <input type="text" class="form-control" id="editResourceType" name="resourceType"
-                                       required>
+                                       placeholder="분류명을 입력하세요" required>
                             </div>
-                            <div class="form-group">
-                                <label for="editResourceName">자원명</label>
+                            <div class="form-group mb-3">
+                                <label for="editResourceName" class="form-label">자원명</label>
                                 <input type="text" class="form-control" id="editResourceName" name="resourceName"
-                                       required>
+                                       placeholder="자원명을 입력하세요" required>
                             </div>
-                            <div class="form-group">
-                                <label for="editResourceInfo">자원정보</label>
-                                <textarea class="form-control" id="editResourceInfo" name="resourceInfo"
-                                          rows="3"></textarea>
+                            <div class="form-group mb-3">
+                                <label for="editResourceInfo" class="form-label">자원정보</label>
+                                <textarea class="form-control" id="editResourceInfo" name="resourceInfo" rows="3"
+                                          placeholder="자원정보를 입력하세요"></textarea>
                             </div>
-                            <div class="form-group">
-                                <label for="editResourceUsable">가용상태</label>
+                            <div class="form-group mb-3">
+                                <label for="editResourceUsable" class="form-label">가용상태</label>
                                 <select class="form-control" id="editResourceUsable" name="resourceUsable" required>
                                     <option value="true">가능</option>
                                     <option value="false">불가</option>
                                 </select>
                             </div>
-                            <button type="submit" class="btn btn-primary">저장</button>
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">취소</button>
+                                <button type="submit" class="btn btn-primary">저장</button>
+                            </div>
                         </form>
                     </div>
                 </div>

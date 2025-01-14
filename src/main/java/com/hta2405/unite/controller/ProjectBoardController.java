@@ -1,8 +1,6 @@
 package com.hta2405.unite.controller;
 
-import com.google.gson.*;
 import com.hta2405.unite.domain.Emp;
-import com.hta2405.unite.domain.Project;
 import com.hta2405.unite.domain.ProjectComment;
 import com.hta2405.unite.dto.ProjectTaskDTO;
 import com.hta2405.unite.service.EmpService;
@@ -16,12 +14,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

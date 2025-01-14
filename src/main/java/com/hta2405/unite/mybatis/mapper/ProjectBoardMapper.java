@@ -1,6 +1,5 @@
 package com.hta2405.unite.mybatis.mapper;
 
-import com.google.gson.JsonArray;
 import com.hta2405.unite.domain.ProjectComment;
 import com.hta2405.unite.domain.ProjectTask;
 import com.hta2405.unite.dto.FileDTO;

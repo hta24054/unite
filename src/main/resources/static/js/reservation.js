@@ -118,26 +118,31 @@ $(document).ready(function () {
             data: {
                 resourceId: resourceId,   // 자원 ID
                 resourceName: resourceName, // 자원 이름
+                empId: $("#emp_id").val(), // 로그인한 사용자의 empId
             },
             success: function (data) {
+                console.log(data);
+
                 events = [];
                 if (data != null && data.length > 0) {
                     for (let i = 0; i < data.length; i++) {
                         // 본인 예약 여부 확인
-                        let isMyReservation = data[i].isMyReservation;
+                        let isReservation = data[i].isMyReservation;
 
-                        // 예약 색상 설정: 본인 예약은 'green', 다른 예약은 'blue'
-                        let reservationColor = isMyReservation ? 'green' : 'blue';
+                        // 예약 색상 : 본인 예약은 '#29aeff', 다른 예약은 '#0e4377'
+                        let reservationColor = isReservation ? '#29aeff' : '#0e4377';
 
                         events.push({
                             id: data[i].reservationId,
                             allDay: data[i].reservationAllDay,
                             start: data[i].reservationStart,
                             end: data[i].reservationEnd,
+                            backgroundColor: reservationColor, // 색상 적용
                             extendedProps: {
                                 reservationInfo: data[i].reservationInfo,
                                 resourceId: data[i].resourceId,
-                                empId: data[i].empId
+                                empId: data[i].empId,
+                                isMyReservation: isReservation
                             }
                         });
                     }
@@ -203,30 +208,12 @@ $(document).ready(function () {
                 empId: $("#emp_id").val(),
             },
             success: function (data) {
-                console.log(data);
-
-                events = [];
-                if (data != null && data.length > 0) {
-                    for (let i = 0; i < data.length; i++) {
-                        events.push({
-                            id: data[i].reservation_id,
-                            allDay: data[i].reservationAllDay,
-                            start: data[i].reservationStart,
-                            end: data[i].reservationEnd,
-                            reservationInfo: data[i].reservationInfo,
-                            resourceType: data[i].resourceType,
-                            resourceName: data[i].resourceName,
-                            empName: data[i].empName
-                        });
-                    }
-                }
-
                 if (data) {
                     $("#reservationDetailModal").find(".modal-header").find("h5").text("예약 정보");
 
                     let _html = "<ul class='deatail_list'>" +
-                        "<li>분류명: " + (event.resourceType) + "</li>" +
-                        "<li>자원명: " + (event.resourceName) + "</li>" +
+                        "<li>분류명: " + data.resourceType + "</li>" +
+                        "<li>자원명: " + data.resourceName + "</li>" +
                         "<li>시작시간: " + moment(event.start).format("YYYY-MM-DD HH:mm") + "</li>";
 
                     // 종료시간 설정 (시작시간과 동일한 경우)
@@ -234,13 +221,12 @@ $(document).ready(function () {
                         moment(event.end && !moment(event.start).isSame(event.end) ? event.end : event.start).format("YYYY-MM-DD HH:mm") +
                         "</li>";
 
-                    _html += "<li>예약자: " + (event.empName) + "</li>" +
-                        "<li>사용용도: " + (event.reservationInfo || "") + "</li>";
-
+                    _html += "<li>예약자: " + data.ename + "</li>" +
+                        "<li>사용용도: " + data.reservationInfo || "" + "</li>";
 
                     // 자원정보 존재할 경우
-                    if (event.resourceInfo) {
-                        _html += "<li>자원정보: " + event.resourceInfo + "</li>";
+                    if (data.resourceInfo) {
+                        _html += "<li>자원정보: " + data.resourceInfo + "</li>";
                     }
 
                     _html += "</ul>" +
@@ -282,7 +268,7 @@ $(document).ready(function () {
                 type: "post",
                 dataType: "json",
                 data: {
-                    reservation_id: event.id,  // 예약 ID
+                    reservationId: event.id,  // 예약 ID
                     emp_id: $("#emp_id").val(), //예약자 emp_id
                 },
                 success: function (data) {
@@ -339,6 +325,8 @@ $(document).ready(function () {
         $("form").each(function () {
             this.reset();
         });
+
+        $("#charCount").text("0/100");
     });
 
     $("#reservationModal").on("hidden.bs.modal", function () {
@@ -487,6 +475,7 @@ $(document).ready(function () {
                     $resourceType.val("");
                     $resourceName.hide().empty().append('<option value="">자원명</option>');
                     $("#reservationInfo").val("");
+                    $("#charCount").text("0/100");
 
                     $("#reservationModal").modal("show");
 

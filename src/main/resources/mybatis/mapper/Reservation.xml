@@ -45,7 +45,7 @@
     </insert>
 
     <select id="getReservationByResourceIdAndName" resultType="com.hta2405.unite.dto.ReservationDTO">
-        SELECT r.*, s.resc_name
+        SELECT r.*, s.resc_name, r.emp_id
         FROM reservation r
                  JOIN resc s ON r.resource_id = s.resc_id
         WHERE r.resource_id = #{resourceId}
@@ -58,24 +58,36 @@
         FROM reservation
     </select>
 
-    <select id="getReservationModal">
+    <!-- 자원예약 상세정보 팝업-->
+    <select id="getReservationModal" resultType="com.hta2405.unite.dto.ReservationDTO">
         SELECT
-            resc.resc_id,
-            resc.resc_type,
-            resc.resc_name,
-            resc.resc_info,
-            resc.resc_usable,
+            -- 자원 정보
+            resc.resc_type AS resourceType,
+            resc.resc_name AS resourceName,
+            resc.resc_info AS resourceInfo,
+            resc.resc_usable AS resourceUsable,
+
+            -- 예약 정보
             reservation.reservation_id,
+            reservation.resource_id,
             reservation.emp_id,
             reservation.reservation_start,
             reservation.reservation_end,
             reservation.reservation_info,
             reservation.reservation_allDay,
-            emp.ename  -- emp 테이블에서 ename 컬럼을 가져옵니다.
+
+            -- 예약자 정보
+            emp.ename
         FROM reservation
-                 LEFT JOIN resc resc ON reservation.resource_id = resc.resc_id
-                 LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id  -- emp 테이블과 JOIN
+             LEFT JOIN resc resc ON reservation.resource_id = resc.resc_id
+             LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id
         WHERE reservation.reservation_id = #{reservationId}
     </select>
+
+    <delete id="cancelReservation">
+        DELETE
+        FROM reservation
+        WHERE reservation_id = #{reservationId} AND emp_id = #{empId}
+    </delete>
 
 </mapper>

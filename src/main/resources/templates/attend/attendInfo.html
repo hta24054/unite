@@ -3,7 +3,7 @@
         <!DOCTYPE html>
         <html xmlns:th="http://www.thymeleaf.org" lang="en">
         <head>
-            <title>근태 관리</title>
+            <title>근태 현황</title>
             <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css" rel="stylesheet"
                   type="text/css">
             <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js" type="text/javascript"></script>
@@ -18,7 +18,7 @@
         <main>
             <div class="container-fluid px-4">
                 <h1 class="mt-4" style="color: #334466; font-weight: bold"
-                    th:text="'근태 관리('+${attendInfoDTO.targetEmpName}+')'"></h1>
+                    th:text="'근태 현황('+${attendInfoDTO.targetEmpName}+')'"></h1>
                 <div class="text-center my-4">
                     <button id="prevMonth" class="btn btn-outline-dark">&lt;</button>
                     <span id="currentYearMonth" style="font-weight: bold; font-size: 25px">&nbsp;&nbsp;[[${param.year}]]년 [[${param.month}]]월&nbsp;&nbsp;</span>

@@ -38,7 +38,7 @@ $(document).ready(function () {
                 const empLine = `
 	                <div class="emp-line" data-name="${empName}" style="display: flex; align-items: center; margin-bottom: 5px;">
 	                    <span style="flex-grow: 1;">${empName}</span>
-	                    <img src="${contextPath}/image/delete.png" class="remove-icon" 
+	                    <img src="/image/delete.png" class="remove-icon" 
 	                         style="cursor: pointer; width: 16px; height: 16px;" alt="삭제">
 	                </div>
 	            `;
@@ -50,7 +50,34 @@ $(document).ready(function () {
         }
     }
 
+    $('.orgChartIcon').on('click', function (event) {
+        event.preventDefault();
 
+        const targetId = $(this).data('target');  // 클릭된 아이콘의 data-target 값을 가져옵니다.
+        const targetText = getTargetText(targetId);  // 타겟에 맞는 텍스트 가져오기
+
+        localStorage.setItem('selectedInputId', targetId);
+        resetModal(targetId); // 모달 상태 초기화
+
+        // 모달 제목을 업데이트합니다.
+        $('#orgChartModalLabel').text(targetText + ' 조직도');
+
+        // 모달을 보여줍니다.
+        $('#orgChartModal').modal('show');
+    });
+
+    function getTargetText(targetId) {
+        switch(targetId) {
+            case 'managerId':
+                return '책임자';
+            case 'participants':
+                return '참여자';
+            case 'viewers':
+                return '열람자';
+            default:
+                return '조직도';
+        }
+    }
     // 조직도 아이콘 클릭 이벤트 처리 (책임자, 참여자, 열람자)
     $('.orgChartIcon').on('click', function (event) {
         event.preventDefault();
@@ -116,8 +143,8 @@ $(document).ready(function () {
                 const empLine = `
                     <div class="emp-line" data-name="${empName}" data-emp-id="${empId}" style="display: flex; align-items: center; margin-bottom: 5px;">
                         <span style="flex-grow: 1;">${empName}</span>
-                        <input type="text" id="empid" name="empid" value="${empId}">
-                        <img src="${contextPath}/image/delete.png" class="remove-icon" 
+                        <input type="hidden" id="empid" name="empid" value="${empId}">
+                        <img src="/image/delete.png" class="remove-icon" 
                              style="cursor: pointer; width: 16px; height: 16px;" alt="삭제">
                     </div>
                 `;
@@ -183,7 +210,7 @@ $(document).ready(function () {
             $('#orgChartModal').modal('hide');
         }
 
-        if (targetInputId === 'manager_id') {
+        if (targetInputId === 'managerId') {
             const empNamesArray = selectedEmpNames.filter(name => name.trim() !== '');
             if (empNamesArray.length > 1) {
                 alert('책임자는 한 명만 지정할 수 있습니다.');

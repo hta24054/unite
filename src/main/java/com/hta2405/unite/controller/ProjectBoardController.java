@@ -1,5 +1,6 @@
 package com.hta2405.unite.controller;
 
+import com.google.gson.*;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.dto.ProjectTaskDTO;
 import com.hta2405.unite.service.EmpService;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,5 +145,41 @@ public class ProjectBoardController {
         log.info("taskId={}", taskId);
         int result = projectBoardService.commentAdd(userid, projectId, taskId, content, parentCommentId);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/commentlist")
+    public ResponseEntity<JsonObject> getComments(
+            @AuthenticationPrincipal UserDetails user, int projectId, int taskNum,
+            @RequestParam("comment_board_num") int commentBoardNum, int state) {
+        String userid = user.getUsername();
+        log.info("userid: " + userid);
+        log.info("projectid: " + projectId);
+        log.info("taskNum: " + taskNum);
+        log.info("comment_board_num: " + commentBoardNum);
+        log.info("state: " + state);
+
+        // 댓글 목록의 개수 가져오기
+//        int listCount = projectBoardService.getListCount(commentBoardNum);
+//        log.info("listcount: " + listCount);
+
+        // 댓글 목록 가져오기
+//        JsonArray commentList = projectBoardService.getCommentList(commentBoardNum, state);
+
+        // JSON 응답 객체 준비
+        JsonObject responseObject = new JsonObject();
+//        responseObject.addProperty("listcount", listCount);
+//        responseObject.add("commentlist", new Gson().toJsonTree(commentList));
+        responseObject.addProperty("id", userid);
+
+        // 직원 정보 가져오기
+//        Gson gson = new GsonBuilder()
+//                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+//                .create();
+//        JsonElement empUuidMap = gson.toJsonTree(empService.getIdToENameUUIDMap());
+//        responseObject.add("emp", empUuidMap);
+//
+//        System.out.println("emp: " + empUuidMap);
+
+        return ResponseEntity.ok(responseObject);
     }
 }

@@ -58,26 +58,7 @@
         FROM reservation
     </select>
 
-<!--    <select id="getReservationModal" resultType="com.hta2405.unite.dto.ReservationDTO">-->
-<!--        SELECT-->
-<!--            resc.resc_id,-->
-<!--            resc.resc_type,-->
-<!--            resc.resc_name,-->
-<!--            resc.resc_info,-->
-<!--            resc.resc_usable,-->
-<!--            reservation.reservation_id,-->
-<!--            reservation.emp_id,-->
-<!--            reservation.reservation_start,-->
-<!--            reservation.reservation_end,-->
-<!--            reservation.reservation_info,-->
-<!--            reservation.reservation_allDay,-->
-<!--            emp.ename-->
-<!--        FROM reservation-->
-<!--                 LEFT JOIN resc resc ON reservation.resource_id = resc.resc_id-->
-<!--                 LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id-->
-<!--        WHERE reservation.reservation_id = #{reservationId}-->
-<!--    </select>-->
-
+    <!-- 자원예약 상세정보 팝업-->
     <select id="getReservationModal" resultType="com.hta2405.unite.dto.ReservationDTO">
         SELECT
             -- 자원 정보
@@ -102,25 +83,6 @@
              LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id
         WHERE reservation.reservation_id = #{reservationId}
     </select>
-
-<!--    <select id="getReservationModal" resultType="com.hta2405.unite.dto.ReservationDTO">-->
-<!--        SELECT-->
-<!--            (SELECT resc.resc_type FROM resc resc WHERE resc.resc_id = reservation.resource_id) AS resourceType,-->
-<!--            (SELECT resc.resc_name FROM resc resc WHERE resc.resc_id = reservation.resource_id) AS resourceName,-->
-<!--            (SELECT resc.resc_info FROM resc resc WHERE resc.resc_id = reservation.resource_id) AS resourceInfo,-->
-<!--            (SELECT resc.resc_usable FROM resc resc WHERE resc.resc_id = reservation.resource_id) AS resourceUsable,-->
-
-<!--            reservation.reservation_id,-->
-<!--            reservation.emp_id,-->
-<!--            reservation.reservation_start,-->
-<!--            reservation.reservation_end,-->
-<!--            reservation.reservation_info,-->
-<!--            reservation.reservation_allDay,-->
-
-<!--            (SELECT emp.ename FROM emp emp WHERE emp.emp_id = reservation.emp_id) AS empName-->
-<!--        FROM reservation-->
-<!--        WHERE reservation.reservation_id = #{reservationId}-->
-<!--    </select>-->
 
 
 </mapper>

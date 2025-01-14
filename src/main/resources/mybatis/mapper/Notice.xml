@@ -10,7 +10,7 @@
     <select id="getAliveNotice" resultType="Notice">
         SELECT *
         FROM notice
-        where NOTICE_END_DATE >= sysdate - 1
+        where NOTICE_END_DATE >= now()
         ORDER BY NOTICE_ID desc
     </select>
     <insert id="insertNotice" parameterType="Notice">

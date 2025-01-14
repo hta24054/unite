@@ -8,6 +8,7 @@ import com.hta2405.unite.dto.*;
 import com.hta2405.unite.mybatis.mapper.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -118,11 +119,11 @@ public class EmpService {
         }
     }
 
-    public List<EmpTreeDTO> getEmpListByDeptId(Long deptId) {
+    public List<EmpListDTO> getEmpListByDeptId(Long deptId) {
         return empMapper.getHiredEmpListByDeptId(deptId);
     }
 
-    public List<EmpTreeDTO> getEmpListByName(String ename) {
+    public List<EmpListDTO> getEmpListByName(String ename) {
         return empMapper.getHiredEmpListByName(ename);
     }
 
@@ -135,7 +136,7 @@ public class EmpService {
     }
 
     public List<EmpListDTO> getEmpListDTO(List<Dept> list) {
-        return empMapper.getEmpListDTO(list);
+        return empMapper.getHiredEmpListDTO(list);
     }
 
     /**
@@ -170,5 +171,20 @@ public class EmpService {
 
     public boolean isHrDeptEmp(Emp emp) {
         return emp.getDeptId() == HR_DEPT_ID;
+    }
+
+    public String changePassword(String empId, String currentPassword, String newPassword) {
+        String savedPassword = empMapper.getEmpById(empId).getPassword();
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        String message;
+        if (!encoder.matches(currentPassword, savedPassword)) {
+            message = "현재 비밀번호가 다릅니다.";
+        } else if (empMapper.changePassword(empId, encoder.encode(newPassword))!=1) {
+            message = "비밀번호 변경 실패";
+        } else {
+            message = "비밀번호 변경이 완료되었습니다.";
+        }
+        return message;
     }
 }

@@ -29,4 +29,8 @@ public class NoticeService {
     public int deleteNotice(Long noticeId) {
         return noticeMapper.deleteNoticeById(noticeId);
     }
+
+    public List<Notice> getAliveNotice() {
+        return noticeMapper.getAliveNotice();
+    }
 }

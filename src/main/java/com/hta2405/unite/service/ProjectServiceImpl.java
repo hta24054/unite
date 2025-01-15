@@ -2,14 +2,13 @@ package com.hta2405.unite.service;
 
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Project;
-import com.hta2405.unite.dto.ProjectDetailDTO;
-import com.hta2405.unite.dto.ProjectRoleDTO;
-import com.hta2405.unite.dto.ProjectTaskDTO;
-import com.hta2405.unite.dto.ProjectTodoDTO;
+import com.hta2405.unite.dto.*;
 import com.hta2405.unite.mybatis.mapper.ProjectMapper;
+import com.hta2405.unite.util.ConfigUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,12 +16,16 @@ import java.util.Map;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
+    private static final String FILE_DIR = ConfigUtil.getProperty("project.upload.directory");
     private final ProjectMapper dao;
     private final NotificationService notificationService;
+    private final FileService fileService;
+
     @Autowired
-    public ProjectServiceImpl(ProjectMapper dao, NotificationService notificationService) {
+    public ProjectServiceImpl(ProjectMapper dao, NotificationService notificationService, FileService fileService) {
         this.dao = dao;
         this.notificationService = notificationService;
+        this.fileService = fileService;
     }
 
     public List<Project> getmainList(String userid) {
@@ -79,27 +82,28 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public boolean updateProjectStatus(int projectId, String status) {
+    public boolean updateProjectStatus(int projectId, String status, MultipartFile file) {
+        FileDTO taskFile = null;
+        if (file != null && !file.isEmpty()) {
+            taskFile = fileService.uploadFile(file, FILE_DIR);
+        }
+        // 상태에 따라 업데이트 수행
         if ("completed".equals(status)) {
-            return dao.projectStatus(projectId, 1, 0);
+            return dao.projectStatus(projectId, taskFile, 1, 0);
         } else if ("canceled".equals(status)) {
-            return dao.projectStatus(projectId, 0, 1);
+            return dao.projectStatus(projectId, taskFile, 0, 1);
         }
         return false;
     }
+
 
     public List<Project> getDoneList(String userid, int dowhat) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("userid", userid);
         if(dowhat == 1) map.put("dowhat", "project_canceled");
-        else if(dowhat == 2) map.put("dowhat", "project_completed");
+        else if(dowhat == 2) map.put("dowhat", "project_finished");
         return dao.getDoneList(map);
     }
-//    public List<Project> getCompleteList(String userid) {
-//        HashMap<String, Object> map = new HashMap<>();
-//        map.put("userid", userid);
-//        return dao.getDoneList(map);
-//    }
 
     public String getProjectName(int projectId) {
         return dao.getProjectName(projectId);

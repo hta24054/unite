@@ -59,7 +59,8 @@
                                         FROM todo t
                                         WHERE member_id IN (select member_id from project_member m where m.project_id=p.project_id) and t.project_id=p.project_id
                                         GROUP BY member_id
-                                    ) AS member_averages) avgProgress
+                                    ) AS member_averages) avgProgress,
+                p.manager_id managerId
         from project_member m join project p on p.project_id = m.project_id
         where member_id=#{userid} and p.project_finished = 0 and p.project_canceled = 0
         group by p.project_id, m.member_role
@@ -87,19 +88,8 @@
         where project_id = #{projectId}
     </update>
 
-    <select id="doneCountList" resultType="int">
-        select count(*)
-        from project p
-                 join project_member m on p.project_id = m.project_id
-        where m.member_id = #{userid}
-          and project_finished = #{finish}
-          and project_canceled = #{cancel}
-        order by p.project_id
-    </select>
-
     <select id="getDoneList" resultType="Project">
-        SELECT *
-        FROM (SELECT p.project_id,
+        SELECT p.project_id,
                      p.project_name,
                      substring(p.project_start_date, 1, 10)                                                                     projectStartDate,
                      substring(p.project_end_date, 1, 10)                                                                       projectEndDate,
@@ -128,11 +118,10 @@
               WHERE p.project_id IN (SELECT project_id
                                      FROM project_member
                                      WHERE member_id = #{userid})
-                AND p.project_canceled = 1 -- 완료된 프로젝트만
+                AND p.${dowhat} = 1
               GROUP BY p.project_id, p.project_name, p.project_start_date, p.project_end_date, p.project_file_original,
                        p.project_file_uuid, p.project_file_type
               ORDER BY p.project_id
-                  LIMIT #{start}, #{end}) AS t;
     </select>
 
     <select id="getProjectName" resultType="String">

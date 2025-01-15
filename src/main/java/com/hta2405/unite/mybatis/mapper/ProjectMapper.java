@@ -26,10 +26,9 @@ public interface ProjectMapper {
 
     void createTask(int projectId, String empId, String memberName);
 
-    int doneCountList(String userid, int finish, int cancel);
-
     List<Project> getMainList(String userid);
     List<Project> getDoneList(HashMap<String, Object> map);
+//    List<Project> getCompleteList(HashMap<String, Object> map);
 
     void projectFavorite(int projectId, String userid);
 

@@ -7,6 +7,7 @@ import com.hta2405.unite.dto.ProjectDetailDTO;
 import com.hta2405.unite.dto.ProjectRoleDTO;
 import com.hta2405.unite.dto.ProjectTaskDTO;
 import com.hta2405.unite.dto.ProjectTodoDTO;
+import com.hta2405.unite.service.EmpService;
 import com.hta2405.unite.service.ProjectService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -29,9 +30,11 @@ import java.util.Map;
 public class ProjectController {
     private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
     private final ProjectService projectService;
+    private final EmpService empService;
 
-    public ProjectController(ProjectService projectService) {
+    public ProjectController(ProjectService projectService, EmpService empService) {
         this.projectService = projectService;
+        this.empService = empService;
     }
 
     @GetMapping(value = "/main")
@@ -182,34 +185,24 @@ public class ProjectController {
     }
 
     @GetMapping("/cancel")
-    public String cancel() {
-        return "project/project_cancel";
-    }
-
-    @GetMapping("/cancelList")
     @ResponseBody
-    public Map<String, Object> cancel(@RequestParam(defaultValue = "1") int page, @AuthenticationPrincipal UserDetails user) {
-        String userid = user.getUsername();
-
-        int limit = 10; // 페이지 당 표시할 데이터 개수
-        int listcount = projectService.doneCountList(userid, 0, 1); // 총 프로젝트 개수 (favorite 파라미터를 넘겨서 처리)
-        List<Project> mainList = projectService.getDoneList(userid, page, limit); // 프로젝트 목록 가져오기
-
-        PaginationResult result = new PaginationResult(page, limit, listcount); // 페이지네이션 결과 계산
-        logger.info("mainList size = {}", mainList.size());
-        logger.info("startpage = {}", result.getStartpage());
-        logger.info("endpage = {}", result.getEndpage());
-        Map<String, Object> response = new HashMap<>();
-        response.put("page", page);
-        response.put("maxpage", result.getMaxpage());
-        response.put("startpage", result.getStartpage());
-        response.put("endpage", result.getEndpage());
-        response.put("listcount", listcount);
-        response.put("boardlist", mainList);
-        response.put("limit", limit);
-
-        return response;
+    public ModelAndView cancel(@AuthenticationPrincipal UserDetails user, ModelAndView mv, int dowhat) {
+        mv.setViewName("project/project_cancel");
+        mv.addObject("boardlist", projectService.getDoneList(user.getUsername(), dowhat));
+        mv.addObject("memberName", empService.getEmpById(user.getUsername()).getEname());
+        if (dowhat == 1) mv.addObject("message", "취소된 프로젝트들을 불러옵니다");
+        if (dowhat == 2) mv.addObject("message", "완료된 프로젝트들을 불러옵니다");
+        return mv;
     }
+//    @GetMapping("/complete")
+//    @ResponseBody
+//    public ModelAndView complete(@AuthenticationPrincipal UserDetails user, ModelAndView mv, int status) {
+//        mv.setViewName("project/project_complete");
+//        mv.addObject("boardlist", projectService.getCompleteList(user.getUsername()));
+//        mv.addObject("memberName", empService.getEmpById(user.getUsername()).getEname());
+//        mv.addObject("message", "취소된 프로젝트들을 불러옵니다");
+//        return mv;
+//    }
 
     @GetMapping("/complete")
     public String complete() {

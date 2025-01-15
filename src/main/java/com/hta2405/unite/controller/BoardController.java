@@ -5,9 +5,9 @@ import com.hta2405.unite.domain.PostFile;
 import com.hta2405.unite.dto.*;
 import com.hta2405.unite.service.BoardPostService;
 import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -256,9 +256,9 @@ public class BoardController {
 
     @ResponseBody
     @GetMapping("/post/down")
-    public void postFileDown(Long postFileId, HttpServletResponse response) {
+    public ResponseEntity<Resource> postFileDown(Long postFileId) {
         PostFile postFile = boardPostService.getPostFile(postFileId);
-        boardPostService.postFileDown(postFile, response);
+        return boardPostService.postFileDown(postFile);
     }
 
     @PostMapping("/post/delete")

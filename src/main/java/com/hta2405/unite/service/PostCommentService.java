@@ -4,9 +4,10 @@ import com.hta2405.unite.domain.PostComment;
 import com.hta2405.unite.dto.FileDTO;
 import com.hta2405.unite.mybatis.mapper.PostCommentMapper;
 import com.hta2405.unite.util.ConfigUtil;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -62,8 +63,8 @@ public class PostCommentService {
         return postCommentInsert > 0 && update == 1;
     }
 
-    public void postCommentFileDown(PostComment postComment, HttpServletResponse response) {
-        fileService.downloadFile(UPLOAD_DIRECTORY, postComment.getPostCommentFileUUID(), postComment.getPostCommentFileOriginal(), response);
+    public ResponseEntity<Resource> postCommentFileDown(PostComment postComment) {
+        return fileService.downloadFile(UPLOAD_DIRECTORY, postComment.getPostCommentFileUUID(), postComment.getPostCommentFileOriginal());
     }
 
     public PostComment getPostCommentByCommentId(Long commentId) {

@@ -178,17 +178,12 @@ public class BoardController {
             @RequestParam(value = "attachFiles", required = false) List<MultipartFile> files) {
 
         HashMap<String, Object> map = new HashMap<>();
-        try {
-            String postWriter = user.getUsername();
-            postAddDTO.setPostWriter(postWriter);
+        String postWriter = user.getUsername();
+        postAddDTO.setPostWriter(postWriter);
 
-            map.put("postId", boardPostService.addPost(boardDTO, postAddDTO, files));
-            map.put("boardDTO", boardDTO);
-            return map;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return map;
-        }
+        map.put("postId", boardPostService.addPost(boardDTO, postAddDTO, files));
+        map.put("boardDTO", boardDTO);
+        return map;
     }
 
     @GetMapping("/post/detail")
@@ -241,7 +236,7 @@ public class BoardController {
     public Object boardPostModifyProcess(PostModifyDTO postModifyDTO, BoardDTO boardDTO,
                                          @RequestParam(value = "addFiles", required = false) List<MultipartFile> addFiles,
                                          @RequestParam(value = "deletedFiles", required = false) List<String> deletedFiles) {
-        boolean result = boardPostService.modifyPost(boardDTO, postModifyDTO, addFiles, deletedFiles);
+        boolean result = boardPostService.modifyPost(postModifyDTO, addFiles, deletedFiles);
 
         HashMap<String, Object> map = new HashMap<>();
         if (result) {
@@ -307,17 +302,12 @@ public class BoardController {
                                                 @AuthenticationPrincipal UserDetails user,
                                                 @RequestParam(value = "attachFiles", required = false) List<MultipartFile> files) {
         HashMap<String, Object> map = new HashMap<>();
-        try {
-            String postWriter = user.getUsername();
-            postReplyDTO.setPostWriter(postWriter);
+        String postWriter = user.getUsername();
+        postReplyDTO.setPostWriter(postWriter);
 
-            map.put("postId", boardPostService.replyPost(boardDTO, postReplyDTO, files));
-            map.put("boardDTO", boardDTO);
-            return map;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return map;
-        }
+        map.put("postId", boardPostService.replyPost(boardDTO, postReplyDTO, files));
+        map.put("boardDTO", boardDTO);
+        return map;
     }
 
     @GetMapping("/create")

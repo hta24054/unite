@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
@@ -31,14 +30,9 @@ public class BoardPostService {
     private final BoardPostMapper boardPostMapper;
     private final EmpService empService;
     private final FileService fileService;
-    private final RestClient.Builder builder;
 
     public Map<String, String> getIdToENameMap() {
         return empService.getIdToENameMap();
-    }
-
-    public Board findBoardByBoardId(Long boardId) {
-        return boardPostMapper.findBoardByBoardId(boardId);
     }
 
     public HashMap<String, Object> getBoardNames(String empId) {
@@ -200,7 +194,7 @@ public class BoardPostService {
     }
 
     @Transactional
-    public boolean modifyPost(BoardDTO boardDTO, PostModifyDTO postModifyDTO,
+    public boolean modifyPost(PostModifyDTO postModifyDTO,
                               List<MultipartFile> addFiles, List<String> deletedFiles) {
         Long postId = postModifyDTO.getPostId();
         PostDetailDTO postDetailDTO = getDetail(postId);
@@ -377,7 +371,7 @@ public class BoardPostService {
 
         int insertManager = 0;
         if (!managerIdList.isEmpty()) {
-            insertManager = boardPostMapper.insertBoardManagement(board.getBoardId(), managerIdList);
+            insertManager += boardPostMapper.insertBoardManagement(board.getBoardId(), managerIdList);
         } else {
             insertManager = 1;
         }
@@ -446,7 +440,7 @@ public class BoardPostService {
             boardPostMapper.deleteBoardManagement(boardId);
             int insertManager = 0;
             if (!managerIdList.isEmpty()) {
-                insertManager = boardPostMapper.insertBoardManagement(boardId, managerIdList);
+                insertManager += boardPostMapper.insertBoardManagement(boardId, managerIdList);
             } else {
                 insertManager = 1;
             }

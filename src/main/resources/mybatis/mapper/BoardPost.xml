@@ -298,13 +298,12 @@
     </insert>
 
     <select id="getBoardAndManagement" resultType="com.hta2405.unite.dto.BoardAndManagementDTO">
-        select board_name1, board_name2, board_manager
+        select board_management.board_id, board_name1, board_name2, board_manager
         from board
         natural join board_management
         <where>
-            <if test="boardName1 != null and boardName2 != null">
-                board_name1 = #{boardName1}
-                and board_name2 = #{boardName2}
+            <if test="boardId != null">
+                board_management.board_id = #{boardId}
             </if>
         </where>
     </select>
@@ -327,5 +326,11 @@
         from board_management
         where board_id = #{boardId}
     </select>
+
+    <delete id="deleteBoard">
+        delete
+        from board
+        where board_id = #{boardId}
+    </delete>
 
 </mapper>

@@ -2,10 +2,7 @@ package com.hta2405.unite.mybatis.mapper;
 
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Project;
-import com.hta2405.unite.dto.ProjectDetailDTO;
-import com.hta2405.unite.dto.ProjectRoleDTO;
-import com.hta2405.unite.dto.ProjectTaskDTO;
-import com.hta2405.unite.dto.ProjectTodoDTO;
+import com.hta2405.unite.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
@@ -34,7 +31,7 @@ public interface ProjectMapper {
 
     void projectColor(String userid, int projectId, String bgColor, String textColor);
 
-    boolean projectStatus(int projectId, int complete, int cancel);
+    boolean projectStatus(int projectId, FileDTO taskFile, int complete, int cancel);
 
     String getProjectName(int projectId);
     String getProjectContent(int projectId);

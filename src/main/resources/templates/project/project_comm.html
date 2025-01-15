@@ -77,25 +77,32 @@
 					</tr>
 
 				</table>
-				<div class="modal" id="myModal">
+				<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
 					<div class="modal-dialog">
 						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="modalLabel">로그인한 비밀번호를 입력해주세요</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							</div>
 							<div class="modal-body">
 								<form name="deleteForm" th:action="delete" method="post">
 									<input type="hidden" name="memberId" th:value="${memberId}">
 									<input type="hidden" name="projectId" th:value="${projectId}">
 									<input type="hidden" name="taskId" th:value="${task.taskId}">
-									<div class="form-group">
-										<label for="board_pass">비밀번호</label>
+									<div class="mb-3">
+										<label for="board_pass" class="form-label">비밀번호</label>
 										<input type="password" class="form-control" placeholder="Enter password" name="board_pass" id="board_pass">
 									</div>
-									<button type="submit" class="btn btn-primary">전송</button>
-									<button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>
+									<div class="d-flex justify-content-end">
+										<button type="submit" class="btn btn-primary me-2">전송</button>
+										<button type="button" class="btn btn-danger" data-bs-dismiss="modal">취소</button>
+									</div>
 								</form>
 							</div>
 						</div>
 					</div>
 				</div>
+
 				<div class="comment-area">
 					<div class="comment-head">
 						<h3 class="comment-count">

@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
@@ -161,14 +162,18 @@ public class ProjectController {
         return "redirect:/project/main";
     }
 
-    // 프로젝트 상태 업데이트 처리
     @PostMapping("/updateStatus")
     @ResponseBody
     public Map<String, Object> updateProjectStatus(@RequestParam("projectId") int projectId,
-                                                   @RequestParam("status") String status) {
+                                                   @RequestParam("status") String status,
+                                                   MultipartFile file) {
+        logger.info("file=========",file.toString());
         Map<String, Object> response = new HashMap<>();
         try {
-            boolean isUpdated = projectService.updateProjectStatus(projectId, status);  // 서비스 메서드 호출
+            boolean isUpdated = projectService.updateProjectStatus(projectId, status, file);
+//            boolean isUpdated;
+//            if(file != null) isUpdated = projectService.updateProjectStatus(projectId, status, file);
+//            else isUpdated = projectService.updateProjectStatus(projectId, status, null);
 
             if (isUpdated) {
                 response.put("success", true);
@@ -184,25 +189,21 @@ public class ProjectController {
         return response;
     }
 
-    @GetMapping("/cancel")
+    @GetMapping("/done")
     @ResponseBody
-    public ModelAndView cancel(@AuthenticationPrincipal UserDetails user, ModelAndView mv, int dowhat) {
-        mv.setViewName("project/project_cancel");
+    public ModelAndView done(@AuthenticationPrincipal UserDetails user, ModelAndView mv, int dowhat) {
         mv.addObject("boardlist", projectService.getDoneList(user.getUsername(), dowhat));
         mv.addObject("memberName", empService.getEmpById(user.getUsername()).getEname());
-        if (dowhat == 1) mv.addObject("message", "취소된 프로젝트들을 불러옵니다");
-        if (dowhat == 2) mv.addObject("message", "완료된 프로젝트들을 불러옵니다");
+        if (dowhat == 1) {
+            mv.setViewName("project/project_cancel");
+            mv.addObject("message", "취소된 프로젝트들을 불러옵니다");
+        }
+        if (dowhat == 2) {
+            mv.setViewName("project/project_complete");
+            mv.addObject("message", "완료된 프로젝트들을 불러옵니다");
+        }
         return mv;
     }
-//    @GetMapping("/complete")
-//    @ResponseBody
-//    public ModelAndView complete(@AuthenticationPrincipal UserDetails user, ModelAndView mv, int status) {
-//        mv.setViewName("project/project_complete");
-//        mv.addObject("boardlist", projectService.getCompleteList(user.getUsername()));
-//        mv.addObject("memberName", empService.getEmpById(user.getUsername()).getEname());
-//        mv.addObject("message", "취소된 프로젝트들을 불러옵니다");
-//        return mv;
-//    }
 
     @GetMapping("/complete")
     public String complete() {

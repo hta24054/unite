@@ -4,6 +4,8 @@ import com.hta2405.unite.domain.ProjectComment;
 import com.hta2405.unite.domain.ProjectTask;
 import com.hta2405.unite.dto.ProjectTaskDTO;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,7 +18,7 @@ public interface ProjectBoardService {
     List<ProjectTask> getTaskList(int projectId, String userid);
     List<ProjectTask> getTask(int projectId, String userid, int taskId);
     boolean deleteTask(int projectId, String memberId, int taskId);
-    void fileDown(String fileuuid, String originalFilename, HttpServletResponse response);
+    ResponseEntity<Resource> fileDown(String fileuuid, String originalFilename);
     void modifyProcess(int projectId, String memberId, int taskId, MultipartFile file, String board_subject, String board_content);
     int commentAdd(ProjectComment.ProjectCommentBuilder projectCommentBuilder);
     int replyAdd(ProjectComment.ProjectCommentBuilder projectCommentBuilder);

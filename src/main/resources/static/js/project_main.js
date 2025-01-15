@@ -88,7 +88,8 @@ function updateBoardList(data) {
                         <span 
                             class="favorite-icon ${project.projectFavorite == 1 ? 'favorite' : 'unfavorite'}" 
                             style="float: right; cursor: pointer; font-size: 1.5rem;" 
-                            data-project-id="${project.projectId}" 
+                            data-project-id="${project.projectId}"
+                            data-manager-id="${project.managerId}" 
                             onclick="toggleFavorite(${project.projectId}, this)"
                         >
                             ${project.projectFavorite == 1 ? '★' : '☆'}
@@ -99,6 +100,7 @@ function updateBoardList(data) {
                         <p><strong>참여자:</strong> ${participantsText}</p>
                         <p><strong>열람자:</strong> ${viewersText}</p>
                         <p><strong>마감일:</strong> ${project.projectEndDate}</p>
+                        <strong>진행률</strong>
                         <div class="progress">
                             <div class="progress-bar" style="width: ${project.avgProgress}%">${project.avgProgress}%</div>
                         </div>

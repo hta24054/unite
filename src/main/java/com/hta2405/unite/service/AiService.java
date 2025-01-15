@@ -30,6 +30,10 @@ public class AiService {
                 .call()
                 .entity(AiScheduleResponseDTO.class);
 
+        if (aiScheduleResponseDTO == null) {
+            return 0;
+        }
+
         Schedule schedule = new Schedule();
         schedule.setEmpId(empId);
         schedule.setScheduleName(aiScheduleResponseDTO.getScheduleName());
@@ -37,6 +41,7 @@ public class AiService {
         schedule.setScheduleStart(LocalDateTime.parse(aiScheduleResponseDTO.getScheduleStart()));
         schedule.setScheduleEnd(LocalDateTime.parse(aiScheduleResponseDTO.getScheduleEnd()));
         schedule.setScheduleColor("#dc2626");
+
         return scheduleService.insertSchedule(schedule);
     }
 }

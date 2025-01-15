@@ -320,16 +320,16 @@
 
 
                     // dragover 이벤트: 드래그한 파일이 attachFlie 영역에 있을 때
-                    $('.attachFile').on('dragover', function (event) {
+                    $('.attachFile, .file-list').on('dragover', function (event) {
                         event.preventDefault();
                         $(this).addClass('dragoverFile');
                     });
 
-                    $('.attachFile').on('dragleave', function () {
+                    $('.attachFile, .file-list').on('dragleave', function () {
                         $(this).removeClass('dragoverFile');
                     });
 
-                    $('.attachFile').on('drop', function (event) {
+                    $('.attachFile, .file-list').on('drop', function (event) {
                         event.preventDefault();  // 기본 동작을 취소
                         $(this).removeClass('dragoverFile');
 

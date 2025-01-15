@@ -58,4 +58,18 @@ public interface BoardPostMapper {
     Board findBoardByBoardId(Long boardId);
 
     List<Board> getBoardNamesByDeptId(Long deptId);
+
+    int createBoard(Board board);
+
+    int insertBoardManagement(Long boardId, List<String> managerIdList);
+
+    List<Board> getBoardListByName1(String boardName1);
+
+    List<BoardAndManagementDTO> getBoardAndManagement(String boardName1, String boardName2);
+
+    int updateBoard(Board board);
+
+    void deleteBoardManagement(Long boardId);
+
+    List<String> findBoardManagerById(Long boardId);
 }

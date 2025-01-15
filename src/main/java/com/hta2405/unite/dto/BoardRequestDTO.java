@@ -10,6 +10,7 @@ import java.util.List;
 @Setter
 @ToString
 public class BoardRequestDTO {
+    private Long boardId;
     private String boardName1;
     private String OriginalBoardName1;
     private String boardName2;

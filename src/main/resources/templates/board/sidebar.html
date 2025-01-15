@@ -129,28 +129,56 @@
         #myModal {
             display: none
         }
+
+        a {
+            text-decoration: none;
+        }
     </style>
     <script>
         function sendPost(element, url) {
+
+
             const boardId = element.getAttribute('data-board-id');
 
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({boardId}),
-            })
-                .then(response => {
+            if (url === '/board/modify') {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = url;
+
+                // 숨겨진 필드로 boardId 추가
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'boardId'; // 서버에서 받을 필드 이름
+                input.value = boardId;
+                form.appendChild(input);
+
+                // 폼을 DOM에 추가하고 제출
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+            if (url === '/board/delete') {
+                if (!confirm("정말 삭제하시겠습니까?\n삭제 후 복구가 불가능합니다.")) {
+                    return false;
+                }
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({boardId}),
+                }).then(response => {
                     if (response.ok) {
-                        alert('delete success');
+                        alert('해당 게시판이 삭제되었습니다.');
                     } else {
-                        alert('delete fail');
+                        alert('게시판 삭제 실패');
                     }
-                })
-                .catch(error => {
+                    location.reload(true);
+                }).catch(error => {
                     console.error('오류 발생:', error);
                 });
+            }
         }
 
         $(function () {
@@ -164,15 +192,12 @@
             })
         })
     </script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.0/font/bootstrap-icons.css"/>
-
     <div class="layoutSidenav_nav_board" id="layoutSidenav_nav">
         <nav class="sb-sidenav accordion sb-sidenav-dark sb-sidenav-dark-board" id="sidenavAccordion">
             <div class="sb-sidenav-menu sb-sidenav-menu-board scrollbar">
                 <div class="nav">
-                    <!--            <div class="sb-sidenav-menu-heading"></div>-->
+
                     <a class="nav-link nav-link-board nav-link-board-title" href="/board/home" id="boardHome">
-                        <!--                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>-->
                         게시판
                     </a>
                     <div class="sb-sidenav-menu-heading sb-sidenav-menu-heading-board">
@@ -180,8 +205,6 @@
                             <button class="writeBtn">글쓰기</button>
                         </a>
                     </div>
-
-                    <!--                    <div class="sb-sidenav-menu-heading">Addons</div>-->
 
                     <a class="nav-link nav-link-board collapsed" href="#" data-bs-toggle="collapse"
                        data-bs-target="#collapsePages11"
@@ -208,11 +231,12 @@
                                         <div id='comment-list-item-layer2_1' class='config-LayerMore'>
                                             <ul class='layer-item'>
                                                 <li class='layer-list'>
-                                                    <a th:href='@{/board/modify(boardName1=${board.boardName1}, boardName2=${board.boardName2})}'
-                                                       class='layer-button'>수정</a>
+                                                    <a href='#' class='layer-button'
+                                                       onclick="sendPost(this, '/board/modify')"
+                                                       th:data-board-id="${board.boardId}">수정</a>
                                                     <a href='#' class='layer-button'
                                                        onclick="sendPost(this, '/board/delete')"
-                                                       th:data-no="${board.boardId}">삭제</a>
+                                                       th:data-board-id="${board.boardId}">삭제</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -228,11 +252,12 @@
                                         <div id='comment-list-item-layer2' class='config-LayerMore'>
                                             <ul class='layer-item'>
                                                 <li class='layer-list'>
-                                                    <a th:href='@{/board/modify(boardName1=${board.boardName1}, boardName2=${board.boardName2})}'
-                                                       class='layer-button'>수정</a>
+                                                    <a href='#' class='layer-button'
+                                                       onclick="sendPost(this, '/board/modify')"
+                                                       th:data-board-id="${board.boardId}">수정</a>
                                                     <a href='#' class='layer-button'
                                                        onclick="sendPost(this, '/board/delete')"
-                                                       th:data-no="${board.boardId}">삭제</a>
+                                                       th:data-board-id="${board.boardId}">삭제</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -274,10 +299,12 @@
                                         <div id='comment-list-item-layer3_1' class='config-LayerMore'>
                                             <ul class='layer-item'>
                                                 <li class='layer-list'>
-                                                    <a th:href='@{/board/modify(boardName1=${board.boardName1}, boardName2=${board.boardName2})}'
-                                                       class='layer-button'>수정</a>
-                                                    <a th:href='@{/board/delete(no=${board.boardId})}'
-                                                       class='layer-button'>삭제</a>
+                                                    <a href='#' class='layer-button'
+                                                       onclick="sendPost(this, '/board/modify')"
+                                                       th:data-board-id="${board.boardId}">수정</a>
+                                                    <a href='#' class='layer-button'
+                                                       onclick="sendPost(this, '/board/delete')"
+                                                       th:data-board-id="${board.boardId}">삭제</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -293,10 +320,12 @@
                                         <div id='comment-list-item-layer3' class='config-LayerMore'>
                                             <ul class='layer-item'>
                                                 <li class='layer-list'>
-                                                    <a th:href='@{/board/modify(boardName1=${board.boardName1}, boardName2=${board.boardName2})}'
-                                                       class='layer-button'>수정</a>
-                                                    <a th:href='@{/board/delete(no=${board.boardId})}'
-                                                       class='layer-button'>삭제</a>
+                                                    <a href='#' class='layer-button'
+                                                       onclick="sendPost(this, '/board/modify')"
+                                                       th:data-board-id="${board.boardId}">수정</a>
+                                                    <a href='#' class='layer-button'
+                                                       onclick="sendPost(this, '/board/delete')"
+                                                       th:data-board-id="${board.boardId}">삭제</a>
                                                 </li>
                                             </ul>
                                         </div>

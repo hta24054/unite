@@ -81,8 +81,8 @@ public class BoardPostService {
         return boardScope;
     }
 
-    public List<BoardAndManagementDTO> getBoardAndManagement(String boardName1, String boardName2) {
-        return boardPostMapper.getBoardAndManagement(boardName1, boardName2);
+    public List<BoardAndManagementDTO> getBoardAndManagement(Long boardId) {
+        return boardPostMapper.getBoardAndManagement(boardId);
     }
 
     public List<BoardPostEmpDTO> getBoardListAll(String empId) {
@@ -353,9 +353,14 @@ public class BoardPostService {
     public boolean createBoard(BoardRequestDTO boardRequestDTO) {
         String ceoId = empService.getEmpListByDeptId(1000L).get(0).getEmpId();
         List<String> managerIdList = boardRequestDTO.getManagerId();
+        if (managerIdList == null) {
+            managerIdList = new ArrayList<>();
+        }
 
-        if (boardRequestDTO.getBoardName1() == null || boardRequestDTO.getBoardName1().equals("일반게시판")) {
-            boardRequestDTO.setBoardName1("일반게시판");
+        String boardName1 = boardRequestDTO.getBoardName1();
+        String boardName2 = boardRequestDTO.getBoardName2();
+        if (boardName1 == null || boardName1.equals("일반게시판")) {
+            boardName1 = "일반게시판";
 
             //일반게시판을 만들었을 경우 대표이사도 운영자 리스트에 추가
             if (!managerIdList.contains(ceoId)) {
@@ -364,22 +369,30 @@ public class BoardPostService {
         }
 
         Board board = Board.builder()
-                .boardName1(boardRequestDTO.getBoardName1())
-                .boardName2(boardRequestDTO.getBoardName2())
+                .boardName1(boardName1)
+                .boardName2(boardName2)
                 .deptId(0L).build();
 
         int insertResult = boardPostMapper.createBoard(board);
-        int insertManager = boardPostMapper.insertBoardManagement(board.getBoardId(), managerIdList);
+
+        int insertManager = 0;
+        if (!managerIdList.isEmpty()) {
+            insertManager = boardPostMapper.insertBoardManagement(board.getBoardId(), managerIdList);
+        } else {
+            insertManager = 1;
+        }
         return insertManager > 0 && insertResult > 0;
     }
 
-    public List<BoardAndManagementDTO> getBoardModify(BoardRequestDTO boardRequestDTO) {
-        List<BoardAndManagementDTO> boardManagementList = getBoardAndManagement(boardRequestDTO.getBoardName1(), boardRequestDTO.getBoardName2());
+    public List<BoardAndManagementDTO> getBoardModify(Long boardId) {
+        List<BoardAndManagementDTO> boardManagementList = getBoardAndManagement(boardId);
 
         BoardAndManagementDTO boardManagement = new BoardAndManagementDTO();
         if (boardManagementList.isEmpty()) {
-            boardManagement.setBoardName1(boardRequestDTO.getBoardName1());
-            boardManagement.setBoardName2(boardRequestDTO.getBoardName2());
+            Board board = boardPostMapper.findBoardByBoardId(boardId);
+            boardManagement.setBoardId(boardId);
+            boardManagement.setBoardName1(board.getBoardName1());
+            boardManagement.setBoardName2(board.getBoardName2());
             boardManagement.setBoardManager("admin");
             boardManagementList.add(boardManagement);
         }
@@ -410,7 +423,9 @@ public class BoardPostService {
         boardDTO.setBoardName2(boardRequestDTO.getOriginalBoardName2());
 
         Long boardId = boardPostMapper.findBoardIdByName1Name2(boardDTO);
-
+        if (boardId == null) {
+            return false;
+        }
         Board board = Board.builder()
                 .boardId(boardId)
                 .boardName1(boardName1)
@@ -418,7 +433,7 @@ public class BoardPostService {
 
         int updateResult = boardPostMapper.updateBoard(board);
 
-        List<BoardAndManagementDTO> boardAndManagementDTOS = boardPostMapper.getBoardAndManagement(boardName1, boardName2);
+        List<BoardAndManagementDTO> boardAndManagementDTOS = boardPostMapper.getBoardAndManagement(boardId);
         boolean check = false;
         for (BoardAndManagementDTO boardAndManagementDTO : boardAndManagementDTOS) {
             if (!managerIdList.contains(boardAndManagementDTO.getBoardManager())) {
@@ -443,5 +458,10 @@ public class BoardPostService {
 
     public List<String> findBoardManagerById(Long boardId) {
         return boardPostMapper.findBoardManagerById(boardId);
+    }
+
+    public int deleteBoard(Long boardId) {
+        boardPostMapper.deleteBoardManagement(boardId);
+        return boardPostMapper.deleteBoard(boardId);
     }
 }

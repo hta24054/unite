@@ -11,9 +11,9 @@ import com.hta2405.unite.enums.DocType;
 import com.hta2405.unite.factory.*;
 import com.hta2405.unite.service.DocService;
 import com.hta2405.unite.strategy.doc.*;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -164,8 +164,9 @@ public class DocController {
     }
 
     @GetMapping("/download")
-    public void downloadFile(String fileUUID, String fileName, HttpServletResponse response) {
-        docService.downloadFile(fileUUID, fileName, response);
+    @ResponseBody
+    public ResponseEntity<Resource> downloadFile(String fileUUID, String fileName) {
+        return docService.downloadFile(fileUUID, fileName);
     }
 
     @PostMapping("/sign")

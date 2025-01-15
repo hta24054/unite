@@ -8,6 +8,7 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,11 +38,12 @@ public class BoardController {
         this.boardPostService = boardPostService;
     }
 
-    @GetMapping(value = "/home")//board/write
-    public String boardHome(Model model) {
+    @GetMapping(value = "/home")
+    public String boardHome(String message, Model model, RedirectAttributes rattr) {
         //sidebar 부서게시판 설정
         boardSidebar_dept(model);
 
+        rattr.addAttribute("message", message);
         return "board/boardHome";
     }
 
@@ -49,8 +51,12 @@ public class BoardController {
     private void boardSidebar_dept(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String empId = auth.getName();
-        List<BoardHomeDeptDTO> BoardDeptList = boardPostService.getBoardListByEmpId(empId);
-        model.addAttribute("boardScope", BoardDeptList);
+        List<Object> boardScope = boardPostService.getBoardListByEmpId(empId);
+        List<BoardAndManagementDTO> boardManagementList = boardPostService.getBoardAndManagement(null, null);
+
+        model.addAttribute("userId", empId);
+        model.addAttribute("boardManagementList", boardManagementList);
+        model.addAttribute("boardScope", boardScope);
     }
 
     @ResponseBody
@@ -316,8 +322,69 @@ public class BoardController {
     }
 
     @GetMapping("/create")
-    public String boardCreate(Model model) {
+    public String boardCreate(@AuthenticationPrincipal UserDetails user, Model model) {
         boardSidebar_dept(model);
+        model.addAttribute("empId", user.getUsername());
         return "board/boardCreate";
+    }
+
+    @PostMapping("/createProcess")
+    public String boardCreateProcess(BoardRequestDTO boardRequestDTO,
+                                     Model model, RedirectAttributes rattr) {
+
+        boolean result = boardPostService.createBoard(boardRequestDTO);
+
+        if (result) {
+            rattr.addFlashAttribute("message", "success");
+            return "redirect:/board/home";
+        } else {
+            model.addAttribute("errorMessage", "게시판 추가 실패");
+            return "error/error";
+        }
+    }
+
+    @GetMapping("/modify")
+    public String boardModify(BoardRequestDTO boardRequestDTO,
+                              @AuthenticationPrincipal UserDetails user, Model model) {
+        boardSidebar_dept(model);
+        List<BoardAndManagementDTO> boardManagementList = boardPostService.getBoardModify(boardRequestDTO);
+
+        model.addAttribute("empMap", boardPostService.getIdToENameMap());
+        model.addAttribute("empId", user.getUsername());
+        model.addAttribute("boardManagementList", boardManagementList);
+        return "board/boardModify";
+    }
+
+    @PostMapping("/modifyProcess")
+    public String boardModifyProcess(BoardRequestDTO boardRequestDTO,
+                                     Model model, RedirectAttributes rattr) {
+
+        boolean result = boardPostService.modifyBoard(boardRequestDTO);
+
+        if (result) {
+            rattr.addFlashAttribute("message", "success");
+            return "redirect:/board/home";
+        } else {
+            model.addAttribute("errorMessage", "게시판 추가 실패");
+            return "error/error";
+        }
+    }
+
+
+    @PostMapping("/delete")
+    public ResponseEntity<String> boardDelete(@AuthenticationPrincipal UserDetails user, @RequestBody Long boardId) {
+        System.out.println(boardId);
+        if (!user.getUsername().equals("admin")) {
+            List<String> boardManagement = boardPostService.findBoardManagerById(boardId);
+            if (boardManagement == null) {
+                return ResponseEntity.badRequest().body("Invalid board ID");
+            }
+
+        }
+
+        // 삭제 로직 실행
+//        boolean result = boardPostService.deleteBoard(boardId);
+
+        return ResponseEntity.ok("delete success");
     }
 }

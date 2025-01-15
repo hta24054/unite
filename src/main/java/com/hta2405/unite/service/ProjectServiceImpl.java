@@ -70,11 +70,6 @@ public class ProjectServiceImpl implements ProjectService {
         dao.createTask(projectId, empId, memberName);
     }
 
-
-    public int doneCountList(String userid, int finish, int cancel) {
-        return dao.doneCountList(userid, finish, cancel);
-    }
-
     public void projectFavorite(int projectId, String userid) {
         dao.projectFavorite(projectId, userid);
     }
@@ -93,15 +88,18 @@ public class ProjectServiceImpl implements ProjectService {
         return false;
     }
 
-    public List<Project> getDoneList(String userid, int page, int limit) {
+    public List<Project> getDoneList(String userid, int dowhat) {
         HashMap<String, Object> map = new HashMap<>();
-        int startrow = (page - 1) * limit;
-        int endrow = startrow + limit;
         map.put("userid", userid);
-        map.put("start", startrow);
-        map.put("end", endrow);
+        if(dowhat == 1) map.put("dowhat", "project_canceled");
+        else if(dowhat == 2) map.put("dowhat", "project_completed");
         return dao.getDoneList(map);
     }
+//    public List<Project> getCompleteList(String userid) {
+//        HashMap<String, Object> map = new HashMap<>();
+//        map.put("userid", userid);
+//        return dao.getDoneList(map);
+//    }
 
     public String getProjectName(int projectId) {
         return dao.getProjectName(projectId);

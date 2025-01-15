@@ -8,6 +8,8 @@ import com.hta2405.unite.mybatis.mapper.EmpMapper;
 import com.hta2405.unite.mybatis.mapper.ProjectBoardMapper;
 import com.hta2405.unite.util.ConfigUtil;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -55,11 +57,11 @@ public class ProjectBoardServiceImpl implements ProjectBoardService {
         return dao.deleteTask(projectId, memberId, taskId);
     }
 
-    public void fileDown(String fileuuid, String originalFilename, HttpServletResponse response){
+    public ResponseEntity<Resource> fileDown(String fileuuid, String originalFilename){
         if (fileuuid == null || fileuuid.isEmpty()) {
-            fileService.downloadFile(FILE_DIR, fileuuid, originalFilename, response);
+            return fileService.downloadFile(FILE_DIR, fileuuid, originalFilename);
         } else {
-            fileService.downloadFile(FILE_DIR, fileuuid, originalFilename, response);
+            return fileService.downloadFile(FILE_DIR, fileuuid, originalFilename);
         }
     }
     public void modifyProcess(int projectId, String memberId, int taskId, MultipartFile file, String board_subject, String board_content){

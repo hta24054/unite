@@ -9,6 +9,7 @@ import com.hta2405.unite.service.ProjectService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -125,8 +126,8 @@ public class ProjectBoardController {
     }
 
     @GetMapping("/down")
-    public void filedown(String fileuuid, String originalFilename, HttpServletResponse response) throws Exception{
-        projectBoardService.fileDown(fileuuid, originalFilename, response);
+    public ResponseEntity<Resource> filedown(String fileuuid, String originalFilename){
+        return projectBoardService.fileDown(fileuuid, originalFilename);
     }
 
 

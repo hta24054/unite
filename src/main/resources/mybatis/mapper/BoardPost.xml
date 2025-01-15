@@ -15,6 +15,12 @@
             )
     </select>
 
+    <select id="getBoardListByName1" parameterType="String" resultType="Board">
+        select *
+        from board
+        where board_name1 = #{boardName1}
+    </select>
+
     <select id="getBoardListAll" parameterType="Long" resultType="com.hta2405.unite.dto.BoardPostEmpDTO">
         select post.*,
                board.*,
@@ -278,4 +284,53 @@
            or (#{deptId} = 1400 and board.dept_id between 1400 and 1499)
            or (board.dept_id = #{deptId})
     </select>
+
+    <insert id="createBoard" parameterType="Board" useGeneratedKeys="true" keyProperty="boardId">
+        insert into board (board_name1, board_name2, dept_id)
+        values (#{boardName1}, #{boardName2}, #{deptId})
+    </insert>
+    <insert id="insertBoardManagement" parameterType="Long">
+        insert into board_management (board_id, board_manager)
+        values
+        <foreach collection="managerIdList" item="managerId" separator=",">
+            (#{boardId}, #{managerId})
+        </foreach>
+    </insert>
+
+    <select id="getBoardAndManagement" resultType="com.hta2405.unite.dto.BoardAndManagementDTO">
+        select board_management.board_id, board_name1, board_name2, board_manager
+        from board
+        natural join board_management
+        <where>
+            <if test="boardId != null">
+                board_management.board_id = #{boardId}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateBoard" parameterType="Board">
+        update board
+        set board_name1 = #{boardName1},
+            board_name2 = #{boardName2}
+        where board_id = #{boardId}
+    </update>
+
+    <delete id="deleteBoardManagement" parameterType="Long">
+        delete
+        from board_management
+        where board_id = #{boardId}
+    </delete>
+
+    <select id="findBoardManagerById" parameterType="Long">
+        select board_manager
+        from board_management
+        where board_id = #{boardId}
+    </select>
+
+    <delete id="deleteBoard">
+        delete
+        from board
+        where board_id = #{boardId}
+    </delete>
+
 </mapper>

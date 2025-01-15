@@ -5,7 +5,7 @@
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>게시판 추가</title>
+            <title>게시판 수정</title>
             <link rel="stylesheet" th:href="@{/css/boardHome.css}">
             <link rel="stylesheet" th:href="@{/css/postWrite.css}">
             <script type="module" th:src="@{/js/boardHome.js}"></script>
@@ -106,16 +106,10 @@
                     max-width: 900px !important;
                 }
             </style>
-            <script>
+            <script th:line="javascript">
                 function addManagement(name, empId) {
                     // 새로운 태그 생성
                     const $tag = $(`<div class="operator-tag">${name}<span class="remove">×</span></div>`);
-
-                    // 삭제 버튼 클릭 이벤트 추가
-                    $tag.find(".remove").click(function () {
-                        $tag.next().remove(); // hidden 태그 삭제
-                        $tag.remove(); // 해당 태그 삭제
-                    });
 
                     const $operator = $("#operator-list");
                     // 리스트에 태그 추가
@@ -137,6 +131,22 @@
                 }
 
                 $(function () {
+                    let boardName1Value = '[(${boardManagementList.get(0).getBoardName1})]';
+                    $('#boardName1').val(boardName1Value);
+
+                    $('#boardName1').change(function () {
+                        let boardName1Value = $(this).val();  // 첫 번째 select의 선택 값
+
+                        if (boardName1Value === '전사게시판') {
+                            if (confirm("admin을 제외한 모든 운영자가 삭제됩니다.\n정말 바꾸시겠습니까")) {
+                                $('#operator-list').html('');
+                            } else {
+                                $(this).val('일반게시판');
+                            }
+                        }
+                    });
+
+
                     $("#add-operator").on("click", function (e) {
                         e.preventDefault();
 
@@ -149,6 +159,13 @@
                         localStorage.setItem('selectedEmpId', targetId);
 
                         $('#employeeModal').modal('show');
+                    });
+
+                    // 삭제 버튼 클릭 이벤트 추가
+                    $(document).on('click', ".remove", function () {
+                        let $tag = $(this).parent();
+                        $tag.next().remove(); // hidden 태그 삭제
+                        $tag.remove(); // 해당 태그 삭제
                     });
 
                     // 저장 버튼 클릭 시 직원 정보 등록
@@ -180,9 +197,10 @@
             <th:block th:replace="~{/board/sidebar :: boardSidebarFragment}"/>
 
             <div class="content">
-                <div class="boardTitle">게시판 추가</div>
+                <div class="boardTitle">게시판 수정</div>
                 <div class="boardContent">
-                    <form method="post" name="boardform" action="createProcess">
+                    <form method="post" name="boardform" action="modifyProcess">
+                        <input type="hidden" name="boardId" th:value="${boardManagementList[0].boardId}">
                         <table class="table" style="line-height: 10px">
                             <tbody>
                             <tr>
@@ -191,20 +209,23 @@
                                     <select id="boardName1" name="boardName1" class="boardName"
                                             style="margin-left: 0; border-radius: 10px"
                                             th:attr="disabled=${empId != 'admin'}">
-                                        <!-- admin일 경우 -->
                                         <option th:if="${empId == 'admin'}" value="전사게시판" selected>전사게시판</option>
                                         <option th:if="${empId == 'admin'}" value="일반게시판">일반게시판</option>
 
-                                        <!-- admin이 아닐 경우 -->
                                         <option th:if="${empId != 'admin'}" value="일반게시판" selected>일반게시판</option>
                                     </select>
+                                    <input type="hidden" name="OriginalBoardName1"
+                                           th:value="${boardManagementList[0].boardName1}">
                                 </th>
                             </tr>
                             <tr>
                                 <th class="labelName">게시판 명</th>
                                 <td style="padding: 10px .75rem">
                                     <input name="boardName2" id="boardName2" type="text" maxlength="100"
-                                           class="form-control2" style="padding-left: 10px;">
+                                           class="form-control2" style="padding-left: 10px;"
+                                           th:value="${boardManagementList[0].boardName2}">
+                                    <input type="hidden" name="OriginalBoardName2"
+                                           th:value="${boardManagementList[0].boardName2}">
                                 </td>
                             </tr>
                             <tr>
@@ -218,6 +239,16 @@
                                 <td>
                                     <div id="operator-list" style="display: inline-block;">
                                         <input type="hidden" name="managerId" th:value="${empId}"/>
+                                        <th:block th:each="boardManagement : ${boardManagementList}">
+                                            <th:block
+                                                    th:if="${boardManagement.boardManager != 'admin' && boardManagement.boardManager != empId}">
+                                                <div class="operator-tag">
+                                                    [[${empMap.get(boardManagement.boardManager)}]]<span class="remove">×</span>
+                                                </div>
+                                                <input type="hidden" name="managerId"
+                                                       th:value="${boardManagement.boardManager}"/>
+                                            </th:block>
+                                        </th:block>
                                     </div>
                                     <a href="javascript:void(0);" th:attr="data-target='employeeModal'"
                                        id="add-operator">
@@ -229,8 +260,9 @@
                         </table>
 
                         <div class="form-group-btn">
-                            <button type="submit" id="addBtn" class="btn registerBtn">추가하기</button>
-                            <button type="reset" class="btn registerBtn">취소</button>
+                            <button type="submit" id="addBtn" class="btn registerBtn">수정하기</button>
+                            <button type="reset" class="btn registerBtn" onClick="history.go(-1)">뒤로가기
+                            </button>
                         </div>
                     </form>
                 </div>

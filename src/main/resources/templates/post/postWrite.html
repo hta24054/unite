@@ -3,10 +3,6 @@
         <!DOCTYPE html>
         <html xmlns:th="http://www.thymeleaf.org" lang="en">
         <head>
-            <script th:src="@{/js/jquery-3.7.1.js}"></script>
-            <script th:src="@{/js/writeform.js}"></script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
             <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.css" rel="stylesheet">
             <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
             <link rel="stylesheet" th:href="@{/css/boardHome.css}">
@@ -129,6 +125,7 @@
                 }
 
             </style>
+            <script th:src="@{/js/writeform.js}"></script>
             <script th:inline="javascript">
                 var fileNo = 0;
                 var filesArr = [];
@@ -323,16 +320,16 @@
 
 
                     // dragover 이벤트: 드래그한 파일이 attachFlie 영역에 있을 때
-                    $('.attachFile').on('dragover', function (event) {
+                    $('.attachFile, .file-list').on('dragover', function (event) {
                         event.preventDefault();
                         $(this).addClass('dragoverFile');
                     });
 
-                    $('.attachFile').on('dragleave', function () {
+                    $('.attachFile, .file-list').on('dragleave', function () {
                         $(this).removeClass('dragoverFile');
                     });
 
-                    $('.attachFile').on('drop', function (event) {
+                    $('.attachFile, .file-list').on('drop', function (event) {
                         event.preventDefault();  // 기본 동작을 취소
                         $(this).removeClass('dragoverFile');
 
@@ -353,8 +350,6 @@
             </script>
         </head>
         <body>
-        <link rel="stylesheet" th:href="@{/css/leftbar.css}">
-        <script th:src="@{/js/leftbar.js}"></script>
         <div class="main">
             <th:block th:replace="~{/board/sidebar :: boardSidebarFragment}"/>
 

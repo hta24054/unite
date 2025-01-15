@@ -80,20 +80,29 @@
         where project_id = #{projectId}
           and member_id = #{userid}
     </update>
-
     <update id="projectStatus">
         update project
         set project_finished = #{complete},
             project_canceled = #{cancel}
-        where project_id = #{projectId}
+            <if test="taskFile != null">
+                ,project_file_path = #{taskFile.filePath}, project_file_original = #{taskFile.fileOriginal}, project_file_uuid = #{taskFile.fileUUID}, project_file_type = #{taskFile.fileType}
+            </if>
+            <if test="taskFile == null">
+                ,project_file_path = '',
+                project_file_original = '',
+                project_file_uuid = '',
+                project_file_type = ''
+            </if>
+            where project_id = #{projectId}
     </update>
+
 
     <select id="getDoneList" resultType="Project">
         SELECT p.project_id,
                      p.project_name,
                      substring(p.project_start_date, 1, 10)                                                                     projectStartDate,
                      substring(p.project_end_date, 1, 10)                                                                       projectEndDate,
-                     p.project_file_original,
+                     p.project_file_original projectFileOriginal,
                      p.project_file_uuid,
                      p.project_file_type,
                      COUNT(pm.project_member_id)                                                                             AS member_count,

@@ -7,9 +7,10 @@ import com.hta2405.unite.domain.PostFile;
 import com.hta2405.unite.dto.*;
 import com.hta2405.unite.mybatis.mapper.BoardPostMapper;
 import com.hta2405.unite.util.ConfigUtil;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -271,8 +272,8 @@ public class BoardPostService {
         return boardPostMapper.getPostFile(postFileId);
     }
 
-    public void postFileDown(PostFile postFile, HttpServletResponse response) {
-        fileService.downloadFile(UPLOAD_DIRECTORY, postFile.getPostFileUUID(), postFile.getPostFileOriginal(), response);
+    public ResponseEntity<Resource> postFileDown(PostFile postFile) {
+        return fileService.downloadFile(UPLOAD_DIRECTORY, postFile.getPostFileUUID(), postFile.getPostFileOriginal());
     }
 
     public boolean postDelete(Long postId) {

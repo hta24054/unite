@@ -5,8 +5,9 @@ import com.hta2405.unite.dto.PostCommentRequestDTO;
 import com.hta2405.unite.dto.PostCommentUpdateDTO;
 import com.hta2405.unite.service.PostCommentService;
 import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -56,9 +57,9 @@ public class PostCommentController {
 
     @ResponseBody
     @GetMapping("/down")
-    public void postCommentFileDown(Long commentId, HttpServletResponse response) {
+    public ResponseEntity<Resource> postCommentFileDown(Long commentId) {
         PostComment postComment = postCommentService.getPostCommentByCommentId(commentId);
-        postCommentService.postCommentFileDown(postComment, response);
+        return postCommentService.postCommentFileDown(postComment);
     }
 
     @ResponseBody

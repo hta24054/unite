@@ -9,8 +9,9 @@ import com.hta2405.unite.enums.DocRole;
 import com.hta2405.unite.enums.DocType;
 import com.hta2405.unite.enums.NotificationCategory;
 import com.hta2405.unite.mybatis.mapper.DocMapper;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -300,8 +301,8 @@ public class DocService {
         return docMapper.getDocVacationByDocId(docId);
     }
 
-    public void downloadFile(String fileUUID, String fileName, HttpServletResponse response) {
-        fileService.downloadFile(FILE_DIR, fileUUID, fileName, response);
+    public ResponseEntity<Resource> downloadFile(String fileUUID, String fileName) {
+        return fileService.downloadFile(FILE_DIR, fileUUID, fileName);
     }
 
     public List<DocListDTO> getWaitingDocs(String empId) {

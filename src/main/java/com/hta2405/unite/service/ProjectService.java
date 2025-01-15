@@ -25,11 +25,10 @@ public interface ProjectService {
 
     void createTask(int projectId, String empId, String memberName);
 
-    int doneCountList(String userid, int finish, int cancel);
-
     List<Project> getmainList(String userid);
 
-    List<Project> getDoneList(String userid, int page, int limit);
+    List<Project> getDoneList(String userid, int dowhat);
+//    List<Project> getCompleteList(String userid);
 
     void projectFavorite(int projectId, String userid);
 

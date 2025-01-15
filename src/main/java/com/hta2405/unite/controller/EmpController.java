@@ -5,12 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.dto.*;
+import com.hta2405.unite.security.CustomUserDetails;
 import com.hta2405.unite.service.AuthService;
 import com.hta2405.unite.service.EmpService;
 import com.hta2405.unite.service.ProfileImgService;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -59,7 +61,7 @@ public class EmpController {
 
     @GetMapping("/editable-field")
     @ResponseBody
-    public Map<String, Object> getEditableFields(@AuthenticationPrincipal UserDetails user) {
+    public Map<String, Object> getEditableFields(@AuthenticationPrincipal CustomUserDetails user) {
         Map<String, Object> response = new HashMap<>();
         List<String> field;
 
@@ -147,8 +149,8 @@ public class EmpController {
 
     @GetMapping("/profile-image")
     @ResponseBody
-    public void getProfileImage(String empId, HttpServletResponse response) {
+    public ResponseEntity<Resource> getProfileImage(String empId) {
         Emp emp = empService.getEmpById(empId);
-        profileImgService.getProfileImage(emp, response);
+        return profileImgService.getProfileImage(emp);
     }
 }

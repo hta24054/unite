@@ -9,6 +9,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
@@ -30,7 +31,7 @@ public class ProfileImgService {
     }
 
     public FileDTO insertProfileImg(MultipartFile file) {
-        if (file == null || file.isEmpty()) {
+        if (ObjectUtils.isEmpty(file)) {
             return new FileDTO();
         }
         return fileService.uploadFile(file, FILE_DIR);
@@ -40,25 +41,25 @@ public class ProfileImgService {
     public FileDTO updateProfileImg(MultipartFile file, String beforeFileName, Emp emp) {
 
         //기존 프로필 사진 없음
-        if (emp.getImgOriginal() == null || emp.getImgOriginal().isEmpty()) {
+        if (ObjectUtils.isEmpty(emp.getImgOriginal())) {
             //업로드된 파일 없음
-            if (file == null || file.isEmpty()) {
-                return new FileDTO(); //빈 객체
+            if (ObjectUtils.isEmpty(file)) {
+                return new FileDTO();
             }
             //프로필사진 등록됨
             return fileService.uploadFile(file, FILE_DIR);
         }
         //아래는 프로필사진 있는경우
 
-        //업로드된 사진이 없는경우 -> 프로필 사진 삭제
-        if (file == null || file.isEmpty()) {
-            fileService.deleteFile(emp.getImgUUID(), FILE_DIR, emp.getImgOriginal());
-            return new FileDTO(); //빈 객체
-        }
-
         //기존 파일명이 파라미터로 옴 -> 파일이 변경되지 않음.
         if (beforeFileName != null) {
             return new FileDTO(emp.getImgOriginal(), emp.getImgPath(), emp.getImgType(), emp.getImgUUID());
+        }
+
+        //업로드된 사진이 없는경우 -> 프로필 사진 삭제
+        if (ObjectUtils.isEmpty(file)) {
+            fileService.deleteFile(emp.getImgUUID(), FILE_DIR, emp.getImgOriginal());
+            return new FileDTO(); //빈 객체
         }
 
         //프로필사진 있었고, 변경된 경우
@@ -69,7 +70,7 @@ public class ProfileImgService {
     @Transactional
     public ResponseEntity<Resource> getProfileImage(Emp emp) {
         String fileUUID = emp.getImgUUID();
-        if (fileUUID == null || fileUUID.isEmpty()) {
+        if (ObjectUtils.isEmpty(fileUUID)) {
             return fileService.downloadFile(FILE_DIR, fileUUID, DEFAULT_PROFILE_IMAGE);
         } else {
             String originalFileName = empMapper.getImgOriginal(fileUUID);

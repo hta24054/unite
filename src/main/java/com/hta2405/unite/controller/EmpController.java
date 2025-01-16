@@ -21,6 +21,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -44,7 +45,7 @@ public class EmpController {
     public ModelAndView showEmpInfoPage(ModelAndView mv,
                                         @AuthenticationPrincipal UserDetails user,
                                         @RequestParam(required = false) String empId) {
-        String targetEmpId = (empId == null || empId.isEmpty()) ? user.getUsername() : empId;
+        String targetEmpId = (ObjectUtils.isEmpty(empId)) ? user.getUsername() : empId;
         Emp targetEmp = empService.getEmpById(targetEmpId);
         Emp emp = empService.getEmpById(user.getUsername());
 

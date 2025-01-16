@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -73,12 +74,13 @@ public class ReservationController {
         int overlapCount = reservationService.checkReservationOverlap(reservationDTO);
         if (overlapCount > 0) {
             System.out.println("이미 예약된 자원입니다.");
-            return 0;
+            return 0; // 중복 예약이 있는 경우
         }
 
         // 중복이 없다면 예약 추가
         return reservationService.resourceReservation(reservationDTO);
     }
+
 
     @ResponseBody
     @GetMapping("/getReservationList")
@@ -125,9 +127,16 @@ public class ReservationController {
     @PostMapping("/cancelReservation")
     public int cancelReservation(@RequestParam Long reservationId, @AuthenticationPrincipal UserDetails user) {
         String empId = user.getUsername();
-        int result = reservationService.cancelReservation(reservationId, empId);
-        return result;
+        return reservationService.cancelReservation(reservationId, empId);
     }
 
+    @GetMapping("/myReservationList")
+    public Model getMyReservationList(@AuthenticationPrincipal UserDetails user, Model model) {
+        String empId = user.getUsername();
 
+        // 예약 목록 가져오기
+        List<ReservationDTO> reservationList = reservationService.getMyReservationList(empId);
+        model.addAttribute("reservationList", reservationList);
+        return model;
+    }
 }

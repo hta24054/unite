@@ -26,7 +26,7 @@ public class Project {
 
 
     private String project_file_path;
-    private String project_file_original;
+    private String projectFileOriginal;
     private String project_file_uuid;
     private String project_file_type;
     private int project_finished;

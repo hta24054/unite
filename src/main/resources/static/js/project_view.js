@@ -57,7 +57,7 @@ function getList(state) {
                     output += `
 						<li id='${comment.taskCommentId}' class='comment-list-item ${replyClass}'>
 							<div class='comment-nick-area'>
-                                <img src="/emp/profile-image?empId=${comment.taskCommentWriter}"style="width:30px; height: 30px;">
+                                <img src="/api/emp/profile-image?empId=${comment.taskCommentWriter}"style="width:30px; height: 30px;">
 								<div class='comment-box'>
 									<div class='comment-nick-box'>
 										<div class='comment-nick-info'>

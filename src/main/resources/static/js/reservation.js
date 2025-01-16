@@ -121,8 +121,6 @@ $(document).ready(function () {
                 empId: $("#emp_id").val(), // 로그인한 사용자의 empId
             },
             success: function (data) {
-                console.log(data);
-
                 events = [];
                 if (data != null && data.length > 0) {
                     for (let i = 0; i < data.length; i++) {
@@ -175,8 +173,6 @@ $(document).ready(function () {
                 reservationInfo: $("#reservationInfo").val()
             }),
             success: function (data) {
-                console.log(data)
-
                 if (data === 0) {
                     alert('이미 예약된 자원입니다.');
                     return;  // 이미 예약된 자원이면 예약을 진행하지 않음
@@ -214,15 +210,15 @@ $(document).ready(function () {
                     let _html = "<ul class='deatail_list'>" +
                         "<li>분류명: " + data.resourceType + "</li>" +
                         "<li>자원명: " + data.resourceName + "</li>" +
-                        "<li>시작시간: " + moment(event.start).format("YYYY-MM-DD HH:mm") + "</li>";
+                        "<li>시작 일시: " + moment(event.start).format("YYYY-MM-DD HH:mm") + "</li>";
 
-                    // 종료시간 설정 (시작시간과 동일한 경우)
-                    _html += "<li>종료시간: " +
-                        moment(event.end && !moment(event.start).isSame(event.end) ? event.end : event.start).format("YYYY-MM-DD HH:mm") +
-                        "</li>";
+                    // 종료 일시 설정 (시작 일시와 동일한 경우)
+                    _html += "<li>종료 일시: " +
+                                moment(event.end && !moment(event.start).isSame(event.end) ? event.end : event.start).format("YYYY-MM-DD HH:mm") +
+                             "</li>";
 
                     _html += "<li>예약자: " + data.ename + "</li>" +
-                        "<li>사용용도: " + data.reservationInfo || "" + "</li>";
+                             "<li>사용용도: " + data.reservationInfo || "" + "</li>";
 
                     // 자원정보 존재할 경우
                     if (data.resourceInfo) {
@@ -343,22 +339,28 @@ $(document).ready(function () {
         const $resourceName = $("#resourceName");
 
         if ($start.val().trim() === "") {
-            alert("시작 날짜/시간을 선택하세요");
+            alert("시작 일시를 선택하세요");
             $start.focus();
             return false;
         }
 
         if ($end.val().trim() === "") {
-            alert("종료 날짜/시간을 선택하세요");
+            alert("종료 일시를 선택하세요");
             $end.focus();
             return false;
         }
 
         if (new Date($start.val()) > new Date($end.val())) {
-            alert("끝나는 날짜/시간이 시작 날짜/시간보다 이전입니다. 다시 확인해 주세요.");
+            alert("종료 일시가 시작 시작 일시보다 이전입니다. 다시 확인해 주세요.");
             $start.focus();
             return false;
         }
+
+        // if (!$("#allDay").prop("checked") && $start.val() === $end.val()) {
+        //     alert("시작 일시와 종료 일시는 동일할 수 없습니다. 다시 확인해 주세요.");
+        //     $end.focus();
+        //     return false;
+        // }
 
         if ($resourceType.val().trim() === "") {
             alert("분류명을 선택하세요");
@@ -462,6 +464,14 @@ $(document).ready(function () {
             locale: 'ko', // 한국어 설정
             events: events, // 전역 이벤트 배열 사용
             dateClick: function (info) {
+                // 현재 시간과 클릭된 날짜
+                let currentDate = moment(); // 현재 날짜와 시간
+                let clickedDate = moment(info.dateStr); // 클릭한 날짜
+                let startDate = clickedDate.set({
+                    hour: currentDate.hour(),
+                    minute: currentDate.minute()
+                });
+
                 if (!info.event) { // 빈 셀 클릭 시
                     $(".modal-header").find("h5").text("예약 하기");
                     $(".modal-body").find(".btn_wrap").html(`
@@ -470,7 +480,8 @@ $(document).ready(function () {
 				    `);
 
                     $("#allDay").prop("checked", false);
-                    $("#startAt, #endAt").prop("type", "datetime-local").val("");
+                    $("#startAt").prop("type", "datetime-local").val(startDate.format("YYYY-MM-DD HH:mm"));
+                    $("#endAt").prop("type", "datetime-local").val("");
                     $("#description").val("");
                     $resourceType.val("");
                     $resourceName.hide().empty().append('<option value="">자원명</option>');

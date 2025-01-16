@@ -42,26 +42,19 @@ public class HolidayService {
         return holidayMapper.getHolidayList(startDate, endDate);
     }
 
-    public String addHoliday(Holiday holiday) {
+    public int addHoliday(Holiday holiday) {
         if (holidayMapper.getHolidayName(holiday.getHolidayDate()) != null) {
-            return "휴일 등록을 실패하였습니다. 이미 등록된 휴일입니다.";
+            throw new IllegalArgumentException("이미 등록된 휴일입니다.");
         }
-        int result = holidayMapper.insertHoliday(holiday);
-        if (result != 1) {
-            return "휴일 등록 실패";
-        }
-        return "휴일 등록 성공";
+
+        return holidayMapper.insertHoliday(holiday);
     }
 
-    public String deleteHoliday(LocalDate date) {
-        int result = holidayMapper.deleteHoliday(date);
-        if (result != 1) {
-            return "휴일 삭제를 실패하였습니다.";
-        }
-        return "휴일을 삭제하였습니다.";
+    public int deleteHoliday(LocalDate date) {
+        return holidayMapper.deleteHoliday(date);
     }
 
-    public void addWeekend(LocalDate startDate, LocalDate endDate) {
+    public boolean addWeekend(LocalDate startDate, LocalDate endDate) {
         LocalDate date = startDate;
         while (!date.isAfter(endDate)) {
             DayOfWeek dayOfWeek = date.getDayOfWeek();
@@ -72,13 +65,14 @@ public class HolidayService {
             }
             date = date.plusDays(1); // 날짜를 하루씩 증가
         }
+        return true;
     }
 
     private boolean isWeekend(DayOfWeek dayOfWeek) {
         return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
     }
 
-    public void insertYearlyHoliday() {
+    public boolean insertYearlyHoliday() {
         TreeMap<LocalDate, String> map = getYearlyHolidays(apiKey);
 
         for (LocalDate date : map.keySet()) {
@@ -89,6 +83,7 @@ public class HolidayService {
                 holidayMapper.insertHoliday(holiday);
             }
         }
+        return true;
     }
 
     private static TreeMap<LocalDate, String> getYearlyHolidays(String apiKey) {

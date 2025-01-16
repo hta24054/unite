@@ -9,11 +9,10 @@
         <meta name="description" content=""/>
         <meta name="author" content=""/>
         <title>Unite</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+                crossorigin="anonymous"></script>
         <!-- FontAwesome -->
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-        <!-- Custom Styles -->
-        <link th:href="@{/css/layout.css}" rel="stylesheet"/>
-        <link th:href="@{/css/notification.css}" rel="stylesheet"/>
         <!-- jQuery -->
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
         <!-- Popper.js -->
@@ -32,6 +31,12 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
         <!--        stomp-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+        <script th:src="@{/js/layout.js}"></script>
+        <link th:href="@{/css/layout.css}" rel="stylesheet"/>
+        <script th:src="@{/js/notification.js}"></script>
+        <link th:href="@{/css/notification.css}" rel="stylesheet"/>
+        <script th:src="@{/js/layout_ai.js}"></script>
+        <link th:href="@{/css/layout_ai.css}" rel="stylesheet"/>
     </head>
     <body class="sb-nav-fixed">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -118,8 +123,7 @@
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
-                   aria-expanded="false"><img th:src="@{/emp/profile-image(empId=${#authentication.name})}"
-                                              width="30px" style="border-radius: 50%; background-color: white;"></a>
+                   aria-expanded="false"><img th:src="@{/api/emp/profile-image(empId=${#authentication.name})}" width="30px" style="border-radius: 50%; background-color: white;"></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" th:href="@{/emp/password}">비밀번호 변경</a></li>
                     <li><a class="dropdown-item" href="#!">Activity Log</a></li>
@@ -283,8 +287,8 @@
                              data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" th:href="@{/project/main}">진행 중 프로젝트</a>
-                                <a class="nav-link" th:href="@{/project/complete?dowhat=2}">완료 프로젝트</a>
-                                <a class="nav-link" th:href="@{/project/cancel?dowhat=1}">취소 프로젝트</a>
+                                <a class="nav-link" th:href="@{/project/done?dowhat=2}">완료 프로젝트</a>
+                                <a class="nav-link" th:href="@{/project/done?dowhat=1}">취소 프로젝트</a>
                                 <a class="nav-link" th:href="@{/project/create}">프로젝트 추가</a>
                             </nav>
                         </div>
@@ -301,9 +305,7 @@
                              data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" th:href="@{/reservation/reservationCalender}">자원예약</a>
-                                <a class="nav-link"
-                                   th:href="@{/reservation/reservationCalender/myReservationList?emp_id=${id}}">나의 예약
-                                    목록</a>
+                                <a class="nav-link" th:href="@{/reservation/myReservationList}">나의 예약 목록</a>
                             </nav>
                         </div>
 
@@ -406,6 +408,25 @@
             </footer>
         </div>
     </div>
+
+    <div id="aiBadge" class="ai-badge">
+        <img th:src="@{/image/ai_icon4.png}" alt="AI Badge">
+    </div>
+    <!-- AI채팅창 -->
+    <div id="aiChat" class="chat-window hiddenAi">
+        <div class="chat-header">
+            AI Chat
+            <span id="closeChat" class="close-btn">&times;</span>
+        </div>
+        <div class="chat-body">
+            <!-- 동적으로 추가될 채팅 메시지 -->
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chatInput" placeholder="Type your command...">
+            <button id="aiSend">Send</button>
+        </div>
+    </div>
+
     <!--토스트 컨테이너-->
     <div id="toastContainer" style="position: fixed; bottom: 10px; right: 10px; z-index: 9999;"></div>
     <script th:src="@{/js/layout.js}"></script>

@@ -43,7 +43,7 @@
         $('#sign').click(function () {
             if (confirm('문서를 결재하시겠습니까?')) {
                 $.ajax({
-                    url: /*[[@{/doc/sign}]]*/'',
+                    url: /*[[@{/api/doc/sign}]]*/'',
                     type: 'POST',
                     data: {docId: /*[[${doc.docId}]]*/''},
                     success: function () {
@@ -60,7 +60,7 @@
         $('#revoke').click(function () {
             if (confirm('결재한 문서를 회수하시겠습니까?')) {
                 $.ajax({
-                    url: /*[[@{/doc/revoke}]]*/'',
+                    url: /*[[@{/api/doc/revoke}]]*/'',
                     data: {docId: /*[[${doc.docId}]]*/''},
                     type: 'POST',
                     success: function () {
@@ -76,7 +76,7 @@
         $('#delete').click(function () {
             if (confirm('문서를 삭제하시겠습니까?')) {
                 $.ajax({
-                    url: /*[[@{/doc}]]*/'',
+                    url: /*[[@{/api/doc}]]*/'',
                     type: 'DELETE',
                     data: {docId: /*[[${doc.docId}]]*/''},
                     success: function () {

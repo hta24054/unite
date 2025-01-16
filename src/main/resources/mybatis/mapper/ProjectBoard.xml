@@ -67,6 +67,9 @@
                     <if test="taskFile != null">
                             ,task_file_path = #{taskFile.filePath}, task_file_original = #{taskFile.fileOriginal}, task_file_uuid = #{taskFile.fileUUID}, task_file_type = #{taskFile.fileType}
                     </if>
+                    <if test="taskFile == null">
+                        ,task_file_path = "", task_file_original = "", task_file_uuid ="", task_file_type = ""
+                    </if>
                     where project_id=#{projectId} and emp_id=#{memberId} and task_id=#{taskId}
     </update>
     <insert id="insertComment" parameterType="map" useGeneratedKeys="true" keyProperty="taskCommentId">

@@ -1,5 +1,5 @@
+const contextPath = /*[[@{/}]]*/ '';
 $(document).ready(function () {
-    const contextPath = /*[[@{/}]]*/ '';
     let originalValues = {};
     let editableFields = []; // 서버에서 가져온 수정 가능한 필드 목록
     let role;
@@ -7,7 +7,7 @@ $(document).ready(function () {
     // 서버에서 editable-field 데이터를 가져옴
     function fetchEditableFields() {
         return $.ajax({
-            url: contextPath + '/emp/editable-field',
+            url: contextPath + '/api/emp/editable-field',
             method: 'GET',
             success: function (data) {
                 editableFields = data.field; // 수정 가능한 필드 목록
@@ -218,13 +218,17 @@ $(document).ready(function () {
         formData.append("dto", JSON.stringify(dto)); // JSON 데이터를 문자열로 추가
 
         $.ajax({
-            url: role === "ROLE_ADMIN" ? `/emp/admin/${$("input[name='empId']").val()}` : `/emp/${$("input[name='empId']").val()}`,
+            url: role === "ROLE_ADMIN" ? `/api/emp/admin/${$("input[name='empId']").val()}` : `/api/emp/${$("input[name='empId']").val()}`,
             method: 'PATCH',
             processData: false, // FormData 객체 사용 시 필수
             contentType: false, // FormData 객체 사용 시 필수
             data: formData,
             success: function (data) {
-                alert("수정이 완료되었습니다.");
+                if (data === 1) {
+                    alert("수정이 완료되었습니다.");
+                } else {
+                    alert("수정 중 오류가 발생했습니다.");
+                }
                 location.reload();
             },
             error: function () {

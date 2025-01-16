@@ -8,6 +8,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -45,7 +46,7 @@ public class LocalFileService implements FileService {
     @Override
     public ResponseEntity<Resource> downloadFile(String subDirectory, String fileUUID, String fileName) {
         Path filePath = Paths.get(BASE_DIR, subDirectory, fileUUID + "_" + fileName);
-        if (fileUUID == null || fileUUID.isEmpty()) {
+        if (ObjectUtils.isEmpty(fileUUID)) {
             filePath = Paths.get(BASE_DIR, subDirectory, fileName);
         }
 

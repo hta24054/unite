@@ -9,7 +9,7 @@
             <title>출장명령부 작성</title>
         </head>
         <body>
-        <form id="doc_form" action="${pageContext.request.contextPath}/doc/trip_write" method="POST">
+        <form id="doc_form">
             <div class="container mt-4">
                 <div class="document-wrapper">
                     <div class="text-center mb-4">
@@ -104,7 +104,8 @@
                 </div>
             </div>
         </form>
-        <script th:inline="javascript">
+        <script>
+            const contextPath = /*[[@{/}]]*/ '';
             $(document).ready(function () {
                 // 제출 버튼 클릭 시 실행
                 $('#submit-button').on('click', function (event) {
@@ -148,7 +149,7 @@
                         signers: $('input[name="sign[]"]').map(function () {
                             return $(this).val();
                         }).get()
-                    })], { type: "application/json" }));
+                    })], {type: "application/json"}));
 
                     // 파일 추가
                     const fileInput = $('input[name="files"]')[0];
@@ -160,14 +161,14 @@
 
                     // AJAX 요청
                     $.ajax({
-                        url: /*[[@{/doc/trip}]]*/'',
+                        url: contextPath + '/api/doc/trip',
                         type: "POST",
                         data: formData,
                         processData: false,
                         contentType: false,
                         success: function (response) {
                             alert("문서 작성이 완료되었습니다.");
-                            window.location.href = /*[[@{/doc/inProgress}]]*/'';
+                            window.location.href = contextPath + '/doc/inProgress';
                         },
                         error: function () {
                             alert("문서 작성 중 오류가 발생했습니다.");

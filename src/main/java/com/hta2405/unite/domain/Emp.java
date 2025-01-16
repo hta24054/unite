@@ -71,7 +71,6 @@ public class Emp {
     }
 
     public void updateBySelf(EmpSelfUpdateDTO dto, FileDTO fileDTO) {
-        this.gender = dto.getEmail();
         this.email = dto.getEmail();
         this.tel = dto.getTel();
         this.mobile = dto.getMobile();

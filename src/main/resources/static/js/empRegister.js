@@ -1,3 +1,4 @@
+const contextPath = /*[[@{/}]]*/ '';
 $(document).ready(function () {
     const contextPath = /*[[@{/}]]*/ '';
     let fileChange = 0;
@@ -70,7 +71,7 @@ $(document).ready(function () {
 
         // AJAX 요청
         $.ajax({
-            url: contextPath + "/admin/emp-manage",
+            url: contextPath + "/api/admin/emp-manage",
             method: 'POST',
             processData: false,
             contentType: false,

@@ -9,7 +9,7 @@
         </head>
         <body class="sb-nav-fixed">
         <div>(임시) 홈화면입니다. 로그인 한 사용자 : [[${#authentication.name}]] 프로필사진 : <img
-                th:src="@{/emp/profile-image(empId=${#authentication.name})}" width="30px"></div>
+                th:src="@{/api/emp/profile-image(empId=${#authentication.name})}" width="30px"></div>
         <div th:replace="attend/attendBox.html">
         </div>
         <!-- 팝업 컨테이너 -->

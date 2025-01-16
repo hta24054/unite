@@ -208,7 +208,7 @@ $(document).ready(function () {
 
                         const postRow = `
 	                        <tr>
-	                        	<td><img src="${contextPath}/emp/profile-image?UUID=${notice.task_file_uuid}"style="width:36px; height: 36px; border-radius:50%; border: 1px solid gray;"></td>
+	                        	<td><img src="${contextPath}/api/emp/profile-image?UUID=${notice.task_file_uuid}"style="width:36px; height: 36px; border-radius:50%; border: 1px solid gray;"></td>
 	                            <td>${notice.taskWriter} ${notice.Jobname}님이<br>${notice.ProjectName} - ${notice.taskTitle}을(를)<br>${action}<br><br><small>${actionDate}</small></td>
 	                        </tr>
 	                    `;

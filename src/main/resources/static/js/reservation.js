@@ -356,11 +356,11 @@ $(document).ready(function () {
             return false;
         }
 
-        if (!$("#allDay").prop("checked") && $start.val() === $end.val()) {
-            alert("시작 일시와 종료 일시는 동일할 수 없습니다. 다시 확인해 주세요.");
-            $end.focus();
-            return false;
-        }
+        // if (!$("#allDay").prop("checked") && $start.val() === $end.val()) {
+        //     alert("시작 일시와 종료 일시는 동일할 수 없습니다. 다시 확인해 주세요.");
+        //     $end.focus();
+        //     return false;
+        // }
 
         if ($resourceType.val().trim() === "") {
             alert("분류명을 선택하세요");

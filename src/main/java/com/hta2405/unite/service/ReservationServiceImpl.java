@@ -6,7 +6,6 @@ import com.hta2405.unite.mybatis.mapper.ReservationMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -55,16 +54,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public void findReservationByEmpId(String empId) {
-        reservationDAO.findReservationByEmpId(empId);
-    }
-
-    @Override
     public List<ReservationDTO> getMyReservationList(String empId) {
-        reservationDAO.findReservationByEmpId(empId);
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("empId", empId);
-
-        return reservationDAO.getMyReservationList(hashMap);
+        return reservationDAO.getMyReservationList(empId);
     }
 }

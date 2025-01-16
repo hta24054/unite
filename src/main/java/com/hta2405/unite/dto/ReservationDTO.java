@@ -1,7 +1,6 @@
 package com.hta2405.unite.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.hta2405.unite.domain.Resource;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString
 public class ReservationDTO {
-    private int reservationId; // 자원예약id
+    private Long reservationId; // 자원예약id
     private Long resourceId; // 자원id
     private String empId; // 예약자id
     private String ename; // 예약자명

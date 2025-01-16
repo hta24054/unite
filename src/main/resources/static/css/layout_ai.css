@@ -1,5 +1,5 @@
 /* 뱃지 스타일 */
-.badge {
+.ai-badge {
     position: fixed;
     bottom: 40px; /* 화면 하단 여백 */
     right: 50px; /* 화면 오른쪽 여백 */
@@ -12,7 +12,7 @@
     overflow: hidden; /* 이미지가 영역을 넘어가지 않도록 */
 }
 
-.badge img {
+.ai-badge img {
     width: 100%;
     height: 100%;
     object-fit: cover; /* 이미지가 배지 크기에 맞게 */
@@ -141,4 +141,30 @@
     background-color: #334466;
     color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chat-message.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    margin: 10px 0;
+}
+
+.loader {
+    width: 24px;
+    height: 24px;
+    border: 4px solid #007bff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }

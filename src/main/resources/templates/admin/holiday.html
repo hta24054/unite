@@ -96,6 +96,7 @@
         </div>
 
         <script>
+            const contextPath = /*[[@{/}]]*/ '';
             (function () {
                 $(function () {
                     const $scheduleModal = $("#scheduleModal");
@@ -123,7 +124,7 @@
                             const endMonth = info.endStr.substring(0, 7);
 
                             $.ajax({
-                                url: "../admin/holiday/list?start=" + startMonth + "&end=" + endMonth,
+                                url: contextPath + "/api/admin/holiday?start=" + startMonth + "&end=" + endMonth,
                                 type: 'GET',
                                 dataType: 'json',
                                 success: function (data) {
@@ -162,7 +163,7 @@
                     $("#holidayImport").on("click", function () {
                         if (confirm("모든 주말이 휴일로 등록됩니다. 진행하시겠습니까?")) {
                             $.ajax({
-                                url: "../admin/holiday/weekend",
+                                url: contextPath + "/api/admin/holiday/weekend",
                                 type: "POST",
                                 success: function (data) {
                                     alert(data);
@@ -177,7 +178,7 @@
                     $("#publicHolidayImport").on("click", function () {
                         if (confirm("모든 공휴일이 휴일로 등록됩니다. 진행하시겠습니까?")) {
                             $.ajax({
-                                url: "../admin/holiday/api",
+                                url: contextPath + "/api/admin/holiday/api",
                                 type: "POST",
                                 success: function (data) {
                                     alert(data);
@@ -196,7 +197,7 @@
                         }
 
                         $.ajax({
-                            url: "/admin/holiday",
+                            url: contextPath + "/api/admin/holiday",
                             type: "POST",
                             data: {
                                 date: $holidayDate.val(),
@@ -216,7 +217,7 @@
                     $("#deleteHoliday").on("click", function () {
                         if (confirm("정말 삭제하시겠습니까?")) {
                             $.ajax({
-                                url: "../admin/holiday",
+                                url: contextPath + "/api/admin/holiday",
                                 type: "DELETE",
                                 data: {
                                     date: $holidayDate.val()
@@ -235,7 +236,6 @@
                 });
             })();
         </script>
-
         </body>
         </html>
     </th:block>

@@ -1,3 +1,4 @@
+const contextPath = /*[[@{/}]]*/ '';
 $(document).ready(function () {
     $('.summernote').summernote({
         height: 500, // set editor height
@@ -32,7 +33,7 @@ function insertNotice() {
     }
     if (confirm("정말로 등록하시겠습니까?")) {
         $.ajax({
-            url: `../admin/notice`,
+            url: contextPath + `/api/admin/notice`,
             method: 'POST',
             data: {
                 noticeSubject: $('#subject').val(),
@@ -76,7 +77,7 @@ function updateNotice() {
     }
     if (confirm("정말로 수정하시겠습니까?")) {
         $.ajax({
-            url: `../admin/notice`,
+            url: contextPath + `/api/admin/notice`,
             method: 'PATCH',
             data: {
                 noticeId: $('#noticeId').val(),
@@ -100,7 +101,7 @@ function deleteNotice() {
     const noticeId = $('#noticeId').val();
     if (confirm("정말로 삭제하시겠습니까?")) {
         $.ajax({
-            url: `../admin/notice`,
+            url: contextPath + `/api/admin/notice`,
             method: 'DELETE',
             data: {noticeId: noticeId},
             success: function (data) {

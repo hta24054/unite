@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hta2405.unite.mybatis.mapper.ReservationMapper">
+    <!-- 자원 선택 시 해당 자원명 불러오기 -->
+<!--    <select id="resourceSelectChange">-->
+<!--        SELECT MIN(resc_id) AS resc_id, resc_type, resc_name, resc_usable-->
+<!--        FROM resc-->
+<!--        WHERE resc_type = #{rescType} AND resc_usable = 1-->
+<!--        GROUP BY resc_type, resc_name, resc_usable-->
+<!--        ORDER BY resc_id ASC-->
+<!--    </select>-->
+
+    <select id="resourceSelectChange">
+        SELECT *
+        FROM resc
+        WHERE resc_type = #{rescType} AND resc_usable = 1
+        GROUP BY resc_type, resc_name, resc_usable
+        ORDER BY resc_id ASC
+    </select>
+
+    <!-- 중복 예약 여부 체크 -->
+    <select id="checkReservationOverlap" resultType="int">
+        SELECT COUNT(*)
+        FROM reservation
+        WHERE resource_id = #{resourceId}
+        AND (
+            <!-- 종일 예약과 새 예약이 중복되는지 검사 -->
+            (reservation_allDay = 1 AND
+            reservation_start &lt;= #{reservationEnd} AND reservation_end &gt;= #{reservationStart})
+            OR
+            <!-- 시간 기반 예약과 새 예약이 중복되는지 검사 -->
+            (reservation_allDay = 0 AND
+            #{reservationStart} &lt; reservation_end AND #{reservationEnd} &gt; reservation_start)
+        )
+    </select>
+
+    <!-- 예약 추가 -->
+    <insert id="resourceReservation" parameterType="com.hta2405.unite.dto.ReservationDTO">
+        INSERT INTO reservation
+        (resource_id, emp_id, reservation_start, reservation_end, reservation_info, reservation_allDay)
+        VALUES
+            (#{resourceId}, #{empId}, #{reservationStart}, #{reservationEnd}, #{reservationInfo}, #{reservationAllDay})
+    </insert>
+
+    <select id="getReservationByResourceIdAndName" resultType="com.hta2405.unite.dto.ReservationDTO">
+        SELECT r.*, s.resc_name, r.emp_id
+        FROM reservation r
+                 JOIN resc s ON r.resource_id = s.resc_id
+        WHERE r.resource_id = #{resourceId}
+          AND s.resc_name = #{resourceName};
+    </select>
+
+
+    <select id="getAllReservation" resultType="com.hta2405.unite.dto.ReservationDTO">
+        SELECT *
+        FROM reservation
+    </select>
+
+    <!-- 자원예약 상세정보 팝업-->
+    <select id="getReservationModal" resultType="com.hta2405.unite.dto.ReservationDTO">
+        SELECT
+            -- 자원 정보
+            resc.resc_type AS resourceType,
+            resc.resc_name AS resourceName,
+            resc.resc_info AS resourceInfo,
+            resc.resc_usable AS resourceUsable,
+
+            -- 예약 정보
+            reservation.reservation_id,
+            reservation.resource_id,
+            reservation.emp_id,
+            reservation.reservation_start,
+            reservation.reservation_end,
+            reservation.reservation_info,
+            reservation.reservation_allDay,
+
+            -- 예약자 정보
+            emp.ename
+        FROM reservation
+             LEFT JOIN resc resc ON reservation.resource_id = resc.resc_id
+             LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id
+        WHERE reservation.reservation_id = #{reservationId}
+    </select>
+
+    <delete id="cancelReservation">
+        DELETE
+        FROM reservation
+        WHERE reservation_id = #{reservationId} AND emp_id = #{empId}
+    </delete>
+
+</mapper>

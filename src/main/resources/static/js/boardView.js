@@ -1,4 +1,6 @@
 var option = 1; //선택한 등록순과 최신순을 수정, 삭제, 추가 후에도 유지되도록 하기 위한 변수로 사용됩니다.
+var deleteFile = null;
+var currentFile = null;
 
 function getList(num) {
     option = num;
@@ -34,16 +36,16 @@ function getList(num) {
 
                 rdata.postCommentList.forEach(comment => {
                     let lev = comment.postCommentReLev;
-                    let replayClass = (lev == 1) ? 'comment-list-item--reply lev1' : (lev == 2) ? 'comment-list-item--reply lev2' : '';
+                    let replayClass = (lev === 1) ? 'comment-list-item--reply lev1' : (lev === 2) ? 'comment-list-item--reply lev2' : '';
 
                     let src = `/emp/profile-image?empId=` + comment.postCommentWriter;
 
                     let replyButton = (lev < 2) ? `<a href='javascript:replyform(${comment.commentId}, ${lev}, ${comment.postCommentReSeq},${comment.postCommentReRef})' class='comment-info-button'>
-													<img class='replyImg' src='/unite/image/postLine.png'>댓글</a>` : '';
+													<img class='replyImg' src='/image/postLine.png'>댓글</a>` : '';
 
                     //로그인한 사람이 댓글 작성자인 경우
                     var empValue = $("#empId").val();
-                    let toolButtons = empValue == comment.postCommentWriter || empValue == 'admin' ? `
+                    let toolButtons = empValue === comment.postCommentWriter || empValue === 'admin' ? `
 						<div class='comment-tool'>
 							<div title='더보기' class='comment-tool-button'>
 								<div>&#46;&#46;&#46;</div>
@@ -51,42 +53,55 @@ function getList(num) {
 							<div id='comment-list-item-layer${comment.commentId}' class='LayerMore'>
 								<ul class='layer-item'>
 									<li class='layer-list'>
-										<a href='javascript:updateForm(${comment.commentId},"${comment.postCommentFileOriginal}")' class='layer-button'>수정</a>
+										<a href='javascript:updateForm(${comment.commentId},"${comment.postCommentFileOriginal}","${comment.postCommentFileUUID}")' class='layer-button'>수정</a>
 										<a href='javascript:del(${comment.commentId})' class='layer-button'>삭제</a>
 									</li>
 								</ul>
 							</div>
 						</div>` : '';
 
-                    output += `
-						<li id='${comment.commentId}' class='comment-list-item ${replayClass}'>
-							<div class='comment-nick-area'>
-								<div class='comment-box'>
-									<div class='comment-nick-box'>
-										
-									<img src='${src}' class="profileImg" alt='프로필 사진' width='36' height='36'>
-									<span class='comment-nickname'>${rdata.empMap[comment.postCommentWriter]}</span>
-									${replyButton}
-									<span class='comment-info-date'>${comment.postCommentDate}</span>
-									
-									<div class='comment-nick-info'>
-									</div>
-									</div>
-									<div class='comment-text-box'>
-											<span class='text-comment'>${comment.postCommentContent}</span>
-									</div>
-									<div class='comment-info-box'>`;
-                    //파일이 존재할 경우
-                    if (comment.postCommentFileUUID != null) {
-                        output += `<img src="/unite/image/attach.png" style="width:13px; margin: 0px 5px 0px 20px;">
-		    					   <a href="comments/down?commentId=${comment.commentId}" style="font-size: 16px; color: gray;">${comment.postCommentFileOriginal}</a>`;
-                    }
+                    output +=
+                        `<li id='${comment.commentId}' class='comment-list-item ${replayClass}'>
+                                <div class='comment-nick-area'>
+                                    <div class='comment-box'>
+                                        <div class='comment-nick-box'>
+                                            
+                                        <img src='${src}' class="profileImg" alt='프로필 사진' width='36' height='36'>
+                                        <span class='comment-nickname'>${rdata.empMap[comment.postCommentWriter]}</span>
+                                        ${replyButton}
+                                        <span class='comment-info-date'>${comment.postCommentDate.split('T').join(' ')}</span>
+                                        
+                                        <div class='comment-nick-info'>
+                                        </div>
+                                        </div>`;
 
-                    output += `</div>
+                    if (comment.deleted === 0) {
+                        output +=
+                            `<div class='comment-text-box'>
+                                <span class='text-comment'>${comment.postCommentContent}</span>
+                            </div>
+                            <div class='comment-info-box'>`;
+
+                        //파일이 존재할 경우
+                        if (comment.postCommentFileUUID !== null) {
+                            output += `<img src="/image/attach.png" style="width:13px; margin: 0px 5px 0px 20px;">
+                                       <a href="/comments/down?commentId=${comment.commentId}" style="font-size: 16px; color: gray;">${comment.postCommentFileOriginal}</a>`;
+                        }
+
+                        output += `</div>
 								${toolButtons}
 							</div>
 						</div>
 					</li>`;
+                    } else {
+                        output +=
+                            `<div class='comment-text-box'>
+                                            <span class='text-comment' style="color: gray">&nbsp;삭제된 댓글 메시지입니다.</span>
+                                        </div>  
+                                    </div>
+                                </div>
+                            </li>`;
+                    }
                 });
 
                 $('.comment-list').html(output);
@@ -107,7 +122,7 @@ function getList(num) {
 }//function getList()
 
 //더보기-수정 클릭한 경우에 수정 폼을 보여줍니다.
-function updateForm(commentId, postCommentFileOriginal) {
+function updateForm(commentId, postCommentFileOriginal, postCommentFileUUID) {
     $(".comment-tool, .LayerMore").hide(); // 더보기 및 수정 삭제 영역 숨김
 
     let $commentId = $('#' + commentId);
@@ -128,9 +143,9 @@ function updateForm(commentId, postCommentFileOriginal) {
     //글자 수 표시
     $commentId.find('.comment-write-area-count').text(`${content.length}/200`);
 
-    console.log('postCommentFileOriginal=', postCommentFileOriginal)
+    if (postCommentFileOriginal !== "null") {//postCommentFileOriginal !== "undefined" &&
+        currentFile = [postCommentFileUUID, postCommentFileOriginal];
 
-    if (postCommentFileOriginal !== "undefined" && postCommentFileOriginal !== null) {
         var file = {
             name: postCommentFileOriginal,
             commentId: commentId
@@ -142,10 +157,11 @@ function updateForm(commentId, postCommentFileOriginal) {
         $('.file-info .remove-file').on('click', function () {
             $('#' + commentId + " #upfile").value = ''; // 파일 선택 초기화
             $('.comment-attachFile').innerHTML = ''; // 파일 이름 삭제
+            deleteFile = [postCommentFileUUID, postCommentFileOriginal]; //삭제된 파일 저장
         });
     }
 
-    updateDividerHeight();
+    // updateDividerHeight();
 }
 
 //더보기 -> 삭제 클릭한 경우 실행하는 함수
@@ -156,11 +172,11 @@ function del(commentId) {//num : 댓글 번호
     }
 
     $.ajax({
-        url: 'comments/delete',
+        url: '/comments/delete',
         data: {commentId: commentId},
+        type: "post",
         success: function (rdata) {
-
-            if (rdata == 1) {
+            if (rdata) {
                 getList(option);
             } else {
                 alert('삭제 중 오류가 발생했습니다.')
@@ -173,7 +189,6 @@ function del(commentId) {//num : 댓글 번호
 
 //답글 달기 폼
 function replyform(commentId, lev, seq, ref) {
-    //수정 삭제 영역 선택 후 답글쓰기를 클릭한 경우
     $(".LayerMore").hide(); //수정 삭제 영역 숨겨요
 
     let $commentId = $('#' + commentId);
@@ -203,7 +218,7 @@ function replyform(commentId, lev, seq, ref) {
     //댓글 폼 보이지 않습니다.
     $('div > div.comment-area > div.comment-write-container').hide();
 
-    updateDividerHeight();
+    // updateDividerHeight();
 }//replyform end
 
 function commentAddFile(file) {
@@ -226,14 +241,14 @@ function commentAddFile(file) {
         // 파일 이름을 표시할 새로운 요소 생성
         const fileNameHtml = `
             <div class="file-info">
-                ${fileName}
+                <span class="commentFileName">${fileName}</span>
                 <span class="remove-file" style="cursor: pointer; color: red; font-weight: bold;">x</span>
             </div>
         `;
 
         // 파일 이름을 .comment-attachFile에 추가
         fileDiv.html(fileNameHtml);
-        updateDividerHeight();
+        // updateDividerHeight();
     }
 }
 
@@ -257,16 +272,16 @@ $(function () {
     $('.comment-list + .comment-write-container .comment-write .btn-register').click(function () {
         const content = $('.comment-write-area-text').val();
         if (!content.trim()) {//내용없이 등록 클릭한 경우
-            alert("1자 이상, 200자 이하로 입력해야 합니다.")
+            alert("댓글을 입력해주세요")
             return
         }
         const file = $('#upfile')[0].files[0];
 
         var formData = new FormData();
         if (file) {
-            formData.append("file", file);
+            formData.append("attachFile", file);
         }
-        formData.append("empId", $("#empId").val());
+        // formData.append("empId", $("#empId").val());
         formData.append("postCommentContent", $(".comment-write-area-text").val());
         formData.append("postCommentReLev", 0);
         formData.append("postId", $("#postId").val());
@@ -274,7 +289,7 @@ $(function () {
 
 
         $.ajax({
-            url: "comments/add",//원문 등록
+            url: "/comments/add",//원문 등록
             data: formData,
             type: 'post',
             processData: false, // 데이터를 자동으로 처리하지 않음
@@ -283,7 +298,6 @@ $(function () {
                 if (rdata == 1) {
                     getList(option);
                 }
-
             }
         })//ajax
 
@@ -291,7 +305,6 @@ $(function () {
         $('.comment-write-area-count').text('0/200')//입력한 글 카운트 초기화
         $('.comment-attachFile').html('');//첨부파일 초기화
         $('#upfile').val("");
-
     })//$('ul + .comment-write .btn-register').click(function(){
 
     //더보기를 클릭한 경우
@@ -316,13 +329,19 @@ $(function () {
 
         var formData = new FormData();
         if (file) {
-            formData.append("file", file);
+            formData.append("attachFile", file);
         }
         formData.append("commentId", commentId);
         formData.append("postCommentContent", content);
+        if (currentFile != null && file != null) {
+            formData.append("deletedFile", currentFile);
+        }
+        if (deleteFile != null) {
+            formData.append("deletedFile", deleteFile);
+        }
 
         $.ajax({
-            url: 'comments/update',
+            url: '/comments/update',
             data: formData,
             type: 'post',
             processData: false, // 데이터를 자동으로 처리하지 않음
@@ -368,17 +387,16 @@ $(function () {
 
         var formData = new FormData();
         if (file) {
-            formData.append("file", file);
+            formData.append("attachFile", file);
         }
-        formData.append("empId", $("#empId").val());
         formData.append("postCommentContent", content);
-        formData.append("postCommentReLev", $(this).attr('data-lev'));
         formData.append("postId", $("#postId").val());
+        formData.append("postCommentReLev", $(this).attr('data-lev'));
         formData.append("postCommentReSeq", $(this).attr('data-seq'));
         formData.append("postCommentReRef", $(this).attr('data-ref'));
 
         $.ajax({
-            url: 'comments/reply',
+            url: '/comments/reply',
             data: formData,
             type: 'post',
             processData: false, // 데이터를 자동으로 처리하지 않음

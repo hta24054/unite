@@ -10,20 +10,20 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @Component
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
+
 
     public JwtAuthorizationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
@@ -45,13 +45,16 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             try {
                 Claims claims = jwtUtil.validateToken(token);
 
-                String username = claims.get("username", String.class);
+                String empId = claims.get("empId", String.class);
                 String role = claims.get("role", String.class);
-                if (username != null) {
-                    UserDetails userDetails = User.builder()
-                            .username(username)
+                Long deptId = claims.get("deptId", Long.class);
+
+                if (empId != null) {
+                    CustomUserDetails userDetails = CustomUserDetails.builder()
+                            .empId(empId)
+                            .deptId(deptId)
                             .password("")
-                            .authorities(Collections.singleton(() -> role))
+                            .authorities(List.of(new SimpleGrantedAuthority(role))) // 권한 설정
                             .build();
 
                     UsernamePasswordAuthenticationToken authentication =

@@ -15,11 +15,11 @@ import java.time.LocalDate;
 @Builder
 public class DocVacation {
     private Long docVacationId;
-    private LocalDate vacationApply;
+    private Long docId;
     private LocalDate vacationStart;
     private LocalDate vacationEnd;
-    private int vacationCount;
     private AttendType vacationType;
+    private int vacationCount;
     private String vacationFilePath;
     private String vacationFileOriginal;
     private String vacationFileUUID;

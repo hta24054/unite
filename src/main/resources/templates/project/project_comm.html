@@ -1,0 +1,135 @@
+<th:block th:replace="layout :: setContent(~{this::content})">
+	<th:block th:fragment="content">
+		<!DOCTYPE html>
+		<html xmlns:th="http://www.thymeleaf.org">
+		<head>
+			<title>Insert title here</title>
+		<!--	<jsp:include page="../common/header.jsp"/>-->
+		<!--	<jsp:include page="project_leftbar.jsp"/>-->
+			<link rel="stylesheet" th:href="@{/css/view.css}" type="text/css">
+			<script th:src="@{/js/project_view.js}"></script>
+			<script>
+				var contextPath = "${pageContext.request.contextPath}";
+				var projectName = "${left}";
+			</script>
+		</head>
+		<body>
+			<div class="container">
+				<input type="hidden" th:value="${projectId}" id="projectId">
+				<input type="hidden" th:value="${taskId}" id="taskId">
+				<input type="hidden" th:value="${#authentication.name}" id="loginId">
+				<table class="table">
+					<tr>
+						<th colspan="2" th:text="${projectName}"></th>
+					</tr>
+					<tr>
+						<td><div>투두리스트</div></td>
+						<td><div th:text="${task.toDo}"></div></td>
+					</tr>
+					<tr>
+						<td><div>글쓴이</div></td>
+						<td><div th:text="${task.memberName}"></div></td>
+					</tr>
+					<tr>
+						<td><div>제목</div></td>
+						<td><span th:text="${task.taskSubject}"></span></td>
+					</tr>
+					<tr>
+						<td><div>내용</div></td>
+						<td style="padding-right: 0px">
+							<textarea class="form-control" rows="5" readonly th:text="${task.taskContent}"></textarea>
+						</td>
+					</tr>
+
+					<tr>
+						<td><div>첨부파일</div></td>
+						<th:block th:if="${not #strings.isEmpty(task.taskFileOriginal)}">
+							<td>
+								<a th:href="@{/projectBoard/down(fileuuid=${task.taskFileUuid},originalFilename=${task.taskFileOriginal})}"
+								   th:title="${task.taskFileOriginal}" style="text-decoration: none; color: inherit;">
+									<img th:src="@{/image/down.png}" style="width: 10px; vertical-align: middle;">&nbsp;
+									<span th:text="${task.taskFileOriginal}" style="color: inherit;"></span>
+								</a>
+
+							</td>
+						</th:block>
+						<th:block th:if="${#strings.isEmpty(task.taskFileOriginal)}">
+							<td></td>
+						</th:block>
+					</tr>
+					<tr class="text-end">
+						<td colspan="2" class="text-right" style="border-bottom-style: none;">
+							<th:block th:if="${task.memberId == #authentication.name or #authentication.name == 'admin'}">
+								<button class="btn btn-info"
+										th:onclick="|location.href='@{/projectBoard/modify(memberId=${task.memberId},taskId=${task.taskId}, projectId=${projectId})}';|">
+									수정
+								</button>
+
+								<a href="#" data-bs-toggle="modal" data-bs-target="#myModal">
+									<button class="btn btn-danger">삭제</button>
+								</a>
+							</th:block>
+							<a href="javascript:void(0);"
+							   th:onclick="|location.href='@{/projectBoard/list(memberId=${task.memberId}, projectId=${projectId})}';|">
+								<button class="btn btn-warning">목록</button>
+							</a>
+						</td>
+					</tr>
+
+				</table>
+				<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="modalLabel">로그인한 비밀번호를 입력해주세요</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								<form name="deleteForm" th:action="delete" method="post">
+									<input type="hidden" name="memberId" th:value="${memberId}">
+									<input type="hidden" name="projectId" th:value="${projectId}">
+									<input type="hidden" name="taskId" th:value="${task.taskId}">
+									<div class="mb-3">
+										<label for="board_pass" class="form-label">비밀번호</label>
+										<input type="password" class="form-control" placeholder="Enter password" name="board_pass" id="board_pass">
+									</div>
+									<div class="d-flex justify-content-end">
+										<button type="submit" class="btn btn-primary me-2">전송</button>
+										<button type="button" class="btn btn-danger" data-bs-dismiss="modal">취소</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="comment-area">
+					<div class="comment-head">
+						<h3 class="comment-count">
+							댓글 <sup id="count"></sup>
+						</h3>
+						<div class="comment-order">
+							<ul class="comment-order-list">
+							</ul>
+						</div>
+					</div>
+					<ul class="comment-list">
+					</ul>
+					<div class="comment-write">
+						<div class="comment-write-area">
+							<b class="comment-write-area-name" th:text="${#authentication.name }"></b>
+							<span class="comment-write-area-count">0/200</span>
+							<textarea placeholder="댓글을 남겨보세요" rows="1" class="comment-write-area-text" maxlength="200"></textarea>
+
+						</div>
+						<div class="register-box">
+							<div class="button btn-cancel">취소</div>
+							<div class="button btn-register">등록</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</body>
+		</html>
+	</th:block>
+</th:block>

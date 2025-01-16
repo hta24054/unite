@@ -1,57 +1,377 @@
 <th:block th:fragment="boardSidebarFragment">
-    <div class="sidebar">
-        <section class="title">
-            <h2>
-                <a href="/board/home" id="boardHome" style="text-decoration: none;color: rgb(51, 68, 102);">게시판</a>
-            </h2>
-        </section>
 
-        <section class="boardWrite">
-            <a th:href="'/board/post/postWrite' + ( ${boardName2 != null} ? '?boardName2=' + ${boardName2} : '')">
-                <button class="writeBtn">글쓰기</button>
-            </a>
-        </section>
+    <style>
+        .sb-sidenav .sb-sidenav-menu .nav .nav-link {
+            justify-content: space-between;
+        }
 
-        <ul class="list-group" style="list-style-type: disc; padding-left: 20px;">
-            <!-- 전사게시판 메뉴 -->
-            <li class="left" style="border: none;">
-                <a href="#" class="boardName1" onclick="toggleSubMenu('#submenu-doc-draft')">전사게시판</a>
-                <ul class="submenu" id="submenu-doc-draft">
-                    <li class="left" style="border: none;">
-                        <a href="/board/boardList?boardName1=전사게시판&boardName2=공지사항" class="boardName2">공지사항</a>
-                    </li>
-                    <li class="left" style="border: none;">
-                        <a href="/board/boardList?boardName1=전사게시판&boardName2=주간식단표" class="boardName2">주간식단표</a>
-                    </li>
-                    <li class="left" style="border: none;">
-                        <a href="/board/boardList?boardName1=전사게시판&boardName2=FAQ" class="boardName2">FAQ</a>
-                    </li>
-                </ul>
-            </li>
+        .layoutSidenav_nav_board {
+            left: 225px !important;
+            float: left;
+            width: 250px !important;
+        }
 
-            <!-- 일반게시판 메뉴 -->
-            <li class="left" style="border: none;"><a href="/board/boardList?boardName1=일반게시판&boardName2=일반게시판"
-                                                      class="boardName1 boardName2">일반게시판</a></li>
+        .layoutSidenav_nav_board .sb-sidenav-dark-board {
+            background-color: white;
+            border-right: 1px solid #ccc;
+        }
 
-            <!-- 부서게시판 메뉴 -->
-            <!-- 세션에서 받은 부서리스트 처리 -->
-            <th:block th:if="${boardScope != null}"> <!-- 부서가 존재할 경우 -->
-                <li class="left deptBoard-list" style="border: none;">
-                    <a href="#" class="boardName1" onclick="toggleSubMenu('#submenu-doc-list')">부서게시판</a>
-                    <ul class="submenu" id="submenu-doc-list">
+        .nav .sb-sidenav-menu-heading-board {
+            padding-top: 10px !important;
+        }
 
-                        <th:block th:each="board : ${boardScope}">
-                            <li class="left" style="border: none;">
-                                <th:block th:if="${board.deptId != null}">
-                                    <a th:href="@{/board/boardList(boardName1='부서게시판', boardName2=${board.boardName2})}"
-                                       class="boardName2" th:text="${board.boardName2}"></a>
+        .nav .nav-link-board-title {
+            font-size: 22px;
+            padding-top: 1rem !important;
+        }
+
+        .nav-link-board {
+            color: rgba(0, 0, 0, 0.7) !important;
+            font-weight: 600;
+        }
+
+        .sb-sidenav-collapse-arrow-board {
+            color: rgba(0, 0, 0, 0.25) !important;
+        }
+
+        .nav-link-board-title, .nav .nav-link-board .boardName1 {
+            color: rgba(0, 0, 0, 0.8) !important;
+        }
+
+        .sb-nav-link-icon-board {
+            color: rgba(0, 0, 0, 0.8) !important;
+            margin-right: 0.5rem;
+        }
+
+        .scrollbar {
+            width: 250px;
+            height: 250px;
+            overflow-y: scroll;
+        }
+
+        /* 스크롤바의 폭 너비 */
+        .scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.25); /* 스크롤바 색상 */
+            border-radius: 10px; /* 스크롤바 둥근 테두리 */
+        }
+
+        .scrollbar::-webkit-scrollbar-track {
+            background: #ccc; /*스크롤바 뒷 배경 색상*/
+        }
+
+        .config-tool-button {
+            color: black;
+        }
+
+        .config-LayerMore {
+            /*   overflow-y: auto; */
+            position: absolute;
+            top: 33px;
+            left: 115px;
+            z-index: 1;
+            max-height: 45px;
+            padding: 10px 0 10px 10px;
+            border: 1px solid rgba(0, 0, 0, .06);
+            border-radius: 6px;
+            box-shadow: 0 1px 12px 0 rgb(0 0 0/ 6%);
+            background-color: #fff;
+            box-sizing: border-box;
+            color: #000 !important;
+            width: 100px;
+            /* height:36px; */
+        }
+
+        .comment-area .comment-list .comment-tool .config-LayerMore {
+            left: auto;
+            right: 0;
+            margin-top: 7px;
+        }
+
+        .layer-item {
+            padding: 0;
+        }
+
+        .config-LayerMore {
+            padding: 10px;
+        }
+
+        .layer-list {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .LayerMore a {
+            font-size: small;
+            text-decoration: none;
+        }
+
+        .layer-list a {
+            text-decoration: none;
+            color: black;
+        }
+
+        .layer-list a:hover {
+            font-weight: bold;
+        }
+
+        .config-tool-button:focus, .config-tool-button:visited {
+            outline: none;
+        }
+
+        .config-LayerMore {
+            display: none;
+        }
+
+        #myModal {
+            display: none
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+    <script>
+        function sendPost(element, url) {
+
+
+            const boardId = element.getAttribute('data-board-id');
+
+            if (url === '/board/modify') {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = url;
+
+                // 숨겨진 필드로 boardId 추가
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'boardId'; // 서버에서 받을 필드 이름
+                input.value = boardId;
+                form.appendChild(input);
+
+                // 폼을 DOM에 추가하고 제출
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+            if (url === '/board/delete') {
+                if (!confirm("정말 삭제하시겠습니까?\n삭제 후 복구가 불가능합니다.")) {
+                    return false;
+                }
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({boardId}),
+                }).then(response => {
+                    if (response.ok) {
+                        alert('해당 게시판이 삭제되었습니다.');
+                    } else {
+                        alert('게시판 삭제 실패');
+                    }
+                    location.reload(true);
+                }).catch(error => {
+                    console.error('오류 발생:', error);
+                });
+            }
+        }
+
+        $(function () {
+            //설정 버튼을 클릭한 경우
+            $(".nav-link").on('click', '.config-tool-button', function () {
+                //더보기를 클릭하면 수정과 삭제 영역이 나타나고 다시 클릭하면 사라져요
+                $(this).next().toggle();
+
+                //클릭 한 곳만 수정 삭제 영역이 나타나도록 합니다.
+                $(".config-tool-button").not(this).next().hide();
+            })
+        })
+    </script>
+    <div class="layoutSidenav_nav_board" id="layoutSidenav_nav">
+        <nav class="sb-sidenav accordion sb-sidenav-dark sb-sidenav-dark-board" id="sidenavAccordion">
+            <div class="sb-sidenav-menu sb-sidenav-menu-board scrollbar">
+                <div class="nav">
+
+                    <a class="nav-link nav-link-board nav-link-board-title" href="/board/home" id="boardHome">
+                        게시판
+                    </a>
+                    <div class="sb-sidenav-menu-heading sb-sidenav-menu-heading-board">
+                        <a th:href="'/board/post/postWrite' + ( ${boardName2 != null} ? '?boardName2=' + ${boardName2} : '')">
+                            <button class="writeBtn">글쓰기</button>
+                        </a>
+                    </div>
+
+                    <a class="nav-link nav-link-board collapsed" href="#" data-bs-toggle="collapse"
+                       data-bs-target="#collapsePages11"
+                       aria-expanded="false" aria-controls="collapsePages11">
+                        <div class="sb-nav-link-icon-board"><i class="bi bi-building fs-6"></i></div>
+                        <span class="boardName1">전사게시판</span>
+                        <div class="sb-sidenav-collapse-arrow sb-sidenav-collapse-arrow-board">
+                            <i class="fas fa-angle-down"></i>
+                        </div>
+                    </a>
+
+                    <div class="collapse" id="collapsePages11" aria-labelledby="headingTwo"
+                         data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <th:block th:each="board : ${boardScope[0]}">
+                                <div class="nav-link">
+                                    <a th:href="@{/board/boardList(boardName1=${board.boardName1}, boardName2=${board.boardName2})}"
+                                       class="nav-link-board boardName2" th:text="${board.boardName2}"></a>
+
+                                    <th:block th:if="${userId == 'admin'}">
+                                        <a href="#" class="config-tool-button">
+                                            <i class="bi bi-gear"></i>
+                                        </a>
+                                        <div id='comment-list-item-layer2_1' class='config-LayerMore'>
+                                            <ul class='layer-item'>
+                                                <li class='layer-list'>
+                                                    <a href='#' class='layer-button'
+                                                       onclick="sendPost(this, '/board/modify')"
+                                                       th:data-board-id="${board.boardId}">수정</a>
+                                                    <a href='#' class='layer-button'
+                                                       onclick="sendPost(this, '/board/delete')"
+                                                       th:data-board-id="${board.boardId}">삭제</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </th:block>
+                                    <th:block th:each="boardManagement : ${boardManagementList}">
+                                        <a th:if="${boardManagement.boardName1 == board.boardName1
+                                                       && boardManagement.boardName2 == board.boardName2
+                                                       && boardManagement.boardManager == userId
+                                                       && boardManagement.boardManager != 'admin'}"
+                                           href="#" class="config-tool-button">
+                                            <i class="bi bi-gear"></i>
+                                        </a>
+                                        <div id='comment-list-item-layer2' class='config-LayerMore'>
+                                            <ul class='layer-item'>
+                                                <li class='layer-list'>
+                                                    <a href='#' class='layer-button'
+                                                       onclick="sendPost(this, '/board/modify')"
+                                                       th:data-board-id="${board.boardId}">수정</a>
+                                                    <a href='#' class='layer-button'
+                                                       onclick="sendPost(this, '/board/delete')"
+                                                       th:data-board-id="${board.boardId}">삭제</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </th:block>
+                                </div>
+                            </th:block>
+                        </nav>
+                    </div>
+
+                    <a class="nav-link nav-link-board collapsed" href="#" data-bs-toggle="collapse"
+                       data-bs-target="#collapsePages12"
+                       aria-expanded="false" aria-controls="collapsePages12">
+                        <div class="sb-nav-link-icon-board">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 class="bi bi-wechat fs-6" viewBox="0 0 16 16">
+                                <path d="M11.176 14.429c-2.665 0-4.826-1.8-4.826-4.018 0-2.22 2.159-4.02 4.824-4.02S16 8.191 16 10.411c0 1.21-.65 2.301-1.666 3.036a.32.32 0 0 0-.12.366l.218.81a.6.6 0 0 1 .029.117.166.166 0 0 1-.162.162.2.2 0 0 1-.092-.03l-1.057-.61a.5.5 0 0 0-.256-.074.5.5 0 0 0-.142.021 5.7 5.7 0 0 1-1.576.22M9.064 9.542a.647.647 0 1 0 .557-1 .645.645 0 0 0-.646.647.6.6 0 0 0 .09.353Zm3.232.001a.646.646 0 1 0 .546-1 .645.645 0 0 0-.644.644.63.63 0 0 0 .098.356"/>
+                                <path d="M0 6.826c0 1.455.781 2.765 2.001 3.656a.385.385 0 0 1 .143.439l-.161.6-.1.373a.5.5 0 0 0-.032.14.19.19 0 0 0 .193.193q.06 0 .111-.029l1.268-.733a.6.6 0 0 1 .308-.088q.088 0 .171.025a6.8 6.8 0 0 0 1.625.26 4.5 4.5 0 0 1-.177-1.251c0-2.936 2.785-5.02 5.824-5.02l.15.002C10.587 3.429 8.392 2 5.796 2 2.596 2 0 4.16 0 6.826m4.632-1.555a.77.77 0 1 1-1.54 0 .77.77 0 0 1 1.54 0m3.875 0a.77.77 0 1 1-1.54 0 .77.77 0 0 1 1.54 0"/>
+                            </svg>
+                        </div>
+                        <span class="boardName1">일반게시판</span>
+                        <div class="sb-sidenav-collapse-arrow sb-sidenav-collapse-arrow-board">
+                            <i class="fas fa-angle-down"></i>
+                        </div>
+                    </a>
+
+                    <div class="collapse" id="collapsePages12" aria-labelledby="headingTwo"
+                         data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+
+                            <th:block th:each="board : ${boardScope[1]}">
+                                <div class="nav-link">
+                                    <a th:href="@{/board/boardList(boardName1=${board.boardName1}, boardName2=${board.boardName2})}"
+                                       class="nav-link-board boardName2" th:text="${board.boardName2}"></a>
+
+                                    <th:block th:if="${userId == 'admin'}">
+                                        <a href="#" class="config-tool-button">
+                                            <i class="bi bi-gear"></i>
+                                        </a>
+                                        <div id='comment-list-item-layer3_1' class='config-LayerMore'>
+                                            <ul class='layer-item'>
+                                                <li class='layer-list'>
+                                                    <a href='#' class='layer-button'
+                                                       onclick="sendPost(this, '/board/modify')"
+                                                       th:data-board-id="${board.boardId}">수정</a>
+                                                    <a href='#' class='layer-button'
+                                                       onclick="sendPost(this, '/board/delete')"
+                                                       th:data-board-id="${board.boardId}">삭제</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </th:block>
+                                    <th:block th:each="boardManagement : ${boardManagementList}">
+                                        <a th:if="${boardManagement.boardName1 == board.boardName1
+                                                       && boardManagement.boardName2 == board.boardName2
+                                                       && boardManagement.boardManager == userId
+                                                       && boardManagement.boardManager != 'admin'}"
+                                           href="#" class="config-tool-button">
+                                            <i class="bi bi-gear"></i>
+                                        </a>
+                                        <div id='comment-list-item-layer3' class='config-LayerMore'>
+                                            <ul class='layer-item'>
+                                                <li class='layer-list'>
+                                                    <a href='#' class='layer-button'
+                                                       onclick="sendPost(this, '/board/modify')"
+                                                       th:data-board-id="${board.boardId}">수정</a>
+                                                    <a href='#' class='layer-button'
+                                                       onclick="sendPost(this, '/board/delete')"
+                                                       th:data-board-id="${board.boardId}">삭제</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </th:block>
+                                </div>
+                            </th:block>
+                        </nav>
+                    </div>
+
+                    <th:block th:if="${boardScope[2] != null}">
+                        <a class="nav-link nav-link-board collapsed" href="#" data-bs-toggle="collapse"
+                           data-bs-target="#collapsePages13"
+                           aria-expanded="false" aria-controls="collapsePages13">
+                            <div class="sb-nav-link-icon-board">
+                                <i class="bi bi-journal-text fs-6"></i>
+                            </div>
+                            <span class="boardName1">부서게시판</span>
+                            <div class="sb-sidenav-collapse-arrow sb-sidenav-collapse-arrow-board">
+                                <i class="fas fa-angle-down"></i>
+                            </div>
+                        </a>
+
+                        <div class="collapse" id="collapsePages13" aria-labelledby="headingTwo"
+                             data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <th:block th:each="board : ${boardScope[2]}">
+                                    <th:block th:if="${board.deptId != null}">
+                                        <a th:href="@{/board/boardList(boardName1='부서게시판', boardName2=${board.boardName2})}"
+                                           class="nav-link nav-link-board boardName2" th:text="${board.boardName2}"></a>
+                                    </th:block>
                                 </th:block>
-                            </li>
-                        </th:block>
+                            </nav>
+                        </div>
+                    </th:block>
 
-                    </ul>
-                </li>
-            </th:block>
-        </ul>
+                    <div class="sb-sidenav-menu-heading" style="padding:0 50% 1rem 0.75rem;">
+                        <a class="nav-link" href="/board/create"
+                           style="color:gray; padding:0; font-size: 14px; margin-left:10px;">
+                            <span>게시판 추가</span>
+                            <i class="bi bi-plus fs-5" style="padding-left:2px"></i>
+                        </a>
+                    </div>
+
+                    <div class="sb-sidenav-menu-heading" style="padding-bottom: 0;"></div>
+                </div>
+            </div>
+        </nav>
     </div>
 </th:block>

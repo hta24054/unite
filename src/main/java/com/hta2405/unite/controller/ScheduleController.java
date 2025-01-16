@@ -1,31 +1,37 @@
 package com.hta2405.unite.controller;
 
+import com.hta2405.unite.domain.Holiday;
 import com.hta2405.unite.domain.Schedule;
 import com.hta2405.unite.domain.ScheduleShare;
 import com.hta2405.unite.dto.ScheduleDTO;
+import com.hta2405.unite.service.HolidayService;
 import com.hta2405.unite.service.ScheduleService;
 import com.hta2405.unite.util.CalendarDateTimeUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @Slf4j
 @RequestMapping("/schedule")
 public class ScheduleController {
     private ScheduleService scheduleService;
+    private HolidayService holidayService;
 
-    public ScheduleController(ScheduleService scheduleService) {
+    @Autowired
+    public ScheduleController(ScheduleService scheduleService, HolidayService holidayService) {
         this.scheduleService = scheduleService;
+        this.holidayService = holidayService;
     }
-
 
     @GetMapping("/calender")
     public String calender() {
@@ -43,7 +49,6 @@ public class ScheduleController {
 
         String id = authentication.getName(); // 로그인한 사용자의 ID (username)
         List<Schedule> schedules = scheduleService.getListSchedule(id);
-        //System.out.println("schedules " + schedules);
 
         return schedules;
     }
@@ -52,7 +57,6 @@ public class ScheduleController {
     @PostMapping("/scheduleAdd")
     public int insertSchedule(Schedule schedule) {
         int result = scheduleService.insertSchedule(schedule);
-        //System.out.println("schedule 등록 " + schedule);
         return result;
     }
 
@@ -60,7 +64,6 @@ public class ScheduleController {
     @PostMapping("/scheduleUpdate")
     public int updateSchedule(Schedule schedule) {
         int result = scheduleService.updateSchedule(schedule);
-        //System.out.println("schedule 수정 " + schedule);
         return result;
     }
 
@@ -68,7 +71,6 @@ public class ScheduleController {
     @PostMapping("/scheduleDragUpdate")
     public int dragUpdateSchedule(Schedule schedule) {
         int result = scheduleService.dragUpdateSchedule(schedule);
-        //System.out.println("schedule 드래그로 수정 " + schedule);
         return result;
     }
 
@@ -76,7 +78,6 @@ public class ScheduleController {
     @PostMapping("/scheduleDelete")
     public int deleteSchedule(int scheduleId) {
         int result = scheduleService.deleteSchedule(scheduleId);
-        //System.out.println("schedule 삭제 " + result);
         return result;
     }
 
@@ -85,7 +86,6 @@ public class ScheduleController {
     public String shareSchedule(Schedule schedule) {
         return "schedule/scheduleShare";
     }
-
 
     @ResponseBody
     @GetMapping("/sharedScheduleList")
@@ -127,7 +127,6 @@ public class ScheduleController {
             scheduleDTOList.add(scheduleDTO);
         }
 
-        //System.out.println("공유 일정 DTO 리스트: " + scheduleDTOList);
         return scheduleDTOList;
     }
 
@@ -135,7 +134,6 @@ public class ScheduleController {
     @PostMapping("/scheduleShareAdd")
     public int insertScheduleShare(@RequestBody ScheduleDTO scheduleDTO) {
         Schedule schedule = scheduleDTO.getSchedule();
-        ScheduleShare scheduleShare = scheduleDTO.getScheduleShare();
 
         // CalendarDateTimeUtil을 사용하여 날짜 변환
         if (schedule != null) {
@@ -148,7 +146,6 @@ public class ScheduleController {
         }
 
         int updatedScheduleDTO = scheduleService.insertScheduleShare(scheduleDTO);
-        //System.out.println("\n scheduleShare.getScheduleId() = " + schedule.getScheduleId());
         return updatedScheduleDTO;
     }
 
@@ -175,18 +172,64 @@ public class ScheduleController {
             schedule.setScheduleEnd(CalendarDateTimeUtil.parseDateTimeWithoutT(scheduleEndStr));
         }
 
-        // System.out.println("\n schedule.getScheduleId() = " + schedule.getScheduleId());
-
-        // 부서 일정 등록
-        int deptScheduleDTO = scheduleService.insertScheduleDept(scheduleDTO);
-        System.out.println("\n deptScheduleDTO" + deptScheduleDTO);
-
-        // 부서에 속한 다른 직원들에게 일정 공유 추가
-        Long deptId = scheduleDTO.getDeptId(); // 부서 ID 가져오기
-        List<String> empIdDept = scheduleService.getEmpIdByDeptId(deptId); // 부서에 속한 직원들의 empId 목록을 가져오기
-
-        return deptScheduleDTO;
+        int scheduleDeptDTO = scheduleService.insertScheduleDept(scheduleDTO);
+        return scheduleDeptDTO;
     }
 
+    @ResponseBody
+    @GetMapping("/deptScheduleList")
+    public List<ScheduleDTO> getListDeptSchedule() {
+        // 현재 인증된 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return new ArrayList<>();
+        }
+        String empId = authentication.getName(); // 로그인한 사용자의 ID (username)
 
+        // 부서 ID를 얻기 위해 사용자 정보로부터 부서 조회
+        String deptId = scheduleService.getDeptIdByEmpId(empId);  // 로그인한 사용자의 부서 ID
+
+        // 부서 일정을 조회, 등록자 제외
+        List<Schedule> deptSchedules = scheduleService.getListDeptSchedule(deptId, empId);  // 등록자 empId도 전달
+        List<ScheduleDTO> scheduleDTOList = new ArrayList<>();
+
+        // 각 일정 객체를 DTO로 변환
+        for (Schedule schedule : deptSchedules) {
+
+            ScheduleDTO scheduleDTO = new ScheduleDTO();
+            scheduleDTO.setScheduleId((long) schedule.getScheduleId());
+            scheduleDTO.setEmpId(schedule.getEmpId());
+
+            // 부서 일정을 등록한 직원의 정보를 가져옴
+            scheduleDTO.setScheduleName(schedule.getScheduleName());
+            scheduleDTO.setScheduleContent(String.valueOf(schedule.getScheduleContent()));
+            scheduleDTO.setScheduleStart(String.valueOf(schedule.getScheduleStart()));
+            scheduleDTO.setScheduleEnd(String.valueOf(schedule.getScheduleEnd()));
+            scheduleDTO.setScheduleColor(schedule.getScheduleColor());
+            scheduleDTO.setScheduleAllDay(schedule.isScheduleAllDay());
+
+            scheduleDTOList.add(scheduleDTO);
+        }
+        return scheduleDTOList;
+    }
+
+    // 공휴일 불러오기
+    @ResponseBody
+    @GetMapping("/getHoliday")
+    public List<Holiday> getHoliday(String start, String end) {
+        String[] startString = start.split("-");
+        String[] endString = end.split("-");
+
+        LocalDate startDate = LocalDate.of(Integer.parseInt(startString[0]), Integer.parseInt(startString[1]), 1);
+        YearMonth endYearMonth = YearMonth.of(Integer.parseInt(endString[0]), Integer.parseInt(endString[1]));
+        LocalDate endDate = endYearMonth.atEndOfMonth();
+
+        // 공휴일 목록 불러오기
+        List<Holiday> holidayList = holidayService.getHolidayList(startDate, endDate);
+
+        // 토요일, 일요일 제외
+        return holidayList.stream()
+                .filter(holiday -> !(holiday.getHolidayName().equals("토요일") || holiday.getHolidayName().equals("일요일")))
+                .collect(Collectors.toList());
+    }
 }

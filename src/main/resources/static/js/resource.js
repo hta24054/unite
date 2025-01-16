@@ -3,9 +3,9 @@ $(document).ready(function () {
     const lang_kor = {
         "decimal": "",
         "emptyTable": "데이터가 없습니다.",
-        "info": "_START_-_END_ (총 _TOTAL_명)",
-        "infoEmpty": "0명",
-        "infoFiltered": "(전체 _MAX_명 중 검색 결과)",
+        "info": "_START_-_END_ (총 _TOTAL_건)",
+        "infoEmpty": "0건",
+        "infoFiltered": "(전체 _MAX_건 중 검색 결과)",
         "infoPostFix": "",
         "thousands": ",",
         "lengthMenu": "_MENU_개씩 보기",

@@ -3,20 +3,8 @@
         <!DOCTYPE html>
         <html xmlns:th="http://www.thymeleaf.org" lang="en">
         <head>
-            <script th:src="@{/js/jquery-3.7.1.js}"></script>
             <link rel="stylesheet" th:href="@{/css/boardHome.css}">
-            <link rel="stylesheet" th:href="@{/css/leftbar.css}">
-            <script th:src="@{/js/leftbar.js}"></script>
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
             <style>
-                .rows {
-                    text-align: right;
-                }
-
-                .gray {
-                    color: gray;
-                }
-
                 .tr-post:hover {
                     background-color: rgba(0, 0, 0, .05);
                     cursor: pointer;
@@ -40,8 +28,8 @@
                 }
 
                 .search-category {
-                    padding: 5px 0px 5px 10px;
-                    margin-right: 5px;
+                    padding: 5px 0;
+                    margin-left: 5px;
                     border: none;
                     border-radius: 3px;
                 }
@@ -54,12 +42,26 @@
                 }
 
                 .search-button {
-                    background-color: #f1f1f1;
-                    border: none;
+                    background-color: white;
+                    border: 1px solid #ccc;
                     padding: 5px 10px;
                     margin-left: 10px;
                     cursor: pointer;
-                    border-radius: 3px;
+                    border-radius: 20px;
+                    height: 30px;
+                    position: relative;
+                    right: 2px;
+                    line-height: 18px;
+                }
+
+                .search-button {
+                    transition: box-shadow 300ms ease-in-out, color 300ms ease-in-out;
+
+                    &:hover {
+                        box-shadow: 0 0 40px 40px #dddddd inset;
+                        /*color: rgba(255, 255, 255, 0.8);*/
+                        border: 1px solid rgba(255, 255, 255, 0.8);
+                    }
                 }
 
                 .search-button i {
@@ -102,10 +104,14 @@
                 body > div > table > thead > tr:nth-child(2) > th:nth-child(5) {
                     width: 11%
                 }
+
+                .table > :not(:last-child) > :last-child > * {
+                    border-bottom: 2px solid #dee2e6;
+                }
             </style>
+            <script type="module" th:src="@{/js/boardList.js}"></script>
         </head>
         <body>
-        <script type="module" th:src="@{/js/boardList.js}"></script>
         <div class="main">
             <th:block th:replace="~{/board/sidebar :: boardSidebarFragment}"/>
 
@@ -124,7 +130,7 @@
                                 </th>
                                 <th colspan="1" style="border-top: none;">
                                     <select class="form-control" id="viewCount"
-                                            style="margin:0;padding:.375rem 20%;appearance: auto;text-align: center;">
+                                            style="margin:0 auto;width:75px;appearance: auto;text-align: center;">
                                         <option value="1">1</option>
                                         <option value="5">5</option>
                                         <option value="10" selected>10</option>
@@ -133,19 +139,19 @@
                                 </th>
                             </tr>
                             <tr>
-                                <th style="width: 100px;">
+                                <th style="width: 10%;">
                                     <div>번호</div>
                                 </th>
                                 <th style="min-width: 250px;">
                                     <div>제목</div>
                                 </th>
-                                <th style="width: 250px;">
+                                <th style="width: 20%;">
                                     <div>작성자</div>
                                 </th>
-                                <th style="width: 200px;">
+                                <th style="width: 20%;">
                                     <div>날짜</div>
                                 </th>
-                                <th style="width: 100px;">
+                                <th style="width: 10%;">
                                     <div>조회수</div>
                                 </th>
                             </tr>
@@ -182,7 +188,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <div>[[${p.postWriter}]]</div>
+                                            <div>[[${empMap.get(p.postWriter)}]]</div>
                                         </td>
                                         <td>
                                             <div>[[${p.getFormattedPostDate()}]]</div>

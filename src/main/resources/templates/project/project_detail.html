@@ -1,347 +1,320 @@
 <th:block th:replace="layout :: setContent(~{this::content})">
 	<th:block th:fragment="content">
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-	<meta charset="UTF-8">
-	<title>Insert title here</title>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-	<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-	
-	<script>
-	    var contextPath = "${pageContext.request.contextPath}";
-	    var projectName = "${left}";
-	</script>
-	<script th:src="@{/js/project_detail.js}"></script>
-<!--	<jsp:include page="../common/header.jsp"/>-->
-<!--	<th:block th:replace="~{project/project_leftbar :: leftbar}"/>-->
-	<style>
-	html, body{
-	 overflow: hidden;  
-}
-		.notification { height: 100%; }
-		caption { caption-side: top; }
-		.notification-content { border: 1px solid #ccc; border-radius: 8px; padding: 10px; height: 480px;}
-		.progress {height: 30px;width: 100%;}
-        .progress-bar {color: white;font-weight: bold;}
-        .table { 
-	        width: 100%; 
-	        margin-bottom: 30px; 
-	        table-layout: fixed; 
-	    }
-	    table, td, th {border-collapse: collapse;}
-	    th, td {padding: 10px; text-align: left;}
-	    th:nth-child(1), td:nth-child(1) {width: 20%; }
-	    th:nth-child(2), td:nth-child(2) {width: 60%; }
-	    th:nth-child(3), td:nth-child(3) {width: 20%; }
-	    
-	    /* tr 요소 클릭 가능 스타일 추가 */
-.clickable-row {
-    cursor: pointer; /* 마우스를 올렸을 때 커서가 클릭 가능한 모양으로 변경 */
-}
+		<!DOCTYPE html>
+		<html xmlns:th="http://www.thymeleaf.org">
+		<head>
+			<meta charset="UTF-8">
+			<title>Insert title here</title>
+			<script th:src="@{/js/project_detail.js}"></script>
+			<script>
+				var contextPath = "${pageContext.request.contextPath}";
+				var projectName = "${left}";
+			</script>
+		<!--	<jsp:include page="../common/header.jsp"/>-->
+		<!--	<th:block th:replace="~{project/project_leftbar :: leftbar}"/>-->
+			<style>
+				.notification { height: 100%; }
+				caption { caption-side: top; }
+				.notification-content { border: 1px solid #ccc; border-radius: 8px; padding: 10px; height: 480px;}
+				.progress {height: 30px;width: 100%;}
+				.progress-bar {color: white;font-weight: bold;}
+				.table {
+					width: 100%;
+					margin-bottom: 30px;
+					table-layout: fixed;
+				}
+				table, td, th {border-collapse: collapse;}
+				th, td {padding: 10px; text-align: left;}
+				th:nth-child(1), td:nth-child(1) {width: 20%; }
+				th:nth-child(2), td:nth-child(2) {width: 60%; }
+				th:nth-child(3), td:nth-child(3) {width: 20%; }
 
-/* tr에 마우스를 올렸을 때 배경색 변경 */
-.clickable-row:hover {
-    background-color: lightgray; /* 회색 배경 */
-}
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
-        }
-        .container {
-            margin-top: 30px;
-        }
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .card-header {
-            background-color: #ffffff;
-            border-bottom: none;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-        .progress {
-            height: 20px;
-            background-color: #e9ecef;
-            border-radius: 10px;
-        }
-        .progress-bar {
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-        table {
-            width: 100%;
-            margin-bottom: 20px;
-            border-collapse: collapse;
-        }
-        th {
-            background-color: #f1f1f1;
-            font-weight: bold;
-        }
-        tr:hover {
-            background-color: #f8f9fa;
-            cursor: pointer;
-        }
-        .notification-content {
-            background-color: #ffffff;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .btn-primary {
-            background-color: #4e73df;
-            border-color: #4e73df;
-        }
-        .btn-primary:hover {
-            background-color: #3757c6;
-            border-color: #3757c6;
-        }
-    </style>
-</head>
-<body>
-	<div class="container">
-		<div class="d-flex justify-content-between align-items-center">
-			<h3><span th:text="${left}"></span></h3>
-		</div>
-		<hr style="margin-top: 40px;"> <!-- 진행률과의 간격 추가 -->
-		<div class="row">
-			<div class="col-md-8">
-				<table class="table">
-					<caption><h5>진행률</h5></caption>
-					<thead>
-					<tr>
-						<th>참여자</th>
-						<th>업무내용</th>
-						<th>진행률</th>
-					</tr>
-					</thead>
-					<tbody>
-					<tr th:each="project : ${project}">
-						<input type="hidden" th:value="${project.projectId}" id="projectId">
-						<td th:text="${project.participantNames}"
-							th:data-id="${project.projectId}"
-							th:data-memberid="${project.memberId}"
-							class="clickable-participant"></td> <!-- 클릭 이벤트 추가 -->
-						<td>
-                <span th:classappend="${project.isManager} ? 'task-content clickable' : 'task-content'"
-					  th:data-id="${project.projectId}"
-					  th:data-memberid="${project.memberId}"
-					  th:data-content="${project.memberDesign}">
-                    <span th:text="${project.memberDesign == null ? '업무를 지정해주세요' : project.memberDesign}"></span>
-                </span>
-						</td>
-						<td>
-                <span th:classappend="${project.memberId == #authentication.name} ? 'progress-rate clickable' : 'progress-rate'"
-					  th:data-id="${project.projectId}"
-					  th:data-memberid="${project.memberId}"
-					  th:data-rate="${project.memberProgressRate}">
-                    <span class="progress-bar" role="progressbar"
-						  th:style="'width:' + ${project.memberProgressRate} + '%'">
-                        <span th:text="${project.memberProgressRate} + '%'"></span>
-                    </span>
-                </span>
-						</td>
-					</tr>
-					</tbody>
-				</table>
+				/* tr 요소 클릭 가능 스타일 추가 */
+		.clickable-row {
+			cursor: pointer; /* 마우스를 올렸을 때 커서가 클릭 가능한 모양으로 변경 */
+		}
 
-				<table id="postTable" class="table">
-				    <caption>
-				        <div class="d-flex justify-content-between align-items-center">
-				            <h5>진행 과정</h5>
+		/* tr에 마우스를 올렸을 때 배경색 변경 */
+		.clickable-row:hover {
+			background-color: lightgray; /* 회색 배경 */
+		}
+				body {
+					background-color: #f8f9fa;
+					font-family: 'Arial', sans-serif;
+				}
+				.container {
+					margin-top: 30px;
+				}
+				.card {
+					border: none;
+					border-radius: 10px;
+					box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+				}
+				.card-header {
+					background-color: #ffffff;
+					border-bottom: none;
+					font-weight: bold;
+					font-size: 1.2rem;
+				}
+				.progress {
+					height: 20px;
+					background-color: #e9ecef;
+					border-radius: 10px;
+				}
+				.progress-bar {
+					font-size: 0.8rem;
+					font-weight: bold;
+				}
+				table {
+					width: 100%;
+					margin-bottom: 20px;
+					border-collapse: collapse;
+				}
+				th {
+					background-color: #f1f1f1;
+					font-weight: bold;
+				}
+				tr:hover {
+					background-color: #f8f9fa;
+					cursor: pointer;
+				}
+				.notification-content {
+					background-color: #ffffff;
+					padding: 15px;
+					border-radius: 10px;
+					box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+				}
+				.btn-primary {
+					background-color: #4e73df;
+					border-color: #4e73df;
+				}
+				.btn-primary:hover {
+					background-color: #3757c6;
+					border-color: #3757c6;
+				}
+			#helpModal {
+				display: none;
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.5);
+				z-index: 1000;
+			}
+
+			#helpModal div {
+				position: relative;
+				margin: 50px auto;
+				width: 600px;
+				background: white;
+				padding: 20px;
+				border-radius: 8px;
+				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			}
+
+			#helpModal span {
+				position: absolute;
+				top: 10px;
+				right: 20px;
+				font-size: 20px;
+				cursor: pointer;
+			}
+			</style>
+		</head>
+		<body>
+			<div class="container" style="margin-top: 50px;">
+				<div class="d-flex justify-content-between align-items-center">
+					<h3><span th:text="${left}"></span> - <span th:text="${projectContent}" style="font-size: 20px;"></span></h3>
+					<span>
+						<img th:src="@{/image/help.png}" style="width: 50px; height: 50px; cursor: pointer;" onclick="openHelpModal()">
+					</span>
+				</div>
+
+				<hr style="margin-top: 20px;">
+				<div class="row">
+					<div class="col-md-8">
+						<table class="table">
+							<caption>
+								<div class="d-flex justify-content-between align-items-center">
+									<h5>진행률</h5>
+									<button type="button" class="btn btn-primary btn-sm float-end"
+											th:if="${#strings.replace(role, '[', '').replace(']', '') != 'VIEWER'}"
+											th:onclick="|location.href='@{/project/todo(projectId=${projectId})}';|">
+										투두리스트
+									</button>
+								</div>
+							</caption>
 							<button type="button"
-									class="btn btn-primary btn-sm float-right"
-									th:if="${#strings.replace(role, '[', '').replace(']', '') != 'VIEWER'}"
-									data-toggle="modal"
-									data-target="#writeModal">
-								글 작성
+									class="btn btn-primary btn-sm float-end"
+									th:if="${#strings.replace(role, '[', '').replace(']', '') == 'VIEWER'}"
+									th:href="@{/project/todo(projectId=${projectId})}"
+									th:data-memberid="${memberId}"
+									th:onclick="|location.href='@{/project/todo(projectId=${projectId})}';|"
+									style="display:none;"
+									disabled>
+								투두
 							</button>
+							<thead>
+								<tr>
+									<th>참여자</th>
+									<th>업무내용</th>
+									<th>진행률</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="project : ${project}">
+									<input type="hidden" th:value="${project.projectId}" id="projectId">
+									<td th:text="${project.participantNames}"
+										th:data-id="${project.projectId}"
+										th:data-memberid="${project.memberId}"
+										class="clickable-participant"></td> <!-- 클릭 이벤트 추가 -->
+									<td>
+										<span th:classappend="${project.isManager} ? 'task-content clickable' : 'task-content'"
+											  th:data-id="${project.projectId}"
+											  th:data-memberid="${project.memberId}"
+											  th:data-content="${project.memberDesign}">
+											<span th:text="${project.memberDesign == null ? '업무를 지정해주세요' : project.memberDesign}"></span>
+										</span>
+														</td>
+														<td>
+										<span th:classappend="${project.memberId == #authentication.name} ? 'progress-rate clickable' : 'progress-rate'"
+											  th:data-id="${project.projectId}"
+											  th:data-memberid="${project.memberId}"
+											  th:data-rate="${project.memberProgressRate}">
+											<span class="progress-bar" role="progressbar"
+												  th:style="'width:' + ${project.memberProgressRate} + '%'">
+												<span th:text="${project.memberProgressRate} + '%'"></span>
+											</span>
+										</span>
+									</td>
+								</tr>
+							</tbody>
+						</table>
 
-                                <!-- 글 작성 버튼 (VIEWER일 때) -->
-                                <button type="button"
-                                        class="btn btn-primary btn-sm float-right"
-                                        th:if="${#strings.replace(role, '[', '').replace(']', '') == 'VIEWER'}"
-                                        style="display:none;"
-                                        disabled>
-                                    글 작성
-                                </button>
-                            </div>
-                        </caption>
-                        <thead>
-                        <tr>
-                            <th>작성자</th>
-                            <th>제목</th>
-                            <th>작성일자</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="project : ${project2}" class="clickable-row"
-                            th:data-member-id="${project.memberId}">
-                            <td>
-                                <span th:text="${project.taskWriter}"></span>
-                            </td>
-                            <td>
-                                <span th:text="${project.taskSubject}"></span>
-                            </td>
-                            <td>
-                                <span th:text="${project.taskDate}"></span>
-                            </td>
-                        </tr>
+						<table id="postTable" class="table">
+							<caption>
+								<div class="d-flex justify-content-between align-items-center">
+									<h5>진행 과정</h5>
+									<input type="hidden" th:value="${memberId}" id="userid">
+									<button type="button"
+											class="btn btn-primary btn-sm float-end"
+											th:if="${#strings.replace(role, '[', '').replace(']', '') != 'VIEWER'}"
+											data-bs-toggle="modal"
+											data-bs-target="#writeModal">
+										글 작성
+									</button>
 
-					</tbody>
-				</table>
+									<button type="button"
+											class="btn btn-primary btn-sm float-end"
+											th:if="${#strings.replace(role, '[', '').replace(']', '') == 'VIEWER'}"
+											th:data-memberid="${memberId}"
+											style="display:none;"
+											disabled>
+										글 작성
+									</button>
+
+								</div>
+							</caption>
+							<thead>
+								<tr>
+									<th>작성자</th>
+									<th>제목</th>
+									<th>작성일자</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="project : ${project2}" class="clickable-row" th:data-member-id="${project.memberId}">
+									<td>
+										<span th:text="${project.taskWriter}"></span>
+									</td>
+									<td>
+										<span th:text="${project.taskSubject}"></span>
+									</td>
+									<td>
+										<span th:text="${project.taskDate}"></span>
+									</td>
+								</tr>
+
+							</tbody>
+						</table>
+					</div>
+
+					<!--			<jsp:include page="project_notice.jsp"/>-->
+				</div>
 			</div>
-			<a th:href="@{/project/todo(projectId=${projectId})}">투두</a>
 
+			<!-- 업무 내용 입력 모달 -->
+			<div class="modal fade" id="taskContentModal" tabindex="-1" aria-labelledby="taskContentModalLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="taskContentModalLabel">업무 내용 수정</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<input type="text" id="taskContentInput" class="form-control" placeholder="업무 내용을 입력하세요" />
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+							<button type="button" class="btn btn-primary" id="saveTaskContentBtn">저장</button>
+						</div>
+					</div>
+				</div>
+			</div>
 
+			<!-- 글 작성 모달 -->
+			<div class="modal fade" id="writeModal" tabindex="-1" aria-labelledby="writeModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="writeModalLabel">글 작성</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<form id="writeForm" action="${pageContext.request.contextPath}/projectb/write" method="post" enctype="multipart/form-data">
+								<div class="mb-3">
+									<label for="todoCategory" class="form-label">카테고리</label>
+									<select class="form-select" id="todoCategory" name="category" required>
+										<option value="" disabled selected>투두리스트에서 카테고리 선택</option>
+									</select>
+								</div>
+								<div class="mb-3">
+									<label for="postTitle" class="form-label">제목</label>
+									<input type="text" class="form-control" id="postTitle" name="title" placeholder="제목을 입력하세요" required>
+								</div>
+								<div class="mb-3">
+									<label for="postContent" class="form-label">내용</label>
+									<textarea class="form-control" id="postContent" name="content" rows="4" placeholder="내용을 입력하세요" required></textarea>
+								</div>
+								<div class="mb-3">
+									<label for="postFile" class="form-label">첨부파일</label>
+									<input type="file" class="form-control" id="postFile" name="file">
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+									<button type="submit" class="btn btn-primary">저장</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
 
-			<!--			<jsp:include page="project_notice.jsp"/>-->
-		</div>
-	</div>
-	
-	<!-- 업무 내용 입력 모달 -->
-	<div class="modal fade" id="taskContentModal" tabindex="-1" role="dialog" aria-labelledby="taskContentModalLabel" aria-hidden="true">
-	    <div class="modal-dialog" role="document">
-	        <div class="modal-content">
-	            <div class="modal-header">
-	                <h5 class="modal-title" id="taskContentModalLabel">업무 내용 수정</h5>
-	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	                    <span aria-hidden="true">&times;</span>
-	                </button>
-	            </div>
-	            <div class="modal-body">
-	                <input type="text" id="taskContentInput" class="form-control" placeholder="업무 내용을 입력하세요" />
-	            </div>
-	            <div class="modal-footer">
-	                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-	                <button type="button" class="btn btn-primary" id="saveTaskContentBtn">저장</button>
-	            </div>
-	        </div>
-	    </div>
-	</div>
-		
-	<!-- 진행률 입력 모달 -->
-	<div class="modal fade" id="progressModal" tabindex="-1" role="dialog" aria-labelledby="progressModalLabel" aria-hidden="true">
-	    <div class="modal-dialog" role="document">
-	        <div class="modal-content">
-	            <div class="modal-header">
-	                <h5 class="modal-title" id="progressModalLabel">진행률 수정</h5>
-	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	                    <span aria-hidden="true">&times;</span>
-	                </button>
-	            </div>
-	            <div class="modal-body">
-	                <input type="number" id="progressInput" class="form-control" min="0" max="100" placeholder="진행률을 입력하세요 (0-100)" />
-	            </div>
-	            <div class="modal-footer">
-	                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-	                <button type="button" class="btn btn-primary" id="saveProgressBtn">저장</button>
-	            </div>
-	        </div>
-	    </div>
-	</div>
-	
-	<!-- 글 작성 모달 -->
-	<div class="modal fade" id="writeModal" tabindex="-1" role="dialog" aria-labelledby="writeModalLabel" aria-hidden="true">
-	    <div class="modal-dialog" role="document">
-	        <div class="modal-content">
-	            <div class="modal-header">
-	                <h5 class="modal-title" id="writeModalLabel">글 작성</h5>
-	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	                    <span aria-hidden="true">&times;</span>
-	                </button>
-	            </div>
-	            <div class="modal-body">
-	                <form id="writeForm" th:action="@{../projectBorad/write}" method="post" enctype="multipart/form-data">
+			<div id="helpModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);">
+				<div onclick="event.stopPropagation()" style="position: relative; margin: 50px auto; width: 60%; background: white; padding: 20px; border-radius: 8px; height: 90vh;">
+					<span onclick="closeHelpModal()" style="cursor: pointer; position: absolute; top: 10px; right: 20px; font-size: 20px; color: white; font-weight: bold;">
+						&times;
+					</span>
+					<iframe th:src="@{/image/help.pdf}" style="width: 100%; height: calc(100% - 40px); border: none;" title="도움말 PDF"></iframe>
+				</div>
+			</div>
 
-        <!-- 업무 내용 입력 모달 -->
-        <div class="modal fade" id="taskContentModal" tabindex="-1" role="dialog"
-             aria-labelledby="taskContentModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="taskContentModalLabel">업무 내용 수정</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="text" id="taskContentInput" class="form-control" placeholder="업무 내용을 입력하세요"/>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                        <button type="button" class="btn btn-primary" id="saveTaskContentBtn">저장</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 진행률 입력 모달 -->
-        <div class="modal fade" id="progressModal" tabindex="-1" role="dialog" aria-labelledby="progressModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="progressModalLabel">진행률 수정</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="number" id="progressInput" class="form-control" min="0" max="100"
-                               placeholder="진행률을 입력하세요 (0-100)"/>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                        <button type="button" class="btn btn-primary" id="saveProgressBtn">저장</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 글 작성 모달 -->
-        <div class="modal fade" id="writeModal" tabindex="-1" role="dialog" aria-labelledby="writeModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="writeModalLabel">글 작성</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="writeForm" th:action="@{../projectBorad/write}" method="post"
-                              enctype="multipart/form-data">
-
-                            <div class="form-group">
-                                <label for="postTitle">제목</label>
-                                <input type="text" class="form-control" id="postTitle" name="title"
-                                       placeholder="제목을 입력하세요" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="postContent">내용</label>
-                                <textarea class="form-control" id="postContent" name="content" rows="4"
-                                          placeholder="내용을 입력하세요" required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="postFile">첨부파일</label>
-                                <input type="file" class="form-control-file" id="postFile" name="file">
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                                <button type="submit" class="btn btn-primary">저장</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+			<script>
+				function openHelpModal() { document.getElementById("helpModal").style.display = "block"; }
+				function closeHelpModal() { document.getElementById("helpModal").style.display = "none"; }
+				document.getElementById("helpModal").onclick = closeHelpModal;
+			</script>
         </body>
         </html>
     </th:block>

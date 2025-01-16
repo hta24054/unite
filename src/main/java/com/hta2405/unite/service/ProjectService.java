@@ -7,6 +7,7 @@ import com.hta2405.unite.dto.ProjectRoleDTO;
 import com.hta2405.unite.dto.ProjectTaskDTO;
 import com.hta2405.unite.dto.ProjectTodoDTO;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -25,21 +26,18 @@ public interface ProjectService {
 
     void createTask(int projectId, String empId, String memberName);
 
-    int mainCountList(String userid, int favorite);
+    List<Project> getmainList(String userid);
 
-    int doneCountList(String userid, int finish, int cancel);
-
-    List<Project> getmainList(String userid, int favorite, int page, int limit);
-
-    List<Project> getDoneList(String userid, int page, int limit);
+    List<Project> getDoneList(String userid, int dowhat);
 
     void projectFavorite(int projectId, String userid);
 
     void projectColor(String userid, int projectId, String bgColor, String textColor);
 
-    boolean updateProjectStatus(int projectId, String status);
+    boolean updateProjectStatus(int projectId, String status, MultipartFile file);
 
     String getProjectName(int projectId);
+    String getProjectContent(int projectId);
 
     List<ProjectDetailDTO> getProjectDetail1(int projectId, String userid);
 
@@ -53,4 +51,6 @@ public interface ProjectService {
     void insertToDo(String task, String userid, int projectId);
     List<ProjectTodoDTO> getTodoList(int projectId, String userid);
     boolean todoProgressRate(int projectId, String userid, int todoId, int memberProgressRate);
+    boolean todoUpdate(int projectId, String userid, int todoId, String newSubject);
+    boolean deleteTodo(int todoId);
 }

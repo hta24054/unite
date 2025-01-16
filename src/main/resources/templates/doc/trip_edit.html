@@ -1,0 +1,191 @@
+<th:block th:replace="layout :: setContent(~{this::content})">
+    <th:block th:fragment="content">
+        <!DOCTYPE html>
+        <html xmlns:th="http://www.thymeleaf.org" lang="en">
+        <head>
+            <script th:src="@{/js/doc_trip.js}"></script>
+            <link th:href="@{/css/doc.css}" rel="stylesheet">
+            <meta charset="UTF-8">
+            <title>출장명령부 작성</title>
+        </head>
+        <body>
+        <form id="doc_form">
+            <div class="container mt-4">
+                <div class="document-wrapper">
+                    <!-- 기안용지 제목 -->
+                    <div class="text-center mb-4">
+                        <h1 class="header-cell">출장명령부</h1>
+                    </div>
+
+                    <!-- 문서 정보 및 결재자 테이블을 좌우로 배치 -->
+                    <div class="row">
+                        <!-- 문서 정보 테이블 -->
+                        <div class="col-md-6 mb-3">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td class="table-secondary font-weight-bold text-center">문서번호</td>
+                                    <td><input type="text" name="docId" th:value="${doc.docId}" readonly></td>
+                                </tr>
+                                <tr>
+                                    <td class="table-secondary font-weight-bold text-center">부&nbsp;&nbsp;&nbsp;서</td>
+                                    <td th:text="${dept.deptName}">부서명</td>
+                                </tr>
+                                <tr>
+                                    <td class="table-secondary font-weight-bold text-center">기 안 자</td>
+                                    <td th:text="${writer.ename}">기안자</td>
+                                    <input type="hidden" name="writer" th:value="${writer.empId}">
+                                </tr>
+                                <tr>
+                                    <td class="table-secondary font-weight-bold text-center">작 성 일</td>
+                                    <td th:text="${doc.docCreateDate.toLocalDate()}"></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <!-- 결재자 테이블 -->
+                        <div class="col-md-6">
+                            <th:block th:include="doc/sign_edit.html"/>
+                        </div>
+                    </div>
+
+                    <!-- 기타 정보 테이블 -->
+                    <table class="table table-bordered mt-4">
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">출장 시작일</td>
+                            <td><input type="date" class="form-control title-input" name="trip_start" data-name="출장 시작일"
+                                       th:value="${docTrip.tripStart}" required></td>
+                        </tr>
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">출장 종료일</td>
+                            <td><input type="date" class="form-control title-input" name="trip_end" data-name="출장 종료일"
+                                       th:value="${docTrip.tripEnd}" required></td>
+                        </tr>
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">출장지</td>
+                            <td><input type="text" class="form-control title-input" name="trip_loc"
+                                       placeholder="출장지를 입력하세요"
+                                       data-name="출장지" th:value="${docTrip.tripLoc}" maxlength="120" required></td>
+                        </tr>
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">출장지 연락처</td>
+                            <td><input type="text" class="form-control title-input" name="trip_phone"
+                                       placeholder="출장지를 입력하세요"
+                                       data-name="출장지 연락처" th:value="${docTrip.tripPhone}" maxlength="13" required></td>
+                        </tr>
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">목적 및 내용</td>
+                            <td><input type="text" class="form-control title-input" name="trip_info"
+                                       placeholder="내용을 입력하세요"
+                                       data-name="내용" th:value="${docTrip.tripInfo}" maxlength="255" required></td>
+                        </tr>
+                    </table>
+                    <table class="table table-bordered mt-4">
+                        <tr>
+                            <td colspan="4" class="table-secondary font-weight-bold text-center">※법인카드 사용 신청(승인 후 재무팀에서
+                                수령)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">사용 시작일</td>
+                            <td><input type="date" class="form-control title-input" name="card_start"
+                                       th:value="${docTrip.cardStart}">
+                            </td>
+
+                            <td class="table-secondary font-weight-bold text-center">사용 종료일</td>
+                            <td><input type="date" class="form-control title-input" name="card_end"
+                                       th:value="${docTrip.cardEnd}"></td>
+                        </tr>
+                        <tr>
+                            <td class="table-secondary font-weight-bold text-center">사용 예정자</td>
+                            <td th:text="${writer.ename}">카드사용자</td>
+                            <td class="table-secondary font-weight-bold text-center">반납 예정일</td>
+                            <td><input type="date" class="form-control title-input" name="card_return"
+                                       th:value="${docTrip.cardReturn}">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <!-- 버튼 영역 -->
+                <div class="button-container">
+                    <button type="button" form="doc_form" class="btn btn-success" id="submit-button">수정완료</button>
+                    <button type="reset" form="doc_form" class="btn btn-secondary">초기화</button>
+                </div>
+            </div>
+        </form>
+        <script th:inline="javascript">
+            $(document).ready(function () {
+                // 제출 버튼 클릭 시 실행
+                $('#submit-button').on('click', function (event) {
+                    event.preventDefault();
+
+                    // 필수 입력 필드 유효성 검사
+                    let isValid = true;
+                    $('#doc_form [required]').each(function () {
+                        if ($(this).val() === '') {
+                            const errorMessage = $(this).data('name');
+                            alert(errorMessage + '을(를) 입력해 주세요');
+                            $(this).focus();
+                            isValid = false;
+                            return false;
+                        }
+                    });
+                    if (!isValid) return;
+
+                    // 결재자 수 확인
+                    const additionalSigners = $('input[name="sign[]"]').length - 1;
+                    if (additionalSigners < 1) {
+                        alert("본인 이외에 최소 1명의 결재자를 추가해야 합니다.");
+                        return;
+                    }
+
+                    // 제출 확인 메시지
+                    const confirmSubmission = confirm("문서를 수정하시겠습니까?");
+                    if (!confirmSubmission) return;
+
+                    // 폼 데이터 수집
+                    const formData = new FormData();
+                    formData.append("formData", new Blob([JSON.stringify({
+                        docId: $('input[name="docId"]').val(),
+                        writer: $('input[name="writer"]').val(),
+                        trip_start: $('input[name="trip_start"]').val(),
+                        trip_end: $('input[name="trip_end"]').val(),
+                        trip_loc: $('input[name="trip_loc"]').val(),
+                        trip_phone: $('input[name="trip_phone"]').val(),
+                        trip_info: $('input[name="trip_info"]').val(),
+                        card_start: $('input[name="card_start"]').val(),
+                        card_end: $('input[name="card_end"]').val(),
+                        card_return: $('input[name="card_return"]').val(),
+                        signers: $('input[name="sign[]"]').map(function () {
+                            return $(this).val();
+                        }).get()
+                    })], { type: "application/json" }));
+
+                    // 파일 추가
+                    const fileInput = $('input[name="files"]')[0];
+                    if (fileInput && fileInput.files.length > 0) {
+                        for (let i = 0; i < fileInput.files.length; i++) {
+                            formData.append("files", fileInput.files[i]);
+                        }
+                    }
+
+                    // AJAX 요청
+                    $.ajax({
+                        url: /*[[@{/doc}]]*/'',
+                        type: "PATCH",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function () {
+                            alert("문서 작성이 완료되었습니다.");
+                            window.location.href = /*[[@{/doc/inProgress}]]*/'';
+                        },
+                        error: function () {
+                            alert("문서 작성 중 오류가 발생했습니다.");
+                        }
+                    });
+                })
+            });
+        </script>
+        </body>
+        </html>
+    </th:block>
+</th:block>

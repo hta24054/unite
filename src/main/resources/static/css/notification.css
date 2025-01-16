@@ -1,0 +1,37 @@
+.toast-notification {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    z-index: 1050;
+    min-width: 250px;
+    max-width: 350px;
+    background-color: #334466; /* 배경색 */
+    border-radius: 8px;
+    padding: 10px;
+    color: #ffffff; /* 텍스트 기본 색상 */
+    opacity: 0;
+    transform: translateY(100%);
+    transition: all 0.5s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 약간의 그림자 */
+}
+
+.toast-notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast-notification.hide {
+    opacity: 0;
+    transform: translateY(100%);
+}
+
+.toast-notification .title {
+    font-size: 16px; /* title 글씨 크기 */
+    font-weight: bold; /* 강조 */
+    margin-bottom: 5px; /* title과 message 간격 */
+}
+
+.toast-notification .message {
+    font-size: 14px; /* message 글씨 크기 */
+    color: #dddddd; /* message 색상 약간 연하게 */
+}

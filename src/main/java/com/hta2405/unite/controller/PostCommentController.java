@@ -1,11 +1,17 @@
 package com.hta2405.unite.controller;
 
+import com.hta2405.unite.domain.PostComment;
+import com.hta2405.unite.dto.PostCommentRequestDTO;
+import com.hta2405.unite.dto.PostCommentUpdateDTO;
 import com.hta2405.unite.service.PostCommentService;
 import jakarta.servlet.annotation.MultipartConfig;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 
@@ -31,5 +37,67 @@ public class PostCommentController {
         map.put("postCommentList", postCommentService.getCommentList(postId, commentListOrder));
         map.put("listCount", postCommentService.getListCount(postId));
         return map;
+    }
+
+    @PostMapping("/add")
+    public Boolean addComment(
+            PostCommentRequestDTO commentRequestDTO,
+            @AuthenticationPrincipal UserDetails user,
+            @RequestParam(value = "attachFile", required = false) MultipartFile file) {
+
+        PostComment.PostCommentBuilder postCommentBuilder = PostComment.builder()
+                .postId(commentRequestDTO.getPostId())
+                .postCommentWriter(user.getUsername())
+                .postCommentContent(commentRequestDTO.getPostCommentContent())
+                .postCommentReLev(0L)
+                .postCommentReSeq(0L);
+
+        return postCommentService.commentsInsert(postCommentBuilder, file);
+    }
+
+    @ResponseBody
+    @GetMapping("/down")
+    public ResponseEntity<Resource> postCommentFileDown(Long commentId) {
+        PostComment postComment = postCommentService.getPostCommentByCommentId(commentId);
+        return postCommentService.postCommentFileDown(postComment);
+    }
+
+    @ResponseBody
+    @PostMapping("/update")
+    public Boolean updateComment(
+            PostCommentUpdateDTO commentUpdateDTO,
+            @AuthenticationPrincipal UserDetails user,
+            @RequestParam(value = "attachFile", required = false) MultipartFile file,
+            String[] deletedFile) {
+
+        PostComment.PostCommentBuilder postCommentBuilder = PostComment.builder()
+                .commentId(commentUpdateDTO.getCommentId())
+                .postCommentContent(commentUpdateDTO.getPostCommentContent());
+
+        return postCommentService.commentsUpdate(postCommentBuilder, file, deletedFile);
+    }
+
+    @ResponseBody
+    @PostMapping("/reply")
+    public Boolean replyComment(
+            PostCommentRequestDTO commentRequestDTO,
+            @AuthenticationPrincipal UserDetails user,
+            @RequestParam(value = "attachFile", required = false) MultipartFile file) {
+
+        PostComment.PostCommentBuilder postCommentBuilder = PostComment.builder()
+                .postId(commentRequestDTO.getPostId())
+                .postCommentWriter(user.getUsername())
+                .postCommentContent(commentRequestDTO.getPostCommentContent())
+                .postCommentReLev(commentRequestDTO.getPostCommentReLev())
+                .postCommentReSeq(commentRequestDTO.getPostCommentReSeq())
+                .postCommentReRef(commentRequestDTO.getPostCommentReRef());
+
+        return postCommentService.commentsInsert(postCommentBuilder, file);
+    }
+
+    @ResponseBody
+    @PostMapping("/delete")
+    public Boolean deleteComment(Long commentId) {
+        return postCommentService.commentsDelete(commentId);
     }
 }

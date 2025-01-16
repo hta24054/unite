@@ -49,60 +49,21 @@
         order by p.project_id
     </select>
 
-    <select id="getmainList" resultType="Project">
-        WITH ranked_projects AS (
-        SELECT
-        p.project_id,
-        p.project_name,
-        DATE(p.project_end_date) projectEndDate,
-        pm.bgColor,
-        pm.textColor,
-        pm.project_favorite projectFavorite,
-        COUNT(pm.project_member_id) AS member_count,
-        IFNULL(SUM(pm.MEMBER_PROGRESS_RATE) / COUNT(pm.project_member_id), 0) AS avg_progress,
-        (SELECT e.ename
-        FROM emp e
-        WHERE e.emp_id = (
-        SELECT m.member_id
-        FROM project_member m
-        WHERE m.project_id = p.project_id
-        AND m.member_role = 'MANAGER'
-        LIMIT 1
-        )) AS managerName,
-        (SELECT m.member_id
-        FROM project_member m
-        WHERE m.project_id = p.project_id
-        AND m.member_role = 'MANAGER'
-        LIMIT 1) AS manager_id,
-        GROUP_CONCAT(CASE WHEN pm.member_role = 'PARTICIPANT' THEN e.ename END ORDER BY e.ename SEPARATOR ', ') AS
-        participants,
-        GROUP_CONCAT(CASE WHEN pm.member_role = 'VIEWER' THEN e.ename END ORDER BY e.ename SEPARATOR ', ') AS viewers,
-        ROW_NUMBER() OVER (ORDER BY p.project_id) AS rnum
-        FROM
-        project p
-        JOIN
-        project_member pm ON p.project_id = pm.project_id
-        LEFT JOIN
-        emp e ON pm.member_id = e.emp_id
-        WHERE
-        p.project_id IN (
-        SELECT project_id
-        FROM project_member
-        WHERE member_id = #{userid}
-        )
-        AND p.project_finished = 0
-        AND p.project_canceled = 0
-        AND pm.member_id = #{userid}
-        <if test="favorite != null">
-            AND pm.project_favorite = #{favorite}
-        </if>
-        GROUP BY
-        p.project_id, p.project_name, p.project_end_date
-        )
-        SELECT *
-        FROM ranked_projects
-        WHERE rnum BETWEEN #{start} AND #{end}
-        ORDER BY rnum;
+    <select id="getMainList" resultType="Project">
+        select p.project_name projectName, p.project_id projectId, group_concat(member_name) as managerName, substring(p.project_end_date, 1, 10) projectEndDate, m.project_favorite projectFavorite,
+               (select group_concat(member_name) from project_member m where m.project_id=p.project_id and member_role = 'PARTICIPANT') as participants,
+               (select group_concat(member_name) from project_member m where m.project_id=p.project_id and member_role = 'VIEWER') as viewers,
+               m.bgColor, m.textColor,
+               (SELECT ifnull(round(AVG(member_avg)),0) FROM (
+                                        SELECT AVG(progress_rate) AS member_avg
+                                        FROM todo t
+                                        WHERE member_id IN (select member_id from project_member m where m.project_id=p.project_id) and t.project_id=p.project_id
+                                        GROUP BY member_id
+                                    ) AS member_averages) avgProgress,
+                p.manager_id managerId
+        from project_member m join project p on p.project_id = m.project_id
+        where member_id=#{userid} and p.project_finished = 0 and p.project_canceled = 0
+        group by p.project_id, m.member_role
     </select>
 
     <update id="projectFavorite">
@@ -119,31 +80,29 @@
         where project_id = #{projectId}
           and member_id = #{userid}
     </update>
-
     <update id="projectStatus">
         update project
         set project_finished = #{complete},
             project_canceled = #{cancel}
-        where project_id = #{projectId}
+            <if test="taskFile != null">
+                ,project_file_path = #{taskFile.filePath}, project_file_original = #{taskFile.fileOriginal}, project_file_uuid = #{taskFile.fileUUID}, project_file_type = #{taskFile.fileType}
+            </if>
+            <if test="taskFile == null">
+                ,project_file_path = '',
+                project_file_original = '',
+                project_file_uuid = '',
+                project_file_type = ''
+            </if>
+            where project_id = #{projectId}
     </update>
 
-    <select id="doneCountList" resultType="int">
-        select count(*)
-        from project p
-                 join project_member m on p.project_id = m.project_id
-        where m.member_id = #{userid}
-          and project_finished = #{finish}
-          and project_canceled = #{cancel}
-        order by p.project_id
-    </select>
 
     <select id="getDoneList" resultType="Project">
-        SELECT *
-        FROM (SELECT p.project_id,
+        SELECT p.project_id,
                      p.project_name,
                      substring(p.project_start_date, 1, 10)                                                                     projectStartDate,
                      substring(p.project_end_date, 1, 10)                                                                       projectEndDate,
-                     p.project_file_original,
+                     p.project_file_original projectFileOriginal,
                      p.project_file_uuid,
                      p.project_file_type,
                      COUNT(pm.project_member_id)                                                                             AS member_count,
@@ -168,20 +127,20 @@
               WHERE p.project_id IN (SELECT project_id
                                      FROM project_member
                                      WHERE member_id = #{userid})
-                AND p.project_canceled = 1 -- 완료된 프로젝트만
+                AND p.${dowhat} = 1
               GROUP BY p.project_id, p.project_name, p.project_start_date, p.project_end_date, p.project_file_original,
                        p.project_file_uuid, p.project_file_type
               ORDER BY p.project_id
-                  LIMIT #{start}, #{end}) AS t;
     </select>
 
     <select id="getProjectName" resultType="String">
-        select project_name
-        from project
-        where project_id = #{projectId}
+        select project_name from project where project_id = #{projectId}
+    </select>
+    <select id="getProjectContent" resultType="String">
+        select project_content from project where project_id = #{projectId}
     </select>
     <select id="getProjectDetail1" resultType="com.hta2405.unite.dto.ProjectDetailDTO">
-        select p.project_id as projectId, m.member_id as memberId, p.manager_id as managerId, m.member_name as participantNames, m.member_designated as memberDesign, (select round(coalesce(avg(t.progress_rate),0)) from todo t where t.member_id = m.member_id) as memberProgressRate,  CASE WHEN p.manager_id = #{userid} THEN true ELSE false END as isManager
+        select p.project_id as projectId, m.member_id as memberId, p.manager_id as managerId, m.member_name as participantNames, m.member_designated as memberDesign, (select round(coalesce(avg(t.progress_rate),0)) from todo t where t.member_id = m.member_id and t.project_id = p.project_id) as memberProgressRate,  CASE WHEN p.manager_id = #{userid} THEN true ELSE false END as isManager
         from project_member m join project p on m.project_id = p.project_id where p.project_id=#{projectId} and m.member_role != 'VIEWER'
 
     </select>
@@ -244,8 +203,15 @@
     </insert>
     <select id="getTodoList" resultType="com.hta2405.unite.dto.ProjectTodoDTO">
         select todo_id todoId, todo_subject todoSubject, progress_rate progressRate from todo where project_id = #{projectId} and member_id = #{userid}
+        order by progressRate;
     </select>
     <update id="updateTodoProgressRate">
         update todo set progress_rate = #{memberProgressRate} where project_id = #{projectId} and member_id = #{userid} and todo_id = #{todoId}
     </update>
+    <update id="todoUpdate">
+        update todo set todo_subject = #{newSubject} where project_id = #{projectId} and member_id = #{userid} and todo_id = #{todoId}
+    </update>
+    <delete id="deleteTodo">
+        delete from todo where todo_id = #{todoId}
+    </delete>
 </mapper>

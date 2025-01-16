@@ -188,10 +188,10 @@
                         </tr>
                         <tr>
                             <td>
-                                <th:block th:if="${#authentication.name=='admin'}">
+                                <th:block th:if="${empInfoDTO.emp.role=='ROLE_ADMIN'}">
                                     관리자
                                 </th:block>
-                                <th:block th:if="${#authentication.name!='admin'}">
+                                <th:block th:if="${empInfoDTO.emp.role!='ROLE_ADMIN'}">
                                     <select name="deptId" data-name="부서" disabled required>
                                         <th:block th:each="dept : ${empInfoDTO.deptList}">
                                             <option
@@ -207,10 +207,10 @@
                             </td>
                             <td th:text="${empInfoDTO.emp.empId}">사번</td>
                             <td>
-                                <th:block th:if="${#authentication.name=='admin'}">
+                                <th:block th:if="${empInfoDTO.emp.role=='ROLE_ADMIN'}">
                                     관리자
                                 </th:block>
-                                <th:block th:if="${#authentication.name!='admin'}">
+                                <th:block th:if="${empInfoDTO.emp.role!='ROLE_ADMIN'}">
                                     <select name="jobId" data-name="직책" disabled required>
                                         <th:block th:each="job : ${empInfoDTO.jobList}">
                                             <option th:value="${job.jobId}"

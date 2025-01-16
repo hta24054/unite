@@ -2,6 +2,7 @@ package com.hta2405.unite.controller;
 
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.dto.AttendInfoDTO;
+import com.hta2405.unite.dto.VacationInfoDTO;
 import com.hta2405.unite.service.AttendService;
 import com.hta2405.unite.service.AuthService;
 import com.hta2405.unite.service.EmpService;
@@ -27,11 +28,11 @@ public class AttendController {
     private final AuthService authService;
 
     @GetMapping("/info")
-    public ModelAndView showEmpInfoPage(ModelAndView mv,
-                                        @AuthenticationPrincipal UserDetails user,
-                                        @RequestParam(required = false) String empId,
-                                        @RequestParam(required = false) Integer year,
-                                        @RequestParam(required = false) Integer month) {
+    public ModelAndView showEmpAttendPage(ModelAndView mv,
+                                          @AuthenticationPrincipal UserDetails user,
+                                          @RequestParam(required = false) String empId,
+                                          @RequestParam(required = false) Integer year,
+                                          @RequestParam(required = false) Integer month) {
         String targetEmpId = (empId == null || empId.isEmpty()) ? user.getUsername() : empId;
         if (year == null || month == null) {
             year = LocalDate.now().getYear();
@@ -55,15 +56,38 @@ public class AttendController {
         return mv;
     }
 
+    @GetMapping("/vacation")
+    public ModelAndView showVacationPage(ModelAndView mv,
+                                        @AuthenticationPrincipal UserDetails user,
+                                        @RequestParam(required = false) String empId,
+                                        @RequestParam(required = false) Integer year,
+                                        @RequestParam(required = false) Integer month) {
+        String targetEmpId = (empId == null || empId.isEmpty()) ? user.getUsername() : empId;
+        if (year == null) {
+            year = LocalDate.now().getYear();
+            mv.setViewName("redirect:/attend/vacation?empId=" + targetEmpId + "&year=" + year);
+            return mv;
+        }
+
+        Emp targetEmp = empService.getEmpById(targetEmpId);
+        Emp emp = empService.getEmpById(user.getUsername());
+
+        if (!authService.isAuthorizedToView(emp, targetEmp, user.getUsername().equals(targetEmpId))) {
+            mv.setViewName("error/error");
+            mv.addObject("errorMessage", "회원정보 열람 권한이 없습니다.");
+            return mv;
+        }
+
+        VacationInfoDTO vacationInfoDTO = attendService.getVacationInfoDTO(year, targetEmp);
+        mv.addObject("vacationInfoDTO", vacationInfoDTO);
+        mv.setViewName("attend/vacationInfo");
+        return mv;
+    }
+
     @GetMapping("/record")
     @ResponseBody
     public Map<String, Object> getAttendRecord(@AuthenticationPrincipal UserDetails user) {
         return attendService.getTodayRecord(user.getUsername(), LocalDate.now());
-    }
-
-    @GetMapping("/test")
-    public String getAttendTest() {
-        return "/attend/attendBox";
     }
 
     @PostMapping("/in")

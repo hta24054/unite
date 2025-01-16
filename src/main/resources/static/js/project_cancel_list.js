@@ -82,40 +82,4 @@ function updateBoardList(data) {
     $('table').append(output);
 }
 
-function setPaging(href, digit, isActive = false) {
-    const gray = (href === "" && isNaN(digit)) ? "gray" : "";
-    const active = isActive ? "active" : "";
-    const anchor = `<a class="page-link ${gray}" ${href}>${digit}</a>`;
-    return `<li class="page-item ${active}">${anchor}</li>`;
-}
-
-function generatePagination(data) {
-    let output = "";
-
-    // 맨 처음 버튼
-    let firstHref = data.page > 1 ? `href=javascript:go(1)` : "";
-    output += setPaging(firstHref, '<<');
-
-    // 이전 버튼
-    let prevHref = data.page > 1 ? `href=javascript:go(${data.page - 1})` : "";
-    output += setPaging(prevHref, '<');
-
-    // 페이지 번호
-    for (let i = data.startpage; i <= data.endpage; i++) {
-        const isActive = (i === data.page);
-        let pageHref = !isActive ? `href=javascript:go(${i})` : "";
-        output += setPaging(pageHref, i, isActive);
-    }
-
-    // 다음 버튼
-    let nextHref = (data.page < data.maxpage) ? `href=javascript:go(${data.page + 1})` : "";
-    output += setPaging(nextHref, '>');
-
-    // 맨 마지막 버튼
-    let lastHref = data.page < data.maxpage ? `href=javascript:go(${data.maxpage})` : "";
-    output += setPaging(lastHref, '>>');
-
-    $('.pagination').empty().append(output);
-}
-
 

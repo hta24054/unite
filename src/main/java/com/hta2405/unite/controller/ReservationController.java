@@ -136,7 +136,6 @@ public class ReservationController {
         // 예약 목록 가져오기
         List<ReservationDTO> reservationList = reservationService.getMyReservationList(empId);
         model.addAttribute("reservationList", reservationList);
-
         return model;
     }
 }

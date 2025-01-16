@@ -90,12 +90,6 @@
         WHERE reservation_id = #{reservationId} AND emp_id = #{empId}
     </delete>
 
-    <select id="findReservationByEmpId"  parameterType="map">
-        SELECT *
-        FROM reservation
-        WHERE emp_id = #{empId};
-    </select>
-
     <select id="getMyReservationList" resultType="com.hta2405.unite.dto.ReservationDTO">
         SELECT
             rs.resc_type AS resourceType,
@@ -111,5 +105,4 @@
         WHERE reservation.emp_id = #{empId}
         ORDER BY reservation.reservation_id;
     </select>
-
 </mapper>

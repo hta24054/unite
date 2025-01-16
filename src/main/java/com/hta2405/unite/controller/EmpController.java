@@ -38,7 +38,6 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public class EmpController {
     private final EmpService empService;
-    private final ProfileImgService profileImgService;
     private final AuthService authService;
 
     @GetMapping("/info")
@@ -63,98 +62,8 @@ public class EmpController {
         return mv;
     }
 
-    @GetMapping("/editable-field")
-    @ResponseBody
-    public Map<String, Object> getEditableFields(@AuthenticationPrincipal CustomUserDetails user) {
-        Map<String, Object> response = new HashMap<>();
-        List<String> field;
-
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority(Role.ROLE_ADMIN.getRoleName()))) {
-            field = Stream.of(EmpAdminUpdateDTO.class.getDeclaredFields())
-                    .map(Field::getName)
-                    .collect(Collectors.toList());
-            response.put("role", Role.ROLE_ADMIN.getRoleName());
-        } else {
-            field = Stream.of(EmpSelfUpdateDTO.class.getDeclaredFields())
-                    .map(Field::getName)
-                    .collect(Collectors.toList());
-            response.put("role", Role.ROLE_MEMBER.getRoleName());
-        }
-        response.put("field", field);
-        return response;
-    }
-
-    @PatchMapping("/{empId}")
-    @ResponseBody
-    public String updateEmpSelf(@PathVariable String empId,
-                                @RequestPart(value = "file", required = false) MultipartFile file,
-                                @RequestBody EmpSelfUpdateDTO dto,
-                                @AuthenticationPrincipal UserDetails user) {
-        //수정 대상 직원이 본인이 아닌 경우 인사정보 수정 제한
-        if (!empId.equals(user.getUsername())) {
-            return "인사정보 수정 실패";
-        }
-
-        int result = empService.updateEmpBySelf(empId, file, dto);
-        if (result != 1) {
-            return "인사정보 수정 실패";
-        }
-
-        return "인사정보 수정 성공";
-    }
-
-    @PatchMapping("/admin/{empId}")
-    @ResponseBody
-    public String updateEmpAdmin(@PathVariable String empId,
-                                 @RequestPart(value = "file", required = false) MultipartFile file,
-                                 @RequestPart(value = "dto") String dtoJson
-    ) {
-        // JSON 데이터를 DTO로 변환
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        EmpAdminUpdateDTO dto;
-        try {
-            dto = objectMapper.readValue(dtoJson, EmpAdminUpdateDTO.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("JSON 데이터 변환 실패", e);
-        }
-        int result = empService.updateEmpByAdmin(empId, file, dto);
-        if (result != 1) {
-            return "인사정보 수정 실패";
-        }
-        return "인사정보 수정 성공";
-    }
-
     @GetMapping("/password")
     public String showChangePassword() {
         return "emp/changePassword";
-    }
-
-    @PostMapping("/password")
-    @ResponseBody
-    public String changePassword(@AuthenticationPrincipal UserDetails user,
-                                 String currentPassword,
-                                 String newPassword) {
-        return empService.changePassword(user.getUsername(), currentPassword, newPassword);
-    }
-
-    @GetMapping("/empTree")
-    @ResponseBody
-    public List<EmpListDTO> getEmpListByDeptId(Long deptId) {
-        return empService.getEmpListByDeptId(deptId);
-    }
-
-    @GetMapping("/empTree-search")
-    @ResponseBody
-    public List<EmpListDTO> getEmpListByName(String query) {
-        query = "%" + query + "%";
-        return empService.getEmpListByName(query);
-    }
-
-    @GetMapping("/profile-image")
-    @ResponseBody
-    public ResponseEntity<Resource> getProfileImage(String empId) {
-        Emp emp = empService.getEmpById(empId);
-        return profileImgService.getProfileImage(emp);
     }
 }

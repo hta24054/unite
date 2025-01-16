@@ -32,6 +32,7 @@
             </div>
         </main>
         <script>
+            const contextPath = /*[[@{/}]]*/ '';
             $(document).ready(function () {
                 // "선택" 열 추가
                 $('#employeeTableContainer thead tr').prepend('<th>선택</th>');
@@ -71,20 +72,18 @@
             ;
 
             function insertEmp() {
-                window.location.href = '../admin/emp-manage/register';
+                window.location.href = contextPath + '/admin/emp-manage/register';
             }
 
             function editEmp() {
                 const empId = $('input[name="selectedEmp"]:checked').val();
 
                 if (empId) {
-                    window.location.href = '../admin/emp-manage/info?empId=' + empId;
+                    window.location.href = contextPath + '/admin/emp-manage/info?empId=' + empId;
                 } else {
                     alert("수정할 직원을 선택해 주세요.");
                 }
             }
-
-            const contextPath = /*[[@{/}]]*/ '';
 
             function resignEmp() {
                 const empId = $('input[name="selectedEmp"]:checked').val();
@@ -92,7 +91,7 @@
                 if (confirm("직원을 퇴사처리 하시겠습니까?")) {
                     if (empId) {
                         $.ajax({
-                            url: contextPath + '/admin/emp-manage',
+                            url: contextPath + '/api/admin/emp-manage',
                             type: 'DELETE',
                             data: {empId: empId},
                             success: function (data) {

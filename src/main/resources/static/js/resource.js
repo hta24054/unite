@@ -1,5 +1,5 @@
+const contextPath = /*[[@{/}]]*/ '';
 $(document).ready(function () {
-    const contextPath = /*[[@{}]]*/ '';
     const lang_kor = {
         "decimal": "",
         "emptyTable": "데이터가 없습니다.",
@@ -21,9 +21,8 @@ $(document).ready(function () {
     const resourceTable = $('#resourceTable').DataTable({
         language: lang_kor,
         ajax: {
-            url: contextPath + "/admin/resource/list",
+            url: contextPath + "/api/admin/resource",
             dataSrc: 'data',
-
         },
         columns: [
             {
@@ -51,7 +50,7 @@ $(document).ready(function () {
     $("#insertResource").submit(function (event) {
         event.preventDefault();
         $.post({
-            url: contextPath + "/admin/resource",
+            url: contextPath + "/api/admin/resource",
             data: $(this).serialize(),
             success: function () {
                 alert("등록 성공");
@@ -68,7 +67,7 @@ $(document).ready(function () {
     $("#updateResource").submit(function (event) {
         event.preventDefault();
         $.ajax({
-            url: contextPath + "/admin/resource",
+            url: contextPath + "/api/admin/resource",
             type: "PATCH",
             data: $(this).serialize(),
             success: function () {
@@ -96,7 +95,7 @@ $(document).ready(function () {
         if (confirm("선택한 자원을 삭제하시겠습니까?")) {
             $('#deleteResourceIds').val(selectedIds.join(','));
             $.ajax({
-                url: "../admin/resource",
+                url: contextPath+ "/api/admin/resource",
                 type: "DELETE",
                 data: {selectedIds},
                 success: function (data) {

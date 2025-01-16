@@ -1,6 +1,7 @@
 package com.hta2405.unite.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.hta2405.unite.domain.Resource;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,6 +26,7 @@ public class ReservationDTO {
     private int reservationAllDay; // 종일
     private String resourceType; // 자원 종류
     private String resourceName; // 자원 이름
+    private String resourceInfo; // 자원 정보
     private boolean resourceUsable; // 자원 사용 가능 여부
     private Boolean isMyReservation;  // 로그인한 사용자의 예약 여부
 }

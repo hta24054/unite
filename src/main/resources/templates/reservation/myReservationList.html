@@ -1,0 +1,105 @@
+<th:block th:replace="~{layout :: setContent(~{this::content})}">
+	<th:block th:fragment="content">
+		<!DOCTYPE html>
+		<html xmlns:th="http://www.thymeleaf.org">
+			<head>
+				<title>나의 자원 예약 목록</title>
+				<script th:src="@{https://cdn.jsdelivr.net/npm/moment@2.27.0/min/moment.min.js}"></script>
+				<script th:src="@{https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js}"></script>
+				<script th:src="@{https://cdn.jsdelivr.net/npm/@fullcalendar/moment@6.1.15/index.global.min.js}"></script>
+			</head>
+			<body class="sb-nav-fixed">
+				<div class="p-5">
+					<h3 class="mb-5">나의 예약 목록</h3>
+
+					<!-- 예약 있는 경우 -->
+					<div th:if="${reservationList.size > 0}">
+						<form th:action="@{/reservation/myReservationList}" method="get" enctype="multipart/form-data">
+							<input type="hidden" id="empId" name="empId" th:value="${#authentication.name}">
+
+							<table class="table table-bordered table-striped">
+								<thead>
+									<tr>
+										<th>예약 번호</th>
+										<th>자원 유형</th>
+										<th>자원 이름</th>
+										<th>시작 일시</th>
+										<th>종료 일시</th>
+										<th>사용 용도</th>
+										<th>자원 정보</th>
+										<th>예약 취소</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="item : ${reservationList}">
+										<td th:text="${item.reservationId}"></td>
+										<td th:text="${item.resourceType}"></td>
+										<td th:text="${item.resourceName}"></td>
+										<td class="start" th:text="${item.reservationStart}"></td>
+										<td class="end" th:text="${item.reservationEnd}"></td>
+										<td th:text="${item.reservationInfo}"></td>
+										<td th:text="${item.resourceInfo}"></td>
+										<td class="text-center">
+											<button type="button" id="btnCancel" class="btn btn-secondary" th:attr="data-reservation-id=${item.reservationId}">예약 취소</button>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</form>
+					</div>
+
+					<!-- 예약 없는 경우 -->
+					<div th:if="${reservationList.size == 0}" class="text-center">
+						<h2>예약한 자원이 없습니다.</h2>
+					</div>
+				</div>
+				<script th:inline="javascript">
+					$(".start, .end").each(function () {
+						$(this).text($(this).text().replace("T", " "));
+					});
+
+					// 예약 취소 버튼 클릭 시
+					$(document).on("click", "#btnCancel", function() {
+						const reservationId = $(this).data("reservation-id");
+						console.log(reservationId)
+
+						if (confirm("정말 취소하시겠습니까?")) {
+							$.ajax({
+								url: "/reservation/cancelReservation",
+								type: "post",
+								dataType: "json",
+								data: {
+									reservationId: reservationId,
+									empId: $("#emp_id").val()
+								},
+								success: function (data) {
+									if (data === 1) {
+										alert("예약이 취소되었습니다.");
+										location.reload();
+									} else {
+										alert("예약 취소 실패");
+									}
+								},
+								error: function (error) {
+									alert("예약 취소 오류");
+								}
+							});
+						}
+					});
+				</script>
+			</body>
+		</html>
+	</th:block>
+</th:block>
+
+
+
+
+
+
+
+
+
+
+
+

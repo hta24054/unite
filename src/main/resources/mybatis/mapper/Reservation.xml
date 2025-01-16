@@ -90,4 +90,26 @@
         WHERE reservation_id = #{reservationId} AND emp_id = #{empId}
     </delete>
 
+    <select id="findReservationByEmpId"  parameterType="map">
+        SELECT *
+        FROM reservation
+        WHERE emp_id = #{empId};
+    </select>
+
+    <select id="getMyReservationList" resultType="com.hta2405.unite.dto.ReservationDTO">
+        SELECT
+            rs.resc_type AS resourceType,
+            rs.resc_name AS resourceName,
+            rs.resc_info AS resourceInfo,
+            reservation.reservation_start,
+            reservation.reservation_end,
+            reservation.reservation_info,
+            reservation.reservation_id
+        FROM reservation
+                 JOIN resc rs
+                      ON reservation.resource_id = rs.resc_id
+        WHERE reservation.emp_id = #{empId}
+        ORDER BY reservation.reservation_id;
+    </select>
+
 </mapper>

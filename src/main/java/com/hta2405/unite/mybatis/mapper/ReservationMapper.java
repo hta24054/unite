@@ -4,6 +4,7 @@ import com.hta2405.unite.domain.Resource;
 import com.hta2405.unite.dto.ReservationDTO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Mapper
@@ -21,4 +22,8 @@ public interface ReservationMapper {
     public ReservationDTO getReservationModal(Long reservationId);
 
     public int cancelReservation(Long reservationId, String empId);
+
+    public void findReservationByEmpId(String empId);
+
+    public List<ReservationDTO> getMyReservationList(HashMap<String, Object> hashMap);
 }

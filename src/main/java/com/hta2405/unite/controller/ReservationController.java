@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -128,9 +129,14 @@ public class ReservationController {
         return reservationService.cancelReservation(reservationId, empId);
     }
 
+    @GetMapping("/myReservationList")
+    public Model getMyReservationList(@AuthenticationPrincipal UserDetails user, Model model) {
+        String empId = user.getUsername();
 
+        // 예약 목록 가져오기
+        List<ReservationDTO> reservationList = reservationService.getMyReservationList(empId);
+        model.addAttribute("reservationList", reservationList);
 
-
-
-
+        return model;
+    }
 }

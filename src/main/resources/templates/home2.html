@@ -13,14 +13,14 @@
         <div class="container" style=" max-width: 1500px;">
             <div class="left">
                 <div class="user">
-                    <img th:src="@{/emp/profile-image(empId=${#authentication.name})}" class="user_img" alt="프로필">
+                    <img th:src="@{/api/emp/profile-image(empId=${#authentication.name})}" class="user_img" alt="프로필">
                     <div>
                         <span th:text="${name}"></span> / <span th:text="${job}"></span>
                     </div>
                     <span th:text="${email}"></span>
                     <div id="user_bottom">
-                        <span style="float:left; padding-bottom: 10px;">결제 대기 문서</span><span style="padding-bottom: 10px;float:right; color: gray;">bb</span>
-                        <span style="float:left">결제 진행 문서</span><span style="float:right; color: gray;">bb</span>
+                        <span style="float:left; padding-bottom: 10px;">결제 대기 문서</span><a th:href="@{/doc/waiting}"><span style="padding-bottom: 10px;float:right; color: gray;" th:text="${waiting}"></span></a>
+                        <span style="float:left">결제 진행 문서</span><a th:href="@{/doc/inProgress}"><span style="float:right; color: gray;" th:text="${waiting}"></span></a>
                     </div><br><br><br>
 
                     <span id="inner" style="float:left; padding-left:45px;" onclick="window.location.href='/contact/inner'"><img th:src="@{/image/inner.png}" style="width:50px; height: 50px;"></span>

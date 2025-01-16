@@ -4,6 +4,7 @@ import com.hta2405.unite.domain.Notice;
 import com.hta2405.unite.dto.BoardPostEmpDTO;
 import com.hta2405.unite.mybatis.mapper.BoardPostMapper;
 import com.hta2405.unite.mybatis.mapper.JobMapper;
+import com.hta2405.unite.service.DocService;
 import com.hta2405.unite.service.EmpService;
 import com.hta2405.unite.service.NoticeService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,14 +26,16 @@ import java.util.Map;
 public class HomeController {
     private final NoticeService noticeService;
     private final EmpService empService;
+    private final DocService docService;
     private final JobMapper jobMapper;
     private final BoardPostMapper boardPostMapper;
 
-    public HomeController(NoticeService noticeService, EmpService empService, JobMapper jobMapper, BoardPostMapper boardPostMapper) {
+    public HomeController(NoticeService noticeService, EmpService empService, JobMapper jobMapper, BoardPostMapper boardPostMapper, DocService docService) {
         this.noticeService = noticeService;
         this.empService = empService;
         this.jobMapper = jobMapper;
         this.boardPostMapper = boardPostMapper;
+        this.docService = docService;
     }
 
     @GetMapping("/")
@@ -45,6 +48,7 @@ public class HomeController {
         model.addAttribute("name", empService.getEmpById(user.getUsername()).getEname());
         model.addAttribute("email", empService.getEmpById(user.getUsername()).getEmail());
         model.addAttribute("job", jobMapper.getJobByEmpId(user.getUsername()).getJobName());
+        model.addAttribute("waiting", docService.getWaitingDocs(user.getUsername()).size());
         return "home2";
     }
 

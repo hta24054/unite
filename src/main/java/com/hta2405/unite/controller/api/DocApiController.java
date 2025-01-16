@@ -7,7 +7,8 @@ import com.hta2405.unite.domain.Doc;
 import com.hta2405.unite.dto.DocRequestDTO;
 import com.hta2405.unite.enums.DocRole;
 import com.hta2405.unite.enums.DocType;
-import com.hta2405.unite.factory.*;
+import com.hta2405.unite.factory.DocEditorFactory;
+import com.hta2405.unite.factory.DocWriterFactory;
 import com.hta2405.unite.service.DocService;
 import com.hta2405.unite.strategy.doc.DocEditor;
 import com.hta2405.unite.strategy.doc.DocWriter;
@@ -107,5 +108,10 @@ public class DocApiController {
     public ResponseEntity<String> revokeDoc(Long docId, @AuthenticationPrincipal UserDetails user) {
         return docService.revokeDoc(docId, user.getUsername())
                 ? ResponseEntity.ok("회수 성공") : ResponseEntity.badRequest().body("회수 실패");
+    }
+
+    @GetMapping(value = "/waitingCount")
+    public int getWaitingCount(@AuthenticationPrincipal UserDetails user) {
+        return docService.getWaitingDocs(user.getUsername()).size();
     }
 }

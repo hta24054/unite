@@ -42,35 +42,64 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Transactional
-    public int createProject(Project project) {
-        // 매니저 ID 처리: 괄호 안의 ID만 추출
+    public void createProject(Project project) {
         String managerInfo = project.getManagerId();
-        String managerId = managerInfo.substring(managerInfo.indexOf("(") + 1, managerInfo.indexOf(")")).trim();
-        String managername = managerInfo.replace("()", "").trim();
-        project.setManagerName(managername);
+        String managerId;
+        String managerName;
+
+        try {
+            managerId = managerInfo.substring(managerInfo.indexOf("(") + 1, managerInfo.indexOf(")")).trim();
+            managerName = managerInfo.replace("(" + managerId + ")", "").trim();
+        } catch (StringIndexOutOfBoundsException e) {
+            throw new IllegalArgumentException("manager_id 형식이 올바르지 않습니다. 값: " + managerInfo, e);
+        }
+
+        project.setManagerName(managerName);
         project.setManagerId(managerId);
+
+        // 프로젝트 생성
         dao.createProject(project);
+        int projectId = project.getProjectId();
 
-        return project.getProjectId();
+        if (projectId <= 0) {
+            throw new IllegalArgumentException("프로젝트 생성에 실패했습니다.");
+        }
+
+        // 매니저 추가
+        addProjectMemberAndTask(projectId, managerName, managerId, "MANAGER");
+
+        // 참여자 추가
+        if (project.getParticipants() != null && !project.getParticipants().isEmpty()) {
+            String[] participantArray = project.getParticipants().split(",");
+            for (String participant : participantArray) {
+                String[] participantInfo = participant.trim().split("\\(");
+                if (participantInfo.length == 2) {
+                    String empName = participantInfo[0].trim();
+                    String empId = participantInfo[1].replace(")", "").trim();
+                    addProjectMemberAndTask(projectId, empName, empId, "PARTICIPANT");
+                }
+            }
+        }
+
+        // 열람자 추가
+        if (project.getViewers() != null && !project.getViewers().isEmpty()) {
+            String[] viewerArray = project.getViewers().split(",");
+            for (String viewer : viewerArray) {
+                String[] viewerInfo = viewer.trim().split("\\(");
+                if (viewerInfo.length == 2) {
+                    String empName = viewerInfo[0].trim();
+                    String empId = viewerInfo[1].replace(")", "").trim();
+                    if (!empId.equals(managerId)) { // 매니저가 아닌 경우만 추가
+                        addProjectMemberAndTask(projectId, empName, empId, "VIEWER");
+                    }
+                }
+            }
+        }
     }
 
-
-    @Override
-    @Transactional
-    public void addProjectMember(int projectId, String memberName, String memberId, String role) {
+    private void addProjectMemberAndTask(int projectId, String memberName, String memberId, String role) {
         dao.addProjectMember(projectId, memberName, memberId, role);
-    }
-
-    @Override
-    @Transactional
-    public void addProjectMembers(int projectId, String memberName, String memberId, String role) {
-        dao.addProjectMembers(projectId, memberName, memberId, role);
-    }
-
-    @Override
-    @Transactional
-    public void createTask(int projectId, String empId, String memberName) {
-        dao.createTask(projectId, empId, memberName);
+        dao.createTask(projectId, memberId, memberName);
     }
 
     public void projectFavorite(int projectId, String userid) {

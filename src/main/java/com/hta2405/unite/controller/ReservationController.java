@@ -74,12 +74,13 @@ public class ReservationController {
         int overlapCount = reservationService.checkReservationOverlap(reservationDTO);
         if (overlapCount > 0) {
             System.out.println("이미 예약된 자원입니다.");
-            return 0;
+            return 0; // 중복 예약이 있는 경우
         }
 
         // 중복이 없다면 예약 추가
         return reservationService.resourceReservation(reservationDTO);
     }
+
 
     @ResponseBody
     @GetMapping("/getReservationList")

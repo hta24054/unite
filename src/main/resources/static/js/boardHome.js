@@ -22,23 +22,6 @@ $(function () {
     })
 });
 
-//sidebar와 content 사이의 구분선 길이 업데이트
-// function updateDividerHeight() {
-//     const sidebar = $('.sidebar')[0];
-//     const content = $('.content')[0];
-//     const sidebarHeight = sidebar.offsetHeight;
-// 	const contentHeight = content.offsetHeight;
-//
-// 	var scrollT = $(document).scrollTop();	//스크롤바의 상단위치        
-// 	var scrollH = $(document).height(); 	//스크롤바를 갖는 div의 높이       
-// 	if(scrollT + scrollH > sidebarHeight) { //스크롤바가 아래 쪽에 위치할 때 
-// 		sidebar.style.minHeight = contentHeight + "px";  
-// 	}else{
-//     	content.style.minHeight = sidebarHeight + "px";
-// 	}
-// }
-
-
 // 게시판 홈(피드형) 데이터 로드 함수
 function loadBoardHome() {
     $.ajax({

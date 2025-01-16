@@ -31,4 +31,6 @@ public interface EmpMapper {
     void updateVacationCount();
 
     int changePassword(String empId, String encodedPassword);
+
+    List<EmpListDTO> getAllEmpListDTO();
 }

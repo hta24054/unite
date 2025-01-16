@@ -138,9 +138,14 @@ public class EmpService {
         return empMapper.resignEmp(empId);
     }
 
-    public List<EmpListDTO> getEmpListDTO(List<Dept> list) {
+    public List<EmpListDTO> getEmpListDTOByDeptList(List<Dept> list) {
         return empMapper.getHiredEmpListDTO(list);
     }
+
+    public List<EmpListDTO> getAllEmpListDTO() {
+        return empMapper.getAllEmpListDTO();
+    }
+
 
     /**
      * 유저 리스트 테이블 ModelAndView 반환 메서드

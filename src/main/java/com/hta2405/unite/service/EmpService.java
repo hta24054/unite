@@ -5,6 +5,7 @@ import com.hta2405.unite.domain.Dept;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Lang;
 import com.hta2405.unite.dto.*;
+import com.hta2405.unite.enums.Role;
 import com.hta2405.unite.mybatis.mapper.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.hta2405.unite.enums.Role.*;
 
 @Service
 @Slf4j
@@ -158,10 +161,10 @@ public class EmpService {
 
     // 관리자) 내 하위부서 직원인지 확인하는 메서드
     public boolean isMySubDeptEmp(Emp emp, Emp targetEmp) {
-        if (emp.getRole().equals("ADMIN")) {
+        if (emp.getRole().equals(ROLE_ADMIN)) {
             return true;
         }
-        if (!emp.getRole().equals("ROLE_MANAGER")) {
+        if (!emp.getRole().equals(ROLE_MANAGER)) {
             return false;
         }
         List<Dept> subDeptList = deptMapper.getSubDeptList(emp.getDeptId());

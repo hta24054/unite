@@ -6,6 +6,7 @@ import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.service.DeptService;
 import com.hta2405.unite.service.EmpService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,6 +34,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                 emp.getEmpId(),
                 dept.getDeptId(),
                 emp.getPassword(),
-                List.of(emp::getRole));
+                List.of(new SimpleGrantedAuthority(emp.getRole().getRoleName())));
     }
 }

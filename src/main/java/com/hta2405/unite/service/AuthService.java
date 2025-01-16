@@ -1,8 +1,12 @@
 package com.hta2405.unite.service;
 
 import com.hta2405.unite.domain.Emp;
+import com.hta2405.unite.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import static com.hta2405.unite.enums.Role.ROLE_ADMIN;
+import static com.hta2405.unite.enums.Role.ROLE_MANAGER;
 
 @Service
 @RequiredArgsConstructor
@@ -30,10 +34,10 @@ public class AuthService {
             return true; // 본인 정보는 누구나 열람 가능
         }
 
-        String role = emp.getRole();
+        Role role = emp.getRole();
 
         // 관리자 권한은 열람 가능
-        if ("ROLE_ADMIN".equals(role)) {
+        if (ROLE_ADMIN.equals(role)) {
             return true;
         }
 
@@ -43,6 +47,6 @@ public class AuthService {
         }
 
         // 부서장 권한 + 부하직원 확인
-        return "ROLE_MANAGER".equals(role) && empService.isMySubDeptEmp(emp, targetEmp);
+        return ROLE_MANAGER.equals(role) && empService.isMySubDeptEmp(emp, targetEmp);
     }
 }

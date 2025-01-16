@@ -4,7 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hta2405.unite.domain.Emp;
-import com.hta2405.unite.dto.*;
+import com.hta2405.unite.dto.EmpAdminUpdateDTO;
+import com.hta2405.unite.dto.EmpInfoDTO;
+import com.hta2405.unite.dto.EmpListDTO;
+import com.hta2405.unite.dto.EmpSelfUpdateDTO;
+import com.hta2405.unite.enums.Role;
 import com.hta2405.unite.security.CustomUserDetails;
 import com.hta2405.unite.service.AuthService;
 import com.hta2405.unite.service.EmpService;
@@ -65,16 +69,16 @@ public class EmpController {
         Map<String, Object> response = new HashMap<>();
         List<String> field;
 
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+        if (user.getAuthorities().contains(new SimpleGrantedAuthority(Role.ROLE_ADMIN.getRoleName()))) {
             field = Stream.of(EmpAdminUpdateDTO.class.getDeclaredFields())
                     .map(Field::getName)
                     .collect(Collectors.toList());
-            response.put("role", "ROLE_ADMIN");
+            response.put("role", Role.ROLE_ADMIN.getRoleName());
         } else {
             field = Stream.of(EmpSelfUpdateDTO.class.getDeclaredFields())
                     .map(Field::getName)
                     .collect(Collectors.toList());
-            response.put("role", "ROLE_USER");
+            response.put("role", Role.ROLE_MEMBER.getRoleName());
         }
         response.put("field", field);
         return response;

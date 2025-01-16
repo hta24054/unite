@@ -3,6 +3,7 @@ package com.hta2405.unite.dto;
 import com.hta2405.unite.domain.Cert;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Lang;
+import com.hta2405.unite.enums.Role;
 import lombok.Data;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -43,7 +44,7 @@ public class EmpRegisterDTO {
                 .empId(this.empId)
                 .password(encodedPassword)
                 .ename(this.ename)
-                .role("ROLE_MEMBER")
+                .role(Role.ROLE_MEMBER)
                 .deptId(this.deptId)
                 .jobId(this.jobId)
                 .gender(this.gender)

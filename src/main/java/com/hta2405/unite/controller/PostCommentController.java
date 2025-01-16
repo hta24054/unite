@@ -4,7 +4,6 @@ import com.hta2405.unite.domain.PostComment;
 import com.hta2405.unite.dto.PostCommentRequestDTO;
 import com.hta2405.unite.dto.PostCommentUpdateDTO;
 import com.hta2405.unite.service.PostCommentService;
-import jakarta.servlet.annotation.MultipartConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 
-@MultipartConfig(
-        fileSizeThreshold = 1024 * 1024 * 5,   // 메모리 내 파일 크기 제한 (5MB)
-        maxFileSize = 1024 * 1024 * 10,        // 파일 하나의 최대 크기 (10MB)
-        maxRequestSize = 1024 * 1024 * 50      // 요청 전체 크기 (50MB)
-)
 @RestController
 @RequestMapping("/comments")
 @Slf4j
@@ -55,14 +49,12 @@ public class PostCommentController {
         return postCommentService.commentsInsert(postCommentBuilder, file);
     }
 
-    @ResponseBody
     @GetMapping("/down")
     public ResponseEntity<Resource> postCommentFileDown(Long commentId) {
         PostComment postComment = postCommentService.getPostCommentByCommentId(commentId);
         return postCommentService.postCommentFileDown(postComment);
     }
 
-    @ResponseBody
     @PostMapping("/update")
     public Boolean updateComment(
             PostCommentUpdateDTO commentUpdateDTO,
@@ -77,7 +69,6 @@ public class PostCommentController {
         return postCommentService.commentsUpdate(postCommentBuilder, file, deletedFile);
     }
 
-    @ResponseBody
     @PostMapping("/reply")
     public Boolean replyComment(
             PostCommentRequestDTO commentRequestDTO,
@@ -95,7 +86,6 @@ public class PostCommentController {
         return postCommentService.commentsInsert(postCommentBuilder, file);
     }
 
-    @ResponseBody
     @PostMapping("/delete")
     public Boolean deleteComment(Long commentId) {
         return postCommentService.commentsDelete(commentId);

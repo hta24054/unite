@@ -4,7 +4,7 @@ import com.hta2405.unite.domain.PaginationResult;
 import com.hta2405.unite.domain.PostFile;
 import com.hta2405.unite.dto.*;
 import com.hta2405.unite.service.BoardPostService;
-import jakarta.servlet.annotation.MultipartConfig;
+import com.hta2405.unite.service.EmpService;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,32 +23,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-@MultipartConfig(
-        fileSizeThreshold = 1024 * 1024 * 5,   // 메모리 내 파일 크기 제한 (5MB)
-        maxFileSize = 1024 * 1024 * 10,        // 파일 하나의 최대 크기 (10MB)
-        maxRequestSize = 1024 * 1024 * 50      // 요청 전체 크기 (50MB)
-)
 @Controller
 @RequestMapping("/board")
 @Slf4j
 public class BoardController {
     private final BoardPostService boardPostService;
+    private final EmpService empService;
 
-    public BoardController(BoardPostService boardPostService) {
+    public BoardController(BoardPostService boardPostService, EmpService empService) {
         this.boardPostService = boardPostService;
+        this.empService = empService;
     }
 
     @GetMapping(value = "/home")
     public String boardHome(String message, Model model, RedirectAttributes rattr) {
         //sidebar 부서게시판 설정
-        boardSidebar_dept(model);
+        boardSidebarDept(model);
 
         rattr.addAttribute("message", message);
         return "board/boardHome";
     }
 
     //sidebar 부서게시판 설정
-    private void boardSidebar_dept(Model model) {
+    private void boardSidebarDept(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String empId = auth.getName();
         List<Object> boardScope = boardPostService.getBoardListByEmpId(empId);
@@ -83,7 +79,7 @@ public class BoardController {
             Model model,
             HttpSession session) {
 
-        boardSidebar_dept(model);
+        boardSidebarDept(model);
         session.setAttribute("referer", "list");
 
         HashMap<String, Object> map = boardPostService.getBoardListAndListCount(page, limit, boardDTO);
@@ -112,7 +108,7 @@ public class BoardController {
             Model model,
             HttpSession session) {
 
-        boardSidebar_dept(model);
+        boardSidebarDept(model);
         session.setAttribute("referer", "list");
 
         HashMap<String, Object> map = boardPostService.getBoardListAndListCount(page, limit, boardDTO);
@@ -143,7 +139,7 @@ public class BoardController {
             Model model,
             String category, String query) {
 
-        boardSidebar_dept(model);
+        boardSidebarDept(model);
 
         HashMap<String, Object> map = boardPostService.getSearchListCountByBoardId(page, limit, boardDTO, category, query);
         PaginationResult result = new PaginationResult(page, limit, (int) map.get("listCount"));
@@ -164,7 +160,7 @@ public class BoardController {
 
     @GetMapping(value = "/post/postWrite")
     public String boardPostWrite(Model model, @AuthenticationPrincipal UserDetails user) {
-        boardSidebar_dept(model);
+        boardSidebarDept(model);
         HashMap<String, Object> map = boardPostService.getBoardNames(user.getUsername());
         model.addAttribute("boardMap", map);
         return "post/postWrite";
@@ -191,7 +187,7 @@ public class BoardController {
     public String boardPostDetail(@RequestParam(defaultValue = "1") int page, BoardDTO boardDTO,
                                   Long no, Model model, RedirectAttributes rattr,
                                   @AuthenticationPrincipal UserDetails user) {
-        boardSidebar_dept(model);
+        boardSidebarDept(model);
         String id = user.getUsername();
 
         boardPostService.setReadCountUpdate(no);
@@ -215,7 +211,7 @@ public class BoardController {
     @GetMapping("/post/modify")
     public String boardPostModify(BoardDTO boardDTO, Long no, @AuthenticationPrincipal UserDetails user,
                                   Model model, RedirectAttributes rattr) {
-        boardSidebar_dept(model);
+        boardSidebarDept(model);
         PostDetailDTO postDetailDTO = boardPostService.getDetail(no);
 
         if (postDetailDTO.getPostId() != null) {
@@ -282,7 +278,7 @@ public class BoardController {
     @GetMapping("/post/reply")
     public String boardPostReply(Long no, BoardDTO boardDTO,
                                  @AuthenticationPrincipal UserDetails user, Model model) {
-        boardSidebar_dept(model);
+        boardSidebarDept(model);
 
         HashMap<String, Object> postMap = boardPostService.selectPostInfo(no);
         if (postMap == null) {
@@ -313,7 +309,7 @@ public class BoardController {
 
     @GetMapping("/create")
     public String boardCreate(@AuthenticationPrincipal UserDetails user, Model model) {
-        boardSidebar_dept(model);
+        boardSidebarDept(model);
         model.addAttribute("empId", user.getUsername());
         return "board/boardCreate";
     }
@@ -342,7 +338,7 @@ public class BoardController {
     @PostMapping("/modify")
     public String boardModify(Long boardId, Model model, RedirectAttributes rattr,
                               @AuthenticationPrincipal UserDetails user) {
-        boardSidebar_dept(model);
+        boardSidebarDept(model);
 
         if (!user.getUsername().equals("admin")) {
             List<String> boardManagerList = boardPostService.findBoardManagerById(boardId);
@@ -368,7 +364,6 @@ public class BoardController {
     @PostMapping("/modifyProcess")
     public String boardModifyProcess(@AuthenticationPrincipal UserDetails user, BoardRequestDTO boardRequestDTO,
                                      RedirectAttributes rattr) {
-
         if (!user.getUsername().equals("admin")) {
             if (Objects.equals(boardRequestDTO.getBoardName1(), "전사게시판")) {
                 rattr.addFlashAttribute("message", "fail");

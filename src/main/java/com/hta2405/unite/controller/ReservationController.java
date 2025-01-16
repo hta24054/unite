@@ -125,9 +125,12 @@ public class ReservationController {
     @PostMapping("/cancelReservation")
     public int cancelReservation(@RequestParam Long reservationId, @AuthenticationPrincipal UserDetails user) {
         String empId = user.getUsername();
-        int result = reservationService.cancelReservation(reservationId, empId);
-        return result;
+        return reservationService.cancelReservation(reservationId, empId);
     }
+
+
+
+
 
 
 }

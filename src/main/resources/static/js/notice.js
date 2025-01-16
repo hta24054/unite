@@ -41,7 +41,11 @@ function insertNotice() {
                 noticeEndDate: $('#endDate').val()
             },
             success: function (data) {
-                alert(data);
+                if (data === 1) {
+                    alert("공지사항을 등록하였습니다.");
+                } else {
+                    alert("공지사항 등록 중 오류가 발생했습니다.");
+                }
                 location.reload();
             },
             error: function () {
@@ -86,11 +90,15 @@ function updateNotice() {
                 noticeEndDate: $('#endDate').val()
             },
             success: function (data) {
-                alert(data);
+                if (data === 1) {
+                    alert("공지사항을 수정하였습니다.");
+                } else {
+                    alert("공지사항 수정 중 오류가 발생했습니다.");
+                }
                 location.reload();
             },
             error: function () {
-                alert("수정 중 오류가 발생했습니다.");
+                alert("공지사항 수정 중 오류가 발생했습니다.");
             }
         });
     }
@@ -105,11 +113,15 @@ function deleteNotice() {
             method: 'DELETE',
             data: {noticeId: noticeId},
             success: function (data) {
-                alert(data);
+                if (data === 1) {
+                    alert("공지사항을 삭제하였습니다.");
+                } else {
+                    alert("공지사항 삭제 중 오류가 발생했습니다.");
+                }
                 location.reload();
             },
             error: function () {
-                alert("삭제 중 오류가 발생했습니다.");
+                alert("공지사항 삭제 중 오류가 발생했습니다.");
             }
         });
     }

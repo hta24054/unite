@@ -1,4 +1,4 @@
-package com.hta2405.unite.controller;
+package com.hta2405.unite.controller.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,29 +47,27 @@ public class AdminApiController {
     }
 
     @PostMapping("/holiday")
-    public String addCustomHoliday(LocalDate date, String holidayName) {
+    public int addCustomHoliday(LocalDate date, String holidayName) {
         Holiday holiday = Holiday.builder().holidayDate(date).holidayName(holidayName).build();
         return holidayService.addHoliday(holiday);
     }
 
     @DeleteMapping("/holiday")
-    public String deleteHoliday(LocalDate date) {
+    public int deleteHoliday(LocalDate date) {
         return holidayService.deleteHoliday(date);
     }
 
 
     @PostMapping("/holiday/weekend")
-    public String addWeekend() {
+    public boolean addWeekend() {
         LocalDate nowDate = LocalDate.now();
         LocalDate endDate = nowDate.plusYears(1);
-        holidayService.addWeekend(nowDate.minusYears(1), endDate);
-        return "주말을 등록하였습니다.";
+        return holidayService.addWeekend(nowDate.minusYears(1), endDate);
     }
 
     @PostMapping("/holiday/api")
-    public String addHolidayWithApi() {
-        holidayService.insertYearlyHoliday();
-        return "공휴일을 등록하였습니다.";
+    public boolean addHolidayWithApi() {
+        return holidayService.insertYearlyHoliday();
     }
 
     @GetMapping("/resource")
@@ -84,63 +82,39 @@ public class AdminApiController {
     }
 
     @PostMapping("/resource")
-    public String addResource(Resource resource) {
-        int result = resourceService.addResource(resource);
-        if (result != 1) {
-            return "자원 등록 실패";
-        }
-        return "자원 등록 성공";
+    public int addResource(Resource resource) {
+        return resourceService.addResource(resource);
     }
 
     @PatchMapping("/resource")
-    public String updateResource(Resource resource) {
-        int result = resourceService.updateResource(resource);
-        if (result != 1) {
-            return "자원 수정 실패";
-        }
-        return "자원 수정 성공";
+    public int updateResource(Resource resource) {
+        return resourceService.updateResource(resource);
     }
 
     @DeleteMapping("/resource")
-    public String deleteResource(@RequestParam("selectedIds[]") long[] selectedIds) {
+    public int deleteResource(@RequestParam("selectedIds[]") long[] selectedIds) {
         List<Long> list = Arrays.stream(selectedIds).boxed().toList();
-        int result = resourceService.deleteResource(list);
-        if (result < 1) {
-            return "자원 삭제 실패";
-        }
-        return "자원 삭제 성공";
+        return resourceService.deleteResource(list);
     }
 
     @PostMapping("/notice")
-    public String addNotice(Notice notice) {
-        int result = noticeService.addNotice(notice);
-        if (result != 1) {
-            return "공지사항 등록 실패";
-        }
-        return "공지사항 등록 성공";
+    public int addNotice(Notice notice) {
+        return noticeService.addNotice(notice);
     }
 
     @PatchMapping("/notice")
-    public String updateNotice(Notice notice) {
-        int result = noticeService.updateNotice(notice);
-        if (result != 1) {
-            return "공지사항 수정 실패";
-        }
-        return "공지사항 수정 성공";
+    public int updateNotice(Notice notice) {
+        return noticeService.updateNotice(notice);
     }
 
     @DeleteMapping("/notice")
-    public String deleteResource(Long noticeId) {
-        int result = noticeService.deleteNotice(noticeId);
-        if (result < 1) {
-            return "공지사항 삭제 실패";
-        }
-        return "공지사항 삭제 성공";
+    public int deleteResource(Long noticeId) {
+        return noticeService.deleteNotice(noticeId);
     }
 
     @PostMapping("/emp-manage")
-    public String registerEmp(@RequestPart(value = "file", required = false) MultipartFile file,
-                              @RequestPart(value = "dto") String dtoJson
+    public Map<String, Object> registerEmp(@RequestPart(value = "file", required = false) MultipartFile file,
+                                           @RequestPart(value = "dto") String dtoJson
     ) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -151,13 +125,14 @@ public class AdminApiController {
             throw new RuntimeException("JSON 데이터 변환 실패", e);
         }
         Emp emp = empService.registerEmp(empRegisterDTO, file);
-
-        return String.format("%s(%s) 직원을 등록하였습니다.", emp.getEname(), emp.getEmpId());
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("empId", emp.getEmpId());
+        map.put("ename", emp.getEname());
+        return map;
     }
 
     @DeleteMapping("/emp-manage")
-    public String fireEmp(String empId) {
-        empService.resignEmp(empId);
-        return "퇴사처리 완료";
+    public int fireEmp(String empId) {
+        return empService.resignEmp(empId);
     }
 }

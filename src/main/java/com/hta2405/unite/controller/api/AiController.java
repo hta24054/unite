@@ -1,4 +1,4 @@
-package com.hta2405.unite.controller;
+package com.hta2405.unite.controller.api;
 
 import com.hta2405.unite.service.AiService;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.hta2405.unite.controller;
+package com.hta2405.unite.controller.api;
 
 import com.hta2405.unite.dto.NotificationDTO;
 import com.hta2405.unite.service.NotificationService;

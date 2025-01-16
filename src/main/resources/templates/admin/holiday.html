@@ -166,7 +166,11 @@
                                 url: contextPath + "/api/admin/holiday/weekend",
                                 type: "POST",
                                 success: function (data) {
-                                    alert(data);
+                                    if (data === true) {
+                                        alert("주말 등록을 성공했습니다.");
+                                    } else {
+                                        alert("주말 등록을 실패했습니다.");
+                                    }
                                 },
                                 error: function () {
                                     alert("주말 등록을 실패했습니다.");
@@ -181,7 +185,11 @@
                                 url: contextPath + "/api/admin/holiday/api",
                                 type: "POST",
                                 success: function (data) {
-                                    alert(data);
+                                    if (data === true) {
+                                        alert("공휴일 등록을 성공했습니다.");
+                                    } else {
+                                        alert("공휴일 등록을 실패했습니다.");
+                                    }
                                 },
                                 error: function () {
                                     alert("공휴일 등록을 실패했습니다.");
@@ -204,12 +212,16 @@
                                 holidayName: $holidayReason.val()
                             },
                             success: function (data) {
-                                alert(data);
+                                if (data === 1) {
+                                    alert("휴일을 등록하였습니다.");
+                                } else {
+                                    alert("휴일 등록을 실패하였습니다.")
+                                }
                                 $scheduleModal.modal("hide");
                                 calendar.refetchEvents();
                             },
                             error: function () {
-                                alert("등록에 실패했습니다.");
+                                alert("휴일 등록을 실패하였습니다.");
                             }
                         });
                     });
@@ -223,7 +235,11 @@
                                     date: $holidayDate.val()
                                 },
                                 success: function (data) {
-                                    alert(data);
+                                    if (data === 1) {
+                                        alert("휴일을 삭제하였습니다.");
+                                    } else {
+                                        alert("휴일 삭제를 실패했습니다.");
+                                    }
                                     $scheduleModal.modal("hide");
                                     calendar.refetchEvents();
                                 },

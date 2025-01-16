@@ -134,8 +134,8 @@ public class EmpService {
         return new RegisterDTO(deptMapper.getAllDept(), jobMapper.getAllJob());
     }
 
-    public void resignEmp(String empId) {
-        empMapper.resignEmp(empId);
+    public int resignEmp(String empId) {
+        return empMapper.resignEmp(empId);
     }
 
     public List<EmpListDTO> getEmpListDTO(List<Dept> list) {

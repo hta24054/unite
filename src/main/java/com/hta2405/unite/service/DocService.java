@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -101,7 +102,7 @@ public class DocService {
                                 List<String> signers,
                                 List<MultipartFile> files) {
         saveGeneralDoc(doc, signers);
-        if (files != null && !files.isEmpty()) {
+        if (!ObjectUtils.isEmpty(files)) {
             //어차피 일단 정책상 아직 첨부파일 최대 1개
             FileDTO fileDTO = fileService.uploadFile(files.get(0), FILE_DIR);
             setFileData(docVacationBuilder, fileDTO);
@@ -166,13 +167,12 @@ public class DocService {
                         beforeDocVacation.getVacationFileOriginal());
                 clearFileData(docVacationBuilder);
             }
-            //새로운 파일이 있다면
 
-            if (files != null && !files.isEmpty()) {
+            //새로운 파일이 있다면
+            if (!ObjectUtils.isEmpty(files)) {
                 FileDTO fileDTO = fileService.uploadFile(files.get(0), FILE_DIR);
                 setFileData(docVacationBuilder, fileDTO);
             }
-
         }
         DocVacation updatedDocVacation = docVacationBuilder.build();
         docMapper.updateVacationDoc(updatedDocVacation);

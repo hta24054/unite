@@ -15,6 +15,10 @@
         </head>
         <th:block th:replace="~{project/project_leftbar :: leftbar}"/>
             <body>
+                <select style="margin-left: 300px;">
+                    <option value="전체" disabled><input type="text" value="1"></option>
+                    <option value="제목 및 내용"><input type="text" value="2"></option>
+                </select>
                 <div style="margin: 50px 0px 80px 170px;" id="favorite">
                     <h2>즐겨찾기
                         <button id="toggle-favorite" class="btn btn-link p-0" style="font-size: 1.5rem;">
@@ -39,20 +43,25 @@
                     <h3 style="text-align:center">등록된 글이 없습니다</h3>
                 </th:block>
 
-                <div id="fileModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">첨부파일 등록</h5>
+                                <h5 class="modal-title" id="fileModalLabel">프로젝트 종료/취소</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <p>최종 첨부파일을 등록하시겠습니까?</p>
-                                <input type="file" id="fileInput" name="file" multiple>
+                                <form>
+                                    <div class="mb-3">
+                                        <label for="fileInput" class="form-label">첨부파일 (선택사항)</label>
+                                        <input type="file" class="form-control" id="fileInput" name="file">
+                                    </div>
+                                </form>
+                                <p>이 작업은 되돌릴 수 없습니다. 정말 진행하시겠습니까?</p>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" id="confirmFileUpload">저장</button>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                                <button type="button" id="confirmFileUpload" class="btn btn-primary">확인</button>
                             </div>
                         </div>
                     </div>

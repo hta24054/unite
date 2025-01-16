@@ -54,6 +54,10 @@ public class ProjectBoardServiceImpl implements ProjectBoardService {
     }
 
     public boolean deleteTask(int projectId, String memberId, int taskId){
+        List<ProjectTask> taskInfo = dao.getTask(projectId, memberId, taskId);
+        ProjectTask currentTask = taskInfo.get(0);
+        String uuid = currentTask.getTaskFileUuid();
+        if(uuid != null) fileService.deleteFile(uuid, FILE_DIR, currentTask.getTaskFileOriginal());
         return dao.deleteTask(projectId, memberId, taskId);
     }
 
@@ -64,13 +68,39 @@ public class ProjectBoardServiceImpl implements ProjectBoardService {
             return fileService.downloadFile(FILE_DIR, fileuuid, originalFilename);
         }
     }
-    public void modifyProcess(int projectId, String memberId, int taskId, MultipartFile file, String board_subject, String board_content){
-        FileDTO taskFile = null;
-        if (file != null && !file.isEmpty()) {
-            taskFile = fileService.uploadFile(file, FILE_DIR);
-        }
-        dao.modifyProcess(projectId, memberId, taskId, taskFile, board_subject, board_content);
+//    public void modifyProcess(int projectId, String memberId, int taskId, MultipartFile file, String board_subject, String board_content){
+//        List<ProjectTask> taskInfo = dao.getTask(projectId, memberId, taskId);
+//        String uuid = taskInfo.get(0).getTaskFileUuid();
+//        FileDTO taskFile = null;
+//        if (file != null && !file.isEmpty()) {
+//            taskFile = fileService.uploadFile(file, FILE_DIR);
+//        }
+//        dao.modifyProcess(projectId, memberId, taskId, taskFile, board_subject, board_content);
+//    }
+public void modifyProcess(int projectId, String memberId, int taskId, MultipartFile file, String board_subject, String board_content) {
+    List<ProjectTask> taskInfo = dao.getTask(projectId, memberId, taskId);
+    if (taskInfo.isEmpty()) {
+        throw new IllegalArgumentException("Task 정보가 존재하지 않습니다.");
     }
+
+    // 현재 Task의 파일 정보 가져오기
+    ProjectTask currentTask = taskInfo.get(0);
+    String uuid = currentTask.getTaskFileUuid();
+    FileDTO taskFile = null;
+
+    if (uuid == null && file != null && !file.isEmpty()) {
+        taskFile = fileService.uploadFile(file, FILE_DIR);
+    } else if (uuid != null && (file == null || file.isEmpty())) {
+        fileService.deleteFile(uuid, FILE_DIR, currentTask.getTaskFileOriginal());
+    } else if (uuid != null && file != null && !file.isEmpty()) {
+        fileService.deleteFile(uuid, FILE_DIR, currentTask.getTaskFileOriginal());
+        taskFile = fileService.uploadFile(file, FILE_DIR);
+    }
+
+    // DB 업데이트 실행
+    dao.modifyProcess(projectId, memberId, taskId, taskFile, board_subject, board_content);
+}
+
 
     public int commentAdd(ProjectComment.ProjectCommentBuilder projectCommentBuilder){
         int insert = dao.insertComment(projectCommentBuilder);

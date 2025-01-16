@@ -88,7 +88,7 @@ function renderData(items) {
                     <div class="board-content" style="word-break: break-all;">` + truncatedContent + `</div>
                     
                     <div class="board-footer">
-                        <img src="/emp/profile-image?empId=${data.postWriter}" alt="Profile Image">
+                        <img src="/api/emp/profile-image?empId=${data.postWriter}" alt="Profile Image">
                         <div class="username">${empMap[data.postWriter]}</div>
                         <div class="date">${formattedDate}</div>
                     </div>

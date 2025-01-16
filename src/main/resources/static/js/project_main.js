@@ -211,9 +211,10 @@ $(document).on('click', '.project-card img', function () {
     });
 
     $('#saveProjectStatus').off('click').on('click', function () {
-        var status = $('#projectStatusSelect').val();  // 선택된 상태 가져오기
+        var status = $('#projectStatusSelect').val(); // 선택된 상태 가져오기
         var confirmationMessage;
 
+        // 상태에 따른 확인 메시지
         if (status === 'completed') {
             confirmationMessage = "정말 프로젝트를 종료하시겠습니까?";
         } else if (status === 'canceled') {
@@ -223,11 +224,51 @@ $(document).on('click', '.project-card img', function () {
             return;
         }
 
-        // 확인 메시지 후 상태 업데이트 진행
+        // 확인 메시지 후 상태 업데이트를 위한 첨부파일 모달을 띄움
         if (confirm(confirmationMessage)) {
-            updateProjectStatus(projectId, status);  // 상태 업데이트 함수 호출
+            $('#colorModal').modal('hide');
+            $('#fileModal')
+                .data('status', status) // 상태 저장
+                .modal('show'); // 첨부파일 모달 표시
         }
     });
+
+    // 파일 모달 확인 버튼 클릭 시
+    $('#confirmFileUpload').on('click', function () {
+        var status = $('#fileModal').data('status'); // 모달에 저장된 상태
+        var fileData = new FormData(); // 파일 전송용 FormData 객체 생성
+        // 파일 선택 처리
+        var file = $('#fileInput')[0].files[0];
+        console.log(file)
+        if (file) {
+            fileData.append('file', file); // 선택된 파일 추가
+        }
+        fileData.append('projectId', projectId);
+        fileData.append('status', status);
+
+        // 상태 변경 및 파일 업로드 요청
+        $.ajax({
+            url: '/project/updateStatus',
+            type: 'POST',
+            data: fileData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    alert('프로젝트 상태가 업데이트되었습니다.');
+                    loadProjects(0); // 진행 중 프로젝트 목록 갱신
+                    loadProjects(1); // 즐겨찾기 프로젝트 목록 갱신
+                    $('#fileModal').modal('hide'); // 모달 닫기
+                } else {
+                    alert('프로젝트 상태 업데이트 실패.');
+                }
+            },
+            error: function () {
+                alert('서버 오류가 발생했습니다.');
+            }
+        });
+    });
+
 });
 
 

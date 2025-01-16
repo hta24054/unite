@@ -8,20 +8,21 @@ import com.hta2405.unite.service.AuthService;
 import com.hta2405.unite.service.EmpService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
-import java.util.Map;
 
 @Controller
-@RequestMapping("/attend")
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/attend")
 public class AttendController {
     private final EmpService empService;
     private final AttendService attendService;
@@ -33,7 +34,7 @@ public class AttendController {
                                           @RequestParam(required = false) String empId,
                                           @RequestParam(required = false) Integer year,
                                           @RequestParam(required = false) Integer month) {
-        String targetEmpId = (empId == null || empId.isEmpty()) ? user.getUsername() : empId;
+        String targetEmpId = (ObjectUtils.isEmpty(empId)) ? user.getUsername() : empId;
         if (year == null || month == null) {
             year = LocalDate.now().getYear();
             month = LocalDate.now().getMonthValue();
@@ -58,11 +59,10 @@ public class AttendController {
 
     @GetMapping("/vacation")
     public ModelAndView showVacationPage(ModelAndView mv,
-                                        @AuthenticationPrincipal UserDetails user,
-                                        @RequestParam(required = false) String empId,
-                                        @RequestParam(required = false) Integer year,
-                                        @RequestParam(required = false) Integer month) {
-        String targetEmpId = (empId == null || empId.isEmpty()) ? user.getUsername() : empId;
+                                         @AuthenticationPrincipal UserDetails user,
+                                         @RequestParam(required = false) String empId,
+                                         @RequestParam(required = false) Integer year) {
+        String targetEmpId = (ObjectUtils.isEmpty(empId)) ? user.getUsername() : empId;
         if (year == null) {
             year = LocalDate.now().getYear();
             mv.setViewName("redirect:/attend/vacation?empId=" + targetEmpId + "&year=" + year);
@@ -82,23 +82,5 @@ public class AttendController {
         mv.addObject("vacationInfoDTO", vacationInfoDTO);
         mv.setViewName("attend/vacationInfo");
         return mv;
-    }
-
-    @GetMapping("/record")
-    @ResponseBody
-    public Map<String, Object> getAttendRecord(@AuthenticationPrincipal UserDetails user) {
-        return attendService.getTodayRecord(user.getUsername(), LocalDate.now());
-    }
-
-    @PostMapping("/in")
-    @ResponseBody
-    public ResponseEntity<Object> attendIn(@AuthenticationPrincipal UserDetails user, String attendType) {
-        return attendService.attendIn(user, attendType);
-    }
-
-    @PostMapping("/out")
-    @ResponseBody
-    public ResponseEntity<Object> attendOut(@AuthenticationPrincipal UserDetails user) {
-        return attendService.attendOut(user);
     }
 }

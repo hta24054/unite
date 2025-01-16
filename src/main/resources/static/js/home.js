@@ -23,7 +23,7 @@ $(document).ready(function () {
 					let row = `
                     <tr onclick="window.location.href='/board/post/detail?no=${board.postId}&boardName1=${board.boardName1}&boardName2=${board.boardName2}&page=1'">
                         <td>[${board.boardName2}] ${board.postSubject}</a></td>
-						<td><img src="/emp/profile-image?empId=${board.postWriter}" style="width:36px; height: 36px; border-radius:50%; border: 1px solid gray;">&nbsp;${emp[board.postWriter]}<br>${formattedDate}</td>
+						<td><img src="/api/emp/profile-image?empId=${board.postWriter}" style="width:36px; height: 36px; border-radius:50%; border: 1px solid gray;">&nbsp;${emp[board.postWriter]}<br>${formattedDate}</td>
                     </tr>
                 `;
 						tableBody.append(row);  // 생성된 row를 테이블에 추가

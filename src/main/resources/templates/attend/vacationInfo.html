@@ -37,7 +37,7 @@
                     th:text="'휴가 관리('+${vacationInfoDTO.targetEmpName}+')'"></h1>
                 <table class="table table-bordered" id="summary">
                     <tr>
-                        <td rowspan="2"><img th:src="@{/emp/profile-image(empId=${#authentication.name})}" width="30px">
+                        <td rowspan="2"><img th:src="@{/api/emp/profile-image(empId=${vacationInfoDTO.targetEmpId})}" width="30px">
                             [[${vacationInfoDTO.targetEmpName+' '+vacationInfoDTO.jobName}]]
                         </td>
                         <td>발생 연차</td>

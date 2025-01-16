@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.function.Supplier;
 
+import static com.hta2405.unite.enums.Role.*;
+
 @Component
 public class ManagerAndHRAuthorizationManager implements AuthorizationManager<RequestAuthorizationContext> {
     @Override
@@ -23,7 +25,7 @@ public class ManagerAndHRAuthorizationManager implements AuthorizationManager<Re
         // 권한 검증: ROLE_ADMIN 또는 ROLE_MANAGER
         boolean hasRole = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .anyMatch(role -> role.equals("ROLE_ADMIN") || role.equals("ROLE_MANAGER"));
+                .anyMatch(role -> role.equals(ROLE_ADMIN.getRoleName()) || role.equals(ROLE_MANAGER.getRoleName()));
 
         // 추가 조건: deptId = 인사부서 id
         Long deptId = null;

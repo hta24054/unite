@@ -3,6 +3,7 @@ package com.hta2405.unite.domain;
 import com.hta2405.unite.dto.EmpAdminUpdateDTO;
 import com.hta2405.unite.dto.EmpSelfUpdateDTO;
 import com.hta2405.unite.dto.FileDTO;
+import com.hta2405.unite.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +19,7 @@ public class Emp {
     private String empId;
     private String password;
     private String ename;
-    private String role;
+    private Role role;
     private Long deptId;
     private Long jobId;
     private String gender; //"남", "여"
@@ -70,7 +71,6 @@ public class Emp {
     }
 
     public void updateBySelf(EmpSelfUpdateDTO dto, FileDTO fileDTO) {
-        this.gender = dto.getEmail();
         this.email = dto.getEmail();
         this.tel = dto.getTel();
         this.mobile = dto.getMobile();

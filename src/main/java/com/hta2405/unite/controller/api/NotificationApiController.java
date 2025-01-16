@@ -1,4 +1,4 @@
-package com.hta2405.unite.controller;
+package com.hta2405.unite.controller.api;
 
 import com.hta2405.unite.dto.NotificationDTO;
 import com.hta2405.unite.service.NotificationService;
@@ -10,7 +10,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/notification")
-public class NotificationController {
+public class NotificationApiController {
     private final NotificationService notificationService;
 
     @PostMapping

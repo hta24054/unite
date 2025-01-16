@@ -2,6 +2,7 @@ package com.hta2405.unite.security;
 
 import com.google.gson.Gson;
 import com.hta2405.unite.dto.LoginDTO;
+import com.hta2405.unite.enums.Role;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,7 +50,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
         String role = userDetails.getAuthorities().stream()
                 .findFirst()
                 .map(GrantedAuthority::getAuthority)
-                .orElse("ROLE_MEMBER");
+                .orElse(Role.ROLE_MEMBER.getRoleName());
         Long deptId = userDetails.getDeptId();
 
         String token = jwtUtil.generateToken(username, role, deptId);

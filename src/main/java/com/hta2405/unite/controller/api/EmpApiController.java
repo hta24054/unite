@@ -1,4 +1,4 @@
-package com.hta2405.unite.controller;
+package com.hta2405.unite.controller.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,7 +9,6 @@ import com.hta2405.unite.dto.EmpListDTO;
 import com.hta2405.unite.dto.EmpSelfUpdateDTO;
 import com.hta2405.unite.enums.Role;
 import com.hta2405.unite.security.CustomUserDetails;
-import com.hta2405.unite.service.AuthService;
 import com.hta2405.unite.service.EmpService;
 import com.hta2405.unite.service.ProfileImgService;
 import lombok.RequiredArgsConstructor;
@@ -58,13 +57,13 @@ public class EmpApiController {
     }
 
     @PatchMapping("/{empId}")
-    public String updateEmpSelf(@PathVariable String empId,
+    public int updateEmpSelf(@PathVariable String empId,
                                 @RequestPart(value = "file", required = false) MultipartFile file,
                                 @RequestPart(value = "dto") String dtoJson,
                                 @AuthenticationPrincipal UserDetails user) {
         //수정 대상 직원이 본인이 아닌 경우 인사정보 수정 제한
         if (!empId.equals(user.getUsername())) {
-            return "인사정보 수정 실패";
+            return 0;
         }
         // JSON 데이터를 DTO로 변환
         ObjectMapper objectMapper = new ObjectMapper();
@@ -76,16 +75,11 @@ public class EmpApiController {
             throw new RuntimeException("JSON 데이터 변환 실패", e);
         }
 
-        int result = empService.updateEmpBySelf(empId, file, dto);
-        if (result != 1) {
-            return "인사정보 수정 실패";
-        }
-
-        return "인사정보 수정 성공";
+        return empService.updateEmpBySelf(empId, file, dto);
     }
 
     @PatchMapping("/admin/{empId}")
-    public String updateEmpAdmin(@PathVariable String empId,
+    public int updateEmpAdmin(@PathVariable String empId,
                                  @RequestPart(value = "file", required = false) MultipartFile file,
                                  @RequestPart(value = "dto") String dtoJson
     ) {
@@ -98,11 +92,7 @@ public class EmpApiController {
         } catch (JsonProcessingException e) {
             throw new RuntimeException("JSON 데이터 변환 실패", e);
         }
-        int result = empService.updateEmpByAdmin(empId, file, dto);
-        if (result != 1) {
-            return "인사정보 수정 실패";
-        }
-        return "인사정보 수정 성공";
+        return empService.updateEmpByAdmin(empId, file, dto);
     }
 
     @PostMapping("/password")

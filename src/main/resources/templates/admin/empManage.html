@@ -95,7 +95,11 @@
                             type: 'DELETE',
                             data: {empId: empId},
                             success: function (data) {
-                                alert(data);
+                                if (data === 1) {
+                                    alert("직원을 퇴사처리 하였습니다.");
+                                } else {
+                                    alert("직원 퇴사처리를 실패했습니다.");
+                                }
                                 location.reload();
                             },
                             error: function () {

@@ -22,7 +22,7 @@ public interface EmpMapper {
 
     int insertEmp(Emp emp);
 
-    void resignEmp(String empId);
+    int resignEmp(String empId);
 
     List<EmpListDTO> getHiredEmpListDTO(List<Dept> list);
 

@@ -224,7 +224,11 @@ $(document).ready(function () {
             contentType: false, // FormData 객체 사용 시 필수
             data: formData,
             success: function (data) {
-                alert("수정이 완료되었습니다.");
+                if (data === 1) {
+                    alert("수정이 완료되었습니다.");
+                } else {
+                    alert("수정 중 오류가 발생했습니다.");
+                }
                 location.reload();
             },
             error: function () {

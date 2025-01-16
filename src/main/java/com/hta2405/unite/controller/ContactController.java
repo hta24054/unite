@@ -32,7 +32,7 @@ public class ContactController {
 
     @GetMapping("/inner")
     public ModelAndView showInnerContact(ModelAndView mv) {
-        List<EmpListDTO> empList = empService.getEmpListDTO(deptService.getAllDept());
+        List<EmpListDTO> empList = empService.getEmpListDTOByDeptList(deptService.getAllDept());
         String message = "사내 주소록입니다.";
         mv.addObject("title", "사내 주소록");
         mv.addObject("message", message);

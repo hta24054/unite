@@ -8,7 +8,7 @@
             <title>구매신청서 작성</title>
         </head>
         <body>
-        <form id="doc_form" th:action="@{/doc/buy_write}" method="POST">
+        <form id="doc_form">
             <div class="container mt-4">
                 <div class="document-wrapper">
                     <!-- 기안용지 제목 -->
@@ -104,7 +104,8 @@
                 </div>
             </div>
         </form>
-        <script th:inline="javascript">
+        <script>
+            const contextPath = /*[[@{/}]]*/ '';
             $(document).ready(function () {
                 // 최대 품목 수, 수량, 단가
                 const maxItems = 10;
@@ -250,7 +251,7 @@
                     });
 
                     // JSON 데이터를 Blob으로 추가
-                    formData.append("formData", new Blob([JSON.stringify(jsonData)], { type: "application/json" }));
+                    formData.append("formData", new Blob([JSON.stringify(jsonData)], {type: "application/json"}));
 
                     console.log(jsonData);
 
@@ -264,14 +265,14 @@
 
                     // AJAX 요청
                     $.ajax({
-                        url: /*[[@{/doc/buy}]]*/'',
+                        url: contextPath + '/api/doc/buy',
                         type: "POST",
                         data: formData,
                         processData: false,
                         contentType: false,
                         success: function (response) {
                             alert("문서 작성이 완료되었습니다.");
-                            window.location.href = /*[[@{/doc/inProgress}]]*/'';
+                            window.location.href = contextPath + '/doc/inProgress';
                         },
                         error: function () {
                             alert("문서 작성 중 오류가 발생했습니다.");

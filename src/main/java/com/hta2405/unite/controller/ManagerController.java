@@ -28,7 +28,7 @@ public class ManagerController {
     @GetMapping("/empInfoList")
     public ModelAndView showEmpInfoList(@AuthenticationPrincipal UserDetails user, ModelAndView mv) {
         List<Dept> deptList = getAvailableDeptList(user);
-        List<EmpListDTO> empList = empService.getEmpListDTO(deptList);
+        List<EmpListDTO> empList = empService.getEmpListDTOByDeptList(deptList);
         String message = "부서 인사정보 조회 페이지입니다. 이름을 클릭하면 인사정보 조회가 가능합니다.";
         return empService.showEmpList(mv, "부서 인사정보", message, empList, "/manager/empInfo");
     }
@@ -36,7 +36,7 @@ public class ManagerController {
     @GetMapping("/attendInfoList")
     public ModelAndView showAttendInfoList(@AuthenticationPrincipal UserDetails user, ModelAndView mv) {
         List<Dept> deptList = getAvailableDeptList(user);
-        List<EmpListDTO> empList = empService.getEmpListDTO(deptList);
+        List<EmpListDTO> empList = empService.getEmpListDTOByDeptList(deptList);
         String message = "근태정보 조회 페이지입니다. 이름을 클릭하면 근태정보 조회가 가능합니다.";
         return empService.showEmpList(mv, "부서 근태현황", message, empList, "/manager/attendInfo");
     }
@@ -44,7 +44,7 @@ public class ManagerController {
     @GetMapping("/vacationInfoList")
     public ModelAndView showVacationInfoList(@AuthenticationPrincipal UserDetails user, ModelAndView mv) {
         List<Dept> deptList = getAvailableDeptList(user);
-        List<EmpListDTO> empList = empService.getEmpListDTO(deptList);
+        List<EmpListDTO> empList = empService.getEmpListDTOByDeptList(deptList);
         String message = "휴가정보 조회 페이지입니다. 이름을 클릭하면 휴가정보 조회가 가능합니다.";
         return empService.showEmpList(mv, "부서 휴가현황", message, empList, "/manager/vacationInfo");
     }

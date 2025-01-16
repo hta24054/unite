@@ -94,6 +94,15 @@
           and e.hired = 1
         order by e.job_id, e.emp_id
     </select>
+    <select id="getAllEmpListDTO">
+        SELECT e.emp_id, e.ename, d.dept_name, j.job_name, j.job_id, e.email, e.tel, e.mobile
+        FROM emp e
+                 join job j on e.job_id = j.job_id
+                 join dept d on e.dept_id = d.dept_id
+        WHERE e.emp_id != 'admin'
+          and e.hired = 1
+        order by e.job_id, e.emp_id
+    </select>
     <select id="getHiredEmpListByName">
         SELECT e.emp_id, e.ename, d.dept_name, j.job_name, j.job_id, e.email, e.tel, e.mobile
         FROM emp e

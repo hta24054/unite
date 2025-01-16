@@ -1,32 +1,30 @@
 package com.hta2405.unite.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hta2405.unite.domain.Doc;
 import com.hta2405.unite.dto.DocListDTO;
-import com.hta2405.unite.dto.DocRequestDTO;
 import com.hta2405.unite.enums.DocRole;
 import com.hta2405.unite.enums.DocType;
-import com.hta2405.unite.factory.*;
+import com.hta2405.unite.factory.DocEditorViewFactory;
+import com.hta2405.unite.factory.DocReaderFactory;
+import com.hta2405.unite.factory.DocWriterViewFactory;
 import com.hta2405.unite.service.DocService;
-import com.hta2405.unite.strategy.doc.*;
+import com.hta2405.unite.strategy.doc.DocEditViewer;
+import com.hta2405.unite.strategy.doc.DocReader;
+import com.hta2405.unite.strategy.doc.DocWriteViewer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/doc")
@@ -35,10 +33,8 @@ import java.util.Map;
 public class DocController {
     private final DocService docService;
     private final DocWriterViewFactory docWriterViewFactory;
-    private final DocWriterFactory docWriterFactory;
     private final DocReaderFactory docReaderFactory;
     private final DocEditorViewFactory docEditorViewFactory;
-    private final DocEditorFactory docEditorFactory;
 
     @GetMapping
     public String readDoc(@AuthenticationPrincipal UserDetails user, Long docId, Model model) {
@@ -65,25 +61,6 @@ public class DocController {
         return writeViewer.getView();
     }
 
-    @PostMapping(value = "/{type}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseBody
-    public ResponseEntity<String> writeDoc(@PathVariable String type,
-                                           @RequestPart("formData") String formDataJson,
-                                           @RequestPart(value = "files", required = false) List<MultipartFile> files,
-                                           @AuthenticationPrincipal UserDetails user) throws JsonProcessingException {
-        // JSON 데이터를 Map으로 변환
-        Map<String, Object> formData = makeMapFromJson(formDataJson);
-
-        // DTO 생성
-        DocRequestDTO docRequestDTO = new DocRequestDTO(formData, files);
-
-        // 저장 처리
-        DocWriter writer = docWriterFactory.getWriter(DocType.fromString(type));
-        writer.write(user.getUsername(), docRequestDTO);
-
-        return ResponseEntity.ok("문서 작성(저장) 완료");
-    }
-
     @GetMapping("/edit")
     public String showEditPage(Long docId,
                                @AuthenticationPrincipal UserDetails user,
@@ -100,29 +77,6 @@ public class DocController {
         return editViewer.getView();
     }
 
-    @PatchMapping
-    @ResponseBody
-    public ResponseEntity<String> editDoc(@RequestPart("formData") String formDataJson,
-                                          @RequestPart(value = "files", required = false) List<MultipartFile> files,
-                                          @AuthenticationPrincipal UserDetails user) throws JsonProcessingException {
-        Map<String, Object> formData = makeMapFromJson(formDataJson);
-        long docId = Long.parseLong(formData.get("docId").toString());
-
-        DocRole docRole = docService.checkRole(user.getUsername(), docId);
-        if (!docRole.equals(DocRole.PRE_SIGNED_WRITER)) {
-            return ResponseEntity.badRequest().body("문서 수정 불가");
-        }
-
-        Doc doc = docService.getDocById(docId);
-
-        DocRequestDTO docRequestDTO = new DocRequestDTO(formData, files);
-
-        DocEditor editor = docEditorFactory.getEditor(doc.getDocType());
-        editor.edit(doc, docRequestDTO);
-
-        return ResponseEntity.ok("문서 수정 완료");
-    }
-
     @GetMapping(value = "/list/dept")
     public ModelAndView showDeptDocList(@AuthenticationPrincipal UserDetails user, ModelAndView mv) {
         List<DocListDTO> docList = docService.getDeptDocs(user.getUsername());
@@ -135,13 +89,6 @@ public class DocController {
         List<DocListDTO> docList = docService.getSignedDocs(user.getUsername());
         String message = "내가 결재한 문서입니다. 제목을 클릭하면 문서 상세조회가 가능합니다.";
         return docService.showDocList(mv, "내가 결재한 문서", message, docList);
-    }
-
-    private static Map<String, Object> makeMapFromJson(String formDataJson) throws JsonProcessingException {
-        // JSON 데이터를 Map으로 변환
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(formDataJson, new TypeReference<>() {
-        });
     }
 
     @GetMapping("/countVacation")
@@ -161,32 +108,5 @@ public class DocController {
         List<DocListDTO> docList = docService.getWaitingDocs(user.getUsername());
         String message = "결재 대기문서 조회 페이지입니다. 제목을 클릭하면 문서 상세조회가 가능합니다.";
         return docService.showDocList(mv, "결재 대기문서", message, docList);
-    }
-
-    @GetMapping("/download")
-    @ResponseBody
-    public ResponseEntity<Resource> downloadFile(String fileUUID, String fileName) {
-        return docService.downloadFile(fileUUID, fileName);
-    }
-
-    @PostMapping("/sign")
-    @ResponseBody
-    public ResponseEntity<String> signDoc(Long docId, @AuthenticationPrincipal UserDetails user) {
-        return docService.signDoc(docId, user.getUsername())
-                ? ResponseEntity.ok("결재 성공") : ResponseEntity.badRequest().body("결재 실패");
-    }
-
-    @PostMapping("/revoke")
-    @ResponseBody
-    public ResponseEntity<String> revokeDoc(Long docId, @AuthenticationPrincipal UserDetails user) {
-        return docService.revokeDoc(docId, user.getUsername())
-                ? ResponseEntity.ok("회수 성공") : ResponseEntity.badRequest().body("회수 실패");
-    }
-
-    @DeleteMapping
-    @ResponseBody
-    public ResponseEntity<String> deleteDoc(Long docId, @AuthenticationPrincipal UserDetails user) {
-        return docService.deleteDoc(docId, user.getUsername())
-                ? ResponseEntity.ok("삭제 성공") : ResponseEntity.badRequest().body("삭제 실패");
     }
 }

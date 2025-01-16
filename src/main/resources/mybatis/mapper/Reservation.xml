@@ -3,15 +3,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.hta2405.unite.mybatis.mapper.ReservationMapper">
-    <!-- 자원 선택 시 해당 자원명 불러오기 -->
-<!--    <select id="resourceSelectChange">-->
-<!--        SELECT MIN(resc_id) AS resc_id, resc_type, resc_name, resc_usable-->
-<!--        FROM resc-->
-<!--        WHERE resc_type = #{rescType} AND resc_usable = 1-->
-<!--        GROUP BY resc_type, resc_name, resc_usable-->
-<!--        ORDER BY resc_id ASC-->
-<!--    </select>-->
-
     <select id="resourceSelectChange">
         SELECT *
         FROM resc
@@ -33,7 +24,16 @@
             <!-- 시간 기반 예약과 새 예약이 중복되는지 검사 -->
             (reservation_allDay = 0 AND
             #{reservationStart} &lt; reservation_end AND #{reservationEnd} &gt; reservation_start)
+            OR
+            <!-- 종일 예약이 아닌 경우 시작 시간과 종료 시간이 같은 경우 중복 처리 -->
+            (reservation_allDay = 0 AND reservation_start = #{reservationStart} AND reservation_end = #{reservationEnd})
         )
+    </select>
+
+    <select id="getReservationsByResourceId" resultType="com.hta2405.unite.dto.ReservationDTO">
+        SELECT reservation_start, reservation_end, resource_id
+        FROM reservation
+        WHERE resource_id = #{resourceId}
     </select>
 
     <!-- 예약 추가 -->

@@ -19,4 +19,6 @@ public interface ReservationService {
     public ReservationDTO getReservationModal(Long reservationId);
 
     public int cancelReservation(Long reservationId, String empId);
+
+    public List<ReservationDTO> getMyReservationList(String empId);
 }

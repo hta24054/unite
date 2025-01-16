@@ -219,3 +219,16 @@ FROM reservation
 -- 예약자 정보와 결합
          LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id
 WHERE reservation.reservation_id = 18;
+
+
+SELECT  rs.resc_type, rs.resc_name, rs.resc_info,
+        reservation.reservation_start, reservation.reservation_end,
+        reservation.reservation_info, reservation.reservation_id
+FROM reservation reservation
+         JOIN resc rs
+              ON reservation.resource_id = rs.resc_id
+WHERE reservation.emp_id = '241001'
+ORDER BY reservation.reservation_id;
+
+
+select * from reservation where emp_id = '241001';

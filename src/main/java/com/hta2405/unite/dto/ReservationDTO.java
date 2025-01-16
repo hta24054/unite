@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString
 public class ReservationDTO {
-    private int reservationId; // 자원예약id
+    private Long reservationId; // 자원예약id
     private Long resourceId; // 자원id
     private String empId; // 예약자id
     private String ename; // 예약자명
@@ -25,6 +25,7 @@ public class ReservationDTO {
     private int reservationAllDay; // 종일
     private String resourceType; // 자원 종류
     private String resourceName; // 자원 이름
+    private String resourceInfo; // 자원 정보
     private boolean resourceUsable; // 자원 사용 가능 여부
     private Boolean isMyReservation;  // 로그인한 사용자의 예약 여부
 }

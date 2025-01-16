@@ -5,13 +5,13 @@ import com.hta2405.unite.domain.Dept;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Lang;
 import com.hta2405.unite.dto.*;
-import com.hta2405.unite.enums.Role;
 import com.hta2405.unite.mybatis.mapper.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.hta2405.unite.enums.Role.*;
+import static com.hta2405.unite.enums.Role.ROLE_ADMIN;
+import static com.hta2405.unite.enums.Role.ROLE_MANAGER;
 
 @Service
 @Slf4j
@@ -73,16 +74,15 @@ public class EmpService {
         // 3. emp 테이블에 입력
         empMapper.insertEmp(emp);
 
-
         // 4. 자격증 및 외국어능력 입력
         List<Lang> langList = empRegisterDTO.getLang();
         List<Cert> certList = empRegisterDTO.getCert();
 
-        if (langList != null && !langList.isEmpty()) {
+        if (!ObjectUtils.isEmpty(langList)) {
             langMapper.insertLang(langList);
         }
 
-        if (certList != null && !certList.isEmpty()) {
+        if (!ObjectUtils.isEmpty(certList)) {
             certMapper.insertCert(certList);
         }
 
@@ -113,11 +113,11 @@ public class EmpService {
         List<Lang> langList = dto.getLang();
         List<Cert> certList = dto.getCert();
 
-        if (langList != null && !langList.isEmpty()) {
+        if (!ObjectUtils.isEmpty(langList)) {
             langMapper.insertLang(langList);
         }
 
-        if (certList != null && !certList.isEmpty()) {
+        if (!ObjectUtils.isEmpty(certList)) {
             certMapper.insertCert(certList);
         }
     }
@@ -183,7 +183,7 @@ public class EmpService {
         String message;
         if (!encoder.matches(currentPassword, savedPassword)) {
             message = "현재 비밀번호가 다릅니다.";
-        } else if (empMapper.changePassword(empId, encoder.encode(newPassword))!=1) {
+        } else if (empMapper.changePassword(empId, encoder.encode(newPassword)) != 1) {
             message = "비밀번호 변경 실패";
         } else {
             message = "비밀번호 변경이 완료되었습니다.";

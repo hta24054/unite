@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -33,7 +34,7 @@ public class AttendController {
                                           @RequestParam(required = false) String empId,
                                           @RequestParam(required = false) Integer year,
                                           @RequestParam(required = false) Integer month) {
-        String targetEmpId = (empId == null || empId.isEmpty()) ? user.getUsername() : empId;
+        String targetEmpId = (ObjectUtils.isEmpty(empId)) ? user.getUsername() : empId;
         if (year == null || month == null) {
             year = LocalDate.now().getYear();
             month = LocalDate.now().getMonthValue();
@@ -58,11 +59,10 @@ public class AttendController {
 
     @GetMapping("/vacation")
     public ModelAndView showVacationPage(ModelAndView mv,
-                                        @AuthenticationPrincipal UserDetails user,
-                                        @RequestParam(required = false) String empId,
-                                        @RequestParam(required = false) Integer year,
-                                        @RequestParam(required = false) Integer month) {
-        String targetEmpId = (empId == null || empId.isEmpty()) ? user.getUsername() : empId;
+                                         @AuthenticationPrincipal UserDetails user,
+                                         @RequestParam(required = false) String empId,
+                                         @RequestParam(required = false) Integer year) {
+        String targetEmpId = (ObjectUtils.isEmpty(empId)) ? user.getUsername() : empId;
         if (year == null) {
             year = LocalDate.now().getYear();
             mv.setViewName("redirect:/attend/vacation?empId=" + targetEmpId + "&year=" + year);

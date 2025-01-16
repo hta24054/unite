@@ -13,7 +13,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
@@ -32,14 +31,9 @@ public class BoardPostService {
     private final BoardPostMapper boardPostMapper;
     private final EmpService empService;
     private final FileService fileService;
-    private final RestClient.Builder builder;
 
     public Map<String, String> getIdToENameMap() {
         return empService.getIdToENameMap();
-    }
-
-    public Board findBoardByBoardId(Long boardId) {
-        return boardPostMapper.findBoardByBoardId(boardId);
     }
 
     public HashMap<String, Object> getBoardNames(String empId) {
@@ -67,11 +61,23 @@ public class BoardPostService {
         return map;
     }
 
-    public List<BoardHomeDeptDTO> getBoardListByEmpId(String empId) {
+    public List<Object> getBoardListByEmpId(String empId) {
         Emp emp = empService.getEmpById(empId);
         Long deptId = emp.getDeptId();
 
-        return boardPostMapper.getBoardListByDeptId(deptId);
+        List<BoardHomeDeptDTO> boardDeptList = boardPostMapper.getBoardListByDeptId(deptId);
+        List<Board> boardCommponeyList = boardPostMapper.getBoardListByName1("전사게시판");
+        List<Board> boardGeneralList = boardPostMapper.getBoardListByName1("일반게시판");
+
+        List<Object> boardScope = new ArrayList<>();
+        boardScope.add(boardCommponeyList);
+        boardScope.add(boardGeneralList);
+        boardScope.add(boardDeptList);
+        return boardScope;
+    }
+
+    public List<BoardAndManagementDTO> getBoardAndManagement(Long boardId) {
+        return boardPostMapper.getBoardAndManagement(boardId);
     }
 
     public List<BoardPostEmpDTO> getBoardListAll(String empId) {
@@ -189,7 +195,7 @@ public class BoardPostService {
     }
 
     @Transactional
-    public boolean modifyPost(BoardDTO boardDTO, PostModifyDTO postModifyDTO,
+    public boolean modifyPost(PostModifyDTO postModifyDTO,
                               List<MultipartFile> addFiles, List<String> deletedFiles) {
         Long postId = postModifyDTO.getPostId();
         PostDetailDTO postDetailDTO = getDetail(postId);
@@ -336,5 +342,121 @@ public class BoardPostService {
             }
         }
         return post.getPostId();
+    }
+
+    @Transactional
+    public boolean createBoard(BoardRequestDTO boardRequestDTO) {
+        String ceoId = empService.getEmpListByDeptId(1000L).get(0).getEmpId();
+        List<String> managerIdList = boardRequestDTO.getManagerId();
+        if (managerIdList == null) {
+            managerIdList = new ArrayList<>();
+        }
+
+        String boardName1 = boardRequestDTO.getBoardName1();
+        String boardName2 = boardRequestDTO.getBoardName2();
+        if (boardName1 == null || boardName1.equals("일반게시판")) {
+            boardName1 = "일반게시판";
+
+            //일반게시판을 만들었을 경우 대표이사도 운영자 리스트에 추가
+            if (!managerIdList.contains(ceoId)) {
+                managerIdList.add(ceoId);
+            }
+        }
+
+        Board board = Board.builder()
+                .boardName1(boardName1)
+                .boardName2(boardName2)
+                .deptId(0L).build();
+
+        int insertResult = boardPostMapper.createBoard(board);
+
+        int insertManager = 0;
+        if (!managerIdList.isEmpty()) {
+            insertManager += boardPostMapper.insertBoardManagement(board.getBoardId(), managerIdList);
+        } else {
+            insertManager = 1;
+        }
+        return insertManager > 0 && insertResult > 0;
+    }
+
+    public List<BoardAndManagementDTO> getBoardModify(Long boardId) {
+        List<BoardAndManagementDTO> boardManagementList = getBoardAndManagement(boardId);
+
+        BoardAndManagementDTO boardManagement = new BoardAndManagementDTO();
+        if (boardManagementList.isEmpty()) {
+            Board board = boardPostMapper.findBoardByBoardId(boardId);
+            boardManagement.setBoardId(boardId);
+            boardManagement.setBoardName1(board.getBoardName1());
+            boardManagement.setBoardName2(board.getBoardName2());
+            boardManagement.setBoardManager("admin");
+            boardManagementList.add(boardManagement);
+        }
+        return boardManagementList;
+    }
+
+    @Transactional
+    public boolean modifyBoard(BoardRequestDTO boardRequestDTO) {
+        String ceoId = empService.getEmpListByDeptId(1000L).get(0).getEmpId();
+        List<String> managerIdList = boardRequestDTO.getManagerId();
+        if (managerIdList == null) {
+            managerIdList = new ArrayList<>();
+        }
+
+        String boardName1 = boardRequestDTO.getBoardName1();
+        String boardName2 = boardRequestDTO.getBoardName2();
+        if (boardName1 == null || boardName1.equals("일반게시판")) {
+            boardName1 = "일반게시판";
+
+            //일반게시판을 만들었을 경우 대표이사도 운영자 리스트에 추가
+            if (!managerIdList.contains(ceoId)) {
+                managerIdList.add(ceoId);
+            }
+        }
+
+        BoardDTO boardDTO = new BoardDTO();
+        boardDTO.setBoardName1(boardRequestDTO.getOriginalBoardName1());
+        boardDTO.setBoardName2(boardRequestDTO.getOriginalBoardName2());
+
+        Long boardId = boardPostMapper.findBoardIdByName1Name2(boardDTO);
+        if (boardId == null) {
+            return false;
+        }
+        Board board = Board.builder()
+                .boardId(boardId)
+                .boardName1(boardName1)
+                .boardName2(boardName2).build();
+
+        int updateResult = boardPostMapper.updateBoard(board);
+
+        List<BoardAndManagementDTO> boardAndManagementDTOS = boardPostMapper.getBoardAndManagement(boardId);
+        boolean check = false;
+        for (BoardAndManagementDTO boardAndManagementDTO : boardAndManagementDTOS) {
+            if (!managerIdList.contains(boardAndManagementDTO.getBoardManager())) {
+                check = true;
+                break;
+            }
+        }
+
+        if (check || boardAndManagementDTOS.size() != managerIdList.size()) {
+            boardPostMapper.deleteBoardManagement(boardId);
+            int insertManager = 0;
+            if (!managerIdList.isEmpty()) {
+                insertManager += boardPostMapper.insertBoardManagement(boardId, managerIdList);
+            } else {
+                insertManager = 1;
+            }
+            return insertManager > 0 && updateResult > 0;
+        }
+
+        return updateResult > 0;
+    }
+
+    public List<String> findBoardManagerById(Long boardId) {
+        return boardPostMapper.findBoardManagerById(boardId);
+    }
+
+    public int deleteBoard(Long boardId) {
+        boardPostMapper.deleteBoardManagement(boardId);
+        return boardPostMapper.deleteBoard(boardId);
     }
 }

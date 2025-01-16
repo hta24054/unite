@@ -25,6 +25,8 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
                 integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
                 crossorigin="anonymous"></script>
+        <!-- Bootstrap icons -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <!--        SockJs-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
         <!--        stomp-->
@@ -264,8 +266,8 @@
                              data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" th:href="@{/project/main}">진행 중 프로젝트</a>
-                                <a class="nav-link" th:href="@{/project/complete?dowhat=2}">완료 프로젝트</a>
-                                <a class="nav-link" th:href="@{/project/cancel?dowhat=1}">취소 프로젝트</a>
+                                <a class="nav-link" th:href="@{/project/done?dowhat=2}">완료 프로젝트</a>
+                                <a class="nav-link" th:href="@{/project/done?dowhat=1}">취소 프로젝트</a>
                                 <a class="nav-link" th:href="@{/project/create}">프로젝트 추가</a>
                             </nav>
                         </div>

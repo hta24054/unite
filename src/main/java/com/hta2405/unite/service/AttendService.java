@@ -252,6 +252,7 @@ public class AttendService {
                 .sum();
 
         return VacationInfoDTO.builder()
+                .targetEmpId(emp.getEmpId())
                 .targetEmpName(emp.getEname())
                 .jobName(jobName)
                 .vacationCount(emp.getVacationCount())

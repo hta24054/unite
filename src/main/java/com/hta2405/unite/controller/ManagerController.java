@@ -38,7 +38,15 @@ public class ManagerController {
         List<Dept> deptList = getAvailableDeptList(user);
         List<EmpListDTO> empList = empService.getEmpListDTO(deptList);
         String message = "근태정보 조회 페이지입니다. 이름을 클릭하면 근태정보 조회가 가능합니다.";
-        return empService.showEmpList(mv, "부서 근태정보", message, empList, "/manager/attendInfo");
+        return empService.showEmpList(mv, "부서 근태현황", message, empList, "/manager/attendInfo");
+    }
+
+    @GetMapping("/vacationInfoList")
+    public ModelAndView showVacationInfoList(@AuthenticationPrincipal UserDetails user, ModelAndView mv) {
+        List<Dept> deptList = getAvailableDeptList(user);
+        List<EmpListDTO> empList = empService.getEmpListDTO(deptList);
+        String message = "휴가정보 조회 페이지입니다. 이름을 클릭하면 휴가정보 조회가 가능합니다.";
+        return empService.showEmpList(mv, "부서 휴가현황", message, empList, "/manager/vacationInfo");
     }
 
     private List<Dept> getAvailableDeptList(UserDetails user) {
@@ -60,5 +68,10 @@ public class ManagerController {
     @GetMapping("/attendInfo")
     public String showAttendInfo(String empId) {
         return "redirect:/attend/info?empId=" + empId;
+    }
+
+    @GetMapping("/vacationInfo")
+    public String showVacationInfo(String empId) {
+        return "redirect:/attend/vacation?empId=" + empId;
     }
 }

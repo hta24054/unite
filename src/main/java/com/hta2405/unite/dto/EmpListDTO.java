@@ -8,6 +8,7 @@ public class EmpListDTO {
     private String ename;
     private String deptName;
     private String jobName;
+    private Long jobId;
     private String email;
     private String tel;
     private String mobile;

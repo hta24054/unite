@@ -2,10 +2,7 @@ package com.hta2405.unite.mybatis.mapper;
 
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Project;
-import com.hta2405.unite.dto.ProjectDetailDTO;
-import com.hta2405.unite.dto.ProjectRoleDTO;
-import com.hta2405.unite.dto.ProjectTaskDTO;
-import com.hta2405.unite.dto.ProjectTodoDTO;
+import com.hta2405.unite.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
@@ -26,21 +23,18 @@ public interface ProjectMapper {
 
     void createTask(int projectId, String empId, String memberName);
 
-    int mainCountList(String userid, int favorite);
-
-    int doneCountList(String userid, int finish, int cancel);
-
-    List<Project> getmainList(HashMap<String, Object> map);
-
+    List<Project> getMainList(String userid);
     List<Project> getDoneList(HashMap<String, Object> map);
+//    List<Project> getCompleteList(HashMap<String, Object> map);
 
     void projectFavorite(int projectId, String userid);
 
     void projectColor(String userid, int projectId, String bgColor, String textColor);
 
-    boolean projectStatus(int projectId, int complete, int cancel);
+    boolean projectStatus(int projectId, FileDTO taskFile, int complete, int cancel);
 
     String getProjectName(int projectId);
+    String getProjectContent(int projectId);
 
     List<ProjectDetailDTO> getProjectDetail1(int projectId, String userid);
 
@@ -54,4 +48,6 @@ public interface ProjectMapper {
     void insertToDo(String task, String userid, int projectId);
     List<ProjectTodoDTO> getTodoList(int projectId, String userid);
     boolean updateTodoProgressRate(int projectId, String userid, int todoId, int memberProgressRate);
+    boolean todoUpdate(int projectId, String userid, int todoId, String newSubject);
+    boolean deleteTodo(int todoId);
 }

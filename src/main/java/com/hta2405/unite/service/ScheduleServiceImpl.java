@@ -53,10 +53,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("scheduleId", scheduleDTO.getSchedule().getScheduleId());
-        //hashMap.put("shareEmp", scheduleDTO.getShareEmp());
         hashMap.put("shareEmp", scheduleDTO.getScheduleShare().getShareEmp());
 
-        //System.out.println("hashMap" + hashMap);
         return scheduleDAO.insertScheduleShareUsers(hashMap);
     }
 
@@ -83,36 +81,24 @@ public class ScheduleServiceImpl implements ScheduleService {
     public int insertScheduleDept(ScheduleDTO scheduleDTO) {
         scheduleDAO.insertScheduleDept(scheduleDTO.getSchedule());
 
-        // 부서에 속한 직원들의 empId를 조회
-        List<String> empIdInDept = scheduleDAO.getEmpIdByDeptId(scheduleDTO.getDeptId());
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("scheduleId", scheduleDTO.getSchedule().getScheduleId());
+        hashMap.put("deptId", scheduleDTO.getDept().getDeptId());
 
-        // 일정 공유 삽입 (부서에 속한 직원들에게 일정 공유)
-        scheduleDTO.setEmpIdInDept(empIdInDept);  // 일정 공유 대상 직원 리스트
-        return scheduleDAO.insertScheduleDeptShareWithDept(scheduleDTO.getDept().getDeptId());
+        return scheduleDAO.insertScheduleShareWithDept(hashMap);
     }
 
-//    @Override
-//    public int insertScheduleDept(ScheduleDTO scheduleDTO) {
-//        scheduleDAO.insertScheduleDept(scheduleDTO.getSchedule());
-//
-//        HashMap<String, Object> hashMap = new HashMap<>();
-//        hashMap.put("empId", scheduleDTO.getEmpId());
-//        hashMap.put("scheduleName", scheduleDTO.getScheduleName());
-//        hashMap.put("scheduleContent", scheduleDTO.getScheduleContent());
-//        hashMap.put("scheduleStart", scheduleDTO.getScheduleStart());
-//        hashMap.put("scheduleEnd", scheduleDTO.getScheduleEnd());
-//        hashMap.put("scheduleAllDay", scheduleDTO.isScheduleAllDay());
-//        hashMap.put("scheduleId", scheduleDTO.getSchedule().getScheduleId());
-//        hashMap.put("deptId", scheduleDTO.getDept().getDeptId());
-//
-//        System.out.println("scheduleDTO.getDept().getDeptId()" + scheduleDTO.getDept().getDeptId());
-//        System.out.println("hashMap" + hashMap);
-//        return scheduleDAO.insertScheduleDeptShareWithDept(scheduleDTO.getDept().getDeptId());
-//    }
+    // 사용자의 부서 ID 조회
+    @Override
+    public String getDeptIdByEmpId(String empId) {
+        String deptId = scheduleDAO.getDeptIdByEmpId(empId);
+        System.out.println("\n *** Dept ID for empId 사용자의 부서 ID 조회 = " + empId + ": " + deptId);
+        return deptId;
+    }
 
-
-    public List<String> getEmpIdByDeptId(Long deptId) {
-        // 해당 부서에 속한 직원들의 empId를 조회하는 로직
-        return scheduleDAO.getEmpIdByDeptId(deptId);
+    @Override
+    public List<Schedule> getListDeptSchedule(String deptId, String empId) {
+        List<Schedule> deptSchedule = scheduleDAO.getScheduleForDept(deptId, empId);
+        return deptSchedule;
     }
 }

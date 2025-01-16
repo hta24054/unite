@@ -3,9 +3,6 @@
         <!DOCTYPE html>
         <html xmlns:th="http://www.thymeleaf.org" lang="en">
         <head>
-            <script th:src="@{/js/writeform.js}"></script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
             <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.css" rel="stylesheet">
             <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
             <link rel="stylesheet" th:href="@{/css/boardHome.css}">
@@ -83,10 +80,17 @@
                     font-size: 18px;
                     width: 300px;
                     border: 1px solid #ccc;
+                    border-radius: 7px;
                 }
 
                 .form-control2 {
                     width: 85%;
+                }
+
+                .form-group2-title {
+                    background: #343a40bf;
+                    height: 60px;
+                    color: white;
                 }
 
                 .form-group-btn {
@@ -124,13 +128,16 @@
                 }
 
             </style>
-            <script>
+            <script th:src="@{/js/writeform.js}"></script>
+            <script th:inline="javascript">
                 var fileNo = 0;
                 var filesArr = [];
                 var maxFileCnt = 5;   // 첨부파일 최대 개수
 
-                var companyBulletinBoards = ['공지사항', '주간식단표', 'FAQ'];
-                var DepartmentBoards = ['솔루션영업팀'];
+                let boardMap = /*[[${boardMap}]]*/ {};
+
+                // var companyBulletinBoards = ['공지사항', '주간식단표', 'FAQ'];
+                // var DepartmentBoards = ['솔루션영업팀'];
 
                 /* 첨부파일 추가 */
                 function addFiles(files) {
@@ -257,52 +264,48 @@
                 }
 
                 //boardName2를 boardName1에 맞게 바꿈
-                function changeBoardName2(boardName1Value, departmentBoards) {
+                function changeBoardName2(boardName1Value, companyBoards, generalBoards, departmentBoards) {
                     let $boardName2 = $('#boardName2'); // 두 번째 select 초기화
                     $boardName2.empty();
 
                     if (boardName1Value === '전사게시판') {
-                        $.each(companyBulletinBoards, function (index, companyBulletinBoard) {
-                            $boardName2.append('<option value="' + companyBulletinBoard + '">' + companyBulletinBoard + '</option>');
+                        $.each(companyBoards, function (index, companyBoard) {
+                            $boardName2.append('<option value="' + companyBoard + '">' + companyBoard + '</option>');
                         });
                     } else if (boardName1Value === '일반게시판') {
-                        $boardName2.append('<option value="' + '일반게시판' + '">' + '일반게시판' + '</option>');
+                        $.each(generalBoards, function (index, generalBoard) {
+                            $boardName2.append('<option value="' + generalBoard + '">' + generalBoard + '</option>');
+                        });
                     } else if (boardName1Value === '부서게시판') {
                         $.each(departmentBoards, function (index, departmentBoard) {
                             $boardName2.append('<option value="' + departmentBoard + '">' + departmentBoard + '</option>');
                         });
                     }
-
                 }
 
-                function filterBoardName2() {
-                    const excludedValues = ['공지사항', '주간식단표', 'FAQ', '일반게시판']; // 제외할 값들
+                function filterBoardName2(boardName1) {
                     let filteredArray = []; // 결과를 담을 배열
-
-                    $('.boardName2').each(function () {
-                        const value = $(this).text(); // .boardName2 요소의 값 가져오기
-                        if (!excludedValues.includes(value)) { // 제외할 값에 포함되지 않으면 추가
-                            filteredArray.push(value);
-                        }
-                    });
-
-                    return filteredArray; // 필터링된 배열 반환
+                    for (const value of boardMap[boardName1]) {
+                        console.log("value = ", value)
+                        filteredArray.push(value);
+                    }
+                    return filteredArray;
                 }
 
                 $(function () {
-                    var departmentBoards = filterBoardName2();
-                    console.log(departmentBoards);
+                    let companyBoards = filterBoardName2('전사게시판');
+                    let generalBoards = filterBoardName2('일반게시판');
+                    let departmentBoards = filterBoardName2('부서게시판');
 
                     var BoardName2Value = $('#boardName2Hidden').val();
-
                     let boardName1Value;
 
-                    if (BoardName2Value == '' || BoardName2Value == null) {//게시판 홈에서 글쓰기 버튼을 누를 경우 초기화
+                    if (BoardName2Value === '' || BoardName2Value == null) {//게시판 홈에서 글쓰기 버튼을 누를 경우 초기화
                         BoardName2Value = '공지사항';
                     }
 
                     // BoardName2Text의 따라 BoardName1 구하기
-                    if (companyBulletinBoards.includes(BoardName2Value)) {
+                    if (companyBoards.includes(BoardName2Value)) {
                         boardName1Value = '전사게시판';
                     } else if (departmentBoards.includes(BoardName2Value)) {
                         boardName1Value = '부서게시판';
@@ -310,23 +313,23 @@
                         boardName1Value = '일반게시판';
                     }
 
-                    changeBoardName2(boardName1Value, departmentBoards);//boardName2를 boardName1에 맞게 바꿈
+                    changeBoardName2(boardName1Value, companyBoards, generalBoards, departmentBoards);//boardName2를 boardName1에 맞게 바꿈
                     $('#boardName1').val(boardName1Value);
                     $('#boardName2').val(BoardName2Value);
 
-                    $(".boardName2,.left a").removeClass('menuActive');
+                    // $(".boardName2,.left a").removeClass('menuActive');
 
                     // dragover 이벤트: 드래그한 파일이 attachFlie 영역에 있을 때
-                    $('.attachFile').on('dragover', function (event) {
+                    $('.attachFile, .file-list').on('dragover', function (event) {
                         event.preventDefault();
                         $(this).addClass('dragoverFile');
                     });
 
-                    $('.attachFile').on('dragleave', function () {
+                    $('.attachFile, .file-list').on('dragleave', function () {
                         $(this).removeClass('dragoverFile');
                     });
 
-                    $('.attachFile').on('drop', function (event) {
+                    $('.attachFile, .file-list').on('drop', function (event) {
                         event.preventDefault();  // 기본 동작을 취소
                         $(this).removeClass('dragoverFile');
 
@@ -347,8 +350,6 @@
             </script>
         </head>
         <body>
-        <link rel="stylesheet" th:href="@{/css/leftbar.css}">
-        <script th:src="@{/js/leftbar.js}"></script>
         <div class="main">
             <th:block th:replace="~{/board/sidebar :: boardSidebarFragment}"/>
 
@@ -357,7 +358,7 @@
                 <div class="boardContent">
                     <form method="post" enctype="multipart/form-data"
                           name="boardform" onsubmit="event.preventDefault(); submitForm();">
-                        <div class="form-group2">
+                        <div class="form-group2 form-group2-title">
                             <input type="hidden" name="postId" th:value='${postMap["post_id"]}'/>
                             <input type="hidden" id="boardName1Hidden" name="boardName1"
                                    th:value='${boardDTO.boardName1}'/>
@@ -366,8 +367,6 @@
                             <input type="hidden" name="postReRef" th:value="${postMap['post_re_ref']}"/>
                             <input type="hidden" name="postReLev" th:value="${postMap['post_re_lev']}"/>
                             <input type="hidden" name="postReSeq" th:value="${postMap['post_re_seq']}"/>
-                            <!--	 		<input type="hidden" id="board_re" data-ref="${postData.postReRef}" data-lev="${postData.postReLev}"-->
-                            <!--	 											data-seq="${postData.postReSeq}">-->
                             <label class="labelName">
                                 To.
                                 <select id="boardName1" name="boardName1" class="boardName" disabled>

@@ -97,3 +97,16 @@ function submitForm(taskNum, memberId) {
     document.body.appendChild(form);
     form.submit();
 }
+function GoProjectComm() {
+    $.ajax({
+        url: '/projectBoard/comm',  // 요청할 URL
+        type: 'GET',  // GET 방식
+        success: function(response) {
+            // AJAX 요청 성공 후 페이지 리디렉션
+            window.location.href = '/projectBoard/comm';  // 이곳으로 리디렉션
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX 요청 오류:', error);
+        }
+    });
+}

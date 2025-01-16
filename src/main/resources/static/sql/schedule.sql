@@ -4,18 +4,6 @@ use unite;
 show tables;
 
 /*
-use mysql;
-alter user 'root'@'localhost' identified with mysql_native_password by '1234';
-flush privileges;
-
-create user unite@localhost identified by 'unite1234';
-grant all privileges on *.* to unite@localhost with grant option;
-flush privileges;
-use mysql;
-select user, host from user;
-*/
-
-/*
 CREATE TABLE schedule (
     schedule_id INT AUTO_INCREMENT PRIMARY KEY,
     emp_id VARCHAR(10) NOT NULL,
@@ -36,142 +24,24 @@ CREATE TABLE schedule_share (
 */
 
 
-
 commit; /*INSERT 하고나서 항상 커밋!!!*/
 
-select *
-from schedule;
 
-desc schedule;
 
-select *
-from schedule_share;
-
-desc schedule_share;
-
-select *
-from schedule
-where emp_id = '241001';
-
+select * from schedule;
 
 CREATE TABLE schedule_share
 (
     schedule_share_id bigINT AUTO_INCREMENT PRIMARY KEY,
     share_emp         VARCHAR(100) NOT NULL,
     schedule_id       bigINT       NOT NULL,
+    dept_id           bigINT       NOT NULL,
     CONSTRAINT FK_schedule FOREIGN KEY (schedule_id) REFERENCES schedule (schedule_id) ON DELETE CASCADE
 );
 
 
 ALTER TABLE schedule_share
     MODIFY share_emp VARCHAR(255);
-
-select share_emp from schedule_share;
-
-SELECT
-    s.schedule_id,
-    s.emp_id,
-    s.schedule_name,
-    s.schedule_content,
-    s.schedule_start,
-    s.schedule_end,
-    s.schedule_color,
-    s.schedule_allDay,
-    (select ename from emp where emp_id  = '241101') ename,
-    GROUP_CONCAT(ss.share_emp) AS share_emp -- 공유 직원 목록
-FROM schedule s
-         JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
-WHERE s.emp_id = '241001'
-   OR ss.share_emp LIKE CONCAT('%', '241101', '%') -- shareEmp를 LIKE로 처리
-   GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
-   s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay;
-
-
-
-SELECT
-    s.schedule_id,
-    s.emp_id,
-    s.schedule_name,
-    s.schedule_content,
-    s.schedule_start,
-    s.schedule_end,
-    s.schedule_color,
-    s.schedule_allDay,
-    (SELECT ename FROM emp WHERE emp_id = '241001') AS ename,
-    GROUP_CONCAT(ss.share_emp) AS share_emp, -- 공유된 직원들의 emp_id
-    GROUP_CONCAT(e.ename) AS share_emp_names -- 공유된 직원들의 이름
-FROM schedule s
-         JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
-         LEFT JOIN emp e ON FIND_IN_SET(e.emp_id, ss.share_emp) > 0  -- share_emp와 일치하는 emp_id 이름
-WHERE s.emp_id = '241001'
-   OR ss.share_emp LIKE CONCAT('%', '241101,241102', '%')
-GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
-         s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay;
-
-
-SELECT
-    s.schedule_id,
-    s.emp_id,
-    s.schedule_name,
-    s.schedule_content,
-    s.schedule_start,
-    s.schedule_end,
-    s.schedule_color,
-    s.schedule_allDay,
-    (SELECT ename FROM emp WHERE emp_id = '241001') AS ename,
-    GROUP_CONCAT(ss.share_emp) AS share_emp, -- 공유된 직원들의 emp_id
-    GROUP_CONCAT(e.ename) AS share_emp_names -- 공유된 직원들의 이름
-FROM schedule s
-         JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
-         LEFT JOIN emp e ON ss.share_emp REGEXP CONCAT('(^|,)', e.emp_id, '(,|$)') -- share_emp와 일치하는 emp_id 이름
-WHERE s.emp_id = '241001'
-   OR ss.share_emp LIKE CONCAT('%', '241101,241102', '%')
-GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
-         s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay;
-
-
-SELECT
-    s.schedule_id,
-    s.emp_id,
-    s.schedule_name,
-    s.schedule_content,
-    s.schedule_start,
-    s.schedule_end,
-    s.schedule_color,
-    s.schedule_allDay,
-    (SELECT ename FROM emp WHERE emp_id = '241001') AS empIdName, -- 로그인한 사용자의 이름을 가져옵니다.
-                                 GROUP_CONCAT(ss.share_emp) AS share_emp, -- 공유된 직원들의 emp_id
-            GROUP_CONCAT(e.ename) AS share_emp_names -- 공유된 직원들의 이름
-     FROM schedule s
-         JOIN schedule_share ss ON s.schedule_id = ss.schedule_id
-         LEFT JOIN emp e ON ss.share_emp REGEXP CONCAT('(^|,)', e.emp_id, '(,|$)') -- share_emp와 일치하는 emp_id 이름
-     WHERE s.emp_id = '241001'
-        OR ss.share_emp LIKE CONCAT('%', '241101,241102', '%')
-         GROUP BY s.schedule_id, s.emp_id, s.schedule_name, s.schedule_content,
-         s.schedule_start, s.schedule_end, s.schedule_color, s.schedule_allDay;
-
-
-select dept_manager from dept;
-
-
-SELECT
-    s.schedule_id,
-    s.emp_id,
-    s.schedule_name,
-    s.schedule_content,
-    s.schedule_start,
-    s.schedule_end,
-    s.schedule_color,
-    s.schedule_allDay,
-    e.dept_id,  -- empId에 해당하는 부서의 deptId
-    d.dept_name  -- 부서명 가져오기
-FROM schedule s
-         JOIN emp e ON s.emp_id = e.emp_id  -- schedule 테이블과 emp 테이블을 empId로 조인
-         JOIN dept d ON e.dept_id = d.dept_id  -- emp 테이블과 dept 테이블을 deptId로 조인
-WHERE s.emp_id = '241001';  -- 특정 직원이 등록한 모든 일정에 대한 부서 정보
-
-
-
 
 SELECT
     s.schedule_id,
@@ -195,6 +65,157 @@ GROUP BY s.schedule_id;
 
 
 
-SELECT emp_id
-FROM emp
-WHERE dept_id = '1100';
+ALTER TABLE schedule_share
+ADD CONSTRAINT fk_deptId FOREIGN KEY (dept_id) REFERENCES dept(dept_id) ON DELETE CASCADE;
+
+
+
+desc reservation;
+select * from resc;
+
+
+
+SELECT MIN(resc_id) AS resc_id, resc_type, resc_name, resc_usable
+FROM resc
+WHERE resc_type = '회의실' AND resc_usable = '1'
+GROUP BY resc_type, resc_name, resc_usable
+ORDER BY resc_id ASC;
+
+SELECT MIN(resc_id) AS resc_id, resc_type, resc_name, resc_usable
+FROM resc
+WHERE resc_type = '차량' AND resc_usable = '1'
+GROUP BY resc_type, resc_name, resc_usable
+ORDER BY resc_id ASC;
+
+
+desc resc;
+select * from resc;
+
+SELECT COUNT(*)
+FROM reservation
+WHERE resource_id = 1
+  AND (
+    (reservation_allDay = 1 AND
+    reservation_start <= '2025-01-13 00:00' AND reservation_end >= '2025-01-13 00:00')
+    OR
+    (reservation_allDay = 0 AND
+     '2025-01-13 00:00' < reservation_end AND '2025-01-13 00:00' > reservation_start)
+    );
+
+INSERT INTO reservation
+(resource_id, emp_id, reservation_start, reservation_end, reservation_info, reservation_allDay)
+VALUES
+    (1,
+     '241001',
+     '2025-01-13 00:00',
+     '2025-01-13 00:00',
+     '회의 예약',
+     1);
+
+select * from reservation;
+
+SELECT *
+FROM resc
+where resc_id = 1
+AND resc_name = '회의실1';
+
+
+select * from resc;
+
+SELECT r.*, s.resc_name
+FROM reservation r
+         JOIN resc s ON r.resource_id = s.resc_id
+WHERE r.resource_id = 1
+  AND s.resc_name = '회의실1';
+
+SHOW COLUMNS FROM resc;
+
+SHOW COLUMNS FROM reservation;
+
+
+SELECT
+    emp.ename,
+    resc.resc_id,
+    resc.resc_type,
+    resc.resc_name,
+    resc.resc_info,
+    resc.resc_usable,
+    reservation.reservation_id,
+    reservation.emp_id,
+    reservation.reservation_start,
+    reservation.reservation_end,
+    reservation.reservation_info,
+    reservation.reservation_allDay
+FROM reservation
+         LEFT JOIN resc resc ON reservation.resource_id = resc.resc_id
+         LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id
+WHERE reservation.reservation_id = 18;
+
+
+-- 해당 예약에 대한 데이터가 존재하는지 확인
+SELECT * FROM reservation WHERE reservation_id = 18;
+
+-- 해당 예약에 연결된 resource_id 값 확인
+SELECT * FROM resc WHERE resc_id = (SELECT resource_id FROM reservation WHERE reservation_id = 18);
+
+-- 해당 예약에 연결된 emp_id 값 확인
+SELECT * FROM emp WHERE emp_id = (SELECT emp_id FROM reservation WHERE reservation_id = 18);
+
+
+SHOW COLUMNS FROM reservation;
+SHOW COLUMNS FROM resc;
+SHOW COLUMNS FROM emp;
+
+
+SELECT resc.resc_type, resc.resc_name
+FROM reservation
+         LEFT JOIN resc ON reservation.resource_id = resc.resc_id
+WHERE reservation.reservation_id = 18;
+
+
+
+SELECT
+    -- 자원 정보 서브쿼리
+    (SELECT resc.resc_type FROM resc resc WHERE resc.resc_id = reservation.resource_id) AS resourceType,
+    (SELECT resc.resc_name FROM resc resc WHERE resc.resc_id = reservation.resource_id) AS resourceName,
+    (SELECT resc.resc_info FROM resc resc WHERE resc.resc_id = reservation.resource_id) AS resourceInfo,
+    (SELECT resc.resc_usable FROM resc resc WHERE resc.resc_id = reservation.resource_id) AS resourceUsable,
+
+    -- 예약 정보
+    reservation.reservation_id,
+    reservation.emp_id,
+    reservation.reservation_start,
+    reservation.reservation_end,
+    reservation.reservation_info,
+    reservation.reservation_allDay,
+
+    -- 예약자 정보 서브쿼리
+    (SELECT emp.ename FROM emp emp WHERE emp.emp_id = reservation.emp_id) AS empName
+FROM reservation
+WHERE reservation.reservation_id = 18;
+
+
+
+SELECT
+    -- 자원 정보 서브쿼리
+    resc.resc_type AS resourceType,
+    resc.resc_name AS resourceName,
+    resc.resc_info AS resourceInfo,
+    resc.resc_usable AS resourceUsable,
+
+    -- 예약 정보
+    reservation.reservation_id,
+    reservation.emp_id,
+    reservation.reservation_start,
+    reservation.reservation_end,
+    reservation.reservation_info,
+    reservation.reservation_allDay,
+
+    -- 예약자 정보 (emp 테이블에서 직접 가져옴)
+    emp.ename
+FROM reservation
+-- 자원 정보와 결합
+         LEFT JOIN resc resc ON reservation.resource_id = resc.resc_id
+-- 예약자 정보와 결합
+         LEFT JOIN emp emp ON reservation.emp_id = emp.emp_id
+WHERE reservation.reservation_id = 18;

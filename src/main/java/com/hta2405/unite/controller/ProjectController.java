@@ -7,17 +7,17 @@ import com.hta2405.unite.dto.ProjectDetailDTO;
 import com.hta2405.unite.dto.ProjectRoleDTO;
 import com.hta2405.unite.dto.ProjectTaskDTO;
 import com.hta2405.unite.dto.ProjectTodoDTO;
+import com.hta2405.unite.service.EmpService;
 import com.hta2405.unite.service.ProjectService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
@@ -31,9 +31,11 @@ import java.util.Map;
 public class ProjectController {
     private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
     private final ProjectService projectService;
+    private final EmpService empService;
 
-    public ProjectController(ProjectService projectService) {
+    public ProjectController(ProjectService projectService, EmpService empService) {
         this.projectService = projectService;
+        this.empService = empService;
     }
 
     @GetMapping(value = "/main")
@@ -121,26 +123,13 @@ public class ProjectController {
 
     @GetMapping("/getProjects")
     @ResponseBody
-    public Map<String, Object> getProjects(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "0") int favorite,
-            @AuthenticationPrincipal UserDetails user
-           ) {
+    public Map<String, Object> getProjects(@AuthenticationPrincipal UserDetails user) {
         String userid = user.getUsername();
-        int limit = 100;
-        int listcount = projectService.mainCountList(userid, favorite);
-        List<Project> mainList = projectService.getmainList(userid, favorite, page, limit);
-
-        PaginationResult result = new PaginationResult(page, limit, listcount);
-
+        List<Project> mainList = projectService.getmainList(userid);
+        logger.info("mainList={}", mainList.size());
         Map<String, Object> response = new HashMap<>();
-        response.put("page", page);
-        response.put("maxpage", result.getMaxpage());
-        response.put("startpage", result.getStartpage());
-        response.put("endpage", result.getEndpage());
-        response.put("listcount", listcount);
         response.put("boardlist", mainList);
-        response.put("limit", limit);
+        response.put("listCount", mainList.size());
         return response;
     }
 
@@ -173,14 +162,18 @@ public class ProjectController {
         return "redirect:/project/main";
     }
 
-    // 프로젝트 상태 업데이트 처리
     @PostMapping("/updateStatus")
     @ResponseBody
     public Map<String, Object> updateProjectStatus(@RequestParam("projectId") int projectId,
-                                                   @RequestParam("status") String status) {
+                                                   @RequestParam("status") String status,
+                                                   MultipartFile file) {
+        logger.info("file=========",file.toString());
         Map<String, Object> response = new HashMap<>();
         try {
-            boolean isUpdated = projectService.updateProjectStatus(projectId, status);  // 서비스 메서드 호출
+            boolean isUpdated = projectService.updateProjectStatus(projectId, status, file);
+//            boolean isUpdated;
+//            if(file != null) isUpdated = projectService.updateProjectStatus(projectId, status, file);
+//            else isUpdated = projectService.updateProjectStatus(projectId, status, null);
 
             if (isUpdated) {
                 response.put("success", true);
@@ -196,34 +189,20 @@ public class ProjectController {
         return response;
     }
 
-    @GetMapping("/cancel")
-    public String cancel() {
-        return "project/project_cancel";
-    }
-
-    @GetMapping("/cancelList")
+    @GetMapping("/done")
     @ResponseBody
-    public Map<String, Object> cancel(@RequestParam(defaultValue = "1") int page, @AuthenticationPrincipal UserDetails user) {
-        String userid = user.getUsername();
-
-        int limit = 10; // 페이지 당 표시할 데이터 개수
-        int listcount = projectService.doneCountList(userid, 0, 1); // 총 프로젝트 개수 (favorite 파라미터를 넘겨서 처리)
-        List<Project> mainList = projectService.getDoneList(userid, page, limit); // 프로젝트 목록 가져오기
-
-        PaginationResult result = new PaginationResult(page, limit, listcount); // 페이지네이션 결과 계산
-        logger.info("mainList size = {}", mainList.size());
-        logger.info("startpage = {}", result.getStartpage());
-        logger.info("endpage = {}", result.getEndpage());
-        Map<String, Object> response = new HashMap<>();
-        response.put("page", page);
-        response.put("maxpage", result.getMaxpage());
-        response.put("startpage", result.getStartpage());
-        response.put("endpage", result.getEndpage());
-        response.put("listcount", listcount);
-        response.put("boardlist", mainList);
-        response.put("limit", limit);
-
-        return response;
+    public ModelAndView done(@AuthenticationPrincipal UserDetails user, ModelAndView mv, int dowhat) {
+        mv.addObject("boardlist", projectService.getDoneList(user.getUsername(), dowhat));
+        mv.addObject("memberName", empService.getEmpById(user.getUsername()).getEname());
+        if (dowhat == 1) {
+            mv.setViewName("project/project_cancel");
+            mv.addObject("message", "취소된 프로젝트들을 불러옵니다");
+        }
+        if (dowhat == 2) {
+            mv.setViewName("project/project_complete");
+            mv.addObject("message", "완료된 프로젝트들을 불러옵니다");
+        }
+        return mv;
     }
 
     @GetMapping("/complete")
@@ -236,6 +215,7 @@ public class ProjectController {
         String userid = user.getUsername();
 
         String left = projectService.getProjectName(projectId);
+        String projectContent = projectService.getProjectContent(projectId);
         List<ProjectDetailDTO> detail_Progress = projectService.getProjectDetail1(projectId, userid);
         for (ProjectDetailDTO projectDetail : detail_Progress) {
             if (projectDetail.getManagerId() != null && projectDetail.getManagerId().equals(userid)) {
@@ -253,6 +233,8 @@ public class ProjectController {
         mv.addObject("project2", project);
         mv.addObject("role", role);
         mv.addObject("projectId", projectId);
+        mv.addObject("memberId", userid);
+        mv.addObject("projectContent", projectContent);
 
         return mv;
     }
@@ -292,6 +274,7 @@ public class ProjectController {
     public String todo(int projectId, Model model, @AuthenticationPrincipal UserDetails user){
         String userid = user.getUsername();
         List<ProjectTodoDTO> todos = projectService.getTodoList(projectId, userid);
+        model.addAttribute("projectName",projectService.getProjectName(projectId));
         model.addAttribute("todos", todos);
         model.addAttribute("projectId", projectId);
         return "project/Todo";
@@ -318,5 +301,15 @@ public class ProjectController {
         boolean success = projectService.todoProgressRate(projectId, userid, todoId, memberProgressRate);
         sendJsonResponse(success, resp);
     }
-
+    @PostMapping("/updateTodo")
+    public void updateTodo(int projectId, int todoId, String newSubject, @AuthenticationPrincipal UserDetails user, HttpServletResponse resp) throws IOException {
+        String userid = user.getUsername();
+        boolean success = projectService.todoUpdate(projectId, userid, todoId, newSubject);
+        sendJsonResponse(success, resp);
+    }
+    @PostMapping("/deleteTodo")
+    public void deleteTodo(int todoId, HttpServletResponse resp) throws IOException {
+        boolean success = projectService.deleteTodo(todoId);
+        sendJsonResponse(success, resp);
+    }
 }

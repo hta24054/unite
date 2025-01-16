@@ -2,42 +2,38 @@
     <th:block th:fragment="content">
         <!DOCTYPE html>
         <html xmlns:th="http://www.thymeleaf.org">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>캘린더 - 일정관리</title>
-                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-                <script th:src="@{/js/jquery-3.7.1.js}"></script>
-                <script th:src="@{https://cdn.jsdelivr.net/npm/moment@2.27.0/min/moment.min.js}"></script>
-                <script th:src="@{https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js}"></script>
-                <script th:src="@{https://cdn.jsdelivr.net/npm/@fullcalendar/moment@6.1.15/index.global.min.js}"></script>
-                <script th:src="@{/js/calendar.js}"></script>
-                <style>
-                    #calendar {
-                        max-width: 100%;
-                        margin: 0 auto;
-                    }
+        <head>
+            <title>캘린더 - 일정관리</title>
+            <script th:src="@{https://cdn.jsdelivr.net/npm/moment@2.27.0/min/moment.min.js}"></script>
+            <script th:src="@{https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js}"></script>
+            <script th:src="@{https://cdn.jsdelivr.net/npm/@fullcalendar/moment@6.1.15/index.global.min.js}"></script>
+            <script th:src="@{/js/calendar.js}"></script>
+            <style>
+                #calendar {
+                    max-width: 100%;
+                    margin: 0 auto;
+                }
 
                 #calendar a {
                     text-decoration: none;
                     color: #000;
                 }
 
-                    /* 일요일 날짜 빨간색 */
-                    .fc-day-sun a {
-                        color: red !important;
-                    }
+                /* 일요일 날짜 빨간색 */
+                .fc-day-sun a {
+                    color: red !important;
+                }
 
                 /* 토요일 날짜 파란색 */
                 .fc-day-sat a {
                     color: blue !important;
                 }
 
-                .color-group {
+                .color-group > div {
                     display: flex;
                 }
 
-                .color-group > p {
+                .color-group > div > p {
                     margin: 0 10px 0 0;
                 }
 
@@ -53,42 +49,69 @@
                     justify-content: center;
                 }
 
-                    .btn_wrap button {
-                        margin: 0 5px;
-                    }
-                </style>
-            </head>
-            <body class="sb-nav-fixed">
-                <div class="px-5 py-4">
-                    <div style="display: flex;">
-                        <button type="button" class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#scheduleModal" style="margin-left: auto; background-color: #334466; color: #fff;">일정 등록</button>
-                    </div>
-                    <div id="calendar"></div>
-                </div>
+                .btn_wrap button {
+                    margin: 0 5px;
+                }
 
-                <!-- 일정 등록 모달 -->
-                <div class="modal" id="scheduleModal">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">일정 등록</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                .form-group > label {
+                    margin-bottom: 5px;
+                }
+
+                textarea {
+                    resize: none;
+                }
+            </style>
+        </head>
+        <body class="sb-nav-fixed">
+        <div class="p-5">
+            <div style="display: flex;" class="mb-5">
+                <div style="display: flex; align-items: center; gap: 30px;}">
+                    <button type="button" class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#scheduleModal" style="background-color: #334466; color: #fff;">일정 등록</button>
+                    <div class="form-check" style="font-size: 20px;">
+                        <input class="form-check-input" type="checkbox" id="departmentScheduleCheckbox">
+                        <label class="form-check-label" for="departmentScheduleCheckbox">
+                            <strong>부서 일정 보기</strong>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div id="calendar"></div>
+        </div>
+
+        <!-- 일정 등록 모달 -->
+        <div class="modal" id="scheduleModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">일정 등록</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form th:action="@{/scheduleAdd}" name="scheduleEvent" method="post">
+                            <input type="hidden" id="schedule_id" name="schedule_id" th:value="${schedule_id}">
+                            <input type="hidden" id="emp_id" name="emp_id" th:value="${#authentication.name}">
+                            <input type="hidden" id="share_emp" name="share_emp" th:value="${share_emp}">
+
+                            <div class="form-group mb-3">
+                                <label for="schedule_name">일정명</label>
+                                <input type="text"
+                                       class="form-control" placeholder="일정명을 입력하세요"
+                                       name="schedule_name" id="schedule_name">
                             </div>
-                            <div class="form-group custom-control custom-checkbox">
-                                <input type="checkbox" name="allDay" id="allDay" class="custom-control-input"
-                                       th:value="${allDay}">
+                            <div class="form-group custom-control custom-checkbox mb-3">
+                                <input type="checkbox" name="allDay" id="allDay" class="custom-control-input" th:value="${allDay}">
                                 <label for="allDay" class="custom-control-label">하루종일</label>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group mb-3">
                                 <label for="startAt">시작날짜/시간</label>
                                 <input type="datetime-local" name="startAt" id="startAt" class="form-control">
                             </div>
-                            <div class="form-group">
+                            <div class="form-group mb-3">
                                 <label for="endAt">종료날짜/시간</label>
                                 <input type="datetime-local" name="endAt" id="endAt" class="form-control">
                             </div>
-                            <div class="form-group">
-                                <div class="color-group">
+                            <div class="form-group color-group mb-3">
+                                <div>
                                     <p>색상</p>
                                     <select name="bgColor" id="bgColor">
                                         <option value="#1e3a8a" style="color: #1e3a8a;">Blue100</option>
@@ -103,7 +126,7 @@
                                 </div>
                             </div>
                             <div>
-                                <p>내용</p>
+                                <p style="margin-bottom: 5px;">내용</p>
                                 <textarea rows="10" name="description" id="description"></textarea>
                             </div>
 

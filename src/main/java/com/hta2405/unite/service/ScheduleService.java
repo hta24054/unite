@@ -32,5 +32,7 @@ public interface ScheduleService {
     // 부서 일정 등록
     public int insertScheduleDept(ScheduleDTO scheduleDTO);
 
-    public List<String> getEmpIdByDeptId(Long deptId);
+    public String getDeptIdByEmpId(String empId);
+
+    public List<Schedule> getListDeptSchedule(String deptId, String empId);
 }

@@ -1,5 +1,6 @@
 package com.hta2405.unite.security;
 
+import com.hta2405.unite.domain.Dept;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,12 +24,13 @@ public class JwtUtil {
         );
     }
 
-    public String generateToken(String username, String role) {
+    public String generateToken(String username, String role, Long deptId) {
         log.info("generateToken username = {}", username);
         long EXPIRED_MS = 60 * 60 * 1000L;
         String generatedToken = Jwts.builder()
-                .claim("username", username)
+                .claim("empId", username)
                 .claim("role", role)
+                .claim("deptId", deptId)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + EXPIRED_MS))
                 .signWith(SECRET_KEY)

@@ -3,12 +3,13 @@ $(document).ready(function () {
     let events = [];
     let isAllDayChk, startDate, endDate;
 
-	// 개인/공유 일정, 공휴일 불러오기
+	// 개인/공유/부서 일정, 공휴일 불러오기
 	function fetchAllData() {
 	    events = []; // 배열 초기화
+
 	    Promise.all([
 			fetchListData(),
-			fetchSharedListData(),
+			fetchSharedListData()
 		]).then(() => {
 	        const startMonth = moment().startOf('month').format('YYYY-MM');
 	        let endMonth = moment().add(1, 'year').endOf('month').format('YYYY-MM');
@@ -24,7 +25,6 @@ $(document).ready(function () {
     function fetchHolidayData(data) {
         const startMonth = data.startStr.substring(0, 7);
         let endMonth = data.endStr.substring(0, 7);
-
         const nextMonth = moment(endMonth).add(1, 'month').format('YYYY-MM');
 
         // 공휴일 데이터가 로드되었는지 확인하기 위한 flag
@@ -41,7 +41,7 @@ $(document).ready(function () {
             },
             dataType: "json",
             success: function (data) {
-                data.holidayList.forEach(function (holiday) {
+                data.forEach(function (holiday) {
                     events.push({
                         title: holiday.holidayName,
                         start: holiday.holidayDate,
@@ -55,7 +55,7 @@ $(document).ready(function () {
                     });
                 });
 
-                // 공휴일 데이터가 로드되었음을 플래그로 저장
+                // 공휴일 데이터가 로드되면 플래그 저장
                 window.holidayDataLoaded = true;
 
                 // 캘린더 초기화
@@ -151,11 +151,63 @@ $(document).ready(function () {
         });
     }
 
+    let isDeptSchedule = false; // 부서 일정 체크박스
+    // 체크박스 클릭 시 부서 일정 리스트 불러오기
+    $('#departmentScheduleCheckbox').on('change', function() {
+        isDeptSchedule = $(this).prop('checked');
+
+        if (isDeptSchedule) {
+            fetchDeptListData();
+        } else {
+            // 부서 일정 제거
+            events = events.filter(event => !event.extendedProps.isDept);
+            initCalendar();
+        }
+    });
+
 	// 부서 일정 리스트 불러오기
+    function fetchDeptListData() {
+        $.ajax({
+            url: "deptScheduleList",
+            type: "get",
+            dataType: "json",
+            data: {
+                emp_id: $("#emp_id").val(),  // 로그인된 직원 ID
+                dept_id: $('#dept_id').val(),
+            },
+            success: function(data) {
+                console.log("부서 일정 데이터:", data);
 
+                if (data != null) {
+                    for (let i = 0; i < data.length; i++) {
 
+                        // 중복 체크: schedule_id로 중복 여부 확인
+                        if (!events.some(event => event.id === data[i].scheduleId)) {
+                            events.push({
+                                id: data[i].scheduleId,
+                                title: data[i].scheduleName,
+                                start: data[i].scheduleStart,
+                                end: data[i].scheduleEnd,
+                                backgroundColor: data[i].scheduleColor,
+                                description: data[i].scheduleContent,
+                                allDay: data[i].scheduleAllDay,
+                                editable: false, // 수정 불가
+                                droppable: false, // 드래그 불가
+                                extendedProps: {
+                                    isDept: true, // 부서 일정
+                                },
+                            })
+                        }
+                    }
+                }
 
-
+                initCalendar();
+            },
+            error: function (error) {
+                console.log("부서 일정 리스트 불러오기 오류", error);
+            }
+        });
+    }
 
 	// 일정 등록
     function addEvent(eventData) {
@@ -188,8 +240,14 @@ $(document).ready(function () {
                     }
                 }
 
+                window.holidayDataLoaded = false;
                 fetchAllData();
                 $("#scheduleModal").modal("hide");
+
+                // 부서 일정 체크
+                if (isDeptSchedule) {
+                    fetchDeptListData();
+                }
             },
             error: function () {
                 console.log("일정 등록 오류");
@@ -214,8 +272,14 @@ $(document).ready(function () {
                 scheduleAllDay: eventData.allDay ? 1 : 0
             },
             success: function (data) {
+                window.holidayDataLoaded = false;
                 fetchAllData();
                 $("#scheduleModal").modal("hide");
+
+                // 부서 일정 체크
+                if (isDeptSchedule) {
+                    fetchDeptListData();
+                }
             },
             error: function (error) {
                 console.log("일정 수정 오류", error);
@@ -244,7 +308,13 @@ $(document).ready(function () {
                 scheduleAllDay: info.event.allDay ? 1 : 0
             },
             success: function () {
+                window.holidayDataLoaded = false;
                 fetchAllData();
+
+                // 부서 일정 체크
+                if (isDeptSchedule) {
+                    fetchDeptListData();
+                }
             },
             error: function () {
                 alert("drag 일정 업데이트 중 오류가 발생했습니다.");
@@ -263,8 +333,14 @@ $(document).ready(function () {
                     scheduleId: eventData.schedule_id,
                 },
                 success: function (data) {
+                    window.holidayDataLoaded = false;
                     fetchAllData();
                     $("#scheduleModal").modal("hide");
+
+                    // 부서 일정 체크
+                    if (isDeptSchedule) {
+                        fetchDeptListData();
+                    }
                 },
                 error: function (error) {
                     alert("일정 삭제 중 오류가 발생했습니다.");
@@ -288,7 +364,7 @@ $(document).ready(function () {
 	        $("#schedule_name").val("");
 		    $("#startAt, #endAt").prop("type", "datetime-local").val("");
 	        $("#description").val("");
-	        $("#bgColor").val("#000");
+	        $("#bgColor").val("#1e3a8a");
 	        $("#allDay").prop("checked", false);
 	        return;
 	    }
@@ -328,18 +404,27 @@ $(document).ready(function () {
 	        $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", true);
 	        $(".modal-body").find(".btn_wrap").remove();
 
-			$(".modal-body").find(".form-group:nth-of-type(1)").after(`
-				<div class="form-group">
-					<p style="margin-bottom: 5px;">공유자 정보</p>
-					<ul>
-						<li><span>등록자:</span> ${event.extendedProps.empIdName}</li>
-						<li><span>참여자:</span> ${event.extendedProps.shareEmpNames}</li>
-					</ul>
-				</div>
-			`);
+            if ($(".modal-body").find(".form-group.share-info").length === 0) {
+                $(".modal-body").find(".form-group:nth-of-type(1)").after(`
+                    <div class="form-group share-info">
+                        <p style="margin-bottom: 5px;">공유자 정보</p>
+                        <ul>
+                            <li><span>등록자:</span> ${event.extendedProps.empIdName}</li>
+                            <li><span>참여자:</span> ${event.extendedProps.shareEmpNames}</li>
+                        </ul>
+                    </div>
+                `);
+            }
+	    } else if(event.extendedProps.isDept === true) { // 부서 일정
+            $(".modal-header").find("h5").text("부서 일정");
+            //$("form[name='scheduleEvent'] input, form[name='scheduleEvent'] textarea").prop("disabled", true);
+            $(".modal-body").find(".form-group.color-group").remove();
+            $(".modal-body").find(".btn_wrap").html(`
+	            <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
+	            <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
+	        `);
 
-			// $(".modal-body").find(".btn_wrap").html(`<button type="button" id="btnDelete" class="btn btn-danger">삭제</button>`);
-	    } else {
+        } else {
 	        $(".modal-header").find("h5").text("상세 일정");
 	        $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);
 	        $(".modal-body").find(".btn_wrap").html(`
@@ -381,9 +466,6 @@ $(document).ready(function () {
 		initializeModalForRegistration();
 	});
 
-	// $("#scheduleModal").on("hidden.bs.modal", function () {
-	//     $("#startAt, #endAt").prop("type", "datetime-local").val("");
-	// });
 
 	// 등록 버튼 클릭 시 모달 강제 초기화
 	function initializeModalForRegistration() {
@@ -392,7 +474,7 @@ $(document).ready(function () {
 	    $("#startAt").val("");
 	    $("#endAt").val("");
 	    $("#description").val("");
-	    $("#bgColor").val("#000");
+	    $("#bgColor").val("#1e3a8a");
 	    $("#allDay").prop("checked", false);
 
         $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);
@@ -432,7 +514,6 @@ $(document).ready(function () {
 		});
 
 		$("#startAt, #endAt").prop("type", "datetime-local").val("");
-		$("#bgColor").val("#000");
 	});
 
     // form 유효성 검사
@@ -509,10 +590,6 @@ $(document).ready(function () {
         }
     });
 
-    // $('#bgColor').on("change", function () {
-	//     $(this).css('color', $(this).val());
-	// });
-
     // 캘린더 생성
     function initCalendar() {
         const calendarEl = document.getElementById('calendar');
@@ -549,7 +626,7 @@ $(document).ready(function () {
 		        $("#schedule_name").val("");
 		        $("#startAt, #endAt").prop("type", "datetime-local").val("");
 		        $("#description").val("");
-		        $("#bgColor").val("#000");
+		        $("#bgColor").val("#1e3a8a");
 		        $("#allDay").prop("checked", false);
 		        $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);
 
@@ -591,9 +668,9 @@ $(document).ready(function () {
             eventDidMount: function (info) {
                 //console.log("info.event.extendedProps", info.event.extendedProps);
             },
-            eventDrop: function (info) {
-                updateDragEvent(info);
-            }
+            // eventDrop: function (info) {
+            //     updateDragEvent(info);
+            // }
         });
 
         //선택 상태 해제
@@ -602,5 +679,4 @@ $(document).ready(function () {
     }
 
     fetchAllData();
-    initCalendar();
 });

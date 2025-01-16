@@ -2,14 +2,13 @@ package com.hta2405.unite.service;
 
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Project;
-import com.hta2405.unite.dto.ProjectDetailDTO;
-import com.hta2405.unite.dto.ProjectRoleDTO;
-import com.hta2405.unite.dto.ProjectTaskDTO;
-import com.hta2405.unite.dto.ProjectTodoDTO;
+import com.hta2405.unite.dto.*;
 import com.hta2405.unite.mybatis.mapper.ProjectMapper;
+import com.hta2405.unite.util.ConfigUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,11 +16,20 @@ import java.util.Map;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
+    private static final String FILE_DIR = ConfigUtil.getProperty("project.upload.directory");
     private final ProjectMapper dao;
+    private final NotificationService notificationService;
+    private final FileService fileService;
 
     @Autowired
-    public ProjectServiceImpl(ProjectMapper dao) {
+    public ProjectServiceImpl(ProjectMapper dao, NotificationService notificationService, FileService fileService) {
         this.dao = dao;
+        this.notificationService = notificationService;
+        this.fileService = fileService;
+    }
+
+    public List<Project> getmainList(String userid) {
+        return dao.getMainList(userid);
     }
 
     public List<Emp> getHiredEmpByDeptId(long deptId) {
@@ -65,26 +73,6 @@ public class ProjectServiceImpl implements ProjectService {
         dao.createTask(projectId, empId, memberName);
     }
 
-    public int mainCountList(String userid, int favorite) {
-        return dao.mainCountList(userid, favorite);
-    }
-
-    public int doneCountList(String userid, int finish, int cancel) {
-        return dao.doneCountList(userid, finish, cancel);
-    }
-
-    @Override
-    public List<Project> getmainList(String userid, int favorite, int page, int limit) {
-        HashMap<String, Object> map = new HashMap<>();
-        int startrow = (page - 1) * limit;
-        int endrow = startrow + limit;
-        map.put("favorite", favorite);
-        map.put("userid", userid);
-        map.put("start", startrow);
-        map.put("end", endrow);
-        return dao.getmainList(map);
-    }
-
     public void projectFavorite(int projectId, String userid) {
         dao.projectFavorite(projectId, userid);
     }
@@ -94,28 +82,33 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public boolean updateProjectStatus(int projectId, String status) {
+    public boolean updateProjectStatus(int projectId, String status, MultipartFile file) {
+        FileDTO taskFile = null;
+        if (file != null && !file.isEmpty()) {
+            taskFile = fileService.uploadFile(file, FILE_DIR);
+        }
+        // 상태에 따라 업데이트 수행
         if ("completed".equals(status)) {
-            return dao.projectStatus(projectId, 1, 0);
+            return dao.projectStatus(projectId, taskFile, 1, 0);
         } else if ("canceled".equals(status)) {
-            return dao.projectStatus(projectId, 0, 1);
+            return dao.projectStatus(projectId, taskFile, 0, 1);
         }
         return false;
     }
 
-    public List<Project> getDoneList(String userid, int page, int limit) {
+
+    public List<Project> getDoneList(String userid, int dowhat) {
         HashMap<String, Object> map = new HashMap<>();
-        int startrow = (page - 1) * limit;
-        int endrow = startrow + limit;
         map.put("userid", userid);
-        map.put("start", startrow);
-        map.put("end", endrow);
+        if(dowhat == 1) map.put("dowhat", "project_canceled");
+        else if(dowhat == 2) map.put("dowhat", "project_finished");
         return dao.getDoneList(map);
     }
 
     public String getProjectName(int projectId) {
         return dao.getProjectName(projectId);
     }
+    public String getProjectContent(int projectId){return dao.getProjectContent(projectId);}
 
     public List<ProjectDetailDTO> getProjectDetail1(int projectId, String userid) {
         return dao.getProjectDetail1(projectId, userid);
@@ -139,6 +132,17 @@ public class ProjectServiceImpl implements ProjectService {
 
     public void insertToDo(String task, String userid, int projectId){
         dao.insertToDo(task, userid, projectId);
+//        List<ProjectTodoDTO> todoList = dao.getTodoList(projectId, userid);
+//        List<ProjectDetailDTO> user = dao.getProjectDetail1(projectId, userid);
+//        NotificationDTO notification = NotificationDTO.builder()
+//                .category(NotificationCategory.DOC)
+//                .title(dao.getProjectName(projectId) + '-' + todoList.get(0).getTodoSubject())
+//                .message(user.get(0).getParticipantNames() + "님이 글을 작성하셨습니다")
+//                .recipientId(user.get(1).getMemberId())
+//                .targetUrl("/project/detail?projectId=" + user.get(1).getProjectId())
+//                .isRead(false)
+//                .createdAt(LocalDateTime.now().toString()).build();
+//        notificationService.sendNotification(notification);
     }
 
     public List<ProjectTodoDTO> getTodoList(int projectId, String userid){
@@ -147,5 +151,13 @@ public class ProjectServiceImpl implements ProjectService {
 
     public boolean todoProgressRate(int projectId, String userid, int todoId, int memberProgressRate){
         return dao.updateTodoProgressRate(projectId, userid, todoId, memberProgressRate);
+    }
+
+    public boolean todoUpdate(int projectId, String userid, int todoId, String newSubject) {
+        return dao.todoUpdate(projectId, userid, todoId, newSubject);
+    }
+
+    public boolean deleteTodo(int todoId) {
+        return dao.deleteTodo(todoId);
     }
 }

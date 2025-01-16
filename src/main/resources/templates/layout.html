@@ -1,6 +1,7 @@
 <th:block th:fragment="setContent(content)">
     <!DOCTYPE html>
-    <html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <html xmlns:th="http://www.thymeleaf.org"
+          xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
     <head>
         <meta charset="utf-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -12,6 +13,7 @@
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
         <!-- Custom Styles -->
         <link th:href="@{/css/layout.css}" rel="stylesheet"/>
+        <link th:href="@{/css/notification.css}" rel="stylesheet"/>
         <!-- jQuery -->
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
         <!-- Popper.js -->
@@ -24,33 +26,80 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
                 integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
                 crossorigin="anonymous"></script>
+        <!-- Bootstrap icons -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <!--        SockJs-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+        <!--        stomp-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     </head>
     <body class="sb-nav-fixed">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
         <!-- Navbar Brand-->
-        <a class="navbar-brand ps-3" th:href="@{/home}" style="font-weight:bold"><img th:src="@{/image/logo_white.png}"
-                                                                                      width="30px"> Unite
+        <a class="navbar-brand ps-3" th:href="@{/home}" style="font-weight:bold">
+            <img th:src="@{/image/logo_white.png}" width="30px"> Unite
         </a>
+        <!-- Sidebar Toggle -->
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!">
+            <i class="fas fa-bars"></i>
+        </button>
 
-        <!-- Sidebar Toggle-->
-        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i
-                class="fas fa-bars"></i></button>
-        <!-- Navbar Search-->
-        <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-            <div class="input-group">
-                <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..."
-                       aria-describedby="btnNavbarSearch"/>
-                <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i>
-                </button>
+        <!-- Navbar Content Wrapper -->
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+            <!-- 날씨 정보 -->
+            <div id="weatherInfo" style="display: flex; align-items: center; margin-right: 20px;">
+                <img id="weatherIcon" alt="Weather Icon" style="width: 40px; height: 40px; margin-right: 8px;"/>
+                <div style="color: white; font-size: 12px;">
+                    <div>
+                        <span id="currentTemp" style="font-size: 14px; font-weight: bold;"></span>°C
+                    </div>
+                    <div>
+                        <span id="maxTemp"></span>°C / <span id="minTemp"></span>°C
+                    </div>
+                </div>
             </div>
-        </form>
+
+            <!-- Navbar Search -->
+            <form class="d-none d-md-inline-block form-inline ms-auto me-3 my-2 my-md-0" style="width: 300px;">
+                <div class="input-group">
+                    <input class="form-control" type="text" placeholder="통합검색" aria-label="Search for..."
+                           aria-describedby="btnNavbarSearch"/>
+                    <button class="btn btn-secondary" id="btnNavbarSearch" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
         <!-- Navbar-->
         <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+            <!-- 알림 -->
+            <li class="nav-item dropdown no-arrow mx-1">
+                <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-bs-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-bell fa-fw"></i>
+                    <!-- Counter - Alerts -->
+                    <span class="badge badge-danger badge-counter" id="notificationBadge" style="display:none;">0</span>
+                </a>
+                <!-- Dropdown - Alerts -->
+                <div class="dropdown-list dropdown-menu dropdown-menu-end shadow animated--grow-in"
+                     aria-labelledby="alertsDropdown" style="max-height: 300px; overflow-y: auto; min-width: 250px;">
+                    <h6 class="dropdown-header">알림 센터</h6>
+                    <div id="notificationList" style="padding: 10px;">
+                        <!-- 알림 항목이 동적으로 추가됩니다 -->
+                        <p id="noNotificationsMessage" class="text-center text-muted"
+                           style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">새로운 알림이
+                            없습니다.</p>
+                    </div>
+                    <button id="loadMoreButton" class="btn btn-link text-center small text-gray-500 w-100">더 보기</button>
+                </div>
+            </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
-                   aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                   aria-expanded="false"><img th:src="@{/emp/profile-image(empId=${#authentication.name})}"
+                                              width="30px"></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="#!">Settings</a></li>
+                    <li><a class="dropdown-item" th:href="@{/emp/password}">비밀번호 변경</a></li>
                     <li><a class="dropdown-item" href="#!">Activity Log</a></li>
                     <li>
                         <hr class="dropdown-divider"/>
@@ -82,10 +131,16 @@
                         <div class="collapse" id="collapseCustomMenu1" aria-labelledby="heading1"
                              data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" th:href="@{/attend/info}">나의 근태관리</a>
-                                <a class="nav-link" th:href="@{/manager/attendInfoList}">부서원 근태관리</a>
-                                <a class="nav-link" th:href="@{/attend/vacation/my}">휴가 관리</a>
-                                <a class="nav-link" th:href="@{/attend/vacation/empList}">휴가 관리(인사)</a>
+                                <a class="nav-link" th:href="@{/attend/info}">근태현황</a>
+                                <a class="nav-link"
+                                   sec:authorize="hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN') or principal.deptId == 1120"
+                                   th:href="@{/manager/attendInfoList}">부서 근태현황
+                                </a>
+                                <a class="nav-link" th:href="@{/attend/vacation}">휴가 현황</a>
+                                <a class="nav-link"
+                                   sec:authorize="hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN') or principal.deptId == 1120"
+                                   th:href="@{/manager/vacationInfoList}">부서 휴가현황
+                                </a>
                             </nav>
                         </div>
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
@@ -99,8 +154,10 @@
                              data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" th:href="@{/emp/info}">나의 인사정보</a>
-                                <a class="nav-link" th:href="@{/manager/empInfoList}">부서 인사정보</a>
-                                <a class="nav-link" th:href="@{/emp/Info/alldept}">전 부서 인사정보</a>
+                                <a class="nav-link"
+                                   sec:authorize="hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN') or principal.deptId == 1120"
+                                   th:href="@{/manager/empInfoList}">부서 인사정보
+                                </a>
                             </nav>
                         </div>
 
@@ -115,7 +172,7 @@
                              data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" th:href="@{/contact/inner}">사내 주소록</a>
-                                <a class="nav-link" th:href="@{/contact/outter}">외부 주소록</a>
+                                <a class="nav-link" th:href="@{/contact/outer}">외부 주소록</a>
                             </nav>
                         </div>
 
@@ -136,36 +193,12 @@
                         </div>
 
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
-                           data-bs-target="#collapsePages1"
+                           data-bs-target="#collapsePages1" onclick="location.href='/board/home'"
                            aria-expanded="false" aria-controls="collapsePages1">
                             <div class="sb-nav-link-icon"><i class="fa-solid fa-comments"></i></div>
                             게시판
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
-                        <div class="collapse" id="collapsePages1" aria-labelledby="headingTwo"
-                             data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages1">
-                                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
-                                   data-bs-target="#pagesCollapseAuth1" aria-expanded="false"
-                                   aria-controls="pagesCollapseAuth1">
-                                    전사게시판
-                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                                </a>
-                                <div class="collapse" id="pagesCollapseAuth1" aria-labelledby="headingOne"
-                                     data-bs-parent="#sidenavAccordionPages1">
-                                    <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link" th:href="@{/board/home}">공지사항</a>
-                                        <a class="nav-link" th:href="@{/board/home}">주간식단표</a>
-                                        <a class="nav-link" th:href="@{/board/home}">FAQ</a>
-                                        <a class="nav-link" th:href="@{/board/home}">구매 신청</a>
-                                    </nav>
-                                </div>
-                            </nav>
-                            <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" th:href="@{/project/main}">일반게시판</a>
-                                <a class="nav-link" th:href="@{/project/complete}">부서게시판</a>
-                            </nav>
-                        </div>
 
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
                            data-bs-target="#collapsePages2"
@@ -228,8 +261,8 @@
                              data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" th:href="@{/project/main}">진행 중 프로젝트</a>
-                                <a class="nav-link" th:href="@{/project/complete}">완료 프로젝트</a>
-                                <a class="nav-link" th:href="@{/project/cancel}">취소 프로젝트</a>
+                                <a class="nav-link" th:href="@{/project/done?dowhat=2}">완료 프로젝트</a>
+                                <a class="nav-link" th:href="@{/project/done?dowhat=1}">취소 프로젝트</a>
                                 <a class="nav-link" th:href="@{/project/create}">프로젝트 추가</a>
                             </nav>
                         </div>
@@ -245,12 +278,14 @@
                         <div class="collapse" id="collapseCustomMenu7" aria-labelledby="heading7"
                              data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" th:href="@{/reservation/reservationCalender}">나의 예약 목록</a>
+                                <a class="nav-link" th:href="@{/reservation/reservationCalender}">자원예약</a>
+                                <a class="nav-link"
+                                   th:href="@{/reservation/reservationCalender/myReservationList?emp_id=${id}}">나의 예약
+                                    목록</a>
                             </nav>
                         </div>
 
-
-                        <th:block th:if="${#authentication.name}=='admin'">
+                        <th:block sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
                                data-bs-target="#collapseCustomMenu10" aria-expanded="false"
                                aria-controls="collapseCustomMenu10">
@@ -327,6 +362,7 @@
 
                 <div class="sb-sidenav-footer">
                     <div class="small" style="font-weight: bold">로그인한 사용자: [[${#authentication.name}]]</div>
+                    <div id="user-info" style="display: none" th:data-username="${#authentication.name}"></div>
                 </div>
             </nav>
         </div>
@@ -348,7 +384,10 @@
             </footer>
         </div>
     </div>
+    <!--토스트 컨테이너-->
+    <div id="toastContainer" style="position: fixed; bottom: 10px; right: 10px; z-index: 9999;"></div>
     <script th:src="@{/js/layout.js}"></script>
+    <script th:src="@{/js/notification.js}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
     </body>
     </html>

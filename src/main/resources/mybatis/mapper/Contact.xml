@@ -1,0 +1,31 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hta2405.unite.mybatis.mapper.ContactMapper">
+    <select id="getAllOuterContactList">
+        select *
+        from contact
+        order by name;
+    </select>
+    <insert id="insertContact">
+        insert into contact(name, position, company, mobile, tel, email, info)
+        VALUES (#{name}, #{position}, #{company}, #{mobile}, #{tel}, #{email}, #{info})
+    </insert>
+    <update id="updateContact">
+        UPDATE contact
+        SET name     = #{name},
+            position =#{position},
+            company  =#{company},
+            mobile   =#{mobile},
+            tel      =#{tel},
+            email    =#{email},
+            info     =#{info}
+        WHERE id = #{id}
+    </update>
+    <delete id="deleteContact">
+        DELETE FROM contact
+        WHERE id IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

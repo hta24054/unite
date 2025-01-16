@@ -61,65 +61,18 @@ public class ProjectController {
         return map;
     }
 
-    @PostMapping("/doCreate")
+    @PostMapping("/create")
     public String doCreate(@ModelAttribute Project project, Model model) {
-        int projectId = projectService.createProject(project);
-        logger.info("projectId = ", projectId);
-        String name;
         try {
-            name = project.getManagerName().replace("(" + project.getManagerId() + ")", "").trim();
-        } catch (StringIndexOutOfBoundsException e) {
-            logger.error("manager_id 형식이 올바르지 않습니다. 값: {}", project.getManagerId(), e);
-            throw new IllegalArgumentException("manager_id 형식이 올바르지 않습니다. 값: " + project.getManagerId());
-        }
-
-        if (projectId > 0) {
-            projectService.addProjectMember(projectId, name, project.getManagerId(), "MANAGER");
-            projectService.createTask(projectId, project.getManagerId(), name);
-            // 참여자 처리
-            if (project.getParticipants() != null && !project.getParticipants().isEmpty()) {
-                String[] participantArray = project.getParticipants().split(","); // 쉼표로 구분된 참여자들
-                for (String participant : participantArray) {
-                    String[] participantInfo = participant.trim().split("\\("); // 이름(ID) 형식으로 분리
-                    if (participantInfo.length == 2) {
-                        String empName = participantInfo[0].trim();  // 이름
-                        String empId = participantInfo[1].replace(")", "").trim();  // ID (괄호 제거)
-
-                        logger.info("participant = {} , empId = {}", empName, empId);
-
-                        //if (empId != null && (userid.equals(empId) || !empId.equals(name))) {
-                        if (empId != null) {
-                            projectService.addProjectMembers(projectId, empName, empId, "PARTICIPANT");
-                            projectService.createTask(projectId, empId, empName);
-                        }
-                    }
-                }
-            }
-
-            // 열람자 처리
-            if (project.getViewers() != null && !project.getViewers().isEmpty()) {
-                String[] viewerArray = project.getViewers().split(","); // 쉼표로 구분된 열람자들
-                for (String viewer : viewerArray) {
-                    String[] viewerInfo = viewer.trim().split("\\("); // 이름(ID) 형식으로 분리
-                    if (viewerInfo.length == 2) {
-                        String empName = viewerInfo[0].trim();  // 이름
-                        String empId = viewerInfo[1].replace(")", "").trim();  // ID (괄호 제거)
-
-                        logger.info("viewer = {} , empId = {}", empName, empId);
-
-                        if (empId != null && !empId.equals(name)) {  // 매니저가 아닌 경우만 추가
-                            projectService.addProjectMembers(projectId, empName, empId, "VIEWER");
-                            projectService.createTask(projectId, empId, empName);
-                        }
-                    }
-                }
-            }
+            projectService.createProject(project);
             model.addAttribute("message", "프로젝트가 성공적으로 생성되었습니다.");
-        } else {
-            model.addAttribute("message", "프로젝트 생성에 실패했습니다.");
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("message", e.getMessage());
+            return "redirect:/project/create";
         }
         return "redirect:/project/main";
     }
+
 
     @GetMapping("/getProjects")
     @ResponseBody
@@ -167,13 +120,9 @@ public class ProjectController {
     public Map<String, Object> updateProjectStatus(@RequestParam("projectId") int projectId,
                                                    @RequestParam("status") String status,
                                                    MultipartFile file) {
-        logger.info("file=========",file.toString());
         Map<String, Object> response = new HashMap<>();
         try {
             boolean isUpdated = projectService.updateProjectStatus(projectId, status, file);
-//            boolean isUpdated;
-//            if(file != null) isUpdated = projectService.updateProjectStatus(projectId, status, file);
-//            else isUpdated = projectService.updateProjectStatus(projectId, status, null);
 
             if (isUpdated) {
                 response.put("success", true);

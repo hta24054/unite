@@ -35,7 +35,6 @@ public class DocApiController {
     private final DocEditorFactory docEditorFactory;
 
     @PostMapping(value = "/{type}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseBody
     public ResponseEntity<String> writeDoc(@PathVariable String type,
                                            @RequestPart("formData") String formDataJson,
                                            @RequestPart(value = "files", required = false) List<MultipartFile> files,
@@ -54,7 +53,6 @@ public class DocApiController {
     }
 
     @PatchMapping
-    @ResponseBody
     public ResponseEntity<String> editDoc(@RequestPart("formData") String formDataJson,
                                           @RequestPart(value = "files", required = false) List<MultipartFile> files,
                                           @AuthenticationPrincipal UserDetails user) throws JsonProcessingException {
@@ -77,7 +75,6 @@ public class DocApiController {
     }
 
     @DeleteMapping
-    @ResponseBody
     public ResponseEntity<String> deleteDoc(Long docId, @AuthenticationPrincipal UserDetails user) {
         return docService.deleteDoc(docId, user.getUsername())
                 ? ResponseEntity.ok("삭제 성공") : ResponseEntity.badRequest().body("삭제 실패");
@@ -91,26 +88,22 @@ public class DocApiController {
     }
 
     @GetMapping("/countVacation")
-    @ResponseBody
     public int countVacation(String startDate, String endDate) {
         return docService.countVacation(LocalDate.parse(startDate), LocalDate.parse(endDate));
     }
 
     @GetMapping("/download")
-    @ResponseBody
     public ResponseEntity<Resource> downloadFile(String fileUUID, String fileName) {
         return docService.downloadFile(fileUUID, fileName);
     }
 
     @PostMapping("/sign")
-    @ResponseBody
     public ResponseEntity<String> signDoc(Long docId, @AuthenticationPrincipal UserDetails user) {
         return docService.signDoc(docId, user.getUsername())
                 ? ResponseEntity.ok("결재 성공") : ResponseEntity.badRequest().body("결재 실패");
     }
 
     @PostMapping("/revoke")
-    @ResponseBody
     public ResponseEntity<String> revokeDoc(Long docId, @AuthenticationPrincipal UserDetails user) {
         return docService.revokeDoc(docId, user.getUsername())
                 ? ResponseEntity.ok("회수 성공") : ResponseEntity.badRequest().body("회수 실패");

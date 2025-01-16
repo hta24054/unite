@@ -1,0 +1,246 @@
+<th:block th:replace="layout :: setContent(~{this::content})">
+    <th:block th:fragment="content">
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Messenger UI</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    height: 100vh;
+                }
+
+                .container {
+                    display: flex;
+                    max-width: none;
+                    width: calc(100% - 40px);
+                    height: 800px;
+                    padding: 0;
+                    margin: 10px 20px 10px !important;
+                    border: 1px solid #ddd;
+                }
+
+                .sidebar {
+                    width: 25%;
+                    background-color: #f4f4f4;
+                    border-right: 1px solid #ddd;
+                    overflow-y: auto;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .sidebar .chat-room {
+                    padding: 15px;
+                    border-bottom: 1px solid #ddd;
+                    cursor: pointer;
+                    height: 85px;
+                }
+
+                .chat {
+                    flex-grow: 1;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .chat-header {
+                    background-color: #f4f4f4;
+                    padding: 10px 15px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-bottom: 1px solid #ddd;
+                    height: 80px;
+                }
+
+                .chat-header button {
+                    background-color: transparent;
+                    border: none;
+                    cursor: pointer;
+                    font-size: 18px;
+                }
+
+                .chat-body {
+                    flex-grow: 1;
+                    padding: 15px;
+                    overflow-y: auto;
+                    background-color: #fff;
+                }
+
+                .chat-message {
+                    margin-bottom: 15px;
+                }
+
+                .chat-message img {
+                    max-width: 100%;
+                    border-radius: 8px;
+                }
+
+                .chat-footer {
+                    padding: 10px;
+                    border-top: 1px solid #ddd;
+                    display: flex;
+                }
+
+                .chat-footer input {
+                    flex-grow: 1;
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    margin-right: 10px;
+                }
+
+                .chat-footer button {
+                    padding: 10px 15px;
+                    border: none;
+                    background-color: #6200ea;
+                    color: #fff;
+                    border-radius: 4px;
+                    cursor: pointer;
+                }
+
+                .chat-info {
+                    width: 25%;
+                    background-color: #f9f9f9;
+                    border-left: 1px solid #ddd;
+                    overflow-y: auto;
+                    display: none; /* Hidden by default */
+                }
+
+                .chat-info.active {
+                    display: block;
+                }
+
+                .chat-info-header {
+                    padding: 15px;
+                    border-bottom: 1px solid #ddd;
+                    font-size: 25px;
+                    font-weight: bold;
+                    background-color: #f4f4f4;
+                    height: 80px;
+                }
+
+                .chat-info-body {
+                    padding: 15px;
+                }
+
+                .chat-info-body .member {
+                    margin-bottom: 10px;
+                }
+
+                .chat-info-footer {
+                    padding: 15px;
+                    border-top: 1px solid #ddd;
+                    text-align: center;
+                }
+
+                .scroll::-webkit-scrollbar {
+                    display: none;
+                    -ms-overflow-style: none; /* 인터넷 익스플로러 */
+                    scrollbar-width: none; /* 파이어폭스 */
+                }
+
+                .scrollbar {
+                    height: 250px;
+                    overflow-y: scroll;
+                }
+
+                /* 스크롤바의 폭 너비 */
+                .scrollbar::-webkit-scrollbar {
+                    width: 8px;
+                }
+
+                .scrollbar::-webkit-scrollbar-thumb {
+                    background: rgba(0, 0, 0, 0.25); /* 스크롤바 색상 */
+                    border-radius: 10px; /* 스크롤바 둥근 테두리 */
+                }
+
+                .scrollbar::-webkit-scrollbar-track {
+                    background: #ccc; /*스크롤바 뒷 배경 색상*/
+                }
+            </style>
+        </head>
+        <body>
+        <div class="container m-auto">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="chat-header">
+                    <span>사용자 정보</span>
+                </div>
+                <div class="chat-body scroll" style="padding:0">
+                    <div class="chat-room">The Real Backpackers</div>
+                    <div class="chat-room">Always Developers</div>
+                    <div class="chat-room">Dad</div>
+                    <div class="chat-room">Dad</div>
+                    <div class="chat-room">Dad</div>
+                    <div class="chat-room">Dad</div>
+                    <div class="chat-room">Dad</div>
+                    <div class="chat-room">Dad</div>
+                    <div class="chat-room">Dad</div>
+                </div>
+            </div>
+
+            <!-- Chat Section -->
+            <div class="chat">
+                <div class="chat-header" style="height: 91px;">
+                    <span>채팅방 명</span>
+                    <button id="info-toggle">ℹ️</button>
+                </div>
+                <div class="chat-body scrollbar">
+                    <div class="chat-message">John: Hey guys, let's climb a summit in the summer</div>
+                    <div class="chat-message">Amy: Sounds like a great idea! Count me in.</div>
+                    <div class="chat-message">Raj: Let's do Mount Kilimanjaro</div>
+                    <div class="chat-message"><img src="https://via.placeholder.com/300" alt="Example Image"></div>
+                    <div class="chat-message">Elaine: Let's do this!</div>
+                    <div class="chat-message">Elaine: Let's do this!</div>
+                    <div class="chat-message">Elaine: Let's do this!</div>
+                    <div class="chat-message">Elaine: Let's do this!</div>
+                    <div class="chat-message">Elaine: Let's do this!</div>
+                    <div class="chat-message">Elaine: Let's do this!</div>
+                    <div class="chat-message">Elaine: Let's do this!</div>
+                    <div class="chat-message">Elaine: Let's do this!</div>
+                    <div class="chat-message">Elaine: Let's do this!</div>
+                    <div class="chat-message">Elaine: Let's do this!</div>
+                    <div class="chat-message">Elaine: Let's do this!</div>
+                    <div class="chat-message">Elaine: Let's do this!</div>
+                    <div class="chat-message">Elaine: Let's do this!</div>
+                    <div class="chat-message">Elaine: Let's do this!</div>
+                    <div class="chat-message">Elaine: Let's do this!</div>
+                    <div class="chat-message">Elaine: Let's do this!</div>
+                </div>
+                <div class="chat-footer">
+                    <input type="text" placeholder="Enter message">
+                    <button>Send</button>
+                </div>
+            </div>
+
+            <!-- Chat Info Section -->
+            <div class="chat-info" id="chat-info">
+                <div class="chat-info-header">Channel Information</div>
+                <div class="chat-info-body">
+                    <div class="member">John</div>
+                    <div class="member">Amy</div>
+                    <div class="member">Raj</div>
+                    <div class="member">Elaine</div>
+                </div>
+                <div class="chat-info-footer">
+                    <button>Leave Channel</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const infoToggle = document.getElementById('info-toggle');
+            const chatInfo = document.getElementById('chat-info');
+
+            infoToggle.addEventListener('click', () => {
+                chatInfo.classList.toggle('active');
+            });
+        </script>
+        </body>
+        </html>
+
+    </th:block>
+</th:block>

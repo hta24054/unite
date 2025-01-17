@@ -1,8 +1,15 @@
 package com.hta2405.unite.service;
 
+import com.hta2405.unite.domain.Doc;
+import com.hta2405.unite.domain.DocVacation;
+import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Schedule;
 import com.hta2405.unite.dto.AiResponseDTO;
 import com.hta2405.unite.dto.EmpListDTO;
+import com.hta2405.unite.enums.AttendType;
+import com.hta2405.unite.enums.DocType;
+import com.hta2405.unite.enums.Role;
+import com.hta2405.unite.strategy.doc.VacationDocWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -10,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +31,8 @@ public class AiService {
     private final EmpService empService;
     private final String SUCCESS = "Success";
     private final String FAIL = "Fail";
+    private final DocService docService;
+    private final VacationDocWriter vacationDocWriter;
 
     public Map<String, Object> findService(String message, String empId) {
         String template = """
@@ -53,8 +63,52 @@ public class AiService {
             return summarize(aiResponse);
         } else if (typeName.equals("getSchedule")) {
             return getSchedule(aiResponse, empId);
+        } else if (typeName.equals("vacationApply")) {
+            return applyVacation(aiResponse, empId);
         }
         return null;
+    }
+
+    private Map<String, Object> applyVacation(Map<String, Object> aiResponse, String empId) {
+        Map<String, Object> map = new HashMap<>();
+
+        Emp emp = empService.getEmpById(empId);
+        if (emp.getRole() == Role.ROLE_ADMIN || emp.getEmpId().equals("241001")) {
+            map.put("resultMessage", "관리자(admin) 또는 대표는 이 기능을 사용할 수 없습니다.");
+            return map;
+        }
+
+        LocalDate startDate = LocalDate.parse(aiResponse.get("vacationStart").toString());
+        LocalDate endDate = LocalDate.parse(aiResponse.get("vacationEnd").toString());
+        AttendType vacationType = AttendType.fromString(aiResponse.get("vacationType").toString());
+
+        int vacationCount = docService.countVacation(startDate, endDate);
+
+        Doc doc = Doc.builder().docWriter(empId)
+                .docType(DocType.VACATION)
+                .docTitle("휴가신청서(" + empId + ")")
+                .docContent(aiResponse.get("vacationInfo").toString())
+                .docCreateDate(LocalDateTime.now())
+                .signFinish(false).build();
+
+        DocVacation.DocVacationBuilder docVacationBuilder = DocVacation.builder()
+                .vacationStart(startDate)
+                .vacationEnd(endDate)
+                .vacationCount(vacationCount)
+                .vacationType(vacationType);
+
+        List<String> signers = new ArrayList<>();
+        signers.add(empId);
+        String managerEmpId = empService.findManager(empId);
+        signers.add(managerEmpId);
+
+        docService.saveVacationDoc(doc, docVacationBuilder, signers, null);
+        StringBuilder sb = new StringBuilder("휴가 신청 결과는 다음과 같습니다.<br>");
+
+        sb.append(String.format("* 휴가 종류 : %s<br>휴가 시작 : %s<br>휴가 종료 : %s<br>휴가 일수 : %s<br><br>"
+                , vacationType.getTypeName(), startDate, endDate, vacationCount));
+        map.put("resultMessage", sb.toString());
+        return map;
     }
 
     private Map<String, Object> getSchedule(Map<String, Object> aiResponse, String empId) {

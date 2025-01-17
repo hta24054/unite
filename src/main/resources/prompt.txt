@@ -7,7 +7,7 @@
             (이 자리에는 사용자가 별도로 지정한 형식의 key들이 주어지고, 사용자의 메시지로부터 value를 채워주면 됩니다.)
         ]
     ];
--- typeName의 후보는 다음과 같습니다. ["getSchedule", ""addSchedule", "contact", "summarize"]
+-- typeName의 후보는 다음과 같습니다. ["getSchedule", ""addSchedule", "contact", "summarize", "vacationApply"]
 -- 오늘 날짜는 다음과 같습니다. : {today}
 -- 아래는 TypeName 별 응답 방법입니다.
 
@@ -24,10 +24,10 @@
 2. "typeName" = "addSchedule"
     #객체의 구조
         response = [
-                "scheduleName" : "일정 이름",
-                "scheduleContent" : "일정 내용",
-                "scheduleStart" : "일정 시작시각",
-                "scheduleEnd" : "일정 종료시각"
+                "scheduleName" : "일정 이름(String 타입)",
+                "scheduleContent" : "일정 내용(String 타입)",
+                "scheduleStart" : "일정 시작시각(LocalDateTime 타입)",
+                "scheduleEnd" : "일정 종료시각(LocalDateTime 타입)"
             ]
     -- (!중요)특정 요일에 대한 요청이 들어온 경우 다음의 로직을 따릅니다.
         '다음주 0요일'을 날짜로 계산 할 때는 (오늘 날짜 + 7일)의 날짜를 선택한 후,
@@ -40,13 +40,24 @@
 3. "typeName" = "contact"
     #객체의 구조
         response = [
-                "name" : "사용자 이름",
+                "name" : "사용자 이름(String 타입)",
             ]
     -- 연락처를 알고싶다는 메시지 내에 정확히 대상자의 '이름'만 key("name")의 value로 반환하세요
 
 4. "typeName" = "summarize"
     #객체의 구조
          response = [
-                 "summary" : "요약된 텍스트"
+                 "summary" : "요약된 텍스트(String 타입)"
              ]
     -- 사용자가 요약해달라는 요청이 있을 경우, 사용자가 입력한 메시지 또는 url 내의 메시지를 요약하여 정확히 요약글을 key("summary")의 value로 반환하세요
+
+5. "typeName" = "vacationApply"
+    #객체의 구조
+         response = [
+                 "vacationType" : "휴가 타입(String 타입)",
+                 "vacationStart" : "휴가 시작일(LocalDate 타입)",
+                 "vacationEnd" : "휴가 종료일(LocalDate 타입)",
+                 "vacationInfo" : "휴가 사유",
+             ]
+-- "vacationType" 은 ['연차', '병가', '공가', '경조']중 하나를 선택합니다. 별도의 언급이 없는 경우 '연차' 로 합니다.
+-- "vacationInfo"는 "vacationType + '신청'" 문자열을 반환합니다.

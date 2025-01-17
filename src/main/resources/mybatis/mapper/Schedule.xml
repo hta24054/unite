@@ -16,6 +16,17 @@
         );
     </select>
 
+    <!-- 특정일 일정 목록 조회(개인일정, 공유일정 모두) -->
+    <select id="getDailyScheduleList" resultType="schedule">
+        SELECT DISTINCT s.*
+        FROM schedule s
+                 LEFT JOIN schedule_share ss
+                           ON s.schedule_id = ss.schedule_id
+        WHERE (#{date} between date(schedule_start) and date(schedule_end)) and
+            (s.emp_id = #{empId}
+           OR ss.share_emp = #{empId})
+    </select>
+
     <!-- 일정 등록 -->
     <insert id="insertSchedule" parameterType="com.hta2405.unite.domain.Schedule">
         INSERT INTO schedule

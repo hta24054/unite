@@ -114,4 +114,9 @@ public class DocApiController {
     public int getWaitingCount(@AuthenticationPrincipal UserDetails user) {
         return docService.getWaitingDocs(user.getUsername()).size();
     }
+
+    @GetMapping(value = "/inProgressCount")
+    public int getInProgressCount(@AuthenticationPrincipal UserDetails user) {
+        return docService.getInProgressDTO(user.getUsername()).size();
+    }
 }

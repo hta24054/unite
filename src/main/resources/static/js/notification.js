@@ -100,11 +100,29 @@ $(document).ready(function () {
             notificationList.prepend(newNotification);
         }
 
-        // 클릭 이벤트 추가 (읽음 처리)
         newNotification.on('click', function (event) {
             event.preventDefault();
-            markAsRead(notification.id, newNotification); // 읽음 처리
-            window.location.href = notification.targetUrl; // 알림 클릭 시 URL로 이동
+
+            const notificationElement = $(this); // 클릭된 요소를 가져옴
+
+            // UI를 바로 업데이트
+            notificationElement.addClass('text-muted');
+            notificationElement.find('.icon-circle').removeClass('bg-primary').addClass('bg-secondary');
+            updateNotificationBadge(-1);
+
+            // 서버에 읽음 처리 요청
+            $.post(`/api/notification/read/${notification.id}`)
+                .done(function () {
+                    console.log(`Notification ${notification.id} marked as read`);
+                })
+                .fail(function () {
+                    notificationElement.removeClass('text-muted');
+                    notificationElement.find('.icon-circle').removeClass('bg-secondary').addClass('bg-primary');
+                    updateNotificationBadge(1);
+                });
+
+            // 알림 클릭 시 URL로 이동
+            window.location.href = notification.targetUrl;
         });
     }
 

@@ -20,11 +20,11 @@
                     contentType: 'application/json',
                     data: JSON.stringify({empId: empId, password: password}),
                     success: function () {
-                        alert("로그인 성공")
+                        alert("로그인 성공, 환영합니다 "+empId+"님")
                         window.location.href = '/home';
                     },
                     error: function () {
-                        alert('Login failed');
+                        alert('아이디 또는 비밀번호를 확인하세요');
                     }
                 });
             });

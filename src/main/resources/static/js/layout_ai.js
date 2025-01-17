@@ -86,11 +86,29 @@ $(function () {
     // 전송 버튼 클릭 이벤트
     $("#aiSend").on("click", sendMessage);
 
-    // Enter 키로 메시지 전송
+    // Enter 키로 메시지 전송 및 Shift/Alt + Enter로 줄바꿈
     $chatInput.on("keydown", function (e) {
         if (e.key === "Enter") {
-            sendMessage();
+            if (e.shiftKey || e.altKey) {
+                // Shift + Enter 또는 Alt + Enter로 줄바꿈
+                const cursorPos = this.selectionStart;
+                const textBefore = $chatInput.val().substring(0, cursorPos);
+                const textAfter = $chatInput.val().substring(cursorPos);
+                $chatInput.val(textBefore + "\n" + textAfter);
+                this.selectionStart = this.selectionEnd = cursorPos + 1; // 커서 위치를 줄바꿈 다음으로 이동
+                e.preventDefault(); // 기본 Enter 동작(Submit) 방지
+            } else {
+                // Enter로 메시지 전송
+                sendMessage();
+                e.preventDefault(); // 기본 Enter 동작(Submit) 방지
+            }
         }
+    });
+
+    // textarea 높이 자동 조정
+    $chatInput.on("input", function () {
+        this.style.height = "auto"; // 높이를 초기화
+        this.style.height = this.scrollHeight + "px"; // 스크롤 높이에 맞게 조정
     });
 
     // 채팅창 스크롤을 최신 메시지로 이동

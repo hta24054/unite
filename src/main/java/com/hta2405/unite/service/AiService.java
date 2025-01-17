@@ -32,7 +32,6 @@ public class AiService {
     private final String SUCCESS = "Success";
     private final String FAIL = "Fail";
     private final DocService docService;
-    private final VacationDocWriter vacationDocWriter;
 
     public Map<String, Object> findService(String message, String empId) {
         String template = """
@@ -103,11 +102,10 @@ public class AiService {
         signers.add(managerEmpId);
 
         docService.saveVacationDoc(doc, docVacationBuilder, signers, null);
-        StringBuilder sb = new StringBuilder("휴가 신청 결과는 다음과 같습니다.<br>");
-
-        sb.append(String.format("* 휴가 종류 : %s<br>휴가 시작 : %s<br>휴가 종료 : %s<br>휴가 일수 : %s<br><br>"
-                , vacationType.getTypeName(), startDate, endDate, vacationCount));
-        map.put("resultMessage", sb.toString());
+        String sb = "휴가 신청 결과는 다음과 같습니다.<br>"
+                + String.format("* 휴가 종류 : %s<br>휴가 시작 : %s<br>휴가 종료 : %s<br>휴가 일수 : %s<br><br>"
+                , vacationType.getTypeName(), startDate, endDate, vacationCount);
+        map.put("resultMessage", sb);
         return map;
     }
 

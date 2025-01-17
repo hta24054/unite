@@ -50,9 +50,38 @@ public class AiService {
         } else if (typeName.equals("contact")) {
             return searchContact(aiResponse);
         } else if (typeName.equals("summarize")) {
-           return summarize(aiResponse);
+            return summarize(aiResponse);
+        } else if (typeName.equals("getSchedule")) {
+            return getSchedule(aiResponse, empId);
         }
         return null;
+    }
+
+    private Map<String, Object> getSchedule(Map<String, Object> aiResponse, String empId) {
+        Map<String, Object> map = new HashMap<>();
+        LocalDate date = LocalDate.parse(aiResponse.get("date").toString());
+        List<Schedule> dailyScheduleList = scheduleService.getDailyScheduleList(empId, date);
+
+        StringBuilder sb = new StringBuilder(date.toString().replaceAll("T", " ") + "<br>일정은 다음과 같습니다.<br><br>");
+        if (dailyScheduleList.isEmpty()) {
+            sb.append("일정이 없습니다.");
+            map.put("resultMessage", sb.toString());
+            return map;
+        }
+        for (Schedule schedule : dailyScheduleList) {
+            sb.append(String.format("* 일정명 : %s<br>일정내용 : %s<br>시작일시 : %s<br>종료일시 : %s<br><br>",
+                    schedule.getScheduleName(),
+                    schedule.getScheduleContent(),
+                    dateTimeToString(schedule.getScheduleStart()),
+                    dateTimeToString(schedule.getScheduleEnd())));
+        }
+        System.out.println(dailyScheduleList);
+        map.put("resultMessage", sb.toString());
+        return map;
+    }
+
+    private static String dateTimeToString(LocalDateTime dateTime) {
+        return dateTime.toString().replaceAll("T", " ").trim();
     }
 
     private Map<String, Object> summarize(Map<String, Object> aiResponse) {
@@ -64,18 +93,18 @@ public class AiService {
         return map;
     }
 
-    public Map<String, Object> addSchedule(Map<String, Object> response, String empId) {
+    public Map<String, Object> addSchedule(Map<String, Object> aiResponse, String empId) {
         String status = SUCCESS;
-        if (response == null) {
+        if (aiResponse == null) {
             status = FAIL;
         }
 
         Schedule schedule = new Schedule();
         schedule.setEmpId(empId);
-        schedule.setScheduleName(response.get("scheduleName").toString());
-        schedule.setScheduleContent(response.get("scheduleContent").toString());
-        schedule.setScheduleStart(LocalDateTime.parse(response.get("scheduleStart").toString()));
-        schedule.setScheduleEnd(LocalDateTime.parse(response.get("scheduleEnd").toString()));
+        schedule.setScheduleName(aiResponse.get("scheduleName").toString());
+        schedule.setScheduleContent(aiResponse.get("scheduleContent").toString());
+        schedule.setScheduleStart(LocalDateTime.parse(aiResponse.get("scheduleStart").toString()));
+        schedule.setScheduleEnd(LocalDateTime.parse(aiResponse.get("scheduleEnd").toString()));
         schedule.setScheduleColor("#dc2626");
 
         int result = scheduleService.insertSchedule(schedule);
@@ -90,8 +119,8 @@ public class AiService {
                 "일정을 추가했습니다.<br>* 일정명 : %s<br>* 일정내용 : %s<br>* 일정시작 : %s<br>* 일정종료 : %s",
                 schedule.getScheduleName(),
                 schedule.getScheduleContent(),
-                schedule.getScheduleStart().toString().replaceAll("T", " "),
-                schedule.getScheduleEnd().toString().replaceAll("T", " "));
+                dateTimeToString(schedule.getScheduleStart()),
+                dateTimeToString(schedule.getScheduleEnd()));
         map.put("resultMessage", resultMessage);
         return map;
     }

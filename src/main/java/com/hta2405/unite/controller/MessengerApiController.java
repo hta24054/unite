@@ -4,16 +4,20 @@ import com.hta2405.unite.domain.ChatMessage;
 import com.hta2405.unite.domain.ChatRoom;
 import com.hta2405.unite.service.MessengerService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/messenger")
-public class ChatRoomController {
+public class MessengerApiController {
     private final MessengerService messengerService;
 
-    public ChatRoomController(MessengerService messengerService) {
+    public MessengerApiController(MessengerService messengerService) {
         this.messengerService = messengerService;
     }
 
@@ -28,9 +32,17 @@ public class ChatRoomController {
     }
 
     @PostMapping("/rooms")
-    public ResponseEntity<String> createRoom(@RequestBody ChatRoom chatRoom) {
-        messengerService.createChatRoom(chatRoom);
-        return ResponseEntity.ok("Chat room created successfully!");
+    public ResponseEntity<HashMap<String, Object>> createRoom(@RequestBody List<String> userIds,
+                                                              @AuthenticationPrincipal UserDetails user) {
+        String empId = user.getUsername();
+        if (!Objects.equals(empId, "admin")) {
+            userIds.add(empId);
+        }
+        boolean result = messengerService.createChatRoom(userIds, empId);
+
+        HashMap<String, Object> response = new HashMap<>();
+        response.put("status", result);
+        return ResponseEntity.ok(response); // JSON 형식으로 반환
     }
 
     @DeleteMapping("/rooms/{id}")

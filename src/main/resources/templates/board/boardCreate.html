@@ -73,6 +73,9 @@
                     height: 30px;
                     background-color: white;
                     border: none;
+                    color: black;
+                    text-decoration-line: none;
+                    line-height: 33px;
                 }
 
                 form[name="boardform"] {
@@ -82,12 +85,6 @@
                 #employeeTableBody tr:hover {
                     background: #e7e7e7;
                     cursor: pointer;
-                }
-
-                #add-operator {
-                    color: black;
-                    text-decoration-line: none;
-                    line-height: 33px;
                 }
 
                 tr td {
@@ -151,7 +148,7 @@
                         $('#employeeModal').modal('show');
                     });
 
-                    // 저장 버튼 클릭 시 직원 정보 등록
+                    //tr 클릭 시 직원 정보 등록
                     $(document).on('click', '#employeeTableBody tr', function () {
                         const empId = $(this).find("td:eq(0)").text(); // 사번 가져오기
                         const name = $(this).find("td:eq(1)").text(); // 이름 가져오기
@@ -242,8 +239,8 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="employeeModalLabel">
-                            조직도 및 직원 검색</h5>
+                        <h5 class="modal-title fw-semibold" id="employeeModalLabel">
+                            운영자 추가</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">

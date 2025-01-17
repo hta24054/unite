@@ -28,8 +28,36 @@ public class MessengerService {
         return messengerMapper.findRoomById(chatRoomId);
     }
 
-    public void createChatRoom(ChatRoom chatRoom) {
+    public boolean createChatRoom(List<String> userIds, String empId) {
+        StringBuilder chatRoomName = new StringBuilder();
+
+        for (int i = 0; i < userIds.size(); i++) {
+            String userId = userIds.get(i);
+            chatRoomName.append(userId);
+
+            // 마지막 요소가 아니면 ',' 추가
+            if (i < userIds.size() - 1) {
+                chatRoomName.append(",");
+            }
+
+            if (chatRoomName.length() > 30) {
+                chatRoomName = new StringBuilder(chatRoomName.substring(0, 30));
+                break;
+            }
+        }
+
+        //userIds 비어있다는 것은 admin 혼자 채팅방에 있을 경우
+        if (chatRoomName.toString().isEmpty()) {
+            chatRoomName.append("admin");
+        }
+
+        ChatRoom chatRoom = ChatRoom.builder()
+                .chatRoomName(chatRoomName.toString())
+                .creatorId(empId).build();
+
         messengerMapper.createRoom(chatRoom);
+
+        return true;
     }
 
     public void deleteChatRoom(Long chatRoomId) {

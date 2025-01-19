@@ -13,9 +13,17 @@
         WHERE chat_room_id = #{chatRoomId}
     </select>
 
-    <insert id="createRoom" parameterType="ChatRoom">
+    <insert id="createRoom" parameterType="ChatRoom" useGeneratedKeys="true" keyProperty="chatRoomId">
         INSERT INTO chat_room (chat_room_name, creator_id)
         VALUES (#{chatRoomName}, #{creatorId})
+    </insert>
+
+    <insert id="insertRoomMember">
+        INSERT INTO chat_room_member (chat_room_id, user_id)
+        VALUES
+        <foreach collection="chatRoomMemberList" item="chatRoomMember" separator=",">
+            (#{chatRoomMember.chatRoomId}, #{chatRoomMember.userId})
+        </foreach>
     </insert>
 
     <delete id="deleteRoom" parameterType="long">

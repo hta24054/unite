@@ -29,4 +29,6 @@ public interface MessengerMapper {
     void addMember(ChatRoomMember member);
 
     void removeMember(Long chatRoomMemberId);
+
+    int insertRoomMember(List<ChatRoomMember> chatRoomMemberList);
 }

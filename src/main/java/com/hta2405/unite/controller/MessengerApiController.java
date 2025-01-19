@@ -35,9 +35,7 @@ public class MessengerApiController {
     public ResponseEntity<HashMap<String, Object>> createRoom(@RequestBody List<String> userIds,
                                                               @AuthenticationPrincipal UserDetails user) {
         String empId = user.getUsername();
-        if (!Objects.equals(empId, "admin")) {
-            userIds.add(empId);
-        }
+
         boolean result = messengerService.createChatRoom(userIds, empId);
 
         HashMap<String, Object> response = new HashMap<>();

@@ -8,7 +8,9 @@ import com.hta2405.unite.mybatis.mapper.MessengerMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class MessengerService {
@@ -29,6 +31,10 @@ public class MessengerService {
     }
 
     public boolean createChatRoom(List<String> userIds, String empId) {
+        if (!Objects.equals(empId, "admin")) {
+            userIds.add(empId);
+        }
+
         StringBuilder chatRoomName = new StringBuilder();
 
         for (int i = 0; i < userIds.size(); i++) {
@@ -54,10 +60,23 @@ public class MessengerService {
         ChatRoom chatRoom = ChatRoom.builder()
                 .chatRoomName(chatRoomName.toString())
                 .creatorId(empId).build();
-
         messengerMapper.createRoom(chatRoom);
 
+        if (!userIds.isEmpty()) {
+            return insertRoomMember(userIds, chatRoom.getChatRoomId());
+        }
         return true;
+    }
+
+    public Boolean insertRoomMember(List<String> userIds, Long chatRoomId) {
+        List<ChatRoomMember> chatRoomMemberList = new ArrayList<>();
+        for (String userId : userIds) {
+            ChatRoomMember chatRoomMember = ChatRoomMember.builder()
+                    .chatRoomId(chatRoomId)
+                    .userId(userId).build();
+            chatRoomMemberList.add(chatRoomMember);
+        }
+        return messengerMapper.insertRoomMember(chatRoomMemberList) > 0;
     }
 
     public void deleteChatRoom(Long chatRoomId) {

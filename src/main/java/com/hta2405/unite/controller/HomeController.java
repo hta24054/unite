@@ -49,6 +49,7 @@ public class HomeController {
         model.addAttribute("email", empService.getEmpById(user.getUsername()).getEmail());
         model.addAttribute("job", jobMapper.getJobByEmpId(user.getUsername()).getJobName());
         model.addAttribute("waiting", docService.getWaitingDocs(user.getUsername()).size());
+        model.addAttribute("inProgress", docService.getInProgressDTO(user.getUsername()).size());
         return "home2";
     }
 

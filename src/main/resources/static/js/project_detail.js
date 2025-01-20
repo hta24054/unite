@@ -22,7 +22,7 @@ $(document).ready(function () {
         }
 
         $.ajax({
-            url: "/project/updatetaskdesign",
+            url: "/api/project/updatetaskdesign",
             type: "POST",
             data: {
                 projectId: currentProjectId,
@@ -66,7 +66,7 @@ $(document).ready(function () {
 	    }
 	
 	    $.ajax({
-	        url: "../projectBoard/write", // 서버 경로
+	        url: "/api/project/write", // 서버 경로
 	        type: "POST", // HTTP 메서드
 	        data: formData, // FormData 객체로 전송
 	        contentType: false, // jQuery가 자동으로 Content-Type을 설정하지 않도록 설정
@@ -111,7 +111,7 @@ $(document).ready(function () {
 
         // 서버에 요청
         $.ajax({
-            url: "/project/updateprogress",  // 서버 요청 URL
+            url: "/api/project/updateprogress",  // 서버 요청 URL
             type: "POST",
             data: {
                 projectId: currentProjectId,      // 프로젝트 ID
@@ -234,7 +234,7 @@ $(document).ready(function () {
 		console.log(projectId);
 		console.log(memberId);
 		$.ajax({
-			url: '/project/todoList',  // 투두리스트 항목을 가져오는 URL
+			url: '/api/project/todoList',  // 투두리스트 항목을 가져오는 URL
 			method: 'GET',
 			data: {
 				projectId: projectId,
@@ -296,7 +296,7 @@ $(document).ready(function () {
 
 		// AJAX 요청 보내기
 		$.ajax({
-			url: "/project/todoList",  // 올바른 경로 설정
+			url: "/api/project/todoList",  // 올바른 경로 설정
 			type: "GET",
 			data: {
 				projectId: projectId,

@@ -196,6 +196,11 @@ public class EmpService {
         return message;
     }
 
+    public int resetPasswordByEmail(String empId, String newPassword) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return empMapper.changePassword(empId, encoder.encode(newPassword));
+    }
+
     public String findManager(String empId) {
         //일반 본인 부서의 부서장을 찾음
         String managerEmpId = empMapper.findDeptManager(empId);

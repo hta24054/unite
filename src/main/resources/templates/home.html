@@ -5,12 +5,53 @@
         <head>
             <title>Unite</title>
             <link th:href="@{/css/popup.css}" rel="stylesheet"/>
+            <link th:href="@{/css/home.css}" rel="stylesheet"/>
             <script th:src="@{/js/popup.js}"></script>
+            <script th:src="@{/js/home.js}"></script>
         </head>
         <body class="sb-nav-fixed">
-          <div>(임시) 홈화면입니다. 로그인 한 사용자 : [[${#authentication.name}]] 프로필사진 : <img
-                th:src="@{/api/emp/profile-image(empId=${#authentication.name})}" width="30px"></div>
-        <div th:replace="attend/attendBox.html">
+        <div class="container" style=" max-width: 1500px;">
+            <div class="left">
+                <div class="user">
+                    <img th:src="@{/api/emp/profile-image(empId=${#authentication.name})}" class="user_img" alt="프로필">
+                    <div>
+                        <span th:text="${name}"></span> / <span th:text="${job}"></span>
+                    </div>
+                    <span th:text="${email}"></span>
+                    <div id="user_bottom">
+                        <span style="float:left; padding-bottom: 10px;">결재 대기 문서</span><a th:href="@{/doc/waiting}"><span style="padding-bottom: 10px;float:right; color: gray;" th:text="${waiting}"></span></a>
+                        <span style="float:left">결재 진행 문서</span><a th:href="@{/doc/inProgress}"><span style="float:right; color: gray;" th:text="${inProgress}"></span></a>
+                    </div><br><br><br>
+
+                    <span id="inner" style="float:left; padding-left:45px;" onclick="window.location.href='/contact/inner'"><img th:src="@{/image/inner.png}" style="width:50px; height: 50px;"></span>
+                    <span id="outer" style="float:right; padding-right:45px;" onclick="window.location.href='/contact/outer'"><img th:src="@{/image/outer.png}" style="width:50px; height: 50px;"></span>
+                    <span style="float:left; margin-left: 30px">사내주소록</span><span style="float:right; margin-right: 30px">외부주소록</span><br>
+                </div>
+                <br>
+                <div style="border: 2px solid #ccc; width: 300px; border-radius:20px;">
+                    <span class="attend"><div th:replace="attend/attendBox.html"></div></span>
+                </div><br>
+            </div>
+
+            <!-- 가운데 위 -->
+            <div class="center">
+                <div class="c_table" style="padding-top: 20px;">
+                    <h5><a th:href="@{/board/home}" style="text-decoration: none; color: black; margin-left: 15px;">게시판</a></h5>
+                    <table class="styled-table">
+                        <tbody>
+                            <tr><td>게시글이 없습니다</td><td></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="c_table">
+                    <div id="calendar-container" style="position: relative;">
+                        <span id="custom-text" style="position: absolute; top: 5px; right: 220px; color: black; padding: 5px;" onclick="window.location.href='/schedule/calender'">
+                            +
+                        </span>
+                        <div th:replace="/schedule.html"></div>
+                    </div>
+                </div>
+            </div>
         </div>
         <!-- 팝업 컨테이너 -->
         <div id="popup-container">
@@ -21,7 +62,6 @@
                 </button>
             </div>
         </div>
-        <!--팝업 컨테이너 끝-->
         </body>
         </html>
     </th:block>

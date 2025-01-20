@@ -45,22 +45,7 @@
 				.container {
 					margin-top: 30px;
 				}
-				.card {
-					border: none;
-					border-radius: 10px;
-					box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-				}
-				.card-header {
-					background-color: #ffffff;
-					border-bottom: none;
-					font-weight: bold;
-					font-size: 1.2rem;
-				}
-				.progress {
-					height: 20px;
-					background-color: #e9ecef;
-					border-radius: 10px;
-				}
+
 				.progress-bar {
 					font-size: 0.8rem;
 					font-weight: bold;
@@ -120,6 +105,25 @@
 				font-size: 20px;
 				cursor: pointer;
 			}
+				.progress-bar-container {
+					background-color: #f3f3f3; /* 배경색 */
+					border-radius: 10px; /* 전체 컨테이너 모서리 둥글게 */
+					overflow: hidden; /* 둥근 모서리에 자식 요소가 넘어가지 않도록 설정 */
+					width: 100%; /* 컨테이너 너비 */
+					height: 20px; /* 컨테이너 높이 */
+					border: 1px solid #ddd; /* 테두리 */
+					box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 살짝 그림자 */
+				}
+
+				.progress-bar {
+					background: linear-gradient(90deg, #4caf50, #8bc34a); /* 그라데이션 색상 */
+					height: 100%; /* 높이를 컨테이너와 동일하게 설정 */
+					text-align: center; /* 텍스트 중앙 정렬 */
+					color: white; /* 텍스트 색상 */
+					font-weight: bold; /* 텍스트 굵기 */
+					line-height: 20px; /* 컨테이너 높이에 맞춘 라인 높이 */
+					transition: width 0.3s ease-in-out; /* 너비 변화 시 부드러운 애니메이션 */
+				}
 			</style>
 		</head>
 		<body>
@@ -182,10 +186,12 @@
 											  th:data-id="${project.projectId}"
 											  th:data-memberid="${project.memberId}"
 											  th:data-rate="${project.memberProgressRate}">
-											<span class="progress-bar" role="progressbar"
-												  th:style="'width:' + ${project.memberProgressRate} + '%'">
+											<div class="progress-bar-container">
+											  <span class="progress-bar" role="progressbar"
+													th:style="'width:' + ${project.memberProgressRate} + '%'">
 												<span th:text="${project.memberProgressRate} + '%'"></span>
-											</span>
+											  </span>
+											</div>
 										</span>
 									</td>
 								</tr>

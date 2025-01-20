@@ -6,10 +6,27 @@
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>TODO 리스트</title>
-            <!--    <link rel="stylesheet" href="style.css"> &lt;!&ndash; CSS 파일 링크 &ndash;&gt;-->
                 <script th:src="@{/js/project_todo.js}"></script>
                 <style>
+                    .progress-bar-container {
+                        background-color: #f3f3f3; /* 배경색 */
+                        border-radius: 10px; /* 전체 컨테이너 모서리 둥글게 */
+                        overflow: hidden; /* 둥근 모서리에 자식 요소가 넘어가지 않도록 설정 */
+                        width: 100%; /* 컨테이너 너비 */
+                        height: 20px; /* 컨테이너 높이 */
+                        border: 1px solid #ddd; /* 테두리 */
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 살짝 그림자 */
+                    }
 
+                    .progress-bar {
+                        background: linear-gradient(90deg, #4caf50, #8bc34a); /* 그라데이션 색상 */
+                        height: 100%; /* 높이를 컨테이너와 동일하게 설정 */
+                        text-align: center; /* 텍스트 중앙 정렬 */
+                        color: white; /* 텍스트 색상 */
+                        font-weight: bold; /* 텍스트 굵기 */
+                        line-height: 20px; /* 컨테이너 높이에 맞춘 라인 높이 */
+                        transition: width 0.3s ease-in-out; /* 너비 변화 시 부드러운 애니메이션 */
+                    }
                 </style>
             </head>
             <body>
@@ -38,10 +55,12 @@
                                 <div class="col-3">
                                <span class="progress-btn" role="button" data-toggle="modal" data-target="#progressModal"
                                      th:data-todo-id="${todo.todoId}" th:data-progress-rate="${todo.progressRate}" th:data-projectid="${projectId}">
-                                    <span class="progress-bar" role="progressbar"
-                                          th:style="'width:' + ${todo.progressRate} + '%' + 'color:white;'">
-                                        <span th:text="${todo.progressRate} + '%'"></span>
+                                   <div class="progress-bar-container">
+                                      <span class="progress-bar" role="progressbar"
+                                            th:style="'width:' + ${todo.progressRate} + '%'">
+                                      <span th:text="${todo.progressRate} + '%'"></span>
                                     </span>
+                                    </div>
                                 </span>
                                 </div>
                                 <div class="col-1">

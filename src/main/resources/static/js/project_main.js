@@ -248,7 +248,7 @@ $(document).on('click', '.project-card img', function () {
 
         // 상태 변경 및 파일 업로드 요청
         $.ajax({
-            url: '/project/updateStatus',
+            url: '/api/project/updateStatus',
             type: 'POST',
             data: fileData,
             processData: false,
@@ -327,7 +327,7 @@ function saveColorSettings(projectId, bgColor, textColor) {
 // 즐겨찾기 토글 함수
 function toggleFavorite(projectId, element) {
     $.ajax({
-        url: '/project/toggleFavorite',
+        url: '/api/project/toggleFavorite',
         type: 'POST',
         data: {projectId: projectId},
         success: function (response) {
@@ -366,7 +366,7 @@ function toggleFavorite(projectId, element) {
 // });
 function loadProjects(favorite) {
     $.ajax({
-        url: '/project/getProjects',
+        url: '/api/project/getProjects',
         data: {page: 1, favorite: favorite},
         type: 'GET',
         dataType: 'json',

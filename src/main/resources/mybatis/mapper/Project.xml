@@ -203,7 +203,7 @@
     </insert>
     <select id="getTodoList" resultType="com.hta2405.unite.dto.ProjectTodoDTO">
         select todo_id todoId, todo_subject todoSubject, progress_rate progressRate from todo where project_id = #{projectId} and member_id = #{userid}
-        order by progressRate;
+            order by progressRate;
     </select>
     <update id="updateTodoProgressRate">
         update todo set progress_rate = #{memberProgressRate} where project_id = #{projectId} and member_id = #{userid} and todo_id = #{todoId}

@@ -41,40 +41,6 @@ public class ProjectBoardController {
         this.empService = empService;
     }
 
-    @PostMapping("/write")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> write(int projectId, String title, String content, MultipartFile file, String category, @AuthenticationPrincipal UserDetails user) {
-        String userId = user.getUsername();
-
-        if (file == null || file.isEmpty()) {
-            System.out.println("첨부 파일이 없습니다.");
-        }
-
-        projectBoardService.insertOrUpdate(title, content, userId, projectId, file, category);
-
-        List<ProjectTaskDTO> recentPosts = projectBoardService.getRecentPosts(projectId);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("posts", recentPosts);
-
-        return ResponseEntity.ok(response);
-    }
-
-//    @GetMapping("/lists")
-//    @ResponseBody
-//    public Map<String, Object> list(@RequestParam int projectId) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String userid = authentication.getName();
-//
-//        List<ProjectTask> taskList = projectBoardService.getTaskList(projectId, userid);
-//
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("boardlist", taskList);
-//        response.put("projectName", projectService.getProjectName(projectId));
-//
-//        return response; // JSON 형식으로 반환
-//    }
     public ModelAndView prepareModelAndView(int projectId, String memberId, Integer taskId, String viewName) {
         ModelAndView mv = new ModelAndView();
         mv.addObject("projectName", projectService.getProjectName(projectId));

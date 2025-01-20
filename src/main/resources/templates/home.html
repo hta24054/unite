@@ -21,6 +21,7 @@
                     <div id="user_bottom">
                         <span style="float:left; padding-bottom: 10px;">결재 대기 문서</span><a th:href="@{/doc/waiting}"><span style="padding-bottom: 10px;float:right; color: gray;" th:text="${waiting}"></span></a>
                         <span style="float:left">결재 진행 문서</span><a th:href="@{/doc/inProgress}"><span style="float:right; color: gray;" th:text="${inProgress}"></span></a>
+
                     </div><br><br><br>
 
                     <span id="inner" style="float:left; padding-left:45px;" onclick="window.location.href='/contact/inner'"><img th:src="@{/image/inner.png}" style="width:50px; height: 50px;"></span>
@@ -45,7 +46,7 @@
                 </div>
                 <div class="c_table">
                     <div id="calendar-container" style="position: relative;">
-                        <span id="custom-text" style="position: absolute; top: 5px; right: 220px; color: black; padding: 5px;" onclick="window.location.href='/schedule/calender'">
+                      <span id="custom-text" style="position: absolute; top: 5px; right: 220px; color: black; padding: 5px;" onclick="window.location.href='/schedule/calender'">
                             +
                         </span>
                         <div th:replace="/schedule.html"></div>

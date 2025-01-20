@@ -1,7 +1,9 @@
 package com.hta2405.unite.dto;
 
 import com.hta2405.unite.enums.NotificationCategory;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter

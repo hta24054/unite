@@ -6,402 +6,49 @@
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Messenger UI</title>
-            <style>
-                main {
-                    background: #ededed;
-                }
-
-                body {
-                    font-family: Arial, sans-serif;
-                    margin: 0;
-                    height: 100vh;
-                }
-
-                .container-messenger {
-                    display: flex;
-                    max-width: none;
-                    width: calc(100% - 20%);
-                    height: 800px;
-                    padding: 0;
-                    margin: 10px 10% 10px !important;
-                    border: 1px solid #ededed;
-                }
-
-                .sidebar {
-                    min-width: 360px;
-                    background-color: #c7cbdd;
-                    border-right: 1px solid #ddd;
-                    overflow-y: auto;
-                    display: flex;
-                    flex-direction: column;
-                }
-
-                .sidebar .messenger-room {
-                    padding: 15px;
-                    border-bottom: 1px solid #ddd;
-                    cursor: pointer;
-                    height: 120px;
-                }
-
-                .messenger {
-                    flex-grow: 1;
-                    display: flex;
-                    flex-direction: column;
-                    background-color: white;
-                }
-
-                .messenger-no-chat {
-                    display: flex;
-                    position: relative;
-                    justify-content: center;
-                    align-items: center;
-                    width: 100%;
-                    height: 100%;
-                    flex-direction: column;
-                }
-
-                .messenger-header {
-                    background-color: #c7cbdd;
-                    padding: 10px 15px 10px 25px;
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                    align-items: center;
-                    border-bottom: 1px solid #ddd;
-                    height: 80px;
-                }
-
-                .messenger-header button {
-                    background-color: transparent;
-                    border: none;
-                    cursor: pointer;
-                    font-size: 18px;
-                    margin-right: 10px;
-                }
-
-                .messenger-chat-room {
-                    font-size: 24px;
-                    font-weight: 600;
-                    font-stretch: normal;
-                    font-style: normal;
-                    line-height: normal;
-                    letter-spacing: -0.2px;
-                }
-
-                .messenger-body {
-                    flex-grow: 1;
-                    padding: 15px;
-                    overflow-y: auto;
-                    background-color: white;
-                }
-
-                .messenger-content-body {
-                    flex-grow: 1;
-                    padding: 15px;
-                    overflow-y: auto;
-                    background-color: white;
-                }
-
-                .messenger-message {
-                    margin-bottom: 15px;
-                    display: inline-flex;
-                    flex-direction: row;
-                    position: relative;
-                    width: 100%;
-                }
-
-                .messenger-message img {
-                    max-width: 100%;
-                    border-radius: 8px;
-                }
-
-                .messenger-footer {
-                    padding: 10px;
-                    border-top: 1px solid #ddd;
-                    display: flex;
-                    background: white;
-                }
-
-                .messenger-footer input {
-                    flex-grow: 1;
-                    padding: 10px;
-                    border: 1px solid #ddd;
-                    border-radius: 4px;
-                    margin-right: 10px;
-                }
-
-                .messenger-footer button {
-                    padding: 10px 15px;
-                    border: none;
-                    background-color: #656e93;
-                    color: #fff;
-                    border-radius: 4px;
-                    cursor: pointer;
-                }
-
-                .messenger-info {
-                    width: 25%;
-                    background-color: white;
-                    border-left: 1px solid #ddd;
-                    overflow-y: auto;
-                    display: none;
-                    min-width: 300px;
-                }
-
-                .messenger-info.active {
-                    display: block;
-                }
-
-                .messenger-info-header {
-                    padding: 15px;
-                    border-bottom: 1px solid #ddd;
-                    font-size: 25px;
-                    font-weight: bold;
-                    background-color: #c7cbdd;
-                    height: 100px;
-                }
-
-                .messenger-info-body {
-                    padding: 15px;
-                }
-
-                .messenger-info-body .member {
-                    margin-bottom: 10px;
-                }
-
-                .messenger-info-footer {
-                    padding: 15px;
-                    border-top: 1px solid #ddd;
-                    text-align: center;
-                }
-
-                .scroll::-webkit-scrollbar {
-                    display: none;
-                    -ms-overflow-style: none; /* 인터넷 익스플로러 */
-                    scrollbar-width: none; /* 파이어폭스 */
-                }
-
-                .scrollbar {
-                    height: 250px;
-                    overflow-y: scroll;
-                }
-
-                /* 스크롤바의 폭 너비 */
-                .scrollbar::-webkit-scrollbar {
-                    width: 8px;
-                }
-
-                .scrollbar::-webkit-scrollbar-thumb {
-                    background: rgba(0, 0, 0, 0.25); /* 스크롤바 색상 */
-                    border-radius: 10px; /* 스크롤바 둥근 테두리 */
-                }
-
-                .scrollbar::-webkit-scrollbar-track {
-                    background: #ccc; /*스크롤바 뒷 배경 색상*/
-                }
-
-                .messenger-message-start {
-                    min-width: 50px;
-                }
-
-                .messenger-sender-img-box {
-                    height: 28px;
-                    width: 40px;
-                    z-index: 0;
-                    top: 24px;
-                    position: absolute;
-                    margin-bottom: 10px;
-                }
-
-                .messenger-sender-img {
-                    border-radius: 50% !important;
-                    background-color: white;
-                    border: 1px solid #e1e1e1;
-                    width: 50px;
-                    height: 50px;
-                }
-
-                .messenger-message-middle {
-                    align-items: flex-start;
-                    display: inline-flex;
-                    flex-direction: column;
-                    position: relative;
-                }
-
-                .messenger-sender-name {
-                    margin-left: 14px;
-                    margin-bottom: 2px;
-                    overflow: hidden;
-                    position: relative;
-                    text-overflow: ellipsis;
-                    width: 100%;
-                    font-size: 14px;
-                    font-weight: bold;
-                }
-
-                .messenger-message-text {
-                    position: relative;
-                    display: inline-block;
-                    box-sizing: content-box;
-                    padding: 8px 12px;
-                    border-radius: 25px;
-                    white-space: pre-line;
-                    word-break: break-word;
-                    background: #e1e1e1;
-                }
-
-                .messenger-message-end {
-                    min-width: 70px;
-                    padding: 26px 0 2px;
-                    font-size: 11px;
-                    margin-left: 5px;
-                    display: flex;
-                    align-items: flex-end;
-                }
-
-                tr td {
-                    vertical-align: middle !important;
-                }
-
-                #employeeTableBody tr:hover {
-                    background: #e7e7e7;
-                    cursor: pointer;
-                }
-
-                #treeContainer {
-                    width: 220px !important;
-                }
-
-                #employeeTableContainer {
-                    width: 580px !important;
-                }
-
-                .modal-lg, .modal-xl {
-                    max-width: 900px !important;
-                }
-
-                .user-tag .remove {
-                    margin-left: 10px;
-                    font-size: 14px;
-                    color: #888;
-                    cursor: pointer;
-                }
-
-                .user-tag .remove:hover {
-                    color: red;
-                }
-
-                .user-tag {
-                    display: inline-block;
-                    background-color: #b6d0ff;
-                    border: 1px solid #4689ff;
-                    border-radius: 20px;
-                    padding: 5px 10px;
-                    margin-right: 10px;
-                    font-size: 14px;
-                    color: #334466;
-                    cursor: default;
-                    margin-bottom: 5px;
-                }
-            </style>
-            <script th:inline="javascript">
-                function addUser(name, empId) {
-                    // 새로운 태그 생성
-                    const $tag = $(`<div class="user-tag">${name}<span class="remove">×</span></div>`);
-
-                    // 삭제 버튼 클릭 이벤트 추가
-                    $tag.find(".remove").click(function () {
-                        $tag.next().remove(); // hidden 태그 삭제
-                        $tag.remove(); // 해당 태그 삭제
-                    });
-
-                    const $user = $("#user-list");
-                    // 리스트에 태그 추가
-                    $user.append($tag);
-
-                    // 숨겨진 필드로 empId 추가
-                    $user.append('<input type="hidden" name="userId" value="' + empId + '">');
-                }
-
-                $(function () {
-                    $("#addChat").on("click", function (e) {
-                        e.preventDefault();
-
-                        const targetId = $(this).data('target');
-                        localStorage.setItem('selectedEmpId', targetId);
-
-                        $('#employeeModal').modal('show');
-                    });
-
-                    //tr 클릭시 사용자 추가
-                    $(document).on('click', '#employeeTableBody tr', function () {
-                        const empId = $(this).find("td:eq(0)").text(); // 사번 가져오기
-                        const name = $(this).find("td:eq(1)").text(); // 이름 가져오기
-                        const myId = `[(${empId})]`;
-
-                        if (empId === myId) {
-                            return; // 자기 자신 추가x
-                        }
-
-                        // 함수 실행 종료 조건
-                        if ($("#user-list").find(`input:hidden[value="${empId}"]`).length > 0) {
-                            alert("중복 선택은 불가능합니다.");
-                            return; // 중복일 경우 함수 종료
-                        }
-
-                        // 사용자 추가
-                        addUser(name, empId);
-                    });
-
-                    //채팅방 개설
-                    $("#insertEmpBtn").on("click", function () {
-                        const data = $('#user-list input[name="userId"]')
-                            .map(function () {
-                                return $(this).val(); // 각 input 요소의 value 값을 추출
-                            }).get(); // jQuery 객체를 배열로 변환
-
-                        console.log("data", data)
-
-                        $('#employeeModal').modal('hide');
-
-                        $.ajax({
-                            type: 'POST',
-                            url: '/api/messenger/rooms',
-                            data: JSON.stringify(data), // JSON 데이터로 변환하여 전송
-                            contentType: 'application/json', // JSON 형식 명시
-                            dataType: 'json', // 서버에서 JSON 응답을 기대
-                            success: function (response) {
-                                console.log('Chat room created successfully:', response);
-                            },
-                            error: function (xhr, status, error) {
-                                console.error('Error creating chat room:', error);
-                            }
-                        });
-                    })
-                });
-            </script>
+            <link th:href="@{/css/messengerMain.css}" rel="stylesheet"/>
+            <script th:src="@{/js/messengerMain.js}" th:inline="javascript"></script>
         </head>
         <body>
         <div class="container-messenger m-auto">
             <!-- Sidebar -->
             <div class="sidebar">
-                <div class="messenger-header" style="height: 144px;">
+                <div class="messenger-header">
                     <div>
-                        <img class="messenger-sender-img" src="/api/emp/profile-image?empId=admin" alt="프로필">
-                        <span class="fw-semibold fs-3" style="margin-left: 10px; vertical-align: middle;">Admin</span>
+                        <img class="messenger-sender-img" th:src="|/api/emp/profile-image?empId=${empId}|" alt="프로필">
+                        <span id="senderName" class="fw-semibold fs-3" th:text="${empMap.get(empId)}"
+                              style="margin-left: 10px; vertical-align: middle;"></span>
                     </div>
                     <a href="javascript:void(0);" th:attr="data-target='employeeModal'"
                        id="addChat" style="margin-right: 10px;">
                         <img src="/image/addChat.png" alt="addChat" style="width: 45px;color:black;"/>
                     </a>
                 </div>
-                <div class="messenger-body scroll messenger-no-chat" style="padding:0">
+                <div id="messenger-body" class="messenger-body scroll messenger-no-chat" style="padding:0">
                     <i class="bi bi-chat fw-semibold" style="font-size: 5rem; color:#ccc; height: 105px;"></i>
                     <div class="fs-2 fw-semibold" style="color:#ccc">
                         No Chat
                     </div>
-                    <!--                    <div class="messenger-room">The Real Backpackers</div>-->
-                    <!--                    <div class="messenger-room">Always Developers</div>-->
+                    <!--                    <div class="messenger-room">-->
+                    <!--                        <div class="messenger-room-title">-->
+                    <!--                            <div class="messenger-chat">The Real Backpackers</div>-->
+                    <!--                            <span class="messenger-last-message-date">2025.01.01 00:00:00</span>-->
+                    <!--                        </div>-->
+                    <!--                        <div class="messenger-room-content">-->
+                    <!--                            <span class="messenger-last-message">hiajiejfialjsilefjailsjfklenfoiwfnaoinoidngodiendgao;wneoigna;owv3ov nhra8onv 3rhv anow83hvra;w83hrv;aow83hrv;aow83hrva;owh38hrv;n aow83hrv;aow83hrvo;a8</span>-->
+                    <!--                            <div class="messenger-unread-message-count">3</div>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+                    <!--                    <div class="messenger-room">-->
+                    <!--                        <div class="messenger-room-title">-->
+                    <!--                            <div class="messenger-chat">The Real Backpackers</div>-->
+                    <!--                            <span class="messenger-last-message-date">2025.01.01 00:00:00</span>-->
+                    <!--                        </div>-->
+                    <!--                        <div class="messenger-room-content">-->
+                    <!--                            <span class="messenger-last-message">아머니ㅏㅇ러ㅑㅐㅔㅈ더랴ㅐ머댜러냐미ㅓ랴ㅣㄷ너랴ㅣㅓ라먀더랴너댜람ㅁㅁ러ㅣㅏ머댜ㅣ럼ㄴ다ㅣㅓ림ㄴ더리ㅑㅁ넏랴ㅣ먼;ㄷ랴ㅣㅓㅁ;ㄴ디ㅑ럼니댜럼;ㄴ디ㅑ럼;니댜러먀ㅣ넏랴ㅣㅁ넏리ㅑㅗㅑ돔재8로매</span>-->
+                    <!--                            <div class="messenger-unread-message-count">3</div>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
                     <!--                    <div class="messenger-room">Dad</div>-->
                     <!--                    <div class="messenger-room">Dad</div>-->
                     <!--                    <div class="messenger-room">Dad</div>-->
@@ -413,105 +60,105 @@
             </div>
 
             <!-- messenger Section -->
-            <div class="messenger messenger-no-chat">
+            <div class="messenger-middle messenger-no-chat">
                 <i class="bi bi-chat fw-semibold" style="font-size: 5rem; color:#ccc; height: 105px;"></i>
                 <div class="fs-2 fw-semibold" style="color:#ccc">
                     No Chat
                 </div>
-                <!--                <div class="messenger-header" style="height: 100px;">-->
-                <!--                    <span class="messenger-chat-room">The Real Backpackers</span>-->
-                <!--                    <button id="info-toggle"><i class="bi bi-list fs-1"></i></button>-->
-                <!--                </div>-->
-                <!--                <div class="messenger-content-body scrollbar">-->
-                <!--                    <div class="messenger-message">-->
-                <!--                        <div class="messenger-message-start">-->
-                <!--                            <div class="messenger-sender-img-box">-->
-                <!--                                <img class="messenger-sender-img" src="/api/emp/profile-image?empId=admin" alt="프로필">-->
-                <!--                            </div>-->
-                <!--                        </div>-->
-                <!--                        <div class="messenger-message-middle">-->
-                <!--                            <div class="messenger-sender-name">John</div>-->
-                <!--                            <div class="messenger-message-text">Hey guys, let's climb a summit in the summer</div>-->
-                <!--                        </div>-->
-                <!--                        <div class="messenger-message-end">2025-01-16</div>-->
-                <!--                    </div>-->
-                <!--                    <div class="messenger-message">-->
-                <!--                        <div class="messenger-message-start">-->
-                <!--                            <div class="messenger-sender-img-box">-->
-                <!--                                <img class="messenger-sender-img" src="/api/emp/profile-image?empId=admin" alt="프로필">-->
-                <!--                            </div>-->
-                <!--                        </div>-->
-                <!--                        <div class="messenger-message-middle">-->
-                <!--                            <div class="messenger-sender-name">Amy</div>-->
-                <!--                            <div class="messenger-message-text">Sounds like a great idea! Count me in.</div>-->
-                <!--                        </div>-->
-                <!--                        <div class="messenger-message-end">2025-01-16</div>-->
-                <!--                    </div>-->
-                <!--                    <div class="messenger-message">-->
-                <!--                        <div class="messenger-message-start">-->
-                <!--                            <div class="messenger-sender-img-box">-->
-                <!--                                <img class="messenger-sender-img" src="/api/emp/profile-image?empId=admin" alt="프로필">-->
-                <!--                            </div>-->
-                <!--                        </div>-->
-                <!--                        <div class="messenger-message-middle">-->
-                <!--                            <div class="messenger-sender-name">Raj</div>-->
-                <!--                            <div class="messenger-message-text">Let's do Mount Kilimanjaro</div>-->
-                <!--                        </div>-->
-                <!--                        <div class="messenger-message-end">2025-01-16</div>-->
-                <!--                    </div>-->
-                <!--                    <div class="messenger-message">-->
-                <!--                        <div class="messenger-message-start">-->
-                <!--                            <div class="messenger-sender-img-box">-->
-                <!--                                <img class="messenger-sender-img" src="/api/emp/profile-image?empId=admin" alt="프로필">-->
-                <!--                            </div>-->
-                <!--                        </div>-->
-                <!--                        <div class="messenger-message-middle">-->
-                <!--                            <div class="messenger-sender-name">Elaine</div>-->
-                <!--                            <div class="messenger-message-text">Let's do this!</div>-->
-                <!--                        </div>-->
-                <!--                        <div class="messenger-message-end">2025-01-16</div>-->
-                <!--                    </div>-->
-                <!--                    <div class="messenger-message">-->
-                <!--                        <div class="messenger-message-start">-->
-                <!--                            <div class="messenger-sender-img-box">-->
-                <!--                                <img class="messenger-sender-img" src="/api/emp/profile-image?empId=admin" alt="프로필">-->
-                <!--                            </div>-->
-                <!--                        </div>-->
-                <!--                        <div class="messenger-message-middle">-->
-                <!--                            <div class="messenger-sender-name">Elaine</div>-->
-                <!--                            <div class="messenger-message-text">Let's do this!</div>-->
-                <!--                        </div>-->
-                <!--                        <div class="messenger-message-end">2025-01-16</div>-->
-                <!--                    </div>-->
-                <!--                    <div class="messenger-message">-->
-                <!--                        <div class="messenger-message-start">-->
-                <!--                            <div class="messenger-sender-img-box">-->
-                <!--                                <img class="messenger-sender-img" src="/api/emp/profile-image?empId=admin" alt="프로필">-->
-                <!--                            </div>-->
-                <!--                        </div>-->
-                <!--                        <div class="messenger-message-middle">-->
-                <!--                            <div class="messenger-sender-name">Elaine</div>-->
-                <!--                            <div class="messenger-message-text">Let's do this!</div>-->
-                <!--                        </div>-->
-                <!--                        <div class="messenger-message-end">2025-01-16</div>-->
-                <!--                    </div>-->
-                <!--                    <div class="messenger-message">-->
-                <!--                        <div class="messenger-message-start">-->
-                <!--                            <div class="messenger-sender-img-box">-->
-                <!--                                <img class="messenger-sender-img" src="/api/emp/profile-image?empId=admin" alt="프로필">-->
-                <!--                            </div>-->
-                <!--                        </div>-->
-                <!--                        <div class="messenger-message-middle">-->
-                <!--                            <div class="messenger-sender-name">Elaine</div>-->
-                <!--                            <div class="messenger-message-text">Let's do this!Hey guys, let's climb a summit in the summerHey guys, let's climb a summit in the summerHey guys, let's climb a summit in the summerHey guys, let's climb a summit in the summerHey guys, let's climb a summit in the summerHey guys, let's climb a summit in the summerHey guys, let's climb a summit in the summerHey guys, let's climb a summit in the summerHey guys, let's climb a summit in the summer</div>-->
-                <!--                        </div>-->
-                <!--                        <div class="messenger-message-end">2025-01-16</div>-->
-                <!--                    </div>-->
-                <!--                </div>-->
-                <!--                <div class="messenger-footer">-->
-                <!--                    <input type="text" placeholder="Enter message">-->
-                <!--                    <button>Send</button>-->
-                <!--                </div>-->
+                <!--                                <div class="messenger-header" style="height: 100px;">-->
+                <!--                                    <span class="messenger-chat-room">The Real Backpackers</span>-->
+                <!--                                    <button id="info-toggle"><i class="bi bi-list fs-1"></i></button>-->
+                <!--                                </div>-->
+                <!--                                <div class="messenger-content-body scrollbar">-->
+                <!--                                    <div class="messenger-message">-->
+                <!--                                        <div class="messenger-message-start">-->
+                <!--                                            <div class="messenger-sender-img-box">-->
+                <!--                                                <img class="messenger-sender-img" src="/api/emp/profile-image?empId=admin" alt="프로필">-->
+                <!--                                            </div>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="messenger-message-middle">-->
+                <!--                                            <div class="messenger-sender-name">John</div>-->
+                <!--                                            <div class="messenger-message-text">Hey guys, let's climb a summit in the summer</div>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="messenger-message-end">2025-01-16</div>-->
+                <!--                                    </div>-->
+                <!--                                    <div class="messenger-message">-->
+                <!--                                        <div class="messenger-message-start">-->
+                <!--                                            <div class="messenger-sender-img-box">-->
+                <!--                                                <img class="messenger-sender-img" src="/api/emp/profile-image?empId=admin" alt="프로필">-->
+                <!--                                            </div>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="messenger-message-middle">-->
+                <!--                                            <div class="messenger-sender-name">Amy</div>-->
+                <!--                                            <div class="messenger-message-text">Sounds like a great idea! Count me in.</div>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="messenger-message-end">2025-01-16</div>-->
+                <!--                                    </div>-->
+                <!--                                    <div class="messenger-message">-->
+                <!--                                        <div class="messenger-message-start">-->
+                <!--                                            <div class="messenger-sender-img-box">-->
+                <!--                                                <img class="messenger-sender-img" src="/api/emp/profile-image?empId=admin" alt="프로필">-->
+                <!--                                            </div>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="messenger-message-middle">-->
+                <!--                                            <div class="messenger-sender-name">Raj</div>-->
+                <!--                                            <div class="messenger-message-text">Let's do Mount Kilimanjaro</div>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="messenger-message-end">2025-01-16</div>-->
+                <!--                                    </div>-->
+                <!--                                    <div class="messenger-message">-->
+                <!--                                        <div class="messenger-message-start">-->
+                <!--                                            <div class="messenger-sender-img-box">-->
+                <!--                                                <img class="messenger-sender-img" src="/api/emp/profile-image?empId=admin" alt="프로필">-->
+                <!--                                            </div>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="messenger-message-middle">-->
+                <!--                                            <div class="messenger-sender-name">Elaine</div>-->
+                <!--                                            <div class="messenger-message-text">Let's do this!</div>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="messenger-message-end">2025-01-16</div>-->
+                <!--                                    </div>-->
+                <!--                                    <div class="messenger-message">-->
+                <!--                                        <div class="messenger-message-start">-->
+                <!--                                            <div class="messenger-sender-img-box">-->
+                <!--                                                <img class="messenger-sender-img" src="/api/emp/profile-image?empId=admin" alt="프로필">-->
+                <!--                                            </div>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="messenger-message-middle">-->
+                <!--                                            <div class="messenger-sender-name">Elaine</div>-->
+                <!--                                            <div class="messenger-message-text">Let's do this!</div>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="messenger-message-end">2025-01-16</div>-->
+                <!--                                    </div>-->
+                <!--                                    <div class="messenger-message">-->
+                <!--                                        <div class="messenger-message-start">-->
+                <!--                                            <div class="messenger-sender-img-box">-->
+                <!--                                                <img class="messenger-sender-img" src="/api/emp/profile-image?empId=admin" alt="프로필">-->
+                <!--                                            </div>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="messenger-message-middle">-->
+                <!--                                            <div class="messenger-sender-name">Elaine</div>-->
+                <!--                                            <div class="messenger-message-text">Let's do this!</div>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="messenger-message-end">2025-01-16</div>-->
+                <!--                                    </div>-->
+                <!--                                    <div class="messenger-message">-->
+                <!--                                        <div class="messenger-message-start">-->
+                <!--                                            <div class="messenger-sender-img-box">-->
+                <!--                                                <img class="messenger-sender-img" src="/api/emp/profile-image?empId=admin" alt="프로필">-->
+                <!--                                            </div>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="messenger-message-middle">-->
+                <!--                                            <div class="messenger-sender-name">Elaine</div>-->
+                <!--                                            <div class="messenger-message-text">Let's do this!Hey guys, let's climb a summit in the summerHey guys, let's climb a summit in the summerHey guys, let's climb a summit in the summerHey guys, let's climb a summit in the summerHey guys, let's climb a summit in the summerHey guys, let's climb a summit in the summerHey guys, let's climb a summit in the summerHey guys, let's climb a summit in the summerHey guys, let's climb a summit in the summer</div>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="messenger-message-end">2025-01-16</div>-->
+                <!--                                    </div>-->
+                <!--                                </div>-->
+                <!--                                <div class="messenger-footer">-->
+                <!--                                    <input type="text" placeholder="Enter message">-->
+                <!--                                    <button>Send</button>-->
+                <!--                                </div>-->
             </div>
 
             <!-- messenger Info Section -->
@@ -554,12 +201,16 @@
             </div>
         </div>
         <script>
-            const infoToggle = document.getElementById('info-toggle');
-            const messengerInfo = document.getElementById('messenger-info');
             const $messengerContentBody = $('.messenger-content-body');
 
-            infoToggle.addEventListener('click', () => {
-                messengerInfo.classList.toggle('active');
+            document.addEventListener('click', (event) => {
+                const infoToggle = event.target.closest('#info-toggle');
+                if (infoToggle) {
+                    const messengerInfo = document.querySelector('.messenger-info');
+                    if (messengerInfo) {
+                        messengerInfo.classList.toggle('active');
+                    }
+                }
             });
 
             function scrollToBottom() {

@@ -3,6 +3,7 @@ package com.hta2405.unite.service;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.Project;
 import com.hta2405.unite.dto.*;
+import com.hta2405.unite.enums.NotificationCategory;
 import com.hta2405.unite.mybatis.mapper.ProjectMapper;
 import com.hta2405.unite.util.ConfigUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -161,17 +163,23 @@ public class ProjectServiceImpl implements ProjectService {
 
     public void insertToDo(String task, String userid, int projectId){
         dao.insertToDo(task, userid, projectId);
-//        List<ProjectTodoDTO> todoList = dao.getTodoList(projectId, userid);
-//        List<ProjectDetailDTO> user = dao.getProjectDetail1(projectId, userid);
-//        NotificationDTO notification = NotificationDTO.builder()
-//                .category(NotificationCategory.DOC)
-//                .title(dao.getProjectName(projectId) + '-' + todoList.get(0).getTodoSubject())
-//                .message(user.get(0).getParticipantNames() + "님이 글을 작성하셨습니다")
-//                .recipientId(user.get(1).getMemberId())
-//                .targetUrl("/project/detail?projectId=" + user.get(1).getProjectId())
-//                .isRead(false)
-//                .createdAt(LocalDateTime.now().toString()).build();
-//        notificationService.sendNotification(notification);
+        List<ProjectDetailDTO> user = dao.getProjectDetail1(projectId, userid);
+
+        NotificationDTO.NotificationDTOBuilder builder = NotificationDTO.builder()
+                .category(NotificationCategory.PROJECT)
+                .title(dao.getProjectName(projectId) + '-' + task)
+                .message(user.get(0).getParticipantNames() + "님이 글을 작성하셨습니다")
+                .targetUrl("/project/detail?projectId=" + user.get(0).getProjectId())
+                .isRead(false)
+                .createdAt(LocalDateTime.now().toString());
+
+        for (ProjectDetailDTO projectDetailDTO : user) {
+            String recipent = projectDetailDTO.getMemberId();
+            if(recipent.equals(userid)) {
+                NotificationDTO notification = builder.recipientId(recipent).build();
+                notificationService.sendNotification(notification);
+            }
+        }
     }
 
     public List<ProjectTodoDTO> getTodoList(int projectId, String userid){

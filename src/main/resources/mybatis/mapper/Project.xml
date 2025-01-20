@@ -54,12 +54,7 @@
                (select group_concat(member_name) from project_member m where m.project_id=p.project_id and member_role = 'PARTICIPANT') as participants,
                (select group_concat(member_name) from project_member m where m.project_id=p.project_id and member_role = 'VIEWER') as viewers,
                m.bgColor, m.textColor,
-               (SELECT ifnull(round(AVG(member_avg)),0) FROM (
-                                        SELECT AVG(progress_rate) AS member_avg
-                                        FROM todo t
-                                        WHERE member_id IN (select member_id from project_member m where m.project_id=p.project_id) and t.project_id=p.project_id
-                                        GROUP BY member_id
-                                    ) AS member_averages) avgProgress,
+               (select ifnull(round(avg(m.member_progress_rate)),0) from project_member m where p.project_id = m.project_id) avgProgress,
                 p.manager_id managerId
         from project_member m join project p on p.project_id = m.project_id
         where member_id=#{userid} and p.project_finished = 0 and p.project_canceled = 0

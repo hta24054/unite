@@ -45,14 +45,13 @@
                 </div>
                 <div class="c_table">
                     <div id="calendar-container" style="position: relative;">
-                        <span id="custom-text" style="position: absolute; top: 5px; right: 220px; background-color: gray; color: white; padding: 5px;" onclick="window.location.href='/schedule/calender'">
+                        <span id="custom-text" style="position: absolute; top: 5px; right: 220px; color: black; padding: 5px;" onclick="window.location.href='/schedule/calender'">
                             +
                         </span>
-                        <div th:replace="project/schedule.html"></div>
+                        <div th:replace="/schedule.html"></div>
                     </div>
                 </div>
             </div>
-
         </div>
         <!-- 팝업 컨테이너 -->
         <div id="popup-container">

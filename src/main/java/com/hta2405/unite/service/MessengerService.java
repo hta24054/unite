@@ -4,29 +4,49 @@ package com.hta2405.unite.service;
 import com.hta2405.unite.domain.ChatMessage;
 import com.hta2405.unite.domain.ChatRoom;
 import com.hta2405.unite.domain.ChatRoomMember;
+import com.hta2405.unite.dto.ChatRoomDTO;
+import com.hta2405.unite.mybatis.mapper.EmpMapper;
 import com.hta2405.unite.mybatis.mapper.MessengerMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class MessengerService {
     private final MessengerMapper messengerMapper;
+    private final EmpService empService;
 
     @Autowired
-    public MessengerService(MessengerMapper messengerMapper) {
+    public MessengerService(MessengerMapper messengerMapper, EmpService empService) {
         this.messengerMapper = messengerMapper;
+        this.empService = empService;
+    }
+
+    public Map<String, String> getIdToENameMap() {
+        return empService.getIdToENameMap();
+    }
+
+    public Map<String, Object> getIdToRoomNameMap() {
+        List<Map<String, Object>> resultList = messengerMapper.getIdToRoomNameMap();
+
+        Map<String, Object> resultMap = new HashMap<>();
+        for (Map<String, Object> row : resultList) {
+            String chatRoomId = String.valueOf(row.get("chat_room_id"));
+            String chatRoomName = (String) row.get("chat_room_name");
+            resultMap.put(chatRoomId, chatRoomName);
+        }
+
+        System.out.println("resultMap = " + resultMap);
+        return resultMap;
     }
 
     // ChatRoom 관련
-    public List<ChatRoom> getAllChatRooms() {
-        return messengerMapper.findAllRooms();
+    public List<ChatRoomDTO> getAllChatRooms(String empId) {
+        return messengerMapper.findAllRooms(empId);
     }
 
-    public ChatRoom getChatRoomById(Long chatRoomId) {
+    public List<ChatMessage> getChatRoomById(Long chatRoomId) {
         return messengerMapper.findRoomById(chatRoomId);
     }
 
@@ -35,11 +55,12 @@ public class MessengerService {
             userIds.add(empId);
         }
 
+        Map<String, String> empMap = getIdToENameMap();
         StringBuilder chatRoomName = new StringBuilder();
 
         for (int i = 0; i < userIds.size(); i++) {
             String userId = userIds.get(i);
-            chatRoomName.append(userId);
+            chatRoomName.append(empMap.get(userId));
 
             // 마지막 요소가 아니면 ',' 추가
             if (i < userIds.size() - 1) {

@@ -44,34 +44,41 @@
 								[[${memberName}]] 게시글
 							</div>
 
-							<div class="card-body">
-								<table id="taskListTable" class="display table member">
-									<thead>
-									<tr>
-										<th>번호</th>
-										<th>카테고리</th>
-										<th>제목</th>
-										<th>내용</th>
-										<th>작성일</th>
-										<th>수정일</th>
-										<th>첨부파일</th>
-									</tr>
-									</thead>
-									<tbody id="boardContent">
-									<th:block th:each="task, status : ${boardlist}">
-										<tr th:onclick="|GoProjectComm('${task.taskId}')|">
-											<td th:text="${status.index + 1}">번호</td>
-											<td th:text="${task.toDo != null ? task.toDo : ''}">카테고리</td>
-											<td th:text="${task.taskSubject}">제목</td>
-											<td th:text="${task.taskContent}">내용</td>
-											<td th:text="${task.taskDate}">작성일</td>
-											<td th:text="${task.taskUpdateDate}">수정일</td>
-											<td th:text="${task.taskFileOriginal}">첨부파일</td>
-										</tr>
-									</th:block>
-									</tbody>
-								</table>
-							</div>
+							<th:block th:each="task, status : ${boardlist}">
+								<th:block th:if="${#strings.isEmpty(task.taskSubject)}">
+									<span style="font-size: 30px; padding: 30px;">게시글이 없습니다</span>
+								</th:block>
+								<th:block th:if="${not #strings.isEmpty(task.taskSubject)}">
+									<div class="card-body">
+										<table id="taskListTable" class="display table member">
+											<thead>
+											<tr>
+												<th>번호</th>
+												<th>카테고리</th>
+												<th>제목</th>
+												<th>내용</th>
+												<th>작성일</th>
+												<th>수정일</th>
+												<th>첨부파일</th>
+											</tr>
+											</thead>
+											<tbody id="boardContent">
+
+												<tr th:onclick="|GoProjectComm('${task.taskId}')|">
+													<td th:text="${status.index + 1}">번호</td>
+													<td th:text="${task.toDo != null ? task.toDo : ''}">카테고리</td>
+													<td th:text="${task.taskSubject}">제목</td>
+													<td th:text="${task.taskContent}">내용</td>
+													<td th:text="${task.taskDate}">작성일</td>
+													<td th:text="${task.taskUpdateDate}">수정일</td>
+													<td th:text="${task.taskFileOriginal}">첨부파일</td>
+												</tr>
+
+											</tbody>
+										</table>
+									</div>
+								</th:block>
+							</th:block>
 						</div>
 					</div>
 				</main>

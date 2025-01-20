@@ -107,7 +107,13 @@ $(document).ready(function () {
 
     // 기존 페이지에서 자원 선택 시 자원명 목록 불러오기
     $resourceTypeCategory.on("change", function () {
-        loadResourceName($resourceTypeCategory, $resourceNameCategory);
+        const selectedCategory = $(this).val(); // 선택된 분류명
+        if (!selectedCategory) {
+            $resourceNameCategory.empty().hide();
+            getReservationList(); // 분류명이 비어 있으면 모든 예약 목록 불러오기
+        } else {
+            loadResourceName($resourceTypeCategory, $resourceNameCategory); // 자원명 로드
+        }
     });
 
     // 자원 선택 시 해당 자원에 대한 예약 목록 불러오기
@@ -184,6 +190,18 @@ $(document).ready(function () {
         });
     }
 
+    // 기존 페이지의 셀렉트 값 업데이트
+    function updateResourceSelects(resourceId, resourceName) {
+        const selectedType = $resourceType.val(); // 선택된 분류명
+        const selectedResourceName = $resourceName.val(); // 선택된 자원명
+
+        if(selectedType) {
+            $resourceTypeCategory.val(selectedType);
+            loadResourceName($resourceTypeCategory, $resourceNameCategory, selectedResourceName);
+        }
+    }
+
+
     // 자원 예약 하기
     function resourceReservation(eventData) {
         $.ajax({
@@ -214,6 +232,8 @@ $(document).ready(function () {
 
                 // 등록한 자원의 예약 목록을 불러옴
                 getReservationList(selectedResourceId, selectedResourceName);
+
+                updateResourceSelects(selectedResourceId, selectedResourceName);
 
                 $("#reservationModal").modal("hide");
             },

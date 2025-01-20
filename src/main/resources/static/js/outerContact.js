@@ -21,7 +21,7 @@ $(document).ready(function () {
     const contactTable = $('#contactTable').DataTable({
         language: lang_kor,
         ajax: {
-            url: contextPath + "/contact/outer/list",
+            url: contextPath + "/api/contact/outer",
             dataSrc: 'data',
         },
         columns: [
@@ -48,15 +48,19 @@ $(document).ready(function () {
     $("#insertContact").submit(function (event) {
         event.preventDefault();
         $.post({
-            url: contextPath + "/contact/outer",
+            url: contextPath + "/api/contact/outer",
             data: $(this).serialize(),
-            success: function () {
-                alert("등록 성공");
+            success: function (data) {
+                if (data > 0) {
+                    alert("등록 하였습니다.");
+                } else {
+                    alert("등록 중 오류가 발생했습니다.")
+                }
                 $('#addContactModal').modal('hide');
                 contactTable.ajax.reload();
             },
             error: function () {
-                alert("등록 실패");
+                alert("등록 중 오류가 발생했습니다.");
             }
         });
     });
@@ -65,16 +69,20 @@ $(document).ready(function () {
     $("#updateContact").submit(function (event) {
         event.preventDefault();
         $.ajax({
-            url: contextPath + "/contact/outer",
+            url: contextPath + "/api/contact/outer",
             type: "PATCH",
             data: $(this).serialize(),
-            success: function () {
-                alert("수정 성공");
+            success: function (data) {
+                if (data > 0) {
+                    alert("수정 하였습니다.");
+                } else {
+                    alert("수정 중 오류가 발생했습니다.")
+                }
                 $('#editContactModal').modal('hide');
                 contactTable.ajax.reload();
             },
             error: function () {
-                alert("수정 실패");
+                alert("수정 중 오류가 발생했습니다.");
             }
         });
     });
@@ -93,15 +101,19 @@ $(document).ready(function () {
         if (confirm("선택한 자원을 삭제하시겠습니까?")) {
             $('#deleteContactIds').val(selectedIds.join(','));
             $.ajax({
-                url: contextPath + "/contact/outer",
+                url: contextPath + "/api/contact/outer",
                 type: "DELETE",
                 data: {selectedIds},
                 success: function (data) {
-                    alert(data);
+                    if (data > 0) {
+                        alert("삭제하였습니다.");
+                    }else{
+                        alert("삭제 중 오류가 발생했습니다.")
+                    }
                     contactTable.ajax.reload();
                 },
                 error: function () {
-                    alert("삭제에 실패했습니다.");
+                    alert("삭제 중 오류가 발생했습니다.")
                 }
             });
         }

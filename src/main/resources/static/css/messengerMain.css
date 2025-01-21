@@ -114,6 +114,7 @@ body {
     align-items: center;
     border-bottom: 1px solid #ddd;
     height: 100px;
+    min-height: 100px;
 }
 
 .messenger-header button {
@@ -147,6 +148,19 @@ body {
     background-color: white;
 }
 
+.standardDay {
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.standardDay-content {
+    background: lavender;
+    border-radius: 10px;
+    width: 250px;
+}
+
 .messenger-message {
     margin-bottom: 15px;
     display: inline-flex;
@@ -177,12 +191,13 @@ body {
 }
 
 .messenger-footer button {
-    padding: 10px 15px;
+    padding: 5px 14px;
     border: none;
     background-color: #656e93;
     color: #fff;
     border-radius: 4px;
     cursor: pointer;
+    display: none;
 }
 
 .messenger-info {
@@ -297,10 +312,10 @@ body {
 }
 
 .messenger-message-end {
-    min-width: 70px;
+    min-width: 50px;
     padding: 26px 0 2px;
     font-size: 11px;
-    margin-left: 5px;
+    margin: 0 5px;
     display: flex;
     align-items: flex-end;
 }

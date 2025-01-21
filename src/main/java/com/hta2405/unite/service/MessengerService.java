@@ -12,6 +12,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MessengerService {
@@ -97,6 +98,10 @@ public class MessengerService {
         messengerMapper.createRoom(chatRoom);
 
         if (!userIds.isEmpty()) {
+            //초대받은 사용자들에게 알림 전송
+            for (String userId : userIds) {
+                messagingTemplate.convertAndSend("/topic/user/" + userId, userId);
+            }
             return insertRoomMember(userIds, chatRoom.getChatRoomId());
         }
         return true;
@@ -127,7 +132,10 @@ public class MessengerService {
         Long chatMessageId = chatMessage.getChatMessageId();
 
         chatMessage = messengerMapper.findMessageById(chatMessageId);
-        messagingTemplate.convertAndSend("/topic/chatRoom/" + chatMessage.getChatRoomId(), chatMessage); // 브로드캐스트
+        Long chatRoomId = chatMessage.getChatRoomId();
+
+        messengerMapper.updateRecentMessageDate(chatRoomId);
+        messagingTemplate.convertAndSend("/topic/chatRoom/" + chatRoomId, chatMessage); // 브로드캐스트
     }
 
     // ChatRoomMember 관련
@@ -149,5 +157,13 @@ public class MessengerService {
 
     public void updateLastReadMessageId(Long chatRoomId, String userId) {
         messengerMapper.updateLastReadMessageId(chatRoomId, userId);
+    }
+
+    public List<Long> getChatRoomsForUser(String userId) {
+        List<ChatRoomMember> chatRoomMemberList = messengerMapper.getChatRoomsById(userId);
+
+        return chatRoomMemberList.stream()
+                .map(ChatRoomMember::getChatRoomId)
+                .collect(Collectors.toList());
     }
 }

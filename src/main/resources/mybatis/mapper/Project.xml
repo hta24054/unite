@@ -61,6 +61,10 @@
         group by p.project_id, m.member_role
     </select>
 
+    <select id="findMemberInfoById" resultType="Project">
+        select * from project_member where project_id = #{projectId} and member_id = #{userid}
+    </select>
+
     <update id="projectFavorite">
         update project_member
         set project_favorite = case when project_favorite = 0 then 1 else 0 end
@@ -137,7 +141,6 @@
     <select id="getProjectDetail1" resultType="com.hta2405.unite.dto.ProjectDetailDTO">
         select p.project_id as projectId, m.member_id as memberId, p.manager_id as managerId, m.member_name as participantNames, m.member_designated as memberDesign, (select round(coalesce(avg(t.progress_rate),0)) from todo t where t.member_id = m.member_id and t.project_id = p.project_id) as memberProgressRate,  CASE WHEN p.manager_id = #{userid} THEN true ELSE false END as isManager
         from project_member m join project p on m.project_id = p.project_id where p.project_id=#{projectId} and m.member_role != 'VIEWER'
-
     </select>
 
     <update id="updateTaskContent">

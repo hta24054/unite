@@ -209,4 +209,5 @@ public class ProjectServiceImpl implements ProjectService {
 
         return colorInfo;
     }
+
 }

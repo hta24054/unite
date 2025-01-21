@@ -7,6 +7,7 @@
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>TODO 리스트</title>
                 <script th:src="@{/js/project_todo.js}"></script>
+                <script th:src="@{/js/project_color.js}"></script>
                 <style>
                     .progress-bar-container {
                         background-color: #f3f3f3; /* 배경색 */
@@ -30,8 +31,12 @@
                 </style>
             </head>
             <body>
+            <input type="hidden" th:value="${projectId}" id="project-id">
+            <input type="hidden" th:value="${#authentication.name}" id="user-id">
                 <div class="container mt-5">
-                    <h1 class="text-center mb-4"><span th:text="${projectName}"></span> - TODO 리스트</h1>
+                    <h1 class="text-center mb-4 background">
+                        <span th:text="'TODO 리스트 - ' + ${projectName}" class="text"></span>
+                    </h1>
                     <form th:action="@{/project/todoForm(projectId=${projectId})}" method="POST" class="mb-4">
                         <div class="input-group">
                             <input type="text" id="task" name="task" class="form-control" placeholder="할 일을 입력하세요" required>

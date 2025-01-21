@@ -2,21 +2,76 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hta2405.unite.mybatis.mapper.MessengerMapper">
     <!-- ChatRoom 관련 -->
-    <select id="findAllRooms" resultType="ChatRoom">
-        SELECT *
+    <select id="findAllRooms" resultType="com.hta2405.unite.dto.ChatRoomDTO">
+        SELECT chat_room.chat_room_id,
+               chat_room.chat_room_name,
+               chat_message.chat_message_content     AS latestMessage,
+               chat_message.chat_message_date        AS latestMessageDate,
+               IFNULL(unread_counts.unread_count, 0) AS unreadCount
         FROM chat_room
+                 LEFT OUTER JOIN chat_room_member
+                                 ON chat_room.chat_room_id = chat_room_member.chat_room_id
+                 LEFT OUTER JOIN chat_message
+                                 ON chat_room.chat_room_id = chat_message.chat_room_id
+                                     AND chat_message.chat_message_id = (SELECT MAX(chat_message_id)
+                                                                         FROM chat_message
+                                                                         WHERE chat_message.chat_room_id = chat_room.chat_room_id)
+                 LEFT JOIN (SELECT chat_room_id,
+                                   COUNT(*) AS unread_count
+                            FROM chat_message
+                            WHERE chat_message_id > (SELECT COALESCE(last_read_message_id, 0)
+                                                     FROM chat_room_member AS crm
+                                                     WHERE crm.chat_room_id = chat_message.chat_room_id
+                                                       AND crm.user_id = #{empId})
+                            GROUP BY chat_room_id)
+            AS unread_counts
+                           ON chat_room.chat_room_id = unread_counts.chat_room_id
+        WHERE (#{empId} = 'admin' OR chat_room_member.user_id = #{empId})
+        ORDER BY chat_message.chat_message_date DESC, chat_room.chat_room_id DESC;
     </select>
 
-    <select id="findRoomById" parameterType="long" resultType="ChatRoom">
+    <select id="findRoomById" parameterType="long" resultType="ChatMessage">
         SELECT *
-        FROM chat_room
+        FROM chat_message
         WHERE chat_room_id = #{chatRoomId}
     </select>
 
-    <insert id="createRoom" parameterType="ChatRoom">
+    <select id="getIdToRoomNameMap" resultType="map">
+        SELECT chat_room_id, chat_room_name
+        FROM chat_room
+    </select>
+
+    <select id="getUnreadMessageCount" resultType="int">
+        SELECT COUNT(*) AS unread_count
+        FROM chat_message
+        WHERE chat_room_id = #{chatRoomId}
+          AND chat_message_id > (SELECT COALESCE(last_read_message_id, 0)
+                                 FROM chat_room_member
+                                 WHERE chat_room_id = #{chatRoomId}
+                                   AND user_id = #{userId})
+    </select>
+
+    <insert id="createRoom" parameterType="ChatRoom" useGeneratedKeys="true" keyProperty="chatRoomId">
         INSERT INTO chat_room (chat_room_name, creator_id)
         VALUES (#{chatRoomName}, #{creatorId})
     </insert>
+
+    <insert id="insertRoomMember">
+        INSERT INTO chat_room_member (chat_room_id, user_id)
+        VALUES
+        <foreach collection="chatRoomMemberList" item="chatRoomMember" separator=",">
+            (#{chatRoomMember.chatRoomId}, #{chatRoomMember.userId})
+        </foreach>
+    </insert>
+
+    <update id="updateLastReadMessageId">
+        UPDATE chat_room_member
+        SET last_read_message_id = (SELECT MAX(chat_message_id)
+                                    FROM chat_message
+                                    WHERE chat_room_id = #{chatRoomId})
+        WHERE chat_room_id = #{chatRoomId}
+          AND user_id = #{userId}
+    </update>
 
     <delete id="deleteRoom" parameterType="long">
         DELETE
@@ -25,6 +80,16 @@
     </delete>
 
     <!-- ChatMessage 관련 -->
+    <select id="findLastMessagesByRoomIds" parameterType="long" resultType="ChatMessage">
+        SELECT *
+        FROM chat_message
+        WHERE chat_room_id = #{chatRoomId}
+        <foreach collection="chatRoomMemberList" item="chatRoomMember" separator=",">
+            (#{chatRoomMember.chatRoomId}, #{chatRoomMember.userId})
+        </foreach>
+        ORDER BY chat_message_date ASC
+    </select>
+
     <select id="findMessagesByRoomId" parameterType="long" resultType="ChatMessage">
         SELECT *
         FROM chat_message
@@ -32,10 +97,16 @@
         ORDER BY chat_message_date ASC
     </select>
 
-    <insert id="saveMessage" parameterType="ChatMessage">
+    <insert id="saveMessage" parameterType="ChatMessage" useGeneratedKeys="true" keyProperty="chatMessageId">
         INSERT INTO chat_message (chat_room_id, sender_id, chat_message_content, chat_message_date)
         VALUES (#{chatRoomId}, #{senderId}, #{chatMessageContent}, NOW())
     </insert>
+
+    <select id="findMessageById" parameterType="Long" resultType="ChatMessage">
+        SELECT *
+        FROM chat_message
+        WHERE chat_message_id = #{chatMessageId}
+    </select>
 
     <!-- ChatRoomMember 관련 -->
     <select id="findMembersByRoomId" parameterType="long" resultType="string">

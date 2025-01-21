@@ -8,14 +8,6 @@ $(document).ready(function () {
     const notifications = []; // 전체 알림 데이터
     let currentIndex = 0; // 현재 표시 중인 알림 인덱스
     const limit = 5; // 한 번에 표시할 알림 수
-    const categoryIcons = {
-        PROJECT: 'fas fa-angle-down', // 프로젝트 아이콘
-        DOC: 'fas fa-book-open',      // 전자문서 아이콘
-        SCHEDULE: 'fa-solid fa-calendar-days',  // 캘린더 아이콘
-        BOARD: 'fas fa-angle-down',
-        default: 'fas fa-info-circle'     // 기본 아이콘
-    };
-
     // WebSocket 연결
     const socket = new SockJS('/ws');
     const stompClient = Stomp.over(socket);
@@ -74,7 +66,8 @@ $(document).ready(function () {
      */
     function addNotification(notification, isRead = false, appendToBottom = false) {
         const formattedDate = formatDateTime(notification.createdAt); // 날짜 포맷 함수
-        const iconClass = categoryIcons[notification.category] || categoryIcons.default; // 카테고리 아이콘 선택
+        const iconClass = notification.category.icon;
+        console.log(notification.category.icon)
         const newNotification = $(`
         <a class="dropdown-item d-flex align-items-center ${isRead ? 'text-muted' : ''}" href="${notification.targetUrl}" data-id="${notification.id}">
             <div class="me-3">

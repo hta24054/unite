@@ -71,6 +71,7 @@ public class ProfileImgService {
     public ResponseEntity<Resource> getProfileImage(Emp emp) {
         String fileUUID = emp.getImgUUID();
         if (ObjectUtils.isEmpty(fileUUID)) {
+            fileUUID = "";
             return fileService.downloadFile(FILE_DIR, fileUUID, DEFAULT_PROFILE_IMAGE);
         } else {
             String originalFileName = empMapper.getImgOriginal(fileUUID);

@@ -160,7 +160,7 @@
                         </tr>
                         <tr>
                             <td colspan="3" style="padding-top: 10px;">
-                                <img th:src="@{|/api/emp/profile-image?empId=${id}|}" alt="프로필 이미지" class="icon viewIcon">
+                                <img th:src="@{|/api/emp/profile-image?empId=${postDetailDTO.postWriter}|}" alt="프로필 이미지" class="icon viewIcon">
                                 <div class="username">[[${empMap.get(postDetailDTO.postWriter)}]]</div>
                                 <div class="date"> [[${postDetailDTO.getFormattedPostDate()}]]</div>
                             </td>

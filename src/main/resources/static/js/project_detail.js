@@ -310,7 +310,12 @@ $(document).ready(function () {
 		});
 	}
 	function updateColor(bgColor, textColor) {
-		$("#background").css('background-color', bgColor);
+		$("#background").css({
+			'background-color' : bgColor,
+			'border-radius' : '50px',
+			'padding' : '10px'
+		});
 		$("#text").css('color', textColor);
 	}
+
 });

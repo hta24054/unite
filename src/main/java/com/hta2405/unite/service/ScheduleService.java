@@ -4,11 +4,14 @@ import com.hta2405.unite.domain.Schedule;
 import com.hta2405.unite.domain.ScheduleShare;
 import com.hta2405.unite.dto.ScheduleDTO;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ScheduleService {
 
     public List<Schedule> getListSchedule(String id);
+
+    List<Schedule> getDailyScheduleList(String empId, LocalDate date);
 
     public int insertSchedule(Schedule schedule);
 

@@ -174,7 +174,7 @@
         // 부서 선택 시 직원 목록 로드
         function loadEmployees(deptId) {
             $.ajax({
-                url: '/project/empTree',
+                url: '/api/project/empTree',
                 method: 'GET',
                 data: {deptId: deptId},
                 success: function (data) {

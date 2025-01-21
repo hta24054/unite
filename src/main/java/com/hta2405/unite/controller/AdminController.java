@@ -1,9 +1,7 @@
 package com.hta2405.unite.controller;
 
 import com.hta2405.unite.service.EmpService;
-import com.hta2405.unite.service.HolidayService;
 import com.hta2405.unite.service.NoticeService;
-import com.hta2405.unite.service.ResourceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -23,7 +21,6 @@ public class AdminController {
     public String showHolidayPage() {
         return "/admin/holiday";
     }
-
 
     @GetMapping("/resource")
     public String showResourcePage() {

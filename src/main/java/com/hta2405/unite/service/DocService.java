@@ -62,15 +62,9 @@ public class DocService {
         List<Sign> list = getSigns(doc, signers);
         docMapper.insertSign(list);
 
-        NotificationDTO notification = NotificationDTO.builder()
-                .category(NotificationCategory.DOC)
-                .title("[전자문서 결재]")
-                .message(doc.getDocTitle() + " 문서가 결재 대기중입니다.")
-                .recipientId(list.get(1).getEmpId())
-                .targetUrl("/doc?docId=" + doc.getDocId())
-                .isRead(false)
-                .createdAt(LocalDateTime.now().toString()).build();
-        notificationService.sendNotification(notification);
+        sendDocNotification("[전자문서]",
+                doc.getDocTitle() + "문서가 결재 대기중입니다.",
+                list.get(1).getEmpId(), doc);
     }
 
     @Transactional
@@ -320,11 +314,32 @@ public class DocService {
         if (docMapper.signDoc(docId, empId) != 1) {
             return false;
         }
+        List<Sign> signList = docMapper.getSignListByDocId(docId);
 
-        // 결재 완료 처리
+
+        //마지막 결재자가 아니라면, 즉 뒤에 더 결재자가 있다면 다음사람에게 알림 보냄
+        int singerIdx = -1;
+        for (int i = 0; i < signList.size(); i++) {
+            if (signList.get(i).getEmpId().equals(empId)) {
+                singerIdx = i;
+            }
+        }
+        Doc doc = docMapper.getDocById(docId);
+        if (signList.size() > singerIdx + 1) {
+            sendDocNotification("[전자문서]",
+                    doc.getDocTitle() + "문서가 결재 대기중입니다.",
+                    signList.get(singerIdx + 1).getEmpId(), doc);
+        }
+
+        // 결재 완료 문서일 경우 기안자에 알림 및 근태 반영 처리
         if (docMapper.checkSignFinished(docId)) {
+
+            //기안자ㅇ[ㅔ 알림
+            sendDocNotification("[전자문서]",
+                    doc.getDocTitle() + "문서가 결재 완료되었습니다.",
+                    doc.getDocWriter(), doc);
+
             docMapper.setSignFinished(docId);
-            Doc doc = docMapper.getDocById(docId);
 
             if (doc.getDocType() == DocType.VACATION) {
                 attendService.insertVacation(doc.getDocWriter(), docMapper.getDocVacationByDocId(docId));
@@ -334,8 +349,20 @@ public class DocService {
                 attendService.insertTrip(doc.getDocWriter(), docMapper.getDocTripByDocId(docId));
             }
         }
-
         return true;
+    }
+
+    @Transactional
+    public void sendDocNotification(String title, String message, String empId, Doc doc) {
+        NotificationDTO notification = NotificationDTO.builder()
+                .category(NotificationCategory.DOC)
+                .title(title)
+                .message(message)
+                .recipientId(empId)
+                .targetUrl("/doc?docId=" + doc.getDocId())
+                .isRead(false)
+                .createdAt(LocalDateTime.now().toString()).build();
+        notificationService.sendNotification(notification);
     }
 
     @Transactional

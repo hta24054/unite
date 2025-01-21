@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,6 +26,11 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public List<Schedule> getListSchedule(String id) {
         return scheduleDAO.getListSchedule(id);
+    }
+
+    @Override
+    public List<Schedule> getDailyScheduleList(String empId, LocalDate date) {
+        return scheduleDAO.getDailyScheduleList(empId, date);
     }
 
     @Override

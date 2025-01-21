@@ -1,7 +1,10 @@
 package com.hta2405.unite.domain;
 
 import com.hta2405.unite.enums.NotificationCategory;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 

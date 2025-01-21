@@ -1,106 +1,121 @@
-.main-container {
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
+/* 전체 레이아웃 */
+body {
+    background-color: #f9fafb;
+    font-family: Arial, sans-serif;
 }
 
-/* 중앙 콘텐츠 스타일 */
-.content {
-    border-radius: 50px;
-    padding: 30px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
+.container {
+    max-width: 1000px;
+    margin: 20px auto;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* 버튼 스타일 */
-form {
-    text-align: right;
-    color: #4CAF50;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 20px;
+h2 {
+    color: #334466;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30px;
 }
 
 /* 테이블 스타일 */
 table {
-    width: 90%; /* 너비 설정 */
+    width: 100%;
     border-collapse: collapse;
-    margin: 0 5%;
-    border-radius: 10px;
-}
-
-td, th {
-    border: 2px solid black;
-    padding: 5px; /* 줄여진 패딩 */
-    color: black;
-    text-align: center;
-    vertical-align: middle; /* 상하 중앙 정렬 */
-    height: 15px; /* 줄여진 높이 */
-    width: 14%;
-}
-
-th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-}
-
-#tr {
-    border-top: 2px solid black;
-}
-
-h2 {
-    text-align: left;
-    color: rgb(51, 68, 102);
-    margin: 0;
+    margin-bottom: 20px;
 }
 
 caption {
     caption-side: top;
-    margin-bottom: 30px;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #334466;
+    text-align: left;
+    margin-bottom: 10px;
 }
 
-input[readonly] {
-    border: none;
-    text-align: center;
-}
-
-select[disabled] {
-    border: none;
-    outline: none;
-    background-color: transparent;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    color: black;
-    text-align: center;
-}
-
-button#saveButton {
-    margin-right: 5%;
-}
-
-table {
-    color: black;
-}
-
-/*!* 입력 필드 스타일 *!*/
-/*input[type=text], input[type=email], input[type=date], input[type=number],*/
-/*	select {*/
-/*	width: 100%;*/
-/*	padding: 10px;*/
-/*	margin: 8px 0;*/
-/*	display: inline-block;*/
-/*	border: 1px solid #ccc;*/
-/*	border-radius: 4px;*/
-/*	box-sizing: border-box;*/
-/*}*/
-
-/* inline-group 스타일 추가 */
-.inline-group input, .inline-group select {
-    display: inline-block;
+th, td {
+    padding: 12px;
+    border: 1px solid #dee2e6;
     vertical-align: middle;
-    margin-right: 5px; /* 요소 간 여백 추가 */
+}
+
+th {
+    background-color: #f1f3f5;
+    font-weight: bold;
+    text-align: left;
+}
+
+/* 입력 필드 및 선택 박스 */
+input, select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+/* 기본 상태 (readonly, disabled) */
+input[readonly], select[disabled] {
+    border: 1px solid #ced4da; /* 기본 테두리 */
+    background-color: #ffffff; /* 흰색 배경 */
+    color: #495057; /* 글자 색상 */
+    cursor: not-allowed; /* 비활성화 커서 */
+}
+
+/* 수정 상태 */
+.editing input, .editing select {
+    border: 2px solid #007bff; /* 활성화된 테두리 */
+    background-color: #ffffff; /* 활성화된 배경색 */
+    color: #212529; /* 활성화된 글자 색상 */
+    cursor: text; /* 수정 가능 커서 */
+}
+
+/* 자격증 및 외국어 항목 */
+.cert-item, .lang-item {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* 간격 추가 */
+}
+
+.cert-input, .lang-input {
+    flex: 1; /* 입력 필드가 남은 공간을 채움 */
+}
+
+/* 버튼 스타일 */
+.btn-sm {
+    padding: 4px 8px;
+}
+
+.btn-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.btn-container button {
+    margin: 0 10px;
+}
+
+/* 프로필 사진 */
+.profile-img-container {
+    text-align: center; /* 프로필 사진 가운데 정렬 */
+    margin-bottom: 20px;
+}
+
+.profile-img {
+    width: 200px; /* 가로 크기 */
+    height: 200px; /* 세로 크기 */
+    border-radius: 50%; /* 원형 이미지 */
+    object-fit: contain; /* 이미지 전체 표시 (비율 유지) */
+    border: 2px solid #dee2e6;
+    margin-bottom: 10px; /* 아래 간격 추가 */
+}
+
+/* 반응형 디자인에서 이미지 크기 조정 */
+@media (max-width: 768px) {
+    .profile-img {
+        width: 150px; /* 모바일 환경에서는 크기 축소 */
+        height: 150px;
+    }
 }

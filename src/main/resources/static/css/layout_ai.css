@@ -1,10 +1,10 @@
 /* 뱃지 스타일 */
 .ai-badge {
     position: fixed;
-    bottom: 50px; /* 화면 하단 여백을 늘려 더 눈에 띄게 */
+    bottom: 30px; /* 화면 하단 여백을 늘려 더 눈에 띄게 */
     right: 40px;
-    width: 80px; /* 뱃지 크기 살짝 증가 */
-    height: 80px;
+    width: 55px; /* 뱃지 크기 살짝 증가 */
+    height: 55px;
     cursor: pointer;
     z-index: 1000;
     display: flex;

@@ -9,6 +9,7 @@ import com.hta2405.unite.service.ProjectBoardService;
 import com.hta2405.unite.service.ProjectService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -145,7 +146,7 @@ public class ProjectApiController {
     public List<ProjectTodoDTO> getTodoList(@RequestParam("projectId") int projectId,
                                             @RequestParam("memberId") String memberId) {
         List<ProjectTodoDTO> todos = projectService.getTodoList(projectId, memberId);
-        return todos;  // JSON 형태로 자동 변환되어 클라이언트로 반환됨
+        return todos;
     }
     @PostMapping("/todoprogress")
     public void todoprogress(int projectId, int todoId, int memberProgressRate, HttpServletResponse resp, @AuthenticationPrincipal UserDetails user) throws IOException {
@@ -172,4 +173,11 @@ public class ProjectApiController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/color")
+    public ResponseEntity<Map<String, String>> getProjectColor(@RequestParam int projectId, @RequestParam String memberId) {
+        Map<String, String> colorInfo = projectService.getColor(projectId, memberId);
+        return ResponseEntity.ok(colorInfo);
+    }
+
 }

@@ -8,19 +8,32 @@ import com.hta2405.unite.dto.ChatRoomDTO;
 import com.hta2405.unite.mybatis.mapper.EmpMapper;
 import com.hta2405.unite.mybatis.mapper.MessengerMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
 public class MessengerService {
+    private final SimpMessagingTemplate messagingTemplate;
     private final MessengerMapper messengerMapper;
     private final EmpService empService;
 
     @Autowired
-    public MessengerService(MessengerMapper messengerMapper, EmpService empService) {
+    public MessengerService(SimpMessagingTemplate messagingTemplate, MessengerMapper messengerMapper, EmpService empService) {
+        this.messagingTemplate = messagingTemplate;
         this.messengerMapper = messengerMapper;
         this.empService = empService;
+    }
+
+    public void sendMessageToChatRoom(Long chatRoomId, ChatMessage message) {
+        // 브로드캐스트 메시지 전송
+        messagingTemplate.convertAndSend("/topic/" + chatRoomId, message);
+    }
+
+    public void sendMessageToUser(String userId, String message) {
+        // 특정 사용자에게 1:1 메시지 전송
+        messagingTemplate.convertAndSendToUser(userId, "/queue/messages", message);
     }
 
     public Map<String, String> getIdToENameMap() {
@@ -111,6 +124,10 @@ public class MessengerService {
 
     public void saveMessage(ChatMessage chatMessage) {
         messengerMapper.saveMessage(chatMessage);
+        Long chatMessageId = chatMessage.getChatMessageId();
+
+        chatMessage = messengerMapper.findMessageById(chatMessageId);
+        messagingTemplate.convertAndSend("/topic/chatRoom/" + chatMessage.getChatRoomId(), chatMessage); // 브로드캐스트
     }
 
     // ChatRoomMember 관련
@@ -124,5 +141,13 @@ public class MessengerService {
 
     public void removeMember(Long chatRoomMemberId) {
         messengerMapper.removeMember(chatRoomMemberId);
+    }
+
+    public int getUnreadMessageCount(Long chatRoomId, String userId) {
+        return messengerMapper.getUnreadMessageCount(chatRoomId, userId);
+    }
+
+    public void updateLastReadMessageId(Long chatRoomId, String userId) {
+        messengerMapper.updateLastReadMessageId(chatRoomId, userId);
     }
 }

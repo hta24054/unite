@@ -21,29 +21,15 @@ import java.util.List;
 @RequestMapping("/api/messenger")
 public class MessengerApiController {
     private final MessengerService messengerService;
-    private final SimpMessagingTemplate messagingTemplate;
 
-    public MessengerApiController(MessengerService messengerService, SimpMessagingTemplate messagingTemplate) {
+    public MessengerApiController(MessengerService messengerService) {
         this.messengerService = messengerService;
-        this.messagingTemplate = messagingTemplate;
     }
-
-    public void sendMessageToChatRoom(Long chatRoomId, String message) {
-        // 브로드캐스트 메시지 전송
-        messagingTemplate.convertAndSend("/topic/" + chatRoomId, message);
-    }
-
-    public void sendMessageToUser(String userId, String message) {
-        // 특정 사용자에게 1:1 메시지 전송
-        messagingTemplate.convertAndSendToUser(userId, "/queue/messages", message);
-    }
-
 
     @GetMapping("/rooms")
     public ResponseEntity<HashMap<String, Object>> getAllRooms(@AuthenticationPrincipal UserDetails user) {
         String empId = user.getUsername();
         List<ChatRoomDTO> chatRoomDTOList = messengerService.getAllChatRooms(empId);
-        ;
 
         HashMap<String, Object> response = new HashMap<>();
         response.put("chatRoomDTOList", chatRoomDTOList);
@@ -81,27 +67,39 @@ public class MessengerApiController {
         return ResponseEntity.ok("Chat room deleted successfully!");
     }
 
-    @PostMapping("/messages")
-    public ResponseEntity<String> sendMessage(@RequestBody String message,
-                                              @RequestBody Long chatRoomId,
-                                              @AuthenticationPrincipal UserDetails user) {
-        ChatMessage chatMessage = ChatMessage.builder()
-                .chatRoomId(chatRoomId)
-                .senderId(user.getUsername())
-                .chatMessageContent(message).build();
+//    @PostMapping("/messages")
+//    public ResponseEntity<String> sendMessage(@RequestBody String message,
+//                                              @RequestBody Long chatRoomId,
+//                                              @AuthenticationPrincipal UserDetails user) {
+//        ChatMessage chatMessage = ChatMessage.builder()
+//                .chatRoomId(chatRoomId)
+//                .senderId(user.getUsername())
+//                .chatMessageContent(message).build();
+//
+//        System.out.println("message = " + message);
+//        //messengerService.saveMessage(chatMessage);
+//
+//        //저장된 메시지를 관련 클라이언트에게 전송 (브로드캐스트)
+//        sendMessageToChatRoom(chatRoomId, message);
+//
+//        return ResponseEntity.ok("Message sent successfully!");
+//    }
 
-        System.out.println("message = " + message);
-        //messengerService.saveMessage(chatMessage);
+    // 메시지 전송 (STOMP 사용)
+    @MessageMapping("/chatRoom/{chatRoomId}")
+    public void sendMessage(@RequestBody ChatMessage message,
+                            @DestinationVariable Long chatRoomId) {
 
-        //저장된 메시지를 관련 클라이언트에게 전송 (브로드캐스트)
-        sendMessageToChatRoom(chatRoomId, message);
-
-        return ResponseEntity.ok("Message sent successfully!");
+        messengerService.saveMessage(message); // 메시지 저장
     }
 
-    @MessageMapping("/chatRoom/{chatRoomId}") // 클라이언트가 메시지를 보낼 경로
-    public void sendMessage(@DestinationVariable String chatRoomId, ChatMessage message) {
-        // 브로드캐스트: 해당 채팅방 주제에 메시지 전송
-        messagingTemplate.convertAndSend("/topic/chatRoom/" + chatRoomId, message);
+    @GetMapping("/chatRoom/{chatRoomId}/unreadCount/{userId}")
+    public int getUnreadMessageCount(@PathVariable Long chatRoomId, @PathVariable String userId) {
+        return messengerService.getUnreadMessageCount(chatRoomId, userId);
+    }
+
+    @PostMapping("/chatRoom/{chatRoomId}/read/{userId}")
+    public void updateLastReadMessageId(@PathVariable Long chatRoomId, @PathVariable String userId) {
+        messengerService.updateLastReadMessageId(chatRoomId, userId);
     }
 }

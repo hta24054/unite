@@ -37,4 +37,10 @@ public interface MessengerMapper {
     void removeMember(Long chatRoomMemberId);
 
     int insertRoomMember(List<ChatRoomMember> chatRoomMemberList);
+
+    int getUnreadMessageCount(Long chatRoomId, String userId);
+
+    void updateLastReadMessageId(Long chatRoomId, String userId);
+
+    ChatMessage findMessageById(Long chatMessageId);
 }

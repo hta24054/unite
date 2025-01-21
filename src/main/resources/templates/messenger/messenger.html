@@ -13,7 +13,7 @@
         <div class="container-messenger m-auto">
             <!-- Sidebar -->
             <div class="sidebar">
-                <div class="messenger-header">
+                <div class="messenger-header" th:data-sender-id="${empId}">
                     <div>
                         <img class="messenger-sender-img" th:src="|/api/emp/profile-image?empId=${empId}|" alt="프로필">
                         <span id="senderName" class="fw-semibold fs-3" th:text="${empMap.get(empId)}"

@@ -197,4 +197,18 @@ public class ProjectServiceImpl implements ProjectService {
     public boolean deleteTodo(int todoId) {
         return dao.deleteTodo(todoId);
     }
+
+    public Map<String, String> getColor(int projectId, String memberId) {
+        // 프로젝트와 회원에 맞는 색상 정보 가져오는 로직
+        Project project = dao.findMemberInfoById(projectId, memberId);
+
+        String bgColor = project.getBgColor();
+        String textColor = project.getTextColor();
+
+        Map<String, String> colorInfo = new HashMap<>();
+        colorInfo.put("bgColor", bgColor);
+        colorInfo.put("textColor", textColor);
+
+        return colorInfo;
+    }
 }

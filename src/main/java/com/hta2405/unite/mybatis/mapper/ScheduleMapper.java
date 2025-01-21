@@ -2,9 +2,9 @@ package com.hta2405.unite.mybatis.mapper;
 
 import com.hta2405.unite.domain.Schedule;
 import com.hta2405.unite.domain.ScheduleShare;
-import com.hta2405.unite.dto.ScheduleDTO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,6 +13,10 @@ public interface ScheduleMapper {
 
     // 일정 리스트
     public List<Schedule> getListSchedule(String id);
+
+
+    // 오늘 일정 리스트
+    List<Schedule> getDailyScheduleList(String empId, LocalDate date);
 
     // 일정 등록
     public int insertSchedule(Schedule schedule);

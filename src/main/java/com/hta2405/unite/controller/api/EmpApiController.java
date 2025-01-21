@@ -58,9 +58,9 @@ public class EmpApiController {
 
     @PatchMapping("/{empId}")
     public int updateEmpSelf(@PathVariable String empId,
-                                @RequestPart(value = "file", required = false) MultipartFile file,
-                                @RequestPart(value = "dto") String dtoJson,
-                                @AuthenticationPrincipal UserDetails user) {
+                             @RequestPart(value = "file", required = false) MultipartFile file,
+                             @RequestPart(value = "dto") String dtoJson,
+                             @AuthenticationPrincipal UserDetails user) {
         //수정 대상 직원이 본인이 아닌 경우 인사정보 수정 제한
         if (!empId.equals(user.getUsername())) {
             return 0;
@@ -80,8 +80,8 @@ public class EmpApiController {
 
     @PatchMapping("/admin/{empId}")
     public int updateEmpAdmin(@PathVariable String empId,
-                                 @RequestPart(value = "file", required = false) MultipartFile file,
-                                 @RequestPart(value = "dto") String dtoJson
+                              @RequestPart(value = "file", required = false) MultipartFile file,
+                              @RequestPart(value = "dto") String dtoJson
     ) {
         // JSON 데이터를 DTO로 변환
         ObjectMapper objectMapper = new ObjectMapper();

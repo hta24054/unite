@@ -31,6 +31,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
         <!--        stomp-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
         <script th:src="@{/js/layout.js}"></script>
         <link th:href="@{/css/layout.css}" rel="stylesheet"/>
         <script th:src="@{/js/notification.js}"></script>
@@ -38,6 +39,7 @@
         <script th:src="@{/js/layout_ai.js}"></script>
         <link th:href="@{/css/layout_ai.css}" rel="stylesheet"/>
         <script th:src="@{/js/messenger.js}"></script>
+
     </head>
     <body class="sb-nav-fixed">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -290,8 +292,8 @@
                              data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" th:href="@{/project/main}">진행 중 프로젝트</a>
-                                <a class="nav-link" th:href="@{/project/done?dowhat=2}">완료 프로젝트</a>
-                                <a class="nav-link" th:href="@{/project/done?dowhat=1}">취소 프로젝트</a>
+                                <a class="nav-link" th:href="@{/api/project/done?state=2}">완료 프로젝트</a>
+                                <a class="nav-link" th:href="@{/api/project/done?state=1}">취소 프로젝트</a>
                                 <a class="nav-link" th:href="@{/project/create}">프로젝트 추가</a>
                             </nav>
                         </div>
@@ -418,14 +420,14 @@
     <!-- AI채팅창 -->
     <div id="aiChat" class="chat-window hiddenAi">
         <div class="chat-header">
-            AI Chat
+            <span>AI Chat&nbsp;&nbsp;<img th:src="@{/image/OpenAI_logo.png}" width="70px"></span>
             <span id="closeChat" class="close-btn">&times;</span>
         </div>
         <div class="chat-body">
             <!-- 동적으로 추가될 채팅 메시지 -->
         </div>
         <div class="chat-footer">
-            <input type="text" id="chatInput" placeholder="Type your command...">
+            <label for="chatInput"></label><textarea id="chatInput" placeholder="Type your command..."></textarea>
             <button id="aiSend">Send</button>
         </div>
     </div>

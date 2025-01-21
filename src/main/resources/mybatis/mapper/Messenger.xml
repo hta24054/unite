@@ -27,7 +27,7 @@
             AS unread_counts
                            ON chat_room.chat_room_id = unread_counts.chat_room_id
         WHERE (#{empId} = 'admin' OR chat_room_member.user_id = #{empId})
-        ORDER BY chat_message.chat_message_date ASC, chat_room.chat_room_id DESC;
+        ORDER BY chat_message.chat_message_date DESC, chat_room.chat_room_id DESC;
     </select>
 
     <select id="findRoomById" parameterType="long" resultType="ChatMessage">
@@ -39,6 +39,16 @@
     <select id="getIdToRoomNameMap" resultType="map">
         SELECT chat_room_id, chat_room_name
         FROM chat_room
+    </select>
+
+    <select id="getUnreadMessageCount" resultType="int">
+        SELECT COUNT(*) AS unread_count
+        FROM chat_message
+        WHERE chat_room_id = #{chatRoomId}
+          AND chat_message_id > (SELECT COALESCE(last_read_message_id, 0)
+                                 FROM chat_room_member
+                                 WHERE chat_room_id = #{chatRoomId}
+                                   AND user_id = #{userId})
     </select>
 
     <insert id="createRoom" parameterType="ChatRoom" useGeneratedKeys="true" keyProperty="chatRoomId">
@@ -53,6 +63,15 @@
             (#{chatRoomMember.chatRoomId}, #{chatRoomMember.userId})
         </foreach>
     </insert>
+
+    <update id="updateLastReadMessageId">
+        UPDATE chat_room_member
+        SET last_read_message_id = (SELECT MAX(chat_message_id)
+                                    FROM chat_message
+                                    WHERE chat_room_id = #{chatRoomId})
+        WHERE chat_room_id = #{chatRoomId}
+          AND user_id = #{userId}
+    </update>
 
     <delete id="deleteRoom" parameterType="long">
         DELETE
@@ -78,10 +97,16 @@
         ORDER BY chat_message_date ASC
     </select>
 
-    <insert id="saveMessage" parameterType="ChatMessage">
+    <insert id="saveMessage" parameterType="ChatMessage" useGeneratedKeys="true" keyProperty="chatMessageId">
         INSERT INTO chat_message (chat_room_id, sender_id, chat_message_content, chat_message_date)
         VALUES (#{chatRoomId}, #{senderId}, #{chatMessageContent}, NOW())
     </insert>
+
+    <select id="findMessageById" parameterType="Long" resultType="ChatMessage">
+        SELECT *
+        FROM chat_message
+        WHERE chat_message_id = #{chatMessageId}
+    </select>
 
     <!-- ChatRoomMember 관련 -->
     <select id="findMembersByRoomId" parameterType="long" resultType="string">

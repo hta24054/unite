@@ -40,7 +40,11 @@ public interface MessengerMapper {
 
     int getUnreadMessageCount(Long chatRoomId, String userId);
 
+    void updateRecentMessageDate(Long chatRoomId);
+
     void updateLastReadMessageId(Long chatRoomId, String userId);
 
     ChatMessage findMessageById(Long chatMessageId);
+
+    List<ChatRoomMember> getChatRoomsById(String userId);
 }

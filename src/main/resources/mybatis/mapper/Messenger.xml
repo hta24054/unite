@@ -6,7 +6,7 @@
         SELECT chat_room.chat_room_id,
                chat_room.chat_room_name,
                chat_message.chat_message_content     AS latestMessage,
-               chat_message.chat_message_date        AS latestMessageDate,
+               chat_room.recent_message_date         AS latestMessageDate,
                IFNULL(unread_counts.unread_count, 0) AS unreadCount
         FROM chat_room
                  LEFT OUTER JOIN chat_room_member
@@ -27,7 +27,7 @@
             AS unread_counts
                            ON chat_room.chat_room_id = unread_counts.chat_room_id
         WHERE (#{empId} = 'admin' OR chat_room_member.user_id = #{empId})
-        ORDER BY chat_message.chat_message_date DESC, chat_room.chat_room_id DESC;
+        ORDER BY chat_room.recent_message_date DESC, chat_room.chat_room_id DESC;
     </select>
 
     <select id="findRoomById" parameterType="long" resultType="ChatMessage">
@@ -63,6 +63,14 @@
             (#{chatRoomMember.chatRoomId}, #{chatRoomMember.userId})
         </foreach>
     </insert>
+
+    <update id="updateRecentMessageDate">
+        UPDATE chat_room
+        SET recent_message_date = (SELECT MAX(chat_message_date)
+                                   FROM chat_message
+                                   WHERE chat_room_id = #{chatRoomId})
+        WHERE chat_room_id = #{chatRoomId}
+    </update>
 
     <update id="updateLastReadMessageId">
         UPDATE chat_room_member
@@ -113,6 +121,12 @@
         SELECT user_id
         FROM chat_room_member
         WHERE chat_room_id = #{chatRoomId}
+    </select>
+
+    <select id="getChatRoomsById" parameterType="String" resultType="ChatRoomMember">
+        SELECT *
+        FROM chat_room_member
+        WHERE user_id = #{userId}
     </select>
 
     <insert id="addMember" parameterType="ChatRoomMember">

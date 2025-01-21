@@ -1,5 +1,4 @@
 let stompClient;
-let currentSubscription;
 let subscriptions = {};
 let empMap;
 
@@ -10,52 +9,66 @@ function connectWebSocket() {
 
     stompClient.connect({}, () => {
         console.log("Connected to WebSocket-Messenger");
+
+        // 초기 채팅방 구독
+        initializeChatRoomSubscriptions();
     });
 }
 
-function updateChatRoomList(chatMessage) {
-    const chatRoomElement = $(`#chatRoom-${chatMessage.chatRoomId}`);
-    chatRoomElement.find('.messenger-last-message').text(chatMessage.chatMessageContent);
-    console.log('date = ' + chatMessage.chatMessageDate)
-    let formattedDate = formattedLocalDate(chatMessage.chatMessageDate);
-    chatRoomElement.find('.messenger-last-message-date').text(formattedDate);
-}
-
-function updateUnreadCount(chatRoomId, senderId) {
+// 사용자가 초대된 모든 채팅방을 구독
+function initializeChatRoomSubscriptions() {
     const userId = $('.messenger-header').data('sender-id'); // 현재 사용자 ID
 
-    // 메시지 보낸 사람이 본인이면 읽지 않은 메시지 계산 스킵
-    if (senderId === userId) return;
-
-    // AJAX 요청으로 읽지 않은 메시지 개수 가져오기
+    // AJAX 요청으로 사용자가 초대된 모든 채팅방 ID 가져오기
     $.ajax({
-        url: `/api/messenger/chatRoom/${chatRoomId}/unreadCount/${userId}`,
+        url: `/api/messenger/chatRooms/${userId}`,
         type: 'GET',
-        success: function (count) {
-            const chatRoomElement = $(`#chatRoom-${chatRoomId}`);
-            const unreadCountElement = chatRoomElement.find('.messenger-unread-message-count');
-
-            if (count > 0) {
-                unreadCountElement.text(count).show();
-            } else {
-                unreadCountElement.hide();
-            }
+        success: function (chatRooms) {
+            chatRooms.forEach(chatRoomId => {
+                joinChatRoom(chatRoomId); // 각 채팅방 구독
+            });
+        },
+        error: function (error) {
+            console.error("Failed to fetch chat rooms:", error);
         }
+    });
+}
+
+// 로그인 시 초대 알림 구독
+function subscribeToInvitations(userId) {
+    stompClient.subscribe(`/topic/user/${userId}`, (message) => {
+        const notification = JSON.parse(message.body);
+
+        console.log(`New chat room invitation: ${notification.chatRoomId} - ${notification.chatRoomName}`);
+
+        // sendMessage(chatRoomId, senderId, content);
+
+        // 초대받은 채팅방 자동 구독
+        joinChatRoom(notification.chatRoomId);
     });
 }
 
 // 특정 채팅방 구독
 function joinChatRoom(chatRoomId) {
-    // 이미 구독된 채팅방인지 확인
     if (subscriptions[chatRoomId]) {
         console.log(`Already subscribed to chatRoom ${chatRoomId}`);
         return;
     }
 
-    // 새로운 채팅방 주제 구독
     subscriptions[chatRoomId] = stompClient.subscribe(`/topic/chatRoom/${chatRoomId}`, (message) => {
         const chatMessage = JSON.parse(message.body);
-        displayMessage(chatMessage);
+        let chatRoomId = $('.messenger-room-active').data('chat-room');
+        let userId = $('.messenger-header').data('sender-id'); // 현재 사용자 ID
+
+        console.log("chatMessage = ", chatMessage)
+
+        if (chatMessage.chatRoomId === chatRoomId) {
+            // 자신이 보낸 메시지인지 확인
+            const isMyMessage = chatMessage.senderId === String(userId);
+
+            // 추가된 메시지 업데이트
+            displayMessage(chatMessage, isMyMessage);
+        }
 
         // 채팅방 목록 업데이트
         updateChatRoomList(chatMessage);
@@ -65,6 +78,86 @@ function joinChatRoom(chatRoomId) {
     });
 
     console.log(`Subscribed to chatRoom ${chatRoomId}`);
+}
+
+function updateChatRoomList(chatMessage) {
+    let chatRoomElement = $(`#chatRoom-${chatMessage.chatRoomId}`);
+
+    // 마지막 메시지와 날짜 업데이트
+    chatRoomElement.find('.messenger-last-message').text(chatMessage.chatMessageContent);
+    let formattedDate = formattedLocalDate(chatMessage.chatMessageDate);
+    chatRoomElement.find('.messenger-last-message-date').text(formattedDate);
+
+    // chatRoomElement를 messenger-body의 맨 앞으로 이동
+    chatRoomElement.prependTo('.messenger-body');
+}
+
+function updateUnreadCount(chatRoomId, senderId) {
+    let userId = $('.messenger-header').data('sender-id'); // 현재 사용자 ID
+    let chatRoomElement = $(`#chatRoom-${chatRoomId}`);
+    let unreadCountElement = chatRoomElement.find('.messenger-unread-message-count');
+    let activeChatRoomId = $('.messenger-room-active').data('chat-room');
+
+    if (activeChatRoomId === chatRoomId) {
+        // 읽음 상태로 처리 (서버에 마지막 읽은 메시지 ID 갱신)
+        markMessagesAsRead(chatRoomId);
+    }
+
+    // 메시지 보낸 사람이 본인이면 읽지 않은 메시지 계산 스킵
+    if (senderId === String(userId) || activeChatRoomId === chatRoomId) {
+        console.log("skip")
+        unreadCountElement.hide();
+        return;
+    }
+    console.log("no skip")
+
+    // AJAX 요청으로 읽지 않은 메시지 개수 가져오기
+    $.ajax({
+        url: `/api/messenger/chatRoom/${chatRoomId}/unreadCount/${userId}`,
+        type: 'GET',
+        success: function (count) {
+            let activeChatRoomId = $('messenger-room-active').data('chat-room');
+
+            if (activeChatRoomId === chatRoomId) {
+                unreadCountElement.hide();
+            } else {
+                unreadCountElement.text(count).show();
+            }
+        }
+    });
+}
+
+function openChatRoom(chatRoomId) {
+    let chatRoomElement = $(`#chatRoom-${chatRoomId}`);
+    let unreadCountElement = chatRoomElement.find('.messenger-unread-message-count');
+    unreadCountElement.hide();
+
+    if (chatRoomElement.find('.messenger-last-message-date').text() !== '') {
+        // 읽음 상태로 처리 (서버에 마지막 읽은 메시지 ID 갱신)
+        markMessagesAsRead(chatRoomId);
+    }
+
+    // 채팅방 메세지 리스트 로드
+    loadChatMessageList(chatRoomId);
+
+    // 채팅방 메시지 출력
+    joinChatRoom(chatRoomId);
+}
+
+// 서버에 읽음 상태 전송
+function markMessagesAsRead(chatRoomId) {
+    const userId = $('.messenger-header').data('sender-id'); // 현재 사용자 ID
+
+    $.ajax({
+        url: `/api/messenger/chatRoom/${chatRoomId}/read/${userId}`,
+        type: 'POST',
+        success: function () {
+            console.log(`Marked messages as read for chatRoom ${chatRoomId}`);
+        },
+        error: function (error) {
+            console.error("Failed to mark messages as read:", error);
+        }
+    });
 }
 
 // 특정 채팅방 구독 해제
@@ -79,12 +172,40 @@ function leaveChatRoom(chatRoomId) {
 }
 
 // 메시지 출력
-function displayMessage(chatMessage) {
+function displayMessage(chatMessage, isMyMessage) {
     const $messengerContentBody = $('.messenger-content-body');
+    let userId = $('.messenger-header').data('sender-id'); // 현재 사용자 ID
     console.log("message : ", chatMessage)
 
-    let formattedDate = new Date(chatMessage.chatMessageDate).toLocaleString();
-    let html = `
+    let formattedDate = new Date(chatMessage.chatMessageDate).toLocaleString().substring(12, 20);
+
+    let formattedDated = new Date(chatMessage.chatMessageDate).toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long', // 요일 추가
+    });
+
+    let standardDay = String($('.standardDay-content').last().text());
+    let html = '';
+
+    if (standardDay !== formattedDated) {
+        html = `
+                <div class="text-center standardDay">
+                    <div class="standardDay-content">${formattedDated}</div>
+                </div>`;
+    }
+
+    if (isMyMessage) {
+        html += `
+                <div class="messenger-message" style="flex-direction: row-reverse;">
+                    <div class="messenger-message-middle">
+                        <div class="messenger-message-text">${chatMessage.chatMessageContent}</div>
+                    </div>
+                    <div class="messenger-message-end" style="margin:0 5px;">${formattedDate}</div>
+                </div>`;
+    } else {
+        html += `
                 <div class="messenger-message">
                     <div class="messenger-message-start">
                         <div class="messenger-sender-img-box">
@@ -97,6 +218,7 @@ function displayMessage(chatMessage) {
                     </div>
                     <div class="messenger-message-end">${formattedDate}</div>
                 </div>`;
+    }
     $messengerContentBody.append(html);
 
     //스크롤바 하단으로 조정
@@ -156,11 +278,15 @@ function loadChatRoomData(data) {
 
     chatRoomDTOList.forEach((chatRoomDTO) => {
         //날짜 계산 함수
-        let formattedDate = formattedLocalDate(chatRoomDTO.latestMessageDate);
+        let formattedDate = '';
+        if (chatRoomDTO.latestMessageDate != null) {
+            formattedDate = formattedLocalDate(chatRoomDTO.latestMessageDate);
+        }
 
         let latestMessage = chatRoomDTO.latestMessage;
         if (latestMessage == null) {
             latestMessage = '메시지가 없습니다.';
+            formattedDate = '';
         }
         let unreadCount = chatRoomDTO.unreadCount;
 
@@ -174,9 +300,8 @@ function loadChatRoomData(data) {
                         <span class="messenger-last-message">${latestMessage}</span>
                         `;
 
-        if (unreadCount !== 0) {
-            html += `<div class="messenger-unread-message-count">${chatRoomDTO.unreadCount}</div>`;
-        }
+        html += `<div class="messenger-unread-message-count" style="display: ${unreadCount !== 0 ? 'block' : 'none'};">${unreadCount}</div>`;
+
 
         html += `
                     </div>
@@ -211,10 +336,8 @@ function loadChatRoomList() {
         dataType: 'json',
         success: function (response) {
             if (response.chatRoomDTOList.length !== 0) {
-                console.log('0 아님')
                 loadChatRoomData(response);
             } else {
-                console.log('0')
                 loadNoChatRoom();
             }
         },
@@ -228,12 +351,42 @@ function loadChatMessageData(data) {
     const chatMessageList = data.chatMessageList;
     const $messengerMiddle = $('.messenger-middle');
     const $messengerContentBody = $('.messenger-content-body');
+    let userId = $('.messenger-header').data('sender-id'); // 현재 사용자 ID
+    let standardDay = null;
 
-    chatMessageList.forEach((chatMessage) => {
+    chatMessageList.forEach((chatMessage, index) => {
         // JavaScript에서 Date 객체로 변환하여 포맷
-        let formattedDate = new Date(chatMessage.chatMessageDate).toLocaleString();
+        let formattedDate = new Date(chatMessage.chatMessageDate).toLocaleString().substring(12, 20);
 
-        let html = `
+        let formattedDated = new Date(chatMessage.chatMessageDate).toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            weekday: 'long', // 요일 추가
+        });
+
+        console.log("chatMessage.senderId = ", chatMessage.senderId, " userId = ", userId)
+        let html = '';
+
+        if (standardDay !== formattedDated) {
+            //기준일 초기화
+            standardDay = formattedDated;
+            html += `
+                <div class="text-center standardDay">
+                    <div class="standardDay-content">${formattedDated}</div>
+                </div>`;
+        }
+
+        if (chatMessage.senderId === String(userId)) {
+            html += `
+                <div class="messenger-message" style="flex-direction: row-reverse;">
+                    <div class="messenger-message-middle">
+                        <div class="messenger-message-text">${chatMessage.chatMessageContent}</div>
+                    </div>
+                    <div class="messenger-message-end" style="margin:0 5px;">${formattedDate}</div>
+                </div>`;
+        } else {
+            html += `
                 <div class="messenger-message">
                     <div class="messenger-message-start">
                         <div class="messenger-sender-img-box">
@@ -247,6 +400,8 @@ function loadChatMessageData(data) {
                     <div class="messenger-message-end">${formattedDate}</div>
                 </div>
                         `;
+        }
+
         $messengerContentBody.append(html);
     });
     let html = `
@@ -281,8 +436,8 @@ function loadChatMessageList(chatRoomId) {
 
             html = `</div>
             <div class="messenger-footer">
-                <input id="chatMessageContent" type="text" placeholder="Enter message">
-                <button id="insertMassageBtn">Send</button>
+                <input id="chatMessageContent" type="text" placeholder="Message...">
+                <button id="insertMassageBtn"><i class="bi bi-send fs-4"></i></button>
             </div>`;
             $messengerMiddle.append(html);
 
@@ -299,6 +454,14 @@ function loadChatMessageList(chatRoomId) {
 $(function () {
     //채팅방 리스트 불러오기
     loadChatRoomList();
+
+    $(document).on('load', 'messenger-body', function () {
+        $('.messenger-room').each(function () {
+            let chatRoomId = $(this).data('chat-room');
+            joinChatRoom(chatRoomId);
+        })
+    })
+
 
     $("#addChat").on("click", function (e) {
         e.preventDefault();
@@ -361,22 +524,8 @@ $(function () {
         $(this).addClass('messenger-room-active');
         let chatRoomId = $(this).data('chat-room');
         $(".messenger-middle").html('');
-        let userId = $(".messenger-header").data("sender-id");
 
-        loadChatMessageList(chatRoomId);
-        joinChatRoom(chatRoomId);
-
-        // AJAX 요청으로 마지막 읽은 메시지 ID 갱신
-        $.ajax({
-            url: `/api/messenger/chatRoom/${chatRoomId}/read/${userId}`,
-            type: 'POST',
-            success: function () {
-                console.log(`Updated last read message ID for chatRoom ${chatRoomId}`);
-
-                //읽은 메시지 카운트 제거
-                $(this).find('.messenger-unread-message-count').remove();
-            }
-        });
+        openChatRoom(chatRoomId);
     })
 
     //메세지 입력 버튼 클릭
@@ -386,9 +535,19 @@ $(function () {
         let chatRoomId = $('.messenger-room-active').data('chat-room');
         const senderId = $('.messenger-header').data('sender-id');
         console.log("Sender ID:", senderId);
+        console.log("ChatRoom ID:", chatRoomId);
 
         sendMessage(chatRoomId, senderId, content);
         //메시지 입력란 초기화
         chatMessageContent.val('');
+    })
+
+    $(document).on('keyup', '#chatMessageContent', function () {
+        if ($('#chatMessageContent').val().trim() === '') {
+            $('#insertMassageBtn').css('display', 'none');
+        } else {
+            $('#insertMassageBtn').css('display', 'block');
+        }
+
     })
 });

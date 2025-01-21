@@ -36,6 +36,11 @@ public class MessengerApiController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/chatRooms/{userId}")
+    public List<Long> getChatRoomsForUser(@PathVariable String userId) {
+        return messengerService.getChatRoomsForUser(userId);
+    }
+
     @GetMapping("/rooms/{id}")
     public ResponseEntity<HashMap<String, Object>> getRoomById(@PathVariable Long id) {
         List<ChatMessage> chatMessageList = messengerService.getChatRoomById(id);
@@ -66,24 +71,6 @@ public class MessengerApiController {
         messengerService.deleteChatRoom(id);
         return ResponseEntity.ok("Chat room deleted successfully!");
     }
-
-//    @PostMapping("/messages")
-//    public ResponseEntity<String> sendMessage(@RequestBody String message,
-//                                              @RequestBody Long chatRoomId,
-//                                              @AuthenticationPrincipal UserDetails user) {
-//        ChatMessage chatMessage = ChatMessage.builder()
-//                .chatRoomId(chatRoomId)
-//                .senderId(user.getUsername())
-//                .chatMessageContent(message).build();
-//
-//        System.out.println("message = " + message);
-//        //messengerService.saveMessage(chatMessage);
-//
-//        //저장된 메시지를 관련 클라이언트에게 전송 (브로드캐스트)
-//        sendMessageToChatRoom(chatRoomId, message);
-//
-//        return ResponseEntity.ok("Message sent successfully!");
-//    }
 
     // 메시지 전송 (STOMP 사용)
     @MessageMapping("/chatRoom/{chatRoomId}")

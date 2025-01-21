@@ -115,70 +115,7 @@ tr:hover {
 .detail-section {
     background-color: #f8f9fa; /* 연한 그레이톤 배경 */
     border-radius: 8px; /* 부드러운 모서리 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 가벼운 그림자 효과 */
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1); /* 가벼운 그림자 효과 */
     padding: 20px; /* 내부 여백 */
     margin-bottom: 20px; /* 섹션 간 간격 */
-}
-
-.detail-section h5 {
-    color: #343a40; /* 제목 색상 */
-    font-weight: bold;
-    margin-bottom: 15px;
-}
-
-.detail-section table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.detail-section table thead {
-    background-color: #007bff; /* 헤더 배경색 */
-    color: white; /* 헤더 글자 색상 */
-    font-weight: bold;
-}
-
-.detail-section table thead th {
-    padding: 10px;
-    text-align: left;
-}
-
-.detail-section table tbody tr {
-    border-bottom: 1px solid #ddd; /* 행 구분선 */
-}
-
-.detail-section table tbody tr:hover {
-    background-color: #f1f1f1; /* 행 호버 효과 */
-}
-
-.detail-section table tbody td {
-    padding: 10px;
-    vertical-align: middle;
-}
-
-.detail-section .btn-primary {
-    background-color: #007bff; /* 버튼 색상 */
-    border: none;
-    border-radius: 20px;
-    padding: 5px 15px;
-    font-size: 14px;
-}
-
-.detail-section .btn-primary:hover {
-    background-color: #0056b3; /* 호버 시 색상 변경 */
-}
-
-.detail-section .clickable-participant {
-    cursor: pointer;
-    color: #007bff; /* 클릭 가능한 텍스트 색상 */
-    text-decoration: underline;
-}
-
-.detail-section .task-content {
-    font-size: 14px;
-    color: #495057;
-}
-
-.detail-section .task-content.clickable {
-    cursor: pointer;
-    color: #007bff;
 }

@@ -195,4 +195,24 @@ public class EmpService {
         }
         return message;
     }
+
+    public int resetPasswordByEmail(String empId, String newPassword) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return empMapper.changePassword(empId, encoder.encode(newPassword));
+    }
+
+    public String findManager(String empId) {
+        //일반 본인 부서의 부서장을 찾음
+        String managerEmpId = empMapper.findDeptManager(empId);
+
+        //본인 부서의 부서장이 본인이라면, 즉 내가 부서장이라면 상위 부서의 부서장을 찾음
+        if (managerEmpId.equals(empId)) {
+            managerEmpId = empMapper.findParentDeptManager(empId);
+        }
+        //대표 또는 admin의 경우 상위부서장이 없기 때문에 본인을 return
+        if (managerEmpId == null) {
+            return empId;
+        }
+        return managerEmpId;
+    }
 }

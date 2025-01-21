@@ -33,4 +33,8 @@ public interface EmpMapper {
     int changePassword(String empId, String encodedPassword);
 
     List<EmpListDTO> getAllEmpListDTO();
+
+    String findDeptManager(String empId);
+
+    String findParentDeptManager(String empId);
 }

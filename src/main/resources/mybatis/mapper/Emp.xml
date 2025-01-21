@@ -133,5 +133,20 @@
         update emp set password = #{encodedPassword}
         where emp_id = #{empId}
     </update>
+    <select id="findDeptManager" resultType="String">
+        select dept_manager
+        from emp
+                 join dept on emp.dept_id = dept.dept_id
+        where emp_id = #{empId}
+    </select>
+    <select id="findParentDeptManager" resultType="String">
+        SELECT parentDept.dept_manager
+        FROM emp
+                 JOIN dept currentDept
+                      ON emp.dept_id = currentDept.dept_id
+                 JOIN dept parentDept
+                      ON currentDept.parent_deptId = parentDept.dept_id
+        WHERE emp.emp_id = #{empId}
+    </select>
 </mapper>
 

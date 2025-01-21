@@ -12,9 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -175,7 +173,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         for (ProjectDetailDTO projectDetailDTO : user) {
             String recipent = projectDetailDTO.getMemberId();
-            if(recipent.equals(userid)) {
+            if(!recipent.equals(userid)) {
                 NotificationDTO notification = builder.recipientId(recipent).build();
                 notificationService.sendNotification(notification);
             }
@@ -211,4 +209,5 @@ public class ProjectServiceImpl implements ProjectService {
 
         return colorInfo;
     }
+
 }

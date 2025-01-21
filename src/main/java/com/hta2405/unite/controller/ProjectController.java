@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/project")
@@ -74,28 +76,20 @@ public class ProjectController {
     public ModelAndView detail(int projectId, ModelAndView mv, @AuthenticationPrincipal UserDetails user) {
         String userid = user.getUsername();
 
-        String left = projectService.getProjectName(projectId);
-        String projectContent = projectService.getProjectContent(projectId);
         List<ProjectDetailDTO> detail_Progress = projectService.getProjectDetail1(projectId, userid);
         for (ProjectDetailDTO projectDetail : detail_Progress) {
-            if (projectDetail.getManagerId() != null && projectDetail.getManagerId().equals(userid)) {
-                projectDetail.setIsManager(true);
-            } else {
-                projectDetail.setIsManager(false);
-            }
+            if (projectDetail.getManagerId() != null && projectDetail.getManagerId().equals(userid)) projectDetail.setIsManager(true);
+            else projectDetail.setIsManager(false);
         }
-        List<ProjectTaskDTO> project = projectService.getProjectDetail2(projectId);
-        List<ProjectRoleDTO> role = projectService.getRole(projectId, userid);
 
         mv.setViewName("project/project_detail");
-        mv.addObject("left", left);
+        mv.addObject("left", projectService.getProjectName(projectId));
         mv.addObject("project", detail_Progress);
-        mv.addObject("project2", project);
-        mv.addObject("role", role);
+        mv.addObject("projectContent", projectService.getProjectContent(projectId));
+        mv.addObject("project2", projectService.getProjectDetail2(projectId));
+        mv.addObject("role", projectService.getRole(projectId, userid));
         mv.addObject("projectId", projectId);
         mv.addObject("memberId", userid);
-        mv.addObject("projectContent", projectContent);
-
         return mv;
     }
 

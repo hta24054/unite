@@ -54,10 +54,11 @@ $(function () {
             contentType: 'application/json', // 요청 데이터 형식
             data: JSON.stringify({message: message}), // JSON 형식으로 데이터 전송
             success: function (response) {
+                const markedResp = marked.parse(response);
                 // 로딩 애니메이션 제거
                 hideLoading();
                 // 서버 응답 메시지 추가
-                $chatBody.append(`<div class="chat-message chat-response">${response.resultMessage}</div>`);
+                $chatBody.append(`<div class="chat-message chat-response">${markedResp}</div>`);
                 scrollToBottom();
             },
             error: function (xhr, status, error) {

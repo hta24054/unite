@@ -31,7 +31,10 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
         <!--        stomp-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+                crossorigin="anonymous"></script>
+        <!--마크다운-->
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         <script th:src="@{/js/layout.js}"></script>
         <link th:href="@{/css/layout.css}" rel="stylesheet"/>
         <script th:src="@{/js/notification.js}"></script>
@@ -126,7 +129,8 @@
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
-                   aria-expanded="false"><img th:src="@{/api/emp/profile-image(empId=${#authentication.name})}" width="30px" style="border-radius: 50%; background-color: white;"></a>
+                   aria-expanded="false"><img th:src="@{/api/emp/profile-image(empId=${#authentication.name})}"
+                                              width="30px" style="border-radius: 50%; background-color: white;"></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" th:href="@{/emp/password}">비밀번호 변경</a></li>
                     <li><a class="dropdown-item" href="#!">Activity Log</a></li>

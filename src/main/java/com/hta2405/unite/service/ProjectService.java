@@ -53,4 +53,6 @@ public interface ProjectService {
     boolean todoUpdate(int projectId, String userid, int todoId, String newSubject);
 
     boolean deleteTodo(int todoId);
+
+    Map<String, String> getColor(int projectId, String userid);
 }

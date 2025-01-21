@@ -27,7 +27,7 @@ $(document).ready(function() {
 
 		// 서버에 요청
 		$.ajax({
-			url: "/project/todoprogress",  // 서버 요청 URL
+			url: "/api/project/todoprogress",  // 서버 요청 URL
 			type: "POST",
 			data: {
 				projectId: currentProjectId,      // 프로젝트 ID

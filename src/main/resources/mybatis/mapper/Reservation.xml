@@ -52,6 +52,15 @@
           AND s.resc_name = #{resourceName};
     </select>
 
+    <!-- 동적 쿼리 추가 예정 -->
+    <select id="getByResourceTypeReservation" resultType="com.hta2405.unite.dto.ReservationDTO">
+        SELECT r.reservation_id, r.resource_id, r.emp_id, r.reservation_start, r.reservation_end,
+               r.reservation_info, r.reservation_allDay, s.resc_type
+        FROM reservation r
+                 JOIN resc s ON r.resource_id = s.resc_id
+        WHERE s.resc_type = #{rescType}
+        ORDER BY r.reservation_id ASC
+    </select>
 
     <select id="getAllReservation" resultType="com.hta2405.unite.dto.ReservationDTO">
         SELECT *

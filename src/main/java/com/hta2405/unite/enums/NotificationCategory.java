@@ -28,14 +28,4 @@ public enum NotificationCategory {
         json.put("icon", icon);
         return json;
     }
-
-    public static NotificationCategory fromString(String type) {
-        for (NotificationCategory category : NotificationCategory.values()) {
-            if (category.getTypeKor().equalsIgnoreCase(type) ||
-                    category.getTypeEng().equalsIgnoreCase(type)) {
-                return category;
-            }
-        }
-        throw new IllegalArgumentException("알 수 없는 타입명: " + type);
-    }
 }

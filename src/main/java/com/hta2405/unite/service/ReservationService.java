@@ -21,4 +21,6 @@ public interface ReservationService {
     public int cancelReservation(Long reservationId, String empId);
 
     public List<ReservationDTO> getMyReservationList(String empId);
+
+    public List<ReservationDTO> getReservationsByResourceId(Long resourceId);
 }

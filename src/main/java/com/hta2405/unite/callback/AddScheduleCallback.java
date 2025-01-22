@@ -73,7 +73,7 @@ public class AddScheduleCallback implements FunctionCallback {
 
             scheduleService.insertSchedule(schedule);
 
-            return objectMapper.writeValueAsString(schedule);
+            return "--다음 정보를 요약해서 답변해주면 됩니다. : " + objectMapper.writeValueAsString(schedule);
 
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Invalid JSON input: " + functionArguments, e);

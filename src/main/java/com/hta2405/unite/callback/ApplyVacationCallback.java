@@ -39,7 +39,8 @@ public class ApplyVacationCallback implements FunctionCallback {
     public String getDescription() {
         return """
                 --apply vacation for the user
-                --"vacationType" 은 ['연차', '병가', '공가', '경조']중 하나를 선택합니다. 별도의 언급이 없는 경우 '연차' 로 합니다.
+                --"vacationType" 은 ['연차', '병가', '공가', '경조']중 하나를 선택합니다. 별도의 언급이 없는 경우 '연차' 로 선택합니다.
+                -- 휴가는 시간 단위가 없이 일 단위로 신청합니다.
                 --"vacationInfo"는 "vacationType + '신청'" 문자열을 반환합니다.
                 """;
     }
@@ -101,7 +102,7 @@ public class ApplyVacationCallback implements FunctionCallback {
 
             docService.saveVacationDoc(doc, docVacationBuilder, signers, null);
 
-            return "휴가 신청 완료";
+            return "--휴가 신청 정보를 요약해서 답변해주면 됩니다.";
 
         } catch (
                 JsonProcessingException e) {

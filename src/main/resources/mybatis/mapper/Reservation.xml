@@ -3,12 +3,39 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.hta2405.unite.mybatis.mapper.ReservationMapper">
+    <!--
+
+    1. 자원 전체 불러오는거 불필요
+
+    2. 분류명 체인지될때 관련 전체 자원명 불러오도록 수정
+
+    3. 자원명 체인지할때 불러오도록 수정
+
+    4. 분류명에 해당하는 예약자원 다 불러오고 배열에있는 필터링은 ajax에서
+    -->
     <select id="resourceSelectChange">
         SELECT *
         FROM resc
         WHERE resc_type = #{rescType} AND resc_usable = 1
         GROUP BY resc_type, resc_name, resc_usable
         ORDER BY resc_id ASC
+    </select>
+
+    <!-- 분류명의 모든 예약 자원 불러오기 -->
+    <select id="resourceSelectReservation" resultType="com.hta2405.unite.dto.ReservationDTO">
+        SELECT r.reservation_id, r.resource_id, r.emp_id, r.reservation_start, r.reservation_end,
+               r.reservation_info, r.reservation_allDay, s.resc_type, s.resc_name
+        FROM reservation r
+                 JOIN resc s ON r.resource_id = s.resc_id
+        WHERE s.resc_type = #{rescType}
+          AND s.resc_usable = 1
+          AND r.resource_id IN (
+            SELECT reservation.resource_id
+            FROM reservation reservation
+                     JOIN resc resource ON reservation.resource_id = resource.resc_id
+            WHERE resource.resc_type = #{rescType}
+        )
+        ORDER BY r.reservation_id
     </select>
 
     <!-- 중복 예약 여부 체크 -->
@@ -50,16 +77,6 @@
                  JOIN resc s ON r.resource_id = s.resc_id
         WHERE r.resource_id = #{resourceId}
           AND s.resc_name = #{resourceName};
-    </select>
-
-    <!-- 동적 쿼리 추가 예정 -->
-    <select id="getByResourceTypeReservation" resultType="com.hta2405.unite.dto.ReservationDTO">
-        SELECT r.reservation_id, r.resource_id, r.emp_id, r.reservation_start, r.reservation_end,
-               r.reservation_info, r.reservation_allDay, s.resc_type
-        FROM reservation r
-                 JOIN resc s ON r.resource_id = s.resc_id
-        WHERE s.resc_type = #{rescType}
-        ORDER BY r.reservation_id ASC
     </select>
 
     <select id="getAllReservation" resultType="com.hta2405.unite.dto.ReservationDTO">

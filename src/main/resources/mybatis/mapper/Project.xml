@@ -54,16 +54,15 @@
                (select group_concat(member_name) from project_member m where m.project_id=p.project_id and member_role = 'PARTICIPANT') as participants,
                (select group_concat(member_name) from project_member m where m.project_id=p.project_id and member_role = 'VIEWER') as viewers,
                m.bgColor, m.textColor,
-               (SELECT ifnull(round(AVG(member_avg)),0) FROM (
-                                        SELECT AVG(progress_rate) AS member_avg
-                                        FROM todo t
-                                        WHERE member_id IN (select member_id from project_member m where m.project_id=p.project_id) and t.project_id=p.project_id
-                                        GROUP BY member_id
-                                    ) AS member_averages) avgProgress,
+               (select ifnull(round(avg(m.member_progress_rate)),0) from project_member m where p.project_id = m.project_id) avgProgress,
                 p.manager_id managerId
         from project_member m join project p on p.project_id = m.project_id
         where member_id=#{userid} and p.project_finished = 0 and p.project_canceled = 0
         group by p.project_id, m.member_role
+    </select>
+
+    <select id="findMemberInfoById" resultType="Project">
+        select * from project_member where project_id = #{projectId} and member_id = #{userid}
     </select>
 
     <update id="projectFavorite">
@@ -140,9 +139,9 @@
         select project_content from project where project_id = #{projectId}
     </select>
     <select id="getProjectDetail1" resultType="com.hta2405.unite.dto.ProjectDetailDTO">
-        select p.project_id as projectId, m.member_id as memberId, p.manager_id as managerId, m.member_name as participantNames, m.member_designated as memberDesign, (select round(coalesce(avg(t.progress_rate),0)) from todo t where t.member_id = m.member_id and t.project_id = p.project_id) as memberProgressRate,  CASE WHEN p.manager_id = #{userid} THEN true ELSE false END as isManager
-        from project_member m join project p on m.project_id = p.project_id where p.project_id=#{projectId} and m.member_role != 'VIEWER'
-
+        select p.project_id as projectId, m.member_id as memberId, p.manager_id as managerId, m.member_name as participantNames, m.member_designated as memberDesign,
+       (select round(coalesce(avg(t.progress_rate),0)) from todo t where t.member_id = m.member_id and t.project_id = p.project_id) as memberProgressRate,  CASE WHEN p.manager_id = #{userid} THEN true ELSE false END as isManager, j.job_name jobName
+        from project_member m join project p on m.project_id = p.project_id join emp e on e.emp_id = m.member_id join job j on j.job_id = e.job_id where p.project_id=#{projectId} and m.member_role != 'VIEWER' order by j.job_rank, m.member_name;
     </select>
 
     <update id="updateTaskContent">
@@ -159,38 +158,15 @@
     </update>
 
     <select id="getProjectDetail2" resultType="com.hta2405.unite.dto.ProjectTaskDTO">
-        SELECT e.ename                                      taskWriter,
-               IFNULL(t.task_subject, '')                AS taskSubject,
-               COALESCE(t.task_update_date, t.task_date) AS taskDate,
-               m.member_id                                  memberId
-        FROM project p
-                 JOIN
-             project_member m ON p.project_id = m.project_id
-                 JOIN
-             emp e ON m.member_id = e.emp_id
-                 LEFT JOIN (SELECT task_subject,
-                                   project_id,
-                                   emp_id,
-                                   task_date,
-                                   task_update_date
-                            FROM (SELECT task_subject,
-                                         project_id,
-                                         emp_id,
-                                         task_date,
-                                         task_update_date,
-                                         ROW_NUMBER() OVER (
-                                             PARTITION BY emp_id
-                                             ORDER BY
-                                                 task_date DESC,
-                                                 task_update_date DESC
-                                             ) AS rn
-                                  FROM task
-                                  WHERE project_id = #{projectId}) ranked_tasks
-                            WHERE rn = 1) t ON p.project_id = t.project_id
-            AND m.member_id = t.emp_id
-        WHERE p.project_id = #{projectId}
-          AND m.member_role != 'VIEWER'
-        ORDER BY e.ename;
+        SELECT e.ename taskWriter, j.job_name jobName, IFNULL(t.task_subject, '') taskSubject, substring(COALESCE(t.task_update_date, t.task_date), 1, 10) taskDate, m.member_id                                  memberId
+        FROM project p JOIN project_member m ON p.project_id = m.project_id
+                       JOIN emp e ON m.member_id = e.emp_id
+                       join job j on e.job_id = j.job_id
+                       LEFT JOIN (SELECT * FROM (SELECT task_subject, project_id, emp_id, task_date, task_update_date,
+                                                        ROW_NUMBER() OVER (PARTITION BY emp_id ORDER BY task_date DESC, task_update_date DESC ) AS rn
+                                                 FROM task WHERE project_id = #{projectId}) ranked_tasks
+                                  WHERE rn = 1) t ON p.project_id = t.project_id AND m.member_id = t.emp_id
+        WHERE p.project_id = #{projectId} AND m.member_role != 'VIEWER' ORDER BY j.job_rank, e.ename;
     </select>
     <select id="getRole" resultType="com.hta2405.unite.dto.ProjectRoleDTO">
         SELECT m.member_role Role
@@ -203,7 +179,7 @@
     </insert>
     <select id="getTodoList" resultType="com.hta2405.unite.dto.ProjectTodoDTO">
         select todo_id todoId, todo_subject todoSubject, progress_rate progressRate from todo where project_id = #{projectId} and member_id = #{userid}
-        order by progressRate;
+            order by progressRate;
     </select>
     <update id="updateTodoProgressRate">
         update todo set progress_rate = #{memberProgressRate} where project_id = #{projectId} and member_id = #{userid} and todo_id = #{todoId}

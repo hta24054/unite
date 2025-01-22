@@ -74,7 +74,8 @@
                 </div>
             </div>
         </form>
-        <script th:inline="javascript">
+        <script>
+            const contextPath = /*[[@{/}]]*/ '';
             $(document).ready(function () {
                 $('.summernote').summernote({
                     height: 500, // set editor height
@@ -119,7 +120,7 @@
                         signers: $('input[name="sign[]"]').map(function () {
                             return $(this).val();
                         }).get()
-                    })], { type: "application/json" }));
+                    })], {type: "application/json"}));
 
                     // 파일 추가
                     const fileInput = $('input[name="files"]')[0];
@@ -131,14 +132,14 @@
 
                     // AJAX 요청
                     $.ajax({
-                        url: /*[[@{/doc/general}]]*/'',
+                        url: contextPath + '/api/doc/general',
                         type: "POST",
                         data: formData,
                         processData: false,
                         contentType: false,
-                        success: function (response) {
+                        success: function () {
                             alert("문서 작성이 완료되었습니다.");
-                            window.location.href = /*[[@{/doc/inProgress}]]*/'';
+                            window.location.href = contextPath + '/doc/inProgress';
                         },
                         error: function () {
                             alert("문서 작성 중 오류가 발생했습니다.");

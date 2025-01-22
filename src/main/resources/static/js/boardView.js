@@ -38,7 +38,7 @@ function getList(num) {
                     let lev = comment.postCommentReLev;
                     let replayClass = (lev === 1) ? 'comment-list-item--reply lev1' : (lev === 2) ? 'comment-list-item--reply lev2' : '';
 
-                    let src = `/emp/profile-image?empId=` + comment.postCommentWriter;
+                    let src = `/api/emp/profile-image?empId=` + comment.postCommentWriter;
 
                     let replyButton = (lev < 2) ? `<a href='javascript:replyform(${comment.commentId}, ${lev}, ${comment.postCommentReSeq},${comment.postCommentReRef})' class='comment-info-button'>
 													<img class='replyImg' src='/image/postLine.png'>댓글</a>` : '';

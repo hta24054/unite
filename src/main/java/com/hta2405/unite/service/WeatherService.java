@@ -1,13 +1,16 @@
 package com.hta2405.unite.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hta2405.unite.dto.WeatherResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -15,13 +18,17 @@ public class WeatherService {
     private final String apiKey;
     private final String URL = "https://api.openweathermap.org/data/2.5/weather";
     private final String WEATHER_CITY;
-    private WeatherResponseDTO cachedWeather; // 캐싱된 날씨 데이터
+    private static final String REDIS_KEY = "weather:";
+    private final RedisTemplate<String, String> redisTemplate;
+    private final ObjectMapper objectMapper; // JSON 직렬화/역직렬화
 
     public WeatherService(@Value("${weather.apiKey}") String apiKey,
                           @Value("${weather.city}")
-                          String WEATHER_CITY) {
+                          String WEATHER_CITY, RedisTemplate<String, String> redisTemplate, ObjectMapper objectMapper) {
         this.apiKey = apiKey;
         this.WEATHER_CITY = WEATHER_CITY;
+        this.redisTemplate = redisTemplate;
+        this.objectMapper = objectMapper;
     }
 
     public WeatherResponseDTO fetchWeatherData() {
@@ -32,23 +39,26 @@ public class WeatherService {
         return restTemplate.getForObject(uri, WeatherResponseDTO.class);
     }
 
-    // 캐싱된 데이터 반환
     public WeatherResponseDTO getCachedWeather() {
-        if (cachedWeather == null) {
-            // 초기 서버 부팅 시 캐싱된 데이터가 없으면 API 호출
-            cachedWeather = fetchWeatherData();
+        //캐싱된 데이터가 있으면 바로 반환
+        String cachedData = redisTemplate.opsForValue().get(REDIS_KEY);
+        if (cachedData != null) {
+            try {
+                log.info("Redis cache hit : {}", REDIS_KEY);
+                return objectMapper.readValue(cachedData, WeatherResponseDTO.class);
+            } catch (JsonProcessingException e) {
+                log.error("Redis cache error: {}", REDIS_KEY, e);
+                throw new RuntimeException(e);
+            }
         }
-        return cachedWeather;
-    }
-
-    // 1시간마다 데이터 갱신
-    @Scheduled(cron = "0 0 * * * ?")
-    public void updateWeatherCache() {
+        //캐싱 데이터 없으므로 API 호출
+        log.info("Redis cache miss : {}", REDIS_KEY);
+        WeatherResponseDTO weatherResponseDTO = fetchWeatherData();
         try {
-            cachedWeather = fetchWeatherData();
-            System.out.println("Weather cache updated: " + cachedWeather);
-        } catch (Exception e) {
-            System.err.println("Failed to update weather data: " + e.getMessage());
+            redisTemplate.opsForValue().set(REDIS_KEY, objectMapper.writeValueAsString(weatherResponseDTO), 1, TimeUnit.HOURS);
+        } catch (JsonProcessingException e) {
+            log.error("Redis cache error : {}", REDIS_KEY, e);
         }
+        return weatherResponseDTO;
     }
 }

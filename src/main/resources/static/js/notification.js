@@ -8,14 +8,6 @@ $(document).ready(function () {
     const notifications = []; // 전체 알림 데이터
     let currentIndex = 0; // 현재 표시 중인 알림 인덱스
     const limit = 5; // 한 번에 표시할 알림 수
-    const categoryIcons = {
-        PROJECT: 'fas fa-angle-down', // 프로젝트 아이콘
-        DOC: 'fas fa-book-open',      // 전자문서 아이콘
-        SCHEDULE: 'fa-solid fa-calendar-days',  // 캘린더 아이콘
-        BOARD: 'fas fa-angle-down',
-        default: 'fas fa-info-circle'     // 기본 아이콘
-    };
-
     // WebSocket 연결
     const socket = new SockJS('/ws');
     const stompClient = Stomp.over(socket);
@@ -74,7 +66,8 @@ $(document).ready(function () {
      */
     function addNotification(notification, isRead = false, appendToBottom = false) {
         const formattedDate = formatDateTime(notification.createdAt); // 날짜 포맷 함수
-        const iconClass = categoryIcons[notification.category] || categoryIcons.default; // 카테고리 아이콘 선택
+        const iconClass = notification.category.icon;
+        console.log(notification.category.icon)
         const newNotification = $(`
         <a class="dropdown-item d-flex align-items-center ${isRead ? 'text-muted' : ''}" href="${notification.targetUrl}" data-id="${notification.id}">
             <div class="me-3">
@@ -100,11 +93,29 @@ $(document).ready(function () {
             notificationList.prepend(newNotification);
         }
 
-        // 클릭 이벤트 추가 (읽음 처리)
         newNotification.on('click', function (event) {
             event.preventDefault();
-            markAsRead(notification.id, newNotification); // 읽음 처리
-            window.location.href = notification.targetUrl; // 알림 클릭 시 URL로 이동
+
+            const notificationElement = $(this); // 클릭된 요소를 가져옴
+
+            // UI를 바로 업데이트
+            notificationElement.addClass('text-muted');
+            notificationElement.find('.icon-circle').removeClass('bg-primary').addClass('bg-secondary');
+            updateNotificationBadge(-1);
+
+            // 서버에 읽음 처리 요청
+            $.post(`/api/notification/read/${notification.id}`)
+                .done(function () {
+                    console.log(`Notification ${notification.id} marked as read`);
+                })
+                .fail(function () {
+                    notificationElement.removeClass('text-muted');
+                    notificationElement.find('.icon-circle').removeClass('bg-secondary').addClass('bg-primary');
+                    updateNotificationBadge(1);
+                });
+
+            // 알림 클릭 시 URL로 이동
+            window.location.href = notification.targetUrl;
         });
     }
 

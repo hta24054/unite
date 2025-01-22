@@ -50,4 +50,5 @@ public interface ProjectMapper {
     boolean updateTodoProgressRate(int projectId, String userid, int todoId, int memberProgressRate);
     boolean todoUpdate(int projectId, String userid, int todoId, String newSubject);
     boolean deleteTodo(int todoId);
+    Project findMemberInfoById(int projectId, String userid);
 }

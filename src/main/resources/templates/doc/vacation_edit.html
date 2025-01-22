@@ -122,7 +122,8 @@
                 </div>
             </div>
         </form>
-        <script th:inline="javascript">
+        <script>
+            const contextPath = /*[[@{/}]]*/ '';
             $(document).ready(function () {
                 // 시작일과 종료일 필드에 change 이벤트 리스너 추가
                 $('input[name="vacation_start"], input[name="vacation_end"]').on('change', function () {
@@ -258,14 +259,14 @@
 
                     // AJAX 요청
                     $.ajax({
-                        url: /*[[@{/doc}]]*/'',
+                        url: contextPath + '/doc',
                         type: "PATCH",
                         data: formData,
                         processData: false,
                         contentType: false,
                         success: function () {
                             alert("문서 작성이 완료되었습니다.");
-                            window.location.href = /*[[@{/doc/inProgress}]]*/'';
+                            window.location.href = contextPath + '/doc/inProgress';
                         },
                         error: function () {
                             alert("문서 작성 중 오류가 발생했습니다.");

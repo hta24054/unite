@@ -2,7 +2,7 @@ $(document).ready(function () {
     const contextPath = /*[[@{}]]*/ '';
     console.log(contextPath)
     $.ajax({
-        url: contextPath + "/home/notice",
+        url: contextPath + "/api/home/notice",
         type: "GET",
         dataType: "json",
         success: function (notices) {

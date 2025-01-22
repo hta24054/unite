@@ -19,13 +19,9 @@ $(document).ready(function () {
             type: "get",
             dataType: "json",
             success: function (data) {
-                $resourceType.empty();
-                $resourceType.append('<option value="">분류명</option>');
-                $resourceName.hide();
-
-                $resourceTypeCategory.empty();
-                $resourceTypeCategory.append('<option value="">분류명</option>');
-                $resourceNameCategory.hide();
+                // 초기화 및 자원 목록 추가
+                resetResourceSelect($resourceType, $resourceName);
+                resetResourceSelect($resourceTypeCategory, $resourceNameCategory);
 
                 // 중복 제거 Set
                 const uniqueResourceType = new Set();
@@ -43,46 +39,14 @@ $(document).ready(function () {
         });
     }
 
-    // 자원 선택 시 해당 자원명 불러오기
-    $resourceTypeCategory.on("change", function () {
-        const $selectedVal = $(this).val();
-        $.ajax({
-            url: "resourceSelectChange",
-            type: "get",
-            dataType: "json",
-            data: {
-                resourceType: $selectedVal,
-            },
-            success: function (data) {
-                $resourceNameCategory.empty();
-                $resourceNameCategory.append('<option value="">자원명</option>');
+    // 자원 선택 초기화
+    function resetResourceSelect($resourceTypeElement, $resourceNameElement) {
+        $resourceTypeElement.empty();
+        $resourceTypeElement.append('<option value="">분류명</option>');
+        $resourceNameElement.hide();
+    }
 
-                // resource_id를 value로 설정
-                data.forEach(function (resource) {
-                    $resourceNameCategory.append('<option value="' + resource.resourceId + '">' + resource.resourceName + '</option>');
-                });
-
-                $resourceNameCategory.show();
-            },
-            error: function () {
-                alert("자원명 불러오기 실패");
-            }
-        });
-    });
-
-    // 자원 선택 시 해당 자원에 대한 예약 목록 불러오기
-    $resourceNameCategory.on("change", function () {
-        const selectedResourceId = $(this).val(); // 선택된 자원 ID
-        const selectedResourceName = $("#resourceNameCategory option:selected").text(); // 선택된 자원 이름
-
-        if (selectedResourceId && selectedResourceName) {
-            getReservationList(selectedResourceId, selectedResourceName); // 자원 ID와 자원 이름에 맞는 예약 목록을 불러오기
-        } else {
-            getReservationList(); // 자원 ID나 이름이 선택되지 않으면 모든 예약 목록을 불러오기
-        }
-    });
-
-    // 자원 선택 시 해당 자원명 불러오기
+    // 모달 - 자원 선택 시 해당 자원명 불러오기
     $resourceType.on("change", function () {
         const $selectedVal = $(this).val();
         $.ajax({
@@ -109,6 +73,78 @@ $(document).ready(function () {
         });
     });
 
+    // 자원 선택 시 해당 자원명 불러오기 (페이지 상단 select 와 모달에서 공통 사용)
+    function loadResourceName($resourceTypeElement, $resourceNameElement, selectedResourceId = null, callback = null) {
+        const selectedVal = $resourceTypeElement.val();
+        $.ajax({
+            url: "resourceSelectChange",
+            type: "get",
+            dataType: "json",
+            data: { resourceType: selectedVal },
+            success: function (data) {
+                $resourceNameElement.empty();
+                $resourceNameElement.append('<option value="">자원명</option>');
+
+                data.forEach(function (resource) {
+                    $resourceNameElement.append('<option value="' + resource.resourceId + '">' + resource.resourceName + '</option>');
+                });
+
+                // 선택된 자원명이 있으면, 그 값을 선택
+                if (selectedResourceId) {
+                    $resourceNameElement.val(selectedResourceId);
+                }
+
+                $resourceNameElement.show();
+
+                // 콜백이 있다면 호출
+                if (callback) callback();
+            },
+            error: function () {
+                alert("자원명 불러오기 실패");
+            }
+        });
+    }
+
+    // 기존 페이지에서 자원 선택 시 자원명 목록 불러오기
+    $resourceTypeCategory.on("change", function () {
+        const selectedCategory = $(this).val(); // 선택된 분류명
+        if (!selectedCategory) {
+            $resourceNameCategory.empty().hide();
+            getReservationList(); // 분류명이 비어 있으면 모든 예약 목록 불러오기
+        } else {
+            loadResourceName($resourceTypeCategory, $resourceNameCategory); // 자원명 로드
+        }
+    });
+
+    // 자원 선택 시 해당 자원에 대한 예약 목록 불러오기
+    $resourceNameCategory.on("change", function () {
+        const selectedResourceId = $(this).val(); // 선택된 자원 ID
+        const selectedResourceName = $("#resourceNameCategory option:selected").text(); // 선택된 자원 이름
+
+        if (selectedResourceId && selectedResourceName) {
+            getReservationList(selectedResourceId, selectedResourceName); // 자원 예약 목록
+        } else {
+            getReservationList(); // 모든 예약 목록
+        }
+    });
+
+    // 모달에서 자원 선택 시 자원명 목록 불러오기
+    $resourceType.on("change", function () {
+        loadResourceName($resourceType, $resourceName);
+    });
+
+    // 모달 열릴 때 기존 페이지에서 선택된 값 동기화
+    $('#reservationModal').on('show.bs.modal', function () {
+        const selectedCategory = $resourceTypeCategory.val(); // 선택된 분류명
+        const selectedResource = $resourceNameCategory.val(); // 선택된 자원명
+
+        // 모달에 선택된 값 동기화
+        if (selectedCategory) {
+            $resourceType.val(selectedCategory); // 분류명 동기화
+            loadResourceName($resourceType, $resourceName, selectedResource); // 자원명 동기화
+        }
+    });
+
     // 자원 예약 목록 불러오기
     function getReservationList(resourceId = null, resourceName = null) {
         $.ajax({
@@ -121,8 +157,6 @@ $(document).ready(function () {
                 empId: $("#emp_id").val(), // 로그인한 사용자의 empId
             },
             success: function (data) {
-                console.log(data);
-
                 events = [];
                 if (data != null && data.length > 0) {
                     for (let i = 0; i < data.length; i++) {
@@ -156,6 +190,18 @@ $(document).ready(function () {
         });
     }
 
+    // 기존 페이지의 셀렉트 값 업데이트
+    function updateResourceSelects(resourceId, resourceName) {
+        const selectedType = $resourceType.val(); // 선택된 분류명
+        const selectedResourceName = $resourceName.val(); // 선택된 자원명
+
+        if(selectedType) {
+            $resourceTypeCategory.val(selectedType);
+            loadResourceName($resourceTypeCategory, $resourceNameCategory, selectedResourceName);
+        }
+    }
+
+
     // 자원 예약 하기
     function resourceReservation(eventData) {
         $.ajax({
@@ -175,8 +221,6 @@ $(document).ready(function () {
                 reservationInfo: $("#reservationInfo").val()
             }),
             success: function (data) {
-                console.log(data)
-
                 if (data === 0) {
                     alert('이미 예약된 자원입니다.');
                     return;  // 이미 예약된 자원이면 예약을 진행하지 않음
@@ -188,6 +232,8 @@ $(document).ready(function () {
 
                 // 등록한 자원의 예약 목록을 불러옴
                 getReservationList(selectedResourceId, selectedResourceName);
+
+                updateResourceSelects(selectedResourceId, selectedResourceName);
 
                 $("#reservationModal").modal("hide");
             },
@@ -214,15 +260,15 @@ $(document).ready(function () {
                     let _html = "<ul class='deatail_list'>" +
                         "<li>분류명: " + data.resourceType + "</li>" +
                         "<li>자원명: " + data.resourceName + "</li>" +
-                        "<li>시작시간: " + moment(event.start).format("YYYY-MM-DD HH:mm") + "</li>";
+                        "<li>시작 일시: " + moment(event.start).format("YYYY-MM-DD HH:mm") + "</li>";
 
-                    // 종료시간 설정 (시작시간과 동일한 경우)
-                    _html += "<li>종료시간: " +
-                        moment(event.end && !moment(event.start).isSame(event.end) ? event.end : event.start).format("YYYY-MM-DD HH:mm") +
-                        "</li>";
+                    // 종료 일시 설정 (시작 일시와 동일한 경우)
+                    _html += "<li>종료 일시: " +
+                                moment(event.end && !moment(event.start).isSame(event.end) ? event.end : event.start).format("YYYY-MM-DD HH:mm") +
+                             "</li>";
 
                     _html += "<li>예약자: " + data.ename + "</li>" +
-                        "<li>사용용도: " + data.reservationInfo || "" + "</li>";
+                             "<li>사용용도: " + data.reservationInfo || "" + "</li>";
 
                     // 자원정보 존재할 경우
                     if (data.resourceInfo) {
@@ -343,22 +389,28 @@ $(document).ready(function () {
         const $resourceName = $("#resourceName");
 
         if ($start.val().trim() === "") {
-            alert("시작 날짜/시간을 선택하세요");
+            alert("시작 일시를 선택하세요");
             $start.focus();
             return false;
         }
 
         if ($end.val().trim() === "") {
-            alert("종료 날짜/시간을 선택하세요");
+            alert("종료 일시를 선택하세요");
             $end.focus();
             return false;
         }
 
         if (new Date($start.val()) > new Date($end.val())) {
-            alert("끝나는 날짜/시간이 시작 날짜/시간보다 이전입니다. 다시 확인해 주세요.");
+            alert("종료 일시가 시작 시작 일시보다 이전입니다. 다시 확인해 주세요.");
             $start.focus();
             return false;
         }
+
+        // if (!$("#allDay").prop("checked") && $start.val() === $end.val()) {
+        //     alert("시작 일시와 종료 일시는 동일할 수 없습니다. 다시 확인해 주세요.");
+        //     $end.focus();
+        //     return false;
+        // }
 
         if ($resourceType.val().trim() === "") {
             alert("분류명을 선택하세요");
@@ -462,6 +514,14 @@ $(document).ready(function () {
             locale: 'ko', // 한국어 설정
             events: events, // 전역 이벤트 배열 사용
             dateClick: function (info) {
+                // 현재 시간과 클릭된 날짜
+                let currentDate = moment(); // 현재 날짜와 시간
+                let clickedDate = moment(info.dateStr); // 클릭한 날짜
+                let startDate = clickedDate.set({
+                    hour: currentDate.hour(),
+                    minute: currentDate.minute()
+                });
+
                 if (!info.event) { // 빈 셀 클릭 시
                     $(".modal-header").find("h5").text("예약 하기");
                     $(".modal-body").find(".btn_wrap").html(`
@@ -470,7 +530,8 @@ $(document).ready(function () {
 				    `);
 
                     $("#allDay").prop("checked", false);
-                    $("#startAt, #endAt").prop("type", "datetime-local").val("");
+                    $("#startAt").prop("type", "datetime-local").val(startDate.format("YYYY-MM-DD HH:mm"));
+                    $("#endAt").prop("type", "datetime-local").val("");
                     $("#description").val("");
                     $resourceType.val("");
                     $resourceName.hide().empty().append('<option value="">자원명</option>');

@@ -9,11 +9,10 @@
         <meta name="description" content=""/>
         <meta name="author" content=""/>
         <title>Unite</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+                crossorigin="anonymous"></script>
         <!-- FontAwesome -->
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-        <!-- Custom Styles -->
-        <link th:href="@{/css/layout.css}" rel="stylesheet"/>
-        <link th:href="@{/css/notification.css}" rel="stylesheet"/>
         <!-- jQuery -->
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
         <!-- Popper.js -->
@@ -32,6 +31,18 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
         <!--        stomp-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+                crossorigin="anonymous"></script>
+        <!--마크다운-->
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        <script th:src="@{/js/layout.js}"></script>
+        <link th:href="@{/css/layout.css}" rel="stylesheet"/>
+        <script th:src="@{/js/notification.js}"></script>
+        <link th:href="@{/css/notification.css}" rel="stylesheet"/>
+        <script th:src="@{/js/layout_ai.js}"></script>
+        <link th:href="@{/css/layout_ai.css}" rel="stylesheet"/>
+        <script th:src="@{/js/messenger.js}"></script>
+
     </head>
     <body class="sb-nav-fixed">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -58,26 +69,38 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Navbar Search -->
-            <form class="d-none d-md-inline-block form-inline ms-auto me-3 my-2 my-md-0" style="width: 300px;">
-                <div class="input-group">
-                    <input class="form-control" type="text" placeholder="통합검색" aria-label="Search for..."
-                           aria-describedby="btnNavbarSearch"/>
-                    <button class="btn btn-secondary" id="btnNavbarSearch" type="button">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </form>
         </div>
 
         <!-- Navbar-->
         <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+            <!-- 메신저 -->
+            <li class="nav-item dropdown no-arrow mx-1">
+                <a class="nav-link dropdown-toggle" href="#" id="messengerDropdown" role="button"
+                   data-bs-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false" style="line-height: 30px;">
+                    <i class="bi bi-chat-right-dots-fill fs-4"></i>
+                    <span class="badge badge-danger badge-counter" id="messengerBadge" style="display:none;">0</span>
+                </a>
+                <div class="dropdown-list dropdown-menu dropdown-menu-end shadow animated--grow-in"
+                     aria-labelledby="messengerDropdown" style="max-height: 300px; overflow-y: auto; min-width: 250px;">
+                    <h6 class="dropdown-header">채팅</h6>
+                    <div id="messengerList" style="padding: 10px;">
+                        <p id="noMessengerMessage" class="text-center text-muted"
+                           style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">채팅을 시작해
+                            보세요</p>
+                    </div>
+                    <div class="text-end small text-gray-500 w-100">
+                        <button id="MessengerButton" class="btn btn-link text-decoration-none text-black fw-bold"
+                                style="font-size: 15px;">GO MESSENGER
+                        </button>
+                    </div>
+                </div>
+            </li>
             <!-- 알림 -->
             <li class="nav-item dropdown no-arrow mx-1">
                 <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-bs-toggle="dropdown"
-                   aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-bell fa-fw"></i>
+                   aria-haspopup="true" aria-expanded="false" style="line-height: 35px;">
+                    <i class="fas fa-bell fa-fw fs-4"></i>
                     <!-- Counter - Alerts -->
                     <span class="badge badge-danger badge-counter" id="notificationBadge" style="display:none;">0</span>
                 </a>
@@ -96,11 +119,10 @@
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
-                   aria-expanded="false"><img th:src="@{/emp/profile-image(empId=${#authentication.name})}"
-                                              width="30px"></a>
+                   aria-expanded="false"><img th:src="@{/api/emp/profile-image(empId=${#authentication.name})}"
+                                              width="30px" style="border-radius: 50%; background-color: white;"></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" th:href="@{/emp/password}">비밀번호 변경</a></li>
-                    <li><a class="dropdown-item" href="#!">Activity Log</a></li>
                     <li>
                         <hr class="dropdown-divider"/>
                     </li>
@@ -261,8 +283,8 @@
                              data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" th:href="@{/project/main}">진행 중 프로젝트</a>
-                                <a class="nav-link" th:href="@{/project/done?dowhat=2}">완료 프로젝트</a>
-                                <a class="nav-link" th:href="@{/project/done?dowhat=1}">취소 프로젝트</a>
+                                <a class="nav-link" th:href="@{/api/project/done?state=2}">완료 프로젝트</a>
+                                <a class="nav-link" th:href="@{/api/project/done?state=1}">취소 프로젝트</a>
                                 <a class="nav-link" th:href="@{/project/create}">프로젝트 추가</a>
                             </nav>
                         </div>
@@ -279,9 +301,7 @@
                              data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" th:href="@{/reservation/reservationCalender}">자원예약</a>
-                                <a class="nav-link"
-                                   th:href="@{/reservation/reservationCalender/myReservationList?emp_id=${id}}">나의 예약
-                                    목록</a>
+                                <a class="nav-link" th:href="@{/reservation/myReservationList}">나의 예약 목록</a>
                             </nav>
                         </div>
 
@@ -384,11 +404,28 @@
             </footer>
         </div>
     </div>
+
+    <div id="aiBadge" class="ai-badge">
+        <img th:src="@{/image/ai_icon4.png}" alt="AI Badge">
+    </div>
+    <!-- AI채팅창 -->
+    <div id="aiChat" class="chat-window hiddenAi">
+        <div class="chat-header">
+            <span>AI Chat&nbsp;&nbsp;<img th:src="@{/image/OpenAI_logo.png}" width="70px"></span>
+            <span id="closeChat" class="close-btn">&times;</span>
+        </div>
+        <div class="chat-body">
+            <!-- 동적으로 추가될 채팅 메시지 -->
+        </div>
+        <div class="chat-footer">
+            <label for="chatInput"></label><textarea id="chatInput" placeholder="Type your command..."></textarea>
+            <button id="aiSend">Send</button>
+        </div>
+    </div>
+
     <!--토스트 컨테이너-->
     <div id="toastContainer" style="position: fixed; bottom: 10px; right: 10px; z-index: 9999;"></div>
-    <script th:src="@{/js/layout.js}"></script>
-    <script th:src="@{/js/notification.js}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+
     </body>
     </html>
 </th:block>

@@ -5,23 +5,132 @@
         <head>
             <title>Unite</title>
             <link th:href="@{/css/popup.css}" rel="stylesheet"/>
+            <link th:href="@{/css/currency.css}" rel="stylesheet"/>
             <script th:src="@{/js/popup.js}"></script>
+            <script th:src="@{/js/currency.js}"></script>
+            <script th:src="@{/js/home.js}"></script>
         </head>
-        <body class="sb-nav-fixed">
-        <div>(임시) 홈화면입니다. 로그인 한 사용자 : [[${#authentication.name}]] 프로필사진 : <img
-                th:src="@{/emp/profile-image(empId=${#authentication.name})}" width="30px"></div>
-        <div th:replace="attend/attendBox.html">
-        </div>
-        <!-- 팝업 컨테이너 -->
-        <div id="popup-container">
-            <p id="popup-content"></p>
-            <div class="button-container">
-                <button id="popup-close" class="btn btn-sm btn-light" style="font-size: 10px">닫기</button>
-                <button id="popup-dont-show" class="btn btn-sm btn-secondary" style="font-size: 10px">모든 공지사항 하루 보지 않기
-                </button>
+        <body class="bg-light">
+        <div class="container mt-4">
+            <div class="row g-4">
+                <!-- 프로필 정보 표시 -->
+                <div class="col-lg-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <img th:src="@{/api/emp/profile-image(empId=${#authentication.name})}"
+                                 class="rounded-circle mb-3" width="150px" alt="프로필">
+                            <h5 th:text="${name}" class="card-title mb-1"></h5>
+                            <p th:text="${job}" class="text-muted small mb-2"></p>
+                            <p th:text="${email}" class="text-muted small"></p>
+                            <hr>
+                            <div class="text-start">
+                                <p>
+                                    결재 대기 문서: <a th:href="@{/doc/waiting}" class="text-decoration-none text-secondary">
+                                    <span th:text="${waiting}"></span>
+                                </a>
+                                </p>
+                                <p>
+                                    결재 진행 문서: <a th:href="@{/doc/inProgress}"
+                                                 class="text-decoration-none text-secondary">
+                                    <span th:text="${inProgress}"></span>
+                                </a>
+                                </p>
+                            </div>
+                            <div class="d-flex justify-content-around mt-4">
+                                <a href="/contact/inner" id="inner">
+                                    <img th:src="@{/image/inner.png}" style="width:50px; height:50px;">
+                                </a>
+                                <a href="/contact/outer" id="outer">
+                                    <img th:src="@{/image/outer.png}" style="width:50px; height:50px;">
+                                </a>
+                            </div>
+                            <div class="d-flex justify-content-around mt-2">
+                                <span>사내주소록</span>
+                                <span>외부주소록</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 게시판 -->
+                <div class="col-lg-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <!--                캘린더-->
+                            <div th:replace="schedule.html"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 환율 정보 -->
+                <div class="col-lg-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="text-center">환율 정보</h5>
+                            <div class="text-center" style="font-size: 12px; color: gray">* PM 12:00 업데이트</div>
+                            <ul class="list-group">
+                                <li id="usd-rate"
+                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                    <img th:src="@{/image/flags/usa.jpg}" width="30px" class="me-2">
+                                    <span class="rate-value text-end flex-grow-1"></span>
+                                </li>
+                                <li id="jpy-rate"
+                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                    <img th:src="@{/image/flags/japan.jpg}" width="30px" class="me-2">
+                                    <span class="rate-value text-end flex-grow-1"></span>
+                                </li>
+                                <li id="eur-rate"
+                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                    <img th:src="@{/image/flags/eu.png}" width="30px" class="me-2">
+                                    <span class="rate-value text-end flex-grow-1"></span>
+                                </li>
+                                <li id="cnh-rate"
+                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                    <img th:src="@{/image/flags/china.jpg}" width="30px" class="me-2">
+                                    <span class="rate-value text-end flex-grow-1"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 출근 버튼 박스 -->
+            <div class="row mt-4">
+                <div class="col-lg-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div th:replace="attend/attendBox.html"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5><a th:href="@{/board/home}" class="text-decoration-none text-dark">게시판</a></h5>
+                            <table class="table table-striped board_table">
+                                <tbody>
+                                <tr>
+                                    <td>게시글이 없습니다</td>
+                                    <td></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <!--팝업 컨테이너 끝-->
+        <!-- 팝업 컨테이너 -->
+        <div id="popup-container"
+             class="position-fixed top-50 start-50 translate-middle p-4 bg-white border rounded shadow-lg"
+             style="width: 300px; display: none; z-index: 1050;">
+            <p id="popup-content" class="mb-3 text-center"></p>
+            <div class="d-flex justify-content-between">
+                <button id="popup-close" class="btn btn-light btn-sm">닫기</button>
+                <button id="popup-dont-show" class="btn btn-secondary btn-sm">모든 공지사항 하루 보지 않기</button>
+            </div>
+        </div>
         </body>
         </html>
     </th:block>

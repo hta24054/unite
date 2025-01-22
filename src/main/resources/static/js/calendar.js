@@ -617,6 +617,14 @@ $(document).ready(function () {
             locale: 'ko', // 한국어 설정
             events: events, // 전역 이벤트 배열 사용
             dateClick: function (info) {
+                // 현재 시간과 클릭된 날짜
+                let currentDate = moment(); // 현재 날짜와 시간
+                let clickedDate = moment(info.dateStr); // 클릭한 날짜
+                let startDate = clickedDate.set({
+                    hour: currentDate.hour(),
+                    minute: currentDate.minute()
+                });
+
                 $(".modal-header").find("h5").text("일정 등록");
                 $(".modal-body").find(".btn_wrap").html(`
 		            <button type="reset" class="btn btn-secondary">취소</button>
@@ -624,7 +632,8 @@ $(document).ready(function () {
 		        `);
 
 		        $("#schedule_name").val("");
-		        $("#startAt, #endAt").prop("type", "datetime-local").val("");
+                $("#startAt").prop("type", "datetime-local").val(startDate.format("YYYY-MM-DD HH:mm"));
+                $("#endAt").prop("type", "datetime-local").val("");
 		        $("#description").val("");
 		        $("#bgColor").val("#1e3a8a");
 		        $("#allDay").prop("checked", false);

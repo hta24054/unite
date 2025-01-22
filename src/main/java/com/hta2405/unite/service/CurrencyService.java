@@ -11,7 +11,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,13 +25,26 @@ public class CurrencyService {
         this.apiKey = apiKey;
     }
 
-    public List<CurrencyDTO> fetchCurrencyData() {
-        //환율이 11시 전후 업데이트 되므로, 12시 이전에는 전날로 요청
-        LocalDate date = LocalDate.now();
-        if (LocalDateTime.now().getHour() < 12) {
-            date = date.minusDays(1);
+    public List<CurrencyDTO> getCachedCurrency() {
+        // 초기 서버 부팅 시 캐싱된 데이터가 없으면 API 호출
+        if (cachedCurrency == null) {
+            cachedCurrency = fetchCurrencyDataWithFallback(LocalDate.now());
         }
+        return cachedCurrency;
+    }
 
+    // 환율 반환 메서드, 아직 업데이트 안된날은 전날로 시도함
+    private List<CurrencyDTO> fetchCurrencyDataWithFallback(LocalDate date) {
+        List<CurrencyDTO> currencyList = fetchCurrencyData(date);
+        if (currencyList.isEmpty()) {
+            log.info("환율 정보가 업데이트 되지 않아, 전날로 조회합니다.");
+            currencyList = fetchCurrencyData(date.minusDays(1));
+        }
+        return currencyList;
+    }
+
+    // API 호출
+    public List<CurrencyDTO> fetchCurrencyData(LocalDate date) {
         URI uri = URI.create(URL + "?authkey=" + apiKey + "&searchdate=" + date + "&data=AP01");
         log.info("currency uri = {}", uri);
         RestTemplate restTemplate = new RestTemplate();
@@ -40,13 +52,10 @@ public class CurrencyService {
             String jsonResponse = restTemplate.getForObject(uri, String.class);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            List<CurrencyDTO> currencies = objectMapper.readValue(jsonResponse, new TypeReference<>() {
-            });
+            List<CurrencyDTO> currencies = objectMapper.readValue(jsonResponse, new TypeReference<>() {});
 
-            List<CurrencyDTO> currencyDTOList = new ArrayList<>(currencies);
-
-            log.info("Filtered currency data: {}", currencyDTOList);
-            return currencyDTOList;
+            log.info("Filtered currency data: {}", currencies);
+            return new ArrayList<>(currencies);
 
         } catch (Exception e) {
             log.error("Failed to fetch currency data from API: {}", e.getMessage());
@@ -54,24 +63,14 @@ public class CurrencyService {
         }
     }
 
-
-    // 캐싱된 데이터 반환
-    public List<CurrencyDTO> getCachedCurrency() {
-        if (cachedCurrency == null) {
-            // 초기 서버 부팅 시 캐싱된 데이터가 없으면 API 호출
-            cachedCurrency = fetchCurrencyData();
-        }
-        return cachedCurrency;
-    }
-
     // 1시간마다 데이터 갱신
     @Scheduled(cron = "0 0 * * * ?")
     public void updateCurrencyCache() {
         try {
-            cachedCurrency = fetchCurrencyData();
-            System.out.println("Currency cache updated: " + cachedCurrency);
+            cachedCurrency = fetchCurrencyDataWithFallback(LocalDate.now());
+            log.info("Currency cache updated: {}", cachedCurrency);
         } catch (Exception e) {
-            System.err.println("Failed to update currency data: " + e.getMessage());
+            log.error("Failed to update currency data: {}", e.getMessage());
         }
     }
 }

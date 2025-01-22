@@ -1,40 +1,40 @@
-/*팝업관련 시작*/
-#popup-container {
-    display: none;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-    background: #fff;
-    padding: 30px;
-    border: 1px solid #ccc;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-height: 70vh; /* 화면 높이의 70%로 제한 */
-    overflow-y: auto; /* 세로 스크롤 활성화 */
-    overflow-x: hidden; /* 가로 스크롤 제거 */
-    border-radius: 8px;
-    position: fixed;
-    min-width: 400px; /* 최소 가로 크기 설정 */
-    max-width: 90%; /* 화면의 최대 90%로 제한 */
-    width: auto; /* 컨텐츠 크기에 따라 가로 크기 조정 */
-    word-wrap: break-word; /* 긴 단어 줄바꿈 */
-    word-break: break-word; /* 단어가 길 경우 줄바꿈 */
-}
+/*!*팝업관련 시작*!*/
+/*#popup-container {*/
+/*    display: none;*/
+/*    top: 50%;*/
+/*    left: 50%;*/
+/*    transform: translate(-50%, -50%);*/
+/*    z-index: 1000;*/
+/*    background: #fff;*/
+/*    padding: 30px;*/
+/*    border: 1px solid #ccc;*/
+/*    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);*/
+/*    max-height: 70vh; !* 화면 높이의 70%로 제한 *!*/
+/*    overflow-y: auto; !* 세로 스크롤 활성화 *!*/
+/*    overflow-x: hidden; !* 가로 스크롤 제거 *!*/
+/*    border-radius: 8px;*/
+/*    position: fixed;*/
+/*    min-width: 400px; !* 최소 가로 크기 설정 *!*/
+/*    max-width: 90%; !* 화면의 최대 90%로 제한 *!*/
+/*    width: auto; !* 컨텐츠 크기에 따라 가로 크기 조정 *!*/
+/*    word-wrap: break-word; !* 긴 단어 줄바꿈 *!*/
+/*    word-break: break-word; !* 단어가 길 경우 줄바꿈 *!*/
+/*}*/
 
-#popup-content {
-    font-size: 16px;
-    color: #333;
-    margin-bottom: 20px;
-}
+/*#popup-content {*/
+/*    font-size: 16px;*/
+/*    color: #333;*/
+/*    margin-bottom: 20px;*/
+/*}*/
 
-.button-container {
-    position: absolute; /* 부모 요소 기준으로 배치 */
-    right: 20px; /* 팝업 오른쪽에서 20px */
-    cursor: pointer;
-    transition: background-color 0.1s; /* hover 효과 부드럽게 */
-}
+/*.button-container {*/
+/*    position: absolute; !* 부모 요소 기준으로 배치 *!*/
+/*    right: 20px; !* 팝업 오른쪽에서 20px *!*/
+/*    cursor: pointer;*/
+/*    transition: background-color 0.1s; !* hover 효과 부드럽게 *!*/
+/*}*/
 
-#popup-close:hover {
-    background-color: #0056b3; /* hover 시 색상 변경 */
-}
-/*팝업관련 끝*/
+/*#popup-close:hover {*/
+/*    background-color: #0056b3; !* hover 시 색상 변경 *!*/
+/*}*/
+/*!*팝업관련 끝*!*/

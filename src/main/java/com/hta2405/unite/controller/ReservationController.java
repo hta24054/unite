@@ -1,5 +1,6 @@
 package com.hta2405.unite.controller;
 
+import com.hta2405.unite.domain.Reservation;
 import com.hta2405.unite.domain.Resource;
 import com.hta2405.unite.dto.ReservationDTO;
 import com.hta2405.unite.service.ReservationService;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -32,11 +34,11 @@ public class ReservationController {
         return "/reservation/reservationCalender";
     }
 
-    @ResponseBody
-    @GetMapping("/getResourceList")
-    public List<Resource> getResourceList() {
-        return resourceService.getResourceList();
-    }
+//    @ResponseBody
+//    @GetMapping("/getResourceList")
+//    public List<Resource> getResourceList() {
+//        return resourceService.getResourceList();
+//    }
 
     @ResponseBody
     @GetMapping("/resourceSelectChange")
@@ -55,8 +57,52 @@ public class ReservationController {
 
             reservationDTOList.add(reservationDTO);
         }
+
         return reservationDTOList;
     }
+
+    @ResponseBody
+    @GetMapping("/resourceSelectReservation")
+    public List<ReservationDTO> resourceSelectReservation(@RequestParam("resourceType") String resourceType) {
+        List<Resource> resources = reservationService.resourceSelectChange(resourceType);
+        List<ReservationDTO> reservations = new ArrayList<>();
+
+        if (resourceType != null && !resources.isEmpty()) {
+            for (Resource resource : resources) {
+                // 예약 DTO 생성
+                ReservationDTO reservationDTO = new ReservationDTO();
+                reservationDTO.setResourceId(resource.getResourceId());
+                reservationDTO.setResourceType(resource.getResourceType());
+                reservationDTO.setResourceName(resource.getResourceName());
+                reservationDTO.setResourceUsable(resource.isResourceUsable());
+
+                // 자원에 해당하는 예약 목록을 가져와서 DTO에 추가
+                List<ReservationDTO> resourceReservations = reservationService.getReservationsByResourceId(resource.getResourceId());
+
+                for (ReservationDTO reservation : resourceReservations) {
+                    ReservationDTO reservationDetails = new ReservationDTO();
+                    reservationDTO.setReservationId(reservation.getReservationId());
+                    reservationDTO.setResourceId(reservation.getResourceId());
+                    reservationDTO.setResourceType(reservation.getResourceType());
+                    reservationDTO.setResourceName(reservation.getResourceName());
+                    reservationDTO.setResourceUsable(reservation.isResourceUsable());
+                    reservationDTO.setReservationStart(reservation.getReservationStart());
+                    reservationDTO.setReservationEnd(reservation.getReservationEnd());
+                    reservationDTO.setReservationInfo(reservation.getReservationInfo());
+                    reservationDTO.setReservationAllDay(reservation.getReservationAllDay());
+
+                    reservationDTO.addReservation(reservationDetails);
+                }
+
+                reservations.add(reservationDTO);
+            }
+
+            System.out.println(reservations);
+        }
+
+        return reservations;
+    }
+
 
     @ResponseBody
     @PostMapping("/resourceReservation")
@@ -73,12 +119,13 @@ public class ReservationController {
         int overlapCount = reservationService.checkReservationOverlap(reservationDTO);
         if (overlapCount > 0) {
             System.out.println("이미 예약된 자원입니다.");
-            return 0;
+            return 0; // 중복 예약이 있는 경우
         }
 
         // 중복이 없다면 예약 추가
         return reservationService.resourceReservation(reservationDTO);
     }
+
 
     @ResponseBody
     @GetMapping("/getReservationList")
@@ -125,9 +172,16 @@ public class ReservationController {
     @PostMapping("/cancelReservation")
     public int cancelReservation(@RequestParam Long reservationId, @AuthenticationPrincipal UserDetails user) {
         String empId = user.getUsername();
-        int result = reservationService.cancelReservation(reservationId, empId);
-        return result;
+        return reservationService.cancelReservation(reservationId, empId);
     }
 
+    @GetMapping("/myReservationList")
+    public Model getMyReservationList(@AuthenticationPrincipal UserDetails user, Model model) {
+        String empId = user.getUsername();
 
+        // 예약 목록 가져오기
+        List<ReservationDTO> reservationList = reservationService.getMyReservationList(empId);
+        model.addAttribute("reservationList", reservationList);
+        return model;
+    }
 }

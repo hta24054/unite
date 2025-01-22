@@ -109,7 +109,8 @@
             </div>
             <!-- 버튼 영역 -->
         </form>
-        <script th:inline="javascript">
+        <script>
+            const contextPath = /*[[@{/}]]*/ '';
             $(document).ready(function () {
                 // 페이지 로드 시 초기화 로직
                 function initializePage() {
@@ -118,6 +119,7 @@
                     });
                     updateTotal(); // 전체 합계 업데이트
                 }
+
                 initializePage();
 
                 // 최대 품목 수, 수량, 단가
@@ -265,7 +267,7 @@
                     });
 
                     // JSON 데이터를 Blob으로 추가
-                    formData.append("formData", new Blob([JSON.stringify(jsonData)], { type: "application/json" }));
+                    formData.append("formData", new Blob([JSON.stringify(jsonData)], {type: "application/json"}));
 
                     console.log(jsonData);
 
@@ -279,14 +281,14 @@
 
                     // AJAX 요청
                     $.ajax({
-                        url: /*[[@{/doc}]]*/'',
+                        url: contextPath + '/api/doc',
                         type: "PATCH",
                         data: formData,
                         processData: false,
                         contentType: false,
                         success: function () {
                             alert("문서 작성이 완료되었습니다.");
-                            window.location.href = /*[[@{/doc/inProgress}]]*/'';
+                            window.location.href = contextPath + '/doc/inProgress';
                         },
                         error: function () {
                             alert("문서 작성 중 오류가 발생했습니다.");

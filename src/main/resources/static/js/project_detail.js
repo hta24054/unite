@@ -1,6 +1,6 @@
 $(document).ready(function () {
     let currentProjectId, memberId;
-
+	color();
     // 업무 내용 클릭 시
     $(".task-content.clickable").click(function () {
         console.log('c');
@@ -22,7 +22,7 @@ $(document).ready(function () {
         }
 
         $.ajax({
-            url: "/project/updatetaskdesign",
+            url: "/api/project/updatetaskdesign",
             type: "POST",
             data: {
                 projectId: currentProjectId,
@@ -66,7 +66,7 @@ $(document).ready(function () {
 	    }
 	
 	    $.ajax({
-	        url: "../projectBoard/write", // 서버 경로
+	        url: "/api/project/write", // 서버 경로
 	        type: "POST", // HTTP 메서드
 	        data: formData, // FormData 객체로 전송
 	        contentType: false, // jQuery가 자동으로 Content-Type을 설정하지 않도록 설정
@@ -99,61 +99,7 @@ $(document).ready(function () {
 		location.href = "../projectBoard/list?projectId="+projectId+"&memberId="+memberId;
     });
 
-    // 진행률 저장 버튼 클릭 시
-    $("#saveProgressBtn").click(function () {
-        const newProgressRate = $("#progressInput").val();  // 새로 입력된 진행률
-        console.log("New progress rate: " + newProgressRate);
 
-        if (!newProgressRate) {
-            alert("진행률을 입력해 주세요.");
-            return;
-        }
-
-        // 서버에 요청
-        $.ajax({
-            url: "/project/updateprogress",  // 서버 요청 URL
-            type: "POST",
-            data: {
-                projectId: currentProjectId,      // 프로젝트 ID
-                memberId: memberId,                // 로그인한 사용자 ID
-                memberProgressRate: newProgressRate // 새로운 진행률
-            },
-            success: function (response) {
-                console.log("Response from server: ", response);
-
-                if (response.success) {
-                    // 서버에서 성공적으로 응답 받은 경우, 해당 로그인한 사용자의 진행률만 업데이트
-                    const progressRateElement = $(`.progress-rate[data-id='${currentProjectId}'][data-memberid='${memberId}']`);
-
-                    if (progressRateElement.length > 0) {
-                        // 진행률 텍스트와 스타일을 업데이트
-                        progressRateElement.find(".progress-bar").css("width", newProgressRate + "%").text(newProgressRate + "%");
-                        progressRateElement.data("rate", newProgressRate);  // data 속성도 업데이트
-
-                        // 진행률에 맞춰 CSS 클래스 업데이트
-                        if (newProgressRate >= 100) {
-                            progressRateElement.find(".progress-bar").removeClass('bg-warning bg-danger').addClass('bg-success');
-                        } else if (newProgressRate >= 50) {
-                            progressRateElement.find(".progress-bar").removeClass('bg-danger bg-success').addClass('bg-warning');
-                        } else {
-                            progressRateElement.find(".progress-bar").removeClass('bg-warning bg-success').addClass('bg-danger');
-                        }
-                    } else {
-                        console.log("진행률 요소를 찾을 수 없습니다.");
-                    }
-                    alert("진행률 변경 완료했습니다");
-                } else {
-                    console.log("업데이트에 실패했습니다.");
-                }
-
-                $("#progressModal").modal("hide");  // 진행률 모달 창 숨기기
-            },
-            error: function () {
-                console.log("오류가 발생했습니다.");
-                $("#progressModal").modal("hide");
-            }
-        });
-    });
 
     // 게시물 리스트 업데이트
     function updatePostList(posts) {
@@ -208,7 +154,7 @@ $(document).ready(function () {
 
                         const postRow = `
 	                        <tr>
-	                        	<td><img src="${contextPath}/emp/profile-image?UUID=${notice.task_file_uuid}"style="width:36px; height: 36px; border-radius:50%; border: 1px solid gray;"></td>
+	                        	<td><img src="${contextPath}/api/emp/profile-image?UUID=${notice.task_file_uuid}"style="width:36px; height: 36px; border-radius:50%; border: 1px solid gray;"></td>
 	                            <td>${notice.taskWriter} ${notice.Jobname}님이<br>${notice.ProjectName} - ${notice.taskTitle}을(를)<br>${action}<br><br><small>${actionDate}</small></td>
 	                        </tr>
 	                    `;
@@ -234,7 +180,7 @@ $(document).ready(function () {
 		console.log(projectId);
 		console.log(memberId);
 		$.ajax({
-			url: '/project/todoList',  // 투두리스트 항목을 가져오는 URL
+			url: '/api/project/todoList',  // 투두리스트 항목을 가져오는 URL
 			method: 'GET',
 			data: {
 				projectId: projectId,
@@ -296,7 +242,7 @@ $(document).ready(function () {
 
 		// AJAX 요청 보내기
 		$.ajax({
-			url: "/project/todoList",  // 올바른 경로 설정
+			url: "/api/project/todoList",  // 올바른 경로 설정
 			type: "GET",
 			data: {
 				projectId: projectId,
@@ -315,12 +261,11 @@ $(document).ready(function () {
 	});
 
 	function updateTodoList(todos, row) {
-		// 투두 리스트가 없으면 '작성하신 투두 리스트가 없습니다' 메시지 추가
 		if (!todos || todos.length === 0) {
 			console.log("투두 리스트가 없습니다.");
 			var todoRow = $("<tr class='todo-row' style='font-size:30px; background-color: gray; color: white;'></tr>");  // 새로운 tr 태그 생성
 			var todoData = `
-            <td colspan="3" style="text-align: center">작성하신 투두 리스트가 없습니다</td>
+            <td colspan="3" style="text-align: center">작성된 투두 리스트가 없습니다</td>
         `;
 			todoRow.append(todoData);  // 해당 데이터를 tr에 추가
 			row.after(todoRow);  // 클릭된 행 바로 아래에 삽입
@@ -340,11 +285,6 @@ $(document).ready(function () {
 			row.after(todoRow);  // 클릭된 행 바로 아래에 삽입
 		});
 	}
-
-
-
-
-
 
 
 });

@@ -1,5 +1,6 @@
 package com.hta2405.unite.security;
 
+import com.hta2405.unite.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,8 +46,8 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthorizationFilter(jwtUtil), JwtAuthenticationFilter.class);
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**", "/css/**", "/js/**", "/image/**", "/error").permitAll()
-                .requestMatchers("/admin/**", "/emp/admin/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers("/auth/**", "/api/auth/**", "/css/**", "/js/**", "/image/**", "/error").permitAll()
+                .requestMatchers("/admin/**", "/emp/admin/**").hasAuthority(Role.ROLE_ADMIN.getRoleName())
                 //관리자, 매니저, HR부서만 접근 가능하도록 설정
                 .requestMatchers("/manager/**").access(managerAndHRAuthorizationManager)
                 .anyRequest().authenticated()

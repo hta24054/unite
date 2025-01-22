@@ -1,5 +1,5 @@
+const contextPath = /*[[@{/}]]*/ '';
 $(document).ready(function () {
-    const contextPath = /*[[@{}]]*/ '';
     const lang_kor = {
         "decimal": "",
         "emptyTable": "데이터가 없습니다.",
@@ -21,9 +21,8 @@ $(document).ready(function () {
     const resourceTable = $('#resourceTable').DataTable({
         language: lang_kor,
         ajax: {
-            url: contextPath + "/admin/resource/list",
+            url: contextPath + "/api/admin/resource",
             dataSrc: 'data',
-
         },
         columns: [
             {
@@ -51,15 +50,19 @@ $(document).ready(function () {
     $("#insertResource").submit(function (event) {
         event.preventDefault();
         $.post({
-            url: contextPath + "/admin/resource",
+            url: contextPath + "/api/admin/resource",
             data: $(this).serialize(),
-            success: function () {
-                alert("등록 성공");
+            success: function (data) {
+                if (data === 1) {
+                    alert("자원을 등록하였습니다.");
+                } else {
+                    alert("자원등록을 실패하였습니다.")
+                }
                 $('#addResourceModal').modal('hide');
                 resourceTable.ajax.reload();
             },
             error: function () {
-                alert("등록 실패");
+                alert("자원등록을 실패하였습니다.")
             }
         });
     });
@@ -68,16 +71,20 @@ $(document).ready(function () {
     $("#updateResource").submit(function (event) {
         event.preventDefault();
         $.ajax({
-            url: contextPath + "/admin/resource",
+            url: contextPath + "/api/admin/resource",
             type: "PATCH",
             data: $(this).serialize(),
-            success: function () {
-                alert("수정 성공");
+            success: function (data) {
+                if (data === 1) {
+                    alert("자원을 수정하였습니다.");
+                } else {
+                    alert("자원수정을 실패하였습니다.")
+                }
                 $('#editResourceModal').modal('hide');
                 resourceTable.ajax.reload();
             },
             error: function () {
-                alert("수정 실패");
+                alert("자원수정을 실패하였습니다.")
             }
         });
     });
@@ -96,15 +103,19 @@ $(document).ready(function () {
         if (confirm("선택한 자원을 삭제하시겠습니까?")) {
             $('#deleteResourceIds').val(selectedIds.join(','));
             $.ajax({
-                url: "../admin/resource",
+                url: contextPath + "/api/admin/resource",
                 type: "DELETE",
                 data: {selectedIds},
                 success: function (data) {
-                    alert(data);
+                    if (data > 0) {
+                        alert("자원을 삭제하였습니다.");
+                    } else {
+                        alert("자원삭제를 실패하였습니다.")
+                    }
                     resourceTable.ajax.reload();
                 },
                 error: function () {
-                    alert("삭제에 실패했습니다.");
+                    alert("자원삭제를 실패하였습니다.")
                 }
             });
         }

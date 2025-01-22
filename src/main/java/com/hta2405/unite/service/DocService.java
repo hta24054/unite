@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -61,15 +62,9 @@ public class DocService {
         List<Sign> list = getSigns(doc, signers);
         docMapper.insertSign(list);
 
-        NotificationDTO notification = NotificationDTO.builder()
-                .category(NotificationCategory.DOC)
-                .title("[전자문서 결재]")
-                .message(doc.getDocTitle() + " 문서가 결재 대기중입니다.")
-                .recipientId(list.get(1).getEmpId())
-                .targetUrl("/doc?docId=" + doc.getDocId())
-                .isRead(false)
-                .createdAt(LocalDateTime.now().toString()).build();
-        notificationService.sendNotification(notification);
+        sendDocNotification("[전자문서]",
+                doc.getDocTitle() + "문서가 결재 대기중입니다.",
+                list.get(1).getEmpId(), doc);
     }
 
     @Transactional
@@ -101,7 +96,7 @@ public class DocService {
                                 List<String> signers,
                                 List<MultipartFile> files) {
         saveGeneralDoc(doc, signers);
-        if (files != null && !files.isEmpty()) {
+        if (!ObjectUtils.isEmpty(files)) {
             //어차피 일단 정책상 아직 첨부파일 최대 1개
             FileDTO fileDTO = fileService.uploadFile(files.get(0), FILE_DIR);
             setFileData(docVacationBuilder, fileDTO);
@@ -166,13 +161,12 @@ public class DocService {
                         beforeDocVacation.getVacationFileOriginal());
                 clearFileData(docVacationBuilder);
             }
-            //새로운 파일이 있다면
 
-            if (files != null && !files.isEmpty()) {
+            //새로운 파일이 있다면
+            if (!ObjectUtils.isEmpty(files)) {
                 FileDTO fileDTO = fileService.uploadFile(files.get(0), FILE_DIR);
                 setFileData(docVacationBuilder, fileDTO);
             }
-
         }
         DocVacation updatedDocVacation = docVacationBuilder.build();
         docMapper.updateVacationDoc(updatedDocVacation);
@@ -320,11 +314,32 @@ public class DocService {
         if (docMapper.signDoc(docId, empId) != 1) {
             return false;
         }
+        List<Sign> signList = docMapper.getSignListByDocId(docId);
 
-        // 결재 완료 처리
+
+        //마지막 결재자가 아니라면, 즉 뒤에 더 결재자가 있다면 다음사람에게 알림 보냄
+        int singerIdx = -1;
+        for (int i = 0; i < signList.size(); i++) {
+            if (signList.get(i).getEmpId().equals(empId)) {
+                singerIdx = i;
+            }
+        }
+        Doc doc = docMapper.getDocById(docId);
+        if (signList.size() > singerIdx + 1) {
+            sendDocNotification("[전자문서]",
+                    doc.getDocTitle() + "문서가 결재 대기중입니다.",
+                    signList.get(singerIdx + 1).getEmpId(), doc);
+        }
+
+        // 결재 완료 문서일 경우 기안자에 알림 및 근태 반영 처리
         if (docMapper.checkSignFinished(docId)) {
+
+            //기안자ㅇ[ㅔ 알림
+            sendDocNotification("[전자문서]",
+                    doc.getDocTitle() + "문서가 결재 완료되었습니다.",
+                    doc.getDocWriter(), doc);
+
             docMapper.setSignFinished(docId);
-            Doc doc = docMapper.getDocById(docId);
 
             if (doc.getDocType() == DocType.VACATION) {
                 attendService.insertVacation(doc.getDocWriter(), docMapper.getDocVacationByDocId(docId));
@@ -334,8 +349,20 @@ public class DocService {
                 attendService.insertTrip(doc.getDocWriter(), docMapper.getDocTripByDocId(docId));
             }
         }
-
         return true;
+    }
+
+    @Transactional
+    public void sendDocNotification(String title, String message, String empId, Doc doc) {
+        NotificationDTO notification = NotificationDTO.builder()
+                .category(NotificationCategory.DOC)
+                .title(title)
+                .message(message)
+                .recipientId(empId)
+                .targetUrl("/doc?docId=" + doc.getDocId())
+                .isRead(false)
+                .createdAt(LocalDateTime.now().toString()).build();
+        notificationService.sendNotification(notification);
     }
 
     @Transactional
@@ -366,7 +393,7 @@ public class DocService {
         mv.addObject("title", title);
         mv.addObject("message", message);
         mv.addObject("list", docList);
-        mv.setViewName("/doc/list");
+        mv.setViewName("/doc/docList");
         return mv;
     }
 

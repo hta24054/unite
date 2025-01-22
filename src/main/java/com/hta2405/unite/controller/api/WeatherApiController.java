@@ -1,4 +1,4 @@
-package com.hta2405.unite.controller;
+package com.hta2405.unite.controller.api;
 
 import com.hta2405.unite.dto.WeatherResponseDTO;
 import com.hta2405.unite.service.WeatherService;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/weather")
 @RequiredArgsConstructor
-public class WeatherController {
+public class WeatherApiController {
     private final WeatherService weatherService;
 
     @GetMapping

@@ -59,7 +59,7 @@ public class ContactCallback implements FunctionCallback {
                     break;
                 }
             }
-            return objectMapper.writeValueAsString(targetEmp);
+            return "--다음 연락처 정보를 요약해서 답변해주면 됩니다." + objectMapper.writeValueAsString(targetEmp);
 
         } catch (
                 JsonProcessingException e) {

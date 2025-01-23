@@ -214,6 +214,7 @@ public class ScheduleController {
         String[] startString = start.split("-");
         String[] endString = end.split("-");
 
+
         LocalDate startDate = LocalDate.of(Integer.parseInt(startString[0]), Integer.parseInt(startString[1]), 1);
         YearMonth endYearMonth = YearMonth.of(Integer.parseInt(endString[0]), Integer.parseInt(endString[1]));
         LocalDate endDate = endYearMonth.atEndOfMonth();

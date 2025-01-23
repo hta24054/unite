@@ -40,23 +40,28 @@ public class WeatherService {
     }
 
     public WeatherResponseDTO getCachedWeather() {
-        //캐싱된 데이터가 있으면 바로 반환
-        String cachedData = redisTemplate.opsForValue().get(REDIS_KEY);
-        if (cachedData != null) {
-            try {
-                log.info("Redis cache hit : {}", REDIS_KEY);
-                return objectMapper.readValue(cachedData, WeatherResponseDTO.class);
-            } catch (JsonProcessingException e) {
-                log.error("Redis cache error: {}", REDIS_KEY, e);
-                throw new RuntimeException(e);
+        try {
+            //캐싱된 데이터가 있으면 바로 반환
+            String cachedData = redisTemplate.opsForValue().get(REDIS_KEY);
+            if (cachedData != null) {
+                try {
+                    log.info("Redis cache hit : {}", REDIS_KEY);
+                    return objectMapper.readValue(cachedData, WeatherResponseDTO.class);
+                } catch (JsonProcessingException e) {
+                    log.error("Redis cache error: {}", REDIS_KEY, e);
+                    throw new RuntimeException(e);
+                }
             }
+        } catch (Exception e) {
+            log.error("Redis 서버 오류", e);
         }
+
         //캐싱 데이터 없으므로 API 호출
         log.info("Redis cache miss : {}", REDIS_KEY);
         WeatherResponseDTO weatherResponseDTO = fetchWeatherData();
         try {
             redisTemplate.opsForValue().set(REDIS_KEY, objectMapper.writeValueAsString(weatherResponseDTO), 1, TimeUnit.HOURS);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             log.error("Redis cache error : {}", REDIS_KEY, e);
         }
         return weatherResponseDTO;

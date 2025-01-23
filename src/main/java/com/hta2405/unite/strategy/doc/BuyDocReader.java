@@ -31,6 +31,6 @@ public class BuyDocReader implements DocReader {
 
     @Override
     public String getView() {
-        return "/doc/buy_read";
+        return "doc/buy_read";
     }
 }

@@ -36,6 +36,6 @@ public class GeneralDocWriteViewer implements DocWriteViewer {
 
     @Override
     public String getView() {
-        return "/doc/general_write";
+        return "doc/general_write";
     }
 }

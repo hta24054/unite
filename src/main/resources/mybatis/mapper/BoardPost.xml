@@ -44,6 +44,9 @@
            or (#{deptId} = 1400 and board.dept_id between 1400 and 1499)
            or board.dept_id = #{deptId}
         order by post_date desc
+        <if test="limit != null and limit > 0">
+            limit #{limit}
+        </if>
     </select>
 
     <select id="findBoardIdByName1Name2" resultType="long">

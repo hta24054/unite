@@ -71,7 +71,7 @@ public class EmpService {
         try {
             redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(resultMap));
         } catch (Exception e) {
-            log.error("Redis Cache 오류", e);
+            log.error("Redis cache error: {}", redisKey, e);
         }
         return resultMap;
     }
@@ -119,7 +119,7 @@ public class EmpService {
         try {
             redisTemplate.delete(redisKey);
         } catch (Exception e) {
-            log.error("Redis Cache 삭제 오류, key = {}", redisKey, e);
+            log.error("Redis 서버 오류 또는 캐시 삭제 오류, key : {}", redisKey, e);
         }
     }
 

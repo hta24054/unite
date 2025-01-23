@@ -141,7 +141,7 @@ public class HolidayService {
                 log.info("Redis key 삭제, pattern: {}", pattern);
             }
         } catch (Exception e) {
-            log.error("Redis 서버 오류, 캐시 삭제 오류", e);
+            log.error("Redis 서버 오류 또는 캐시 삭제 오류(holiday)", e);
         }
     }
 

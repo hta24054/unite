@@ -37,6 +37,7 @@ public class CurrencyService {
         try {
             String cachedData = redisTemplate.opsForValue().get(REDIS_KEY);
             if (cachedData != null) {
+                log.info("Redis cache hit : {}", REDIS_KEY);
                 return objectMapper.readValue(cachedData, new TypeReference<>() {
                 });
             }
@@ -48,6 +49,7 @@ public class CurrencyService {
         List<CurrencyDTO> currencyDTOList = fetchCurrencyDataWithFallback();
 
         try {
+            log.debug("Currency data to cache: {}", objectMapper.writeValueAsString(currencyDTOList));
             redisTemplate.opsForValue().set(REDIS_KEY, objectMapper.writeValueAsString(currencyDTOList), 1, TimeUnit.HOURS);
         } catch (Exception e) {
             log.error("Redis Cache 오류", e);
@@ -60,11 +62,12 @@ public class CurrencyService {
     private List<CurrencyDTO> fetchCurrencyDataWithFallback() {
         LocalDate date = LocalDate.now();
         List<CurrencyDTO> currencyList = fetchCurrencyData(date);
-        while (!currencyList.isEmpty()) {
+        while (currencyList.isEmpty()) {
             date = date.minusDays(1);
             log.info("환율 정보가 업데이트 되지 않아, 전날로 조회합니다.");
             currencyList = fetchCurrencyData(date);
         }
+        log.debug("Fetched currency data: {}", currencyList);
         return currencyList;
     }
 

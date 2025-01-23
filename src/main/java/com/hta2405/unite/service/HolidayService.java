@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
@@ -88,7 +88,7 @@ public class HolidayService {
 
         // Redis 캐시 갱신
         if (result > 0) {
-            updateRedisCacheForDate(holiday.getHolidayDate());
+            deleteRedisCache();
         }
         return result;
     }
@@ -96,9 +96,8 @@ public class HolidayService {
     public int deleteHoliday(LocalDate date) {
         int result = holidayMapper.deleteHoliday(date);
 
-        // Redis 캐시 갱신
         if (result > 0) {
-            updateRedisCacheForDate(date);
+            deleteRedisCache();
         }
         return result;
     }
@@ -125,32 +124,24 @@ public class HolidayService {
             if (savedHolidayName == null || !savedHolidayName.equals(map.get(date))) {
                 int result = holidayMapper.insertHoliday(holiday);
                 if (result > 0) {
-                    updateRedisCacheForDate(holiday.getHolidayDate());
+                    deleteRedisCache();
                 }
             }
         }
         return true;
     }
 
-    private void updateRedisCacheForDate(LocalDate targetDate) {
-        String pattern = REDIS_KEY_PREFIX + "*";
+    private void deleteRedisCache() {
+        try {
+            String pattern = REDIS_KEY_PREFIX + "*";
 
-        // Redis에 저장된 모든 키를 검색
-        for (String redisKey : Objects.requireNonNull(redisTemplate.keys(pattern))) {
-            // Redis 키에서 범위 추출
-            String range = redisKey.replace(REDIS_KEY_PREFIX, ""); // 예: 2025-01-01:2025-12-31
-            String[] dates = range.split(":");
-
-            if (dates.length == 2) {
-                LocalDate startDate = LocalDate.parse(dates[0]);
-                LocalDate endDate = LocalDate.parse(dates[1]);
-
-                // 대상 날짜가 Redis 키 범위에 포함된다면 해당 키 삭제
-                if (!targetDate.isBefore(startDate) && !targetDate.isAfter(endDate)) {
-                    redisTemplate.delete(redisKey);
-                    log.info("Deleted Redis key for affected range: {}", redisKey);
-                }
+            Set<String> keys = redisTemplate.keys(pattern);
+            if (keys != null && !keys.isEmpty()) {
+                redisTemplate.delete(keys);
+                log.info("Redis key 삭제, pattern: {}", pattern);
             }
+        } catch (Exception e) {
+            log.error("Redis 서버 오류, 캐시 삭제 오류", e);
         }
     }
 

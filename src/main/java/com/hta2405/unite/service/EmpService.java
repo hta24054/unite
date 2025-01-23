@@ -1,5 +1,7 @@
 package com.hta2405.unite.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hta2405.unite.domain.Cert;
 import com.hta2405.unite.domain.Dept;
 import com.hta2405.unite.domain.Emp;
@@ -8,6 +10,7 @@ import com.hta2405.unite.dto.*;
 import com.hta2405.unite.mybatis.mapper.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,12 +37,28 @@ public class EmpService {
     private final JobMapper jobMapper;
     private final DeptMapper deptMapper;
     private final long HR_DEPT_ID = 1120L;
+    private static final String REDIS_KEY_PREFIX = "emp:";
+    private final RedisTemplate<String, String> redisTemplate;
+    private final ObjectMapper objectMapper; // JSON 직렬화/역직렬화
 
     public Emp getEmpById(String empId) {
         return empMapper.getEmpById(empId);
     }
 
     public Map<String, String> getIdToENameMap() {
+        String redisKey = REDIS_KEY_PREFIX + "map";
+        try {
+            String cachedData = redisTemplate.opsForValue().get(redisKey);
+            if (cachedData != null) {
+                log.info("Redis cache hit, key = {}", redisKey);
+                return objectMapper.readValue(cachedData, new TypeReference<>() {
+                });
+            }
+        } catch (Exception e) {
+            log.error("Redis 서버 error", e);
+        }
+        log.info("Redis cache miss, key = {}", redisKey);
+
         List<Map<String, Object>> resultList = empMapper.getIdToENameMap();
 
         Map<String, String> resultMap = new HashMap<>();
@@ -49,6 +68,11 @@ public class EmpService {
             resultMap.put(empId, eName);
         }
 
+        try {
+            redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(resultMap));
+        } catch (Exception e) {
+            log.error("Redis Cache 오류", e);
+        }
         return resultMap;
     }
 
@@ -85,8 +109,18 @@ public class EmpService {
         if (!ObjectUtils.isEmpty(certList)) {
             certMapper.insertCert(certList);
         }
+        deleteEnameCache();
 
         return emp;
+    }
+
+    private void deleteEnameCache() {
+        String redisKey = REDIS_KEY_PREFIX + "map";
+        try {
+            redisTemplate.delete(redisKey);
+        } catch (Exception e) {
+            log.error("Redis Cache 삭제 오류, key = {}", redisKey, e);
+        }
     }
 
     @Transactional

@@ -83,6 +83,9 @@
         update project
         set project_finished = #{complete},
             project_canceled = #{cancel}
+            <if test="cancel == 1">
+                ,project_end_date = sysdate()
+            </if>
             <if test="taskFile != null">
                 ,project_file_path = #{taskFile.filePath}, project_file_original = #{taskFile.fileOriginal}, project_file_uuid = #{taskFile.fileUUID}, project_file_type = #{taskFile.fileType}
             </if>
@@ -99,11 +102,11 @@
     <select id="getDoneList" resultType="Project">
         SELECT p.project_id,
                      p.project_name,
-                     substring(p.project_start_date, 1, 10)                                                                     projectStartDate,
-                     substring(p.project_end_date, 1, 10)                                                                       projectEndDate,
+                     substring(p.project_start_date, 1, 10) projectStartDate,
+                     substring(p.project_end_date, 1, 10) projectEndDate,
                      p.project_file_original projectFileOriginal,
-                     p.project_file_uuid,
-                     p.project_file_type,
+                     p.project_file_uuid  projectFileUuid,
+                     p.project_file_type projectFileType,
                      COUNT(pm.project_member_id)                                                                             AS member_count,
                      SUM(pm.MEMBER_PROGRESS_RATE) / COUNT(pm.project_member_id)                                              AS avg_progress,
                      (SELECT e.ename
@@ -190,11 +193,8 @@
     <delete id="deleteTodo">
         delete from todo where todo_id = #{todoId}
     </delete>
-
     <update id="updateTodoOrder">
-        UPDATE todo
-        SET order_col = #{orderColumn}
-        WHERE todo_id = #{todoId}
+        update todo set order_col = #{orderColumn} where todo_id = #{todoId}
     </update>
 
 

@@ -156,6 +156,7 @@ $(document).ready(function() {
 		}
 	});
 	$(".sortable").sortable({
+		handle: ".bi-arrows-expand",
 		update: function(event, ui) {
 			var orderedIds = [];
 			$(this).children("li").each(function(index) {

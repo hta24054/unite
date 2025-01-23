@@ -180,4 +180,10 @@ public class ProjectApiController {
         return ResponseEntity.ok(colorInfo);
     }
 
+    @PostMapping("/updateTodoOrder")
+    public String updateTodoOrder(@RequestParam List<Long> orderedIds, int projectId, @AuthenticationPrincipal UserDetails user) {
+        log.info("--------------------hello={}", projectId);
+        projectService.updateTodoOrder(orderedIds, projectId, user.getUsername());
+        return "success";
+    }
 }

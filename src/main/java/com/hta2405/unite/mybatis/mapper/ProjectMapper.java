@@ -49,4 +49,6 @@ public interface ProjectMapper {
     boolean todoUpdate(int projectId, String userid, int todoId, String newSubject);
     boolean deleteTodo(int todoId);
     Project findMemberInfoById(int projectId, String userid);
+
+    void updateTodoOrder(ProjectTodoDTO orderedTodos);
 }

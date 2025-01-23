@@ -1,3 +1,4 @@
+const contextPath = /*[[@{/}]]*/ '';
 $(document).ready(function () {
     let calendar;
     let events = [];
@@ -15,7 +16,7 @@ $(document).ready(function () {
         window.holidayDataLoaded = false; // 날짜 범위가 변경될 때마다 플래그를 false로 설정
 
         $.ajax({
-            url: "getHoliday?start=" + startMonth + "&end=" + endMonth,
+            url: contextPath +"/schedule/getHoliday?start=" + startMonth + "&end=" + endMonth,
             type: "GET",
             dataType: "json",
             success: function(data) {
@@ -44,7 +45,7 @@ $(document).ready(function () {
     // 일정 리스트 불러오기
     function fetchListData() {
         $.ajax({
-            url: "scheduleList",
+            url:  contextPath + "/schedule/scheduleList",
             type: "get",
             dataType: "json",
             data: {
@@ -82,7 +83,7 @@ $(document).ready(function () {
 	// 공유 일정 리스트 불러오기
 	function fetchSharedListData() {
 	    $.ajax({
-	        url: "sharedScheduleList",
+	        url: contextPath + "/schedule/sharedScheduleList",
 	        type: "get",
 	        dataType: "json",
 	        data: {
@@ -140,7 +141,7 @@ $(document).ready(function () {
 	// 부서 일정 리스트 불러오기
     function fetchDeptListData() {
         $.ajax({
-            url: "deptScheduleList",
+            url: contextPath + "/schedule/deptScheduleList",
             type: "get",
             dataType: "json",
             data: {
@@ -182,7 +183,7 @@ $(document).ready(function () {
 	// 일정 등록
     function addEvent(eventData) {
         $.ajax({
-            url: "scheduleAdd",
+            url: contextPath + "/schedule/scheduleAdd",
             type: "post",
             dataType: "json",
             data: {
@@ -228,7 +229,7 @@ $(document).ready(function () {
     // 일정 수정
     function updateEvent(eventData) {
         $.ajax({
-            url: "scheduleUpdate",
+            url: contextPath + "/schedule/scheduleUpdate",
             type: "post",
             dataType: "json",
             data: {
@@ -267,7 +268,7 @@ $(document).ready(function () {
         }
 
         $.ajax({
-            url: "scheduleDragUpdate",
+            url: contextPath + "/schedule/scheduleDragUpdate",
             type: "post",
             dataType: "json",
             data: {
@@ -296,7 +297,7 @@ $(document).ready(function () {
     function deleteEvent(eventData) {
         if (confirm("정말 삭제하시겠습니까?")) {
             $.ajax({
-                url: "scheduleDelete",
+                url: contextPath + "/schedule/scheduleDelete",
                 type: "post",
                 dataType: "json",
                 data: {

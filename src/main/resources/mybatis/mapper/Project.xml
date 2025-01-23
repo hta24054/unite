@@ -178,8 +178,8 @@
         insert into todo (todo_subject, member_id, project_id) values (#{task}, #{userid}, #{projectId})
     </insert>
     <select id="getTodoList" resultType="com.hta2405.unite.dto.ProjectTodoDTO">
-        select todo_id todoId, todo_subject todoSubject, progress_rate progressRate from todo where project_id = #{projectId} and member_id = #{userid}
-            order by progressRate;
+        select todo_id todoId, todo_subject todoSubject, progress_rate progressRate, order_col orderColumn from todo where project_id = #{projectId} and member_id = #{userid}
+            order by order_col;
     </select>
     <update id="updateTodoProgressRate">
         update todo set progress_rate = #{memberProgressRate} where project_id = #{projectId} and member_id = #{userid} and todo_id = #{todoId}
@@ -190,4 +190,14 @@
     <delete id="deleteTodo">
         delete from todo where todo_id = #{todoId}
     </delete>
+
+    <update id="updateTodoOrder">
+        UPDATE todo
+        SET order_col = #{orderColumn}
+        WHERE todo_id = #{todoId}
+    </update>
+
+
+
+
 </mapper>

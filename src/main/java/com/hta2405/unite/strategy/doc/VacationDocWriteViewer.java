@@ -40,6 +40,6 @@ public class VacationDocWriteViewer implements DocWriteViewer {
 
     @Override
     public String getView() {
-        return "/doc/vacation_write";
+        return "doc/vacation_write";
     }
 }

@@ -26,6 +26,6 @@ public class GeneralDocEditViewer implements DocEditViewer {
 
     @Override
     public String getView() {
-        return "/doc/general_edit";
+        return "doc/general_edit";
     }
 }

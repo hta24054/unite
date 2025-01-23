@@ -19,25 +19,25 @@ public class AdminController {
 
     @GetMapping("/holiday")
     public String showHolidayPage() {
-        return "/admin/holiday";
+        return "admin/holiday";
     }
 
     @GetMapping("/resource")
     public String showResourcePage() {
-        return "/admin/resource";
+        return "admin/resource";
     }
 
 
     @GetMapping("/notice")
     public ModelAndView showNoticePage(ModelAndView mv) {
         mv.addObject("noticeList", noticeService.getAllNotice());
-        mv.setViewName("/admin/notice");
+        mv.setViewName("admin/notice");
         return mv;
     }
 
     @GetMapping("/emp-manage")
     public String showEmpManage() {
-        return "/admin/empManage";
+        return "admin/empManage";
     }
 
     @GetMapping("/emp-manage/info")

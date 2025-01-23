@@ -27,6 +27,6 @@ public class VacationDocReader implements DocReader {
 
     @Override
     public String getView() {
-        return "/doc/vacation_read";
+        return "doc/vacation_read";
     }
 }

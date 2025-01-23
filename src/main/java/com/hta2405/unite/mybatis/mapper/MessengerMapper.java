@@ -14,9 +14,9 @@ public interface MessengerMapper {
     // ChatRoom 관련
     List<ChatRoomDTO> findAllRooms(String empId);
 
-    List<ChatMessage> findRoomById(Long chatRoomId);
+    List<ChatMessage> findMessageListById(Long chatRoomId);
 
-    List<Map<String, Object>> getIdToRoomNameMap();
+    List<Map<String, Object>> getIdToRoomNameMap(String userId);
 
     void createRoom(ChatRoom chatRoom);
 
@@ -32,9 +32,11 @@ public interface MessengerMapper {
     // ChatRoomMember 관련
     List<String> findMembersByRoomId(Long chatRoomId);
 
+    ChatRoom findChatRoomById(Long chatRoomId);
+
     void addMember(ChatRoomMember member);
 
-    void removeMember(Long chatRoomMemberId);
+    int removeMember(Long chatRoomId, String userId);
 
     int insertRoomMember(List<ChatRoomMember> chatRoomMemberList);
 
@@ -47,4 +49,10 @@ public interface MessengerMapper {
     ChatMessage findMessageById(Long chatMessageId);
 
     List<ChatRoomMember> getChatRoomsById(String userId);
+
+    void updateChatRoomName(Long chatRoomId, String userId, String chatRoomName);
+
+    void deleteMessageById(Long chatRoomId);
+
+    int deleteMember(Long chatRoomId);
 }

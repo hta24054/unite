@@ -27,6 +27,6 @@ public class BuyDocEditViewer implements DocEditViewer {
 
     @Override
     public String getView() {
-        return "/doc/buy_edit";
+        return "doc/buy_edit";
     }
 }

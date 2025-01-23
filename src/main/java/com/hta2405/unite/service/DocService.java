@@ -393,7 +393,7 @@ public class DocService {
         mv.addObject("title", title);
         mv.addObject("message", message);
         mv.addObject("list", docList);
-        mv.setViewName("/doc/docList");
+        mv.setViewName("doc/docList");
         return mv;
     }
 

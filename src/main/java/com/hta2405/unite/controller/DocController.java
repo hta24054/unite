@@ -100,7 +100,7 @@ public class DocController {
     @GetMapping("/inProgress")
     public String showInProgress(@AuthenticationPrincipal UserDetails user, Model model) {
         model.addAttribute("list", docService.getInProgressDTO(user.getUsername()));
-        return "/doc/inProgress";
+        return "doc/inProgress";
     }
 
     @GetMapping(value = "/waiting")

@@ -31,7 +31,7 @@ public class ReservationController {
 
     @GetMapping("/reservationCalender")
     public String reservationCalender() {
-        return "/reservation/reservationCalender";
+        return "reservation/reservationCalender";
     }
 
 //    @ResponseBody

@@ -56,29 +56,25 @@ public class ScheduleController {
     @ResponseBody
     @PostMapping("/scheduleAdd")
     public int insertSchedule(Schedule schedule) {
-        int result = scheduleService.insertSchedule(schedule);
-        return result;
+        return scheduleService.insertSchedule(schedule);
     }
 
     @ResponseBody
     @PostMapping("/scheduleUpdate")
     public int updateSchedule(Schedule schedule) {
-        int result = scheduleService.updateSchedule(schedule);
-        return result;
+        return scheduleService.updateSchedule(schedule);
     }
 
     @ResponseBody
     @PostMapping("/scheduleDragUpdate")
     public int dragUpdateSchedule(Schedule schedule) {
-        int result = scheduleService.dragUpdateSchedule(schedule);
-        return result;
+        return scheduleService.dragUpdateSchedule(schedule);
     }
 
     @ResponseBody
     @PostMapping("/scheduleDelete")
     public int deleteSchedule(int scheduleId) {
-        int result = scheduleService.deleteSchedule(scheduleId);
-        return result;
+        return scheduleService.deleteSchedule(scheduleId);
     }
 
     // 공유 일정 등록 페이지
@@ -145,8 +141,7 @@ public class ScheduleController {
             schedule.setScheduleEnd(CalendarDateTimeUtil.parseDateTimeWithoutT(scheduleEndStr));
         }
 
-        int updatedScheduleDTO = scheduleService.insertScheduleShare(scheduleDTO);
-        return updatedScheduleDTO;
+        return scheduleService.insertScheduleShare(scheduleDTO);
     }
 
     // 부서 일정 등록 페이지
@@ -172,8 +167,7 @@ public class ScheduleController {
             schedule.setScheduleEnd(CalendarDateTimeUtil.parseDateTimeWithoutT(scheduleEndStr));
         }
 
-        int scheduleDeptDTO = scheduleService.insertScheduleDept(scheduleDTO);
-        return scheduleDeptDTO;
+        return scheduleService.insertScheduleDept(scheduleDTO);
     }
 
     @ResponseBody

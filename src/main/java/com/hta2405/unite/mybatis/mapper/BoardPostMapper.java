@@ -12,7 +12,7 @@ import java.util.List;
 
 @Mapper
 public interface BoardPostMapper {
-    List<BoardPostEmpDTO> getBoardListAll(Long deptId);
+    List<BoardPostEmpDTO> getBoardListAll(Long deptId, Integer limit);
 
     List<BoardHomeDeptDTO> getBoardListByDeptId(Long deptId);
 

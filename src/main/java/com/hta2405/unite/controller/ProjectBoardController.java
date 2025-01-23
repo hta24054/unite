@@ -58,6 +58,8 @@ public class ProjectBoardController {
         ModelAndView mv = prepareModelAndView(projectId, memberId, null, "project/project_task_list");
         mv.addObject("boardlist", projectBoardService.getTaskList(projectId, memberId));
         mv.addObject("message", "진행 과정 게시판");
+        mv.addObject("list",projectBoardService.getTaskList(projectId, memberId).get(0).getTaskContent());
+        mv.addObject("comm", projectBoardService.commentCount(projectId, memberId));
         return mv;
     }
 

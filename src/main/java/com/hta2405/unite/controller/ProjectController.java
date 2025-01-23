@@ -93,6 +93,7 @@ public class ProjectController {
     public String todo(int projectId, Model model, @AuthenticationPrincipal UserDetails user){
         String userid = user.getUsername();
         List<ProjectTodoDTO> todos = projectService.getTodoList(projectId, userid);
+        model.addAttribute("left", projectService.getProjectName(projectId));
         model.addAttribute("projectName",projectService.getProjectName(projectId));
         model.addAttribute("todos", todos);
         model.addAttribute("projectId", projectId);

@@ -45,6 +45,7 @@ public class ProjectBoardController {
         mv.addObject("memberName", empService.getEmpById(memberId).getEname());
         mv.addObject("memberId", memberId);
         mv.addObject("taskId", taskId);
+        mv.addObject("left", projectService.getProjectName(projectId));
         if (taskId != null) {
             mv.addObject("task", projectBoardService.getTask(projectId, memberId, taskId).get(0));
         }
@@ -58,6 +59,7 @@ public class ProjectBoardController {
         ModelAndView mv = prepareModelAndView(projectId, memberId, null, "project/project_task_list");
         mv.addObject("boardlist", projectBoardService.getTaskList(projectId, memberId));
         mv.addObject("message", "진행 과정 게시판");
+        mv.addObject("left", projectService.getProjectName(projectId));
         mv.addObject("list",projectBoardService.getTaskList(projectId, memberId).get(0).getTaskContent());
         mv.addObject("comm", projectBoardService.commentCount(projectId, memberId));
         return mv;

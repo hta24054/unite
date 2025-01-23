@@ -3,16 +3,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.hta2405.unite.mybatis.mapper.ReservationMapper">
-    <!--
-
-    1. 자원 전체 불러오는거 불필요
-
-    2. 분류명 체인지될때 관련 전체 자원명 불러오도록 수정
-
-    3. 자원명 체인지할때 불러오도록 수정
-
-    4. 분류명에 해당하는 예약자원 다 불러오고 배열에있는 필터링은 ajax에서
-    -->
     <select id="resourceSelectChange">
         SELECT *
         FROM resc

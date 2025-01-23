@@ -7,13 +7,14 @@ import com.hta2405.unite.dto.ProjectTaskDTO;
 import com.hta2405.unite.mybatis.mapper.EmpMapper;
 import com.hta2405.unite.mybatis.mapper.ProjectBoardMapper;
 import com.hta2405.unite.util.ConfigUtil;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProjectBoardServiceImpl implements ProjectBoardService {
@@ -124,5 +125,18 @@ public void modifyProcess(int projectId, String memberId, int taskId, MultipartF
 
     public int deleteComment(int taskId){
         return dao.deleteComment(taskId);
+    }
+
+    public Map<Long, Long> commentCount(int projectId, String userid) {
+        List<Map<String, Object>> resultList = dao.commentCount(projectId, userid);
+
+        Map<Long, Long> resultMap = new HashMap<>();
+        for (Map<String, Object> row : resultList) {
+            Long taskId = (Long) row.get("taskId");
+            Long commentCount = (Long) row.get("commentCount");
+
+            resultMap.put(taskId, commentCount);
+        }
+        return resultMap;
     }
 }

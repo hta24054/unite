@@ -158,7 +158,7 @@
     </update>
 
     <select id="getProjectDetail2" resultType="com.hta2405.unite.dto.ProjectTaskDTO">
-        SELECT e.ename taskWriter, j.job_name jobName, IFNULL(t.task_subject, '') taskSubject, substring(COALESCE(t.task_update_date, t.task_date), 1, 10) taskDate, m.member_id                                  memberId
+        SELECT e.ename taskWriter, j.job_name jobName, IFNULL(t.task_subject, '등록된 글이 없습니다') taskSubject, substring(COALESCE(t.task_update_date, t.task_date), 1, 10) taskDate, m.member_id                                  memberId
         FROM project p JOIN project_member m ON p.project_id = m.project_id
                        JOIN emp e ON m.member_id = e.emp_id
                        join job j on e.job_id = j.job_id

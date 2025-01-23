@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -197,7 +199,6 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     public Map<String, String> getColor(int projectId, String memberId) {
-        // 프로젝트와 회원에 맞는 색상 정보 가져오는 로직
         Project project = dao.findMemberInfoById(projectId, memberId);
 
         String bgColor = project.getBgColor();

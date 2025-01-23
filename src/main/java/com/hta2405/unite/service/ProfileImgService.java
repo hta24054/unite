@@ -139,7 +139,7 @@ public class ProfileImgService {
         try {
             String cachedData = redisTemplate.opsForValue().get(redisKey);
             if (cachedData != null) {
-                log.info("Redis Cache hit {}", redisKey);
+                log.info("Redis Cache hit : {}", redisKey);
                 byte[] imageData = Base64.getDecoder().decode(cachedData);
                 return ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_PNG)

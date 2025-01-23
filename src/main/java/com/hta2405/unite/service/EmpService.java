@@ -50,7 +50,7 @@ public class EmpService {
         try {
             String cachedData = redisTemplate.opsForValue().get(redisKey);
             if (cachedData != null) {
-                log.info("Redis cache hit, key = {}", redisKey);
+                log.info("Redis cache hit : {}", redisKey);
                 return objectMapper.readValue(cachedData, new TypeReference<>() {
                 });
             }

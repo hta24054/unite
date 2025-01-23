@@ -55,4 +55,6 @@ public interface ProjectService {
     boolean deleteTodo(int todoId);
 
     Map<String, String> getColor(int projectId, String userid);
+
+    List<Long> updateTodoOrder(List<Long> orderedIds, int projectId, String userid);
 }

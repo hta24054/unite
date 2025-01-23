@@ -33,6 +33,6 @@ public class VacationDocEditViewer implements DocEditViewer {
 
     @Override
     public String getView() {
-        return "/doc/vacation_edit";
+        return "doc/vacation_edit";
     }
 }

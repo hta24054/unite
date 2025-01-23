@@ -27,6 +27,6 @@ public class TripDocEditViewer implements DocEditViewer {
 
     @Override
     public String getView() {
-        return "/doc/trip_edit";
+        return "doc/trip_edit";
     }
 }

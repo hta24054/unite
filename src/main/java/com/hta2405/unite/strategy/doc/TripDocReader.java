@@ -27,6 +27,6 @@ public class TripDocReader implements DocReader {
 
     @Override
     public String getView() {
-        return "/doc/trip_read";
+        return "doc/trip_read";
     }
 }

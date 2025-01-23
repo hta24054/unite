@@ -26,6 +26,6 @@ public class GeneralDocReader implements DocReader {
 
     @Override
     public String getView() {
-        return "/doc/general_read";
+        return "doc/general_read";
     }
 }

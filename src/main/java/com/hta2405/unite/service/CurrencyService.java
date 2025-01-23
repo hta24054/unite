@@ -52,7 +52,7 @@ public class CurrencyService {
             log.debug("Currency data to cache: {}", objectMapper.writeValueAsString(currencyDTOList));
             redisTemplate.opsForValue().set(REDIS_KEY, objectMapper.writeValueAsString(currencyDTOList), 1, TimeUnit.HOURS);
         } catch (Exception e) {
-            log.error("Redis Cache 오류", e);
+            log.error("Redis cache error: {}", REDIS_KEY, e);
         }
 
         return currencyDTOList;

@@ -35,6 +35,6 @@ public class TripDocWriteViewer implements DocWriteViewer {
 
     @Override
     public String getView() {
-        return "/doc/trip_write";
+        return "doc/trip_write";
     }
 }

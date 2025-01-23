@@ -29,7 +29,7 @@ public class HomeApiController {
     @GetMapping("/board")
     public Map<String, Object> getHomeData(@AuthenticationPrincipal UserDetails user) {
         Map<String, Object> response = new HashMap<>();
-        response.put("boardList", boardPostMapper.getBoardListAll(empService.getEmpById(user.getUsername()).getDeptId()));
+        response.put("boardList", boardPostMapper.getBoardListAll(empService.getEmpById(user.getUsername()).getDeptId(), 4));
         response.put("emp", empService.getIdToENameMap());
         return response;
     }

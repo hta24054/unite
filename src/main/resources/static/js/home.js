@@ -18,7 +18,7 @@ $(document).ready(function () {
                 let emp = data.emp;
 
                 // 게시판 리스트에서 각 게시판의 최근 게시글만 가져와서 표시
-                boards.slice(0, 4).forEach(function (board) {
+                boards.forEach(function (board) {
                     let formattedDate = new Date(board.postDate).toLocaleString();
                     let row = `
                     <tr style="cursor: pointer;" onclick="window.location.href='/board/post/detail?no=${board.postId}&boardName1=${board.boardName1}&boardName2=${board.boardName2}&page=1'">

@@ -100,14 +100,16 @@ public class ProjectApiController {
 
     @GetMapping("/done")
     public ModelAndView done(@AuthenticationPrincipal UserDetails user, ModelAndView mv, int state) {
+        mv.setViewName("project/endProject");
         mv.addObject("boardlist", projectService.getDoneList(user.getUsername(), state));
         mv.addObject("memberName", empService.getEmpById(user.getUsername()).getEname());
+        mv.addObject("state", state);
         if (state == 1) {
-            mv.setViewName("project/project_cancel");
+            mv.addObject("doneName", "취소");
             mv.addObject("message", "취소된 프로젝트들을 불러옵니다");
         }
         if (state == 2) {
-            mv.setViewName("project/project_complete");
+            mv.addObject("doneName", "완료");
             mv.addObject("message", "완료된 프로젝트들을 불러옵니다");
         }
         return mv;

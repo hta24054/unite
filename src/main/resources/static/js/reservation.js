@@ -46,33 +46,6 @@ $(document).ready(function () {
         $resourceNameElement.hide();
     }
 
-    // 모달 - 자원 선택 시 해당 자원명 불러오기
-    $resourceType.on("change", function () {
-        const $selectedVal = $(this).val();
-        $.ajax({
-            url: "resourceSelectChange",
-            type: "get",
-            dataType: "json",
-            data: {
-                resourceType: $selectedVal,
-            },
-            success: function (data) {
-                $resourceName.empty();
-                $resourceName.append('<option value="">자원명</option>');
-
-                // resource_id를 value로 설정
-                data.forEach(function (resource) {
-                    $resourceName.append('<option value="' + resource.resourceId + '">' + resource.resourceName + '</option>');
-                });
-
-                $resourceName.show();
-            },
-            error: function () {
-                alert("자원명 불러오기 실패");
-            }
-        });
-    });
-
     // 자원 선택 시 해당 자원명 불러오기 (페이지 상단 select 와 모달에서 공통 사용)
     function loadResourceName($resourceTypeElement, $resourceNameElement, selectedResourceId = null, callback = null) {
         const selectedVal = $resourceTypeElement.val();
@@ -83,7 +56,6 @@ $(document).ready(function () {
             data: { resourceType: selectedVal },
             success: function (data) {
                 $resourceNameElement.empty();
-                $resourceNameElement.append('<option value="">자원명</option>');
 
                 data.forEach(function (resource) {
                     $resourceNameElement.append('<option value="' + resource.resourceId + '">' + resource.resourceName + '</option>');
@@ -112,7 +84,13 @@ $(document).ready(function () {
             $resourceNameCategory.empty().hide();
             getReservationList(); // 분류명이 비어 있으면 모든 예약 목록 불러오기
         } else {
-            loadResourceName($resourceTypeCategory, $resourceNameCategory); // 자원명 로드
+            loadResourceName($resourceTypeCategory, $resourceNameCategory, null, function() {
+                // 자원명 로드된 후 첫 번째 자원 자동 선택하여 예약 목록 불러오기
+                const firstResourceId = $resourceNameCategory.find("option:first").val();
+                if (firstResourceId) {
+                    getReservationList(firstResourceId, $resourceNameCategory.find("option:first").text());
+                }
+            });
         }
     });
 
@@ -130,7 +108,13 @@ $(document).ready(function () {
 
     // 모달에서 자원 선택 시 자원명 목록 불러오기
     $resourceType.on("change", function () {
-        loadResourceName($resourceType, $resourceName);
+
+        const selectedType = $(this).val(); // 선택된 분류명
+        if (!selectedType) {
+            $resourceName.empty().hide();
+        } else {
+            loadResourceName($resourceType, $resourceName);
+        }
     });
 
     // 모달 열릴 때 기존 페이지에서 선택된 값 동기화

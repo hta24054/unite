@@ -1,6 +1,5 @@
 package com.hta2405.unite.controller;
 
-import com.hta2405.unite.domain.Reservation;
 import com.hta2405.unite.domain.Resource;
 import com.hta2405.unite.dto.ReservationDTO;
 import com.hta2405.unite.service.ReservationService;
@@ -34,11 +33,11 @@ public class ReservationController {
         return "reservation/reservationCalender";
     }
 
-//    @ResponseBody
-//    @GetMapping("/getResourceList")
-//    public List<Resource> getResourceList() {
-//        return resourceService.getResourceList();
-//    }
+    @ResponseBody
+    @GetMapping("/getResourceList")
+    public List<Resource> getResourceList() {
+        return resourceService.getResourceList();
+    }
 
     @ResponseBody
     @GetMapping("/resourceSelectChange")

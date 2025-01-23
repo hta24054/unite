@@ -3,46 +3,24 @@ $(document).ready(function () {
     let events = [];
     let isAllDayChk, startDate, endDate;
 
-	// 개인/공유/부서 일정, 공휴일 불러오기
+	// 개인/공유/부서 일정 불러오기
 	function fetchAllData() {
-	    events = []; // 배열 초기화
-
-	    Promise.all([
-			fetchListData(),
-			fetchSharedListData()
-		]).then(() => {
-	        const startMonth = moment().startOf('month').format('YYYY-MM');
-	        let endMonth = moment().add(1, 'year').endOf('month').format('YYYY-MM');
-
-            fetchHolidayData({
-                startStr: startMonth,
-                endStr: endMonth
-            });
-        });
+        fetchListData();
+        fetchSharedListData();
     }
 
     // 공휴일 불러오기
-    function fetchHolidayData(data) {
-        const startMonth = data.startStr.substring(0, 7);
-        let endMonth = data.endStr.substring(0, 7);
-        const nextMonth = moment(endMonth).add(1, 'month').format('YYYY-MM');
-
+    function fetchHolidayData(startMonth, endMonth, successCallback, failureCallback) {
         // 공휴일 데이터가 로드되었는지 확인하기 위한 flag
-        if (window.holidayDataLoaded) {
-            return;
-        }
+        window.holidayDataLoaded = false; // 날짜 범위가 변경될 때마다 플래그를 false로 설정
 
         $.ajax({
-            url: "getHoliday",
+            url: "getHoliday?start=" + startMonth + "&end=" + endMonth,
             type: "GET",
-            data: {
-                start: startMonth,
-                end: nextMonth
-            },
             dataType: "json",
-            success: function (data) {
-                data.forEach(function (holiday) {
-                    events.push({
+            success: function(data) {
+                const holidays = data.map(function(holiday) {
+                    return {
                         title: holiday.holidayName,
                         start: holiday.holidayDate,
                         allDay: true,
@@ -50,19 +28,15 @@ $(document).ready(function () {
                         editable: false,  // 드래그 불가
                         droppable: false, // 다른 날짜로 드래그 불가
                         extendedProps: {
-                            isHoliday: true,
+                            isHoliday: true
                         }
-                    });
+                    };
                 });
-
-                // 공휴일 데이터가 로드되면 플래그 저장
-                window.holidayDataLoaded = true;
-
-                // 캘린더 초기화
-                initCalendar();
+                successCallback(holidays);
             },
             error: function (error) {
                 console.log('공휴일 불러오기 오류', error);
+                failureCallback();
             }
         });
     }
@@ -97,7 +71,6 @@ $(document).ready(function () {
                         }
                     }
                 }
-
                 initCalendar();
             },
             error: function (error) {
@@ -142,7 +115,6 @@ $(document).ready(function () {
 	                    }
 	                }
 	            }
-
                 initCalendar();
             },
             error: function (error) {
@@ -176,8 +148,6 @@ $(document).ready(function () {
                 dept_id: $('#dept_id').val(),
             },
             success: function(data) {
-                console.log("부서 일정 데이터:", data);
-
                 if (data != null) {
                     for (let i = 0; i < data.length; i++) {
 
@@ -417,8 +387,7 @@ $(document).ready(function () {
             }
 	    } else if(event.extendedProps.isDept === true) { // 부서 일정
             $(".modal-header").find("h5").text("부서 일정");
-            //$("form[name='scheduleEvent'] input, form[name='scheduleEvent'] textarea").prop("disabled", true);
-            $(".modal-body").find(".form-group.color-group").remove();
+            $(".modal-body").find(".form-group.color-group").hide();
             $(".modal-body").find(".btn_wrap").html(`
 	            <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
 	            <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
@@ -466,7 +435,6 @@ $(document).ready(function () {
 		initializeModalForRegistration();
 	});
 
-
 	// 등록 버튼 클릭 시 모달 강제 초기화
 	function initializeModalForRegistration() {
 		$("#schedule_id").val("");
@@ -484,6 +452,7 @@ $(document).ready(function () {
 	        <button type="reset" class="btn btn-secondary">취소</button>
 	        <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
 	    `);
+        $(".modal-body").find(".form-group.color-group").show();
 
         // 등록 버튼에 이벤트 바인딩
         $("#btnRegister").off("click").on("click", function (e) {
@@ -615,7 +584,31 @@ $(document).ready(function () {
             nowIndicator: true, // 현재 시간 마크
             dayMaxEvents: true, // 이벤트가 오버되면 높이 제한 (+ 몇 개식으로 표현)
             locale: 'ko', // 한국어 설정
-            events: events, // 전역 이벤트 배열 사용
+            fixedWeekCount: false, // 이전달, 다음달의 날짜 한 주 설정
+            // events: events, // 전역 이벤트 배열 사용
+            events: function(info, successCallback, failureCallback) {
+                const startMonth = moment(info.startStr).format('YYYY-MM');  // 'YYYY-MM' 형식으로 변환
+                const endMonth = moment(info.endStr).format('YYYY-MM');  // 'YYYY-MM' 형식으로 변환
+
+                // 공휴일 데이터를 갱신하기 위해 날짜 범위가 변경될 때마다 새로 로드
+                fetchHolidayData(startMonth, endMonth, function(newHolidays) {
+                    // 기존 events 배열에서 시작 날짜가 같은 공휴일 있는지 체크
+                    const existingEventStartDates = events.map(event => event.start);
+
+                    // 중복되지 않는 공휴일 필터링
+                    const uniqueHolidays = newHolidays.filter(holiday =>
+                        !existingEventStartDates.includes(holiday.start)
+                    );
+
+                    // 공휴일 데이터 기존 이벤트에 추가
+                    events = [...events, ...uniqueHolidays];
+
+                    // 성공적으로 갱신된 events 배열을 콜백으로 전달
+                    successCallback(events);
+                }, function() {
+                    failureCallback();  // 오류 발생 시 콜백 호출
+                });
+            },
             dateClick: function (info) {
                 // 현재 시간과 클릭된 날짜
                 let currentDate = moment(); // 현재 날짜와 시간
@@ -630,6 +623,7 @@ $(document).ready(function () {
 		            <button type="reset" class="btn btn-secondary">취소</button>
 		            <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
 		        `);
+                $(".modal-body").find(".form-group.color-group").show();
 
 		        $("#schedule_name").val("");
                 $("#startAt").prop("type", "datetime-local").val(startDate.format("YYYY-MM-DD HH:mm"));
@@ -661,7 +655,6 @@ $(document).ready(function () {
                 if (info.event.extendedProps.isHoliday) {
                     return;
                 }
-
                 openDetailModal(info.event);
             },
             eventChange: function (info) {
@@ -676,10 +669,7 @@ $(document).ready(function () {
             },
             eventDidMount: function (info) {
                 //console.log("info.event.extendedProps", info.event.extendedProps);
-            },
-            // eventDrop: function (info) {
-            //     updateDragEvent(info);
-            // }
+            }
         });
 
         //선택 상태 해제

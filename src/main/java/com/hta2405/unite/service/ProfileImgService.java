@@ -122,7 +122,7 @@ public class ProfileImgService {
             redisTemplate.opsForValue().set(redisKey, Base64.getEncoder().encodeToString(fileData), 1, TimeUnit.HOURS);
             log.info("Redis 캐시 완료, key = {}", redisKey);
         } catch (Exception e) {
-            log.error("Redis 캐시 실패, key = {}", redisKey, e);
+            log.error("Redis cache error: {}", redisKey, e);
         }
     }
 
@@ -131,7 +131,7 @@ public class ProfileImgService {
             redisTemplate.opsForValue().set(redisKey, Base64.getEncoder().encodeToString(imageData), 1, TimeUnit.HOURS);
             log.info("Redis 캐시 완료, key = {}", redisKey);
         } catch (Exception e) {
-            log.error("Redis 캐시 실패, key = {}", redisKey, e);
+            log.error("Redis cache error: {}", redisKey, e);
         }
     }
 

@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    // $('body').addClass("sb-sidenav-toggled");
     // 페이지 로딩 시 진행 중인 프로젝트 데이터 가져오기
     go(1);
     $("#viewcount").change(function () {

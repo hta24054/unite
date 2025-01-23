@@ -10,8 +10,10 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 public class ChatMessageDTO {
+    private int messageType;
+    private Long chatMessageId;
     private Long chatRoomId;
     private String senderId;
-    private String content;
-    private LocalDateTime sentAt;
+    private String chatMessageContent;
+    private LocalDateTime chatMessageDate;
 }

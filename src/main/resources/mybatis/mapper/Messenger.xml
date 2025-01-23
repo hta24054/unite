@@ -4,7 +4,7 @@
     <!-- ChatRoom 관련 -->
     <select id="findAllRooms" resultType="com.hta2405.unite.dto.ChatRoomDTO">
         SELECT chat_room.chat_room_id,
-               chat_room.chat_room_name,
+               chat_room_member.chat_room_name,
                chat_message.chat_message_content     AS latestMessage,
                chat_room.recent_message_date         AS latestMessageDate,
                IFNULL(unread_counts.unread_count, 0) AS unreadCount
@@ -15,7 +15,8 @@
                                  ON chat_room.chat_room_id = chat_message.chat_room_id
                                      AND chat_message.chat_message_id = (SELECT MAX(chat_message_id)
                                                                          FROM chat_message
-                                                                         WHERE chat_message.chat_room_id = chat_room.chat_room_id)
+                                                                         WHERE chat_message.chat_room_id = chat_room.chat_room_id
+                                                                           AND chat_message.chat_message_type = 'NORMAL')
                  LEFT JOIN (SELECT chat_room_id,
                                    COUNT(*) AS unread_count
                             FROM chat_message
@@ -30,7 +31,7 @@
         ORDER BY chat_room.recent_message_date DESC, chat_room.chat_room_id DESC;
     </select>
 
-    <select id="findRoomById" parameterType="long" resultType="ChatMessage">
+    <select id="findMessageListById" parameterType="long" resultType="ChatMessage">
         SELECT *
         FROM chat_message
         WHERE chat_room_id = #{chatRoomId}
@@ -38,7 +39,14 @@
 
     <select id="getIdToRoomNameMap" resultType="map">
         SELECT chat_room_id, chat_room_name
+        FROM chat_room_member
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="findChatRoomById" parameterType="Long" resultType="ChatRoom">
+        SELECT *
         FROM chat_room
+        WHERE chat_room_id = #{chatRoomId}
     </select>
 
     <select id="getUnreadMessageCount" resultType="int">
@@ -52,23 +60,22 @@
     </select>
 
     <insert id="createRoom" parameterType="ChatRoom" useGeneratedKeys="true" keyProperty="chatRoomId">
-        INSERT INTO chat_room (chat_room_name, creator_id)
-        VALUES (#{chatRoomName}, #{creatorId})
+        INSERT INTO chat_room (chat_room_default_name, creator_id)
+        VALUES (#{chatRoomDefaultName}, #{creatorId})
     </insert>
 
     <insert id="insertRoomMember">
-        INSERT INTO chat_room_member (chat_room_id, user_id)
+        INSERT INTO chat_room_member (chat_room_id, user_id, chat_room_name)
         VALUES
         <foreach collection="chatRoomMemberList" item="chatRoomMember" separator=",">
-            (#{chatRoomMember.chatRoomId}, #{chatRoomMember.userId})
+            (#{chatRoomMember.chatRoomId}, #{chatRoomMember.userId}, #{chatRoomMember.chatRoomName})
         </foreach>
     </insert>
 
     <update id="updateRecentMessageDate">
         UPDATE chat_room
         SET recent_message_date = (SELECT MAX(chat_message_date)
-                                   FROM chat_message
-                                   WHERE chat_room_id = #{chatRoomId})
+                                   FROM chat_message)
         WHERE chat_room_id = #{chatRoomId}
     </update>
 
@@ -81,10 +88,22 @@
           AND user_id = #{userId}
     </update>
 
-    <delete id="deleteRoom" parameterType="long">
+    <delete id="deleteRoom" parameterType="Long">
         DELETE
         FROM chat_room
         WHERE chat_room_id = #{chatRoomId}
+    </delete>
+
+    <delete id="deleteMember" parameterType="Long">
+        DELETE
+        FROM chat_room_member
+        WHERE chat_room_id = #{chatRoomId};
+    </delete>
+
+    <delete id="deleteMessageById" parameterType="Long">
+        DELETE
+        FROM chat_message
+        WHERE chat_room_id = #{chatRoomId};
     </delete>
 
     <!-- ChatMessage 관련 -->
@@ -106,8 +125,8 @@
     </select>
 
     <insert id="saveMessage" parameterType="ChatMessage" useGeneratedKeys="true" keyProperty="chatMessageId">
-        INSERT INTO chat_message (chat_room_id, sender_id, chat_message_content, chat_message_date)
-        VALUES (#{chatRoomId}, #{senderId}, #{chatMessageContent}, NOW())
+        INSERT INTO chat_message (chat_room_id, sender_id, chat_message_type, chat_message_content, chat_message_date)
+        VALUES (#{chatRoomId}, #{senderId}, #{chatMessageType}, #{chatMessageContent}, NOW())
     </insert>
 
     <select id="findMessageById" parameterType="Long" resultType="ChatMessage">
@@ -134,10 +153,19 @@
         VALUES (#{chatRoomId}, #{userId})
     </insert>
 
-    <delete id="removeMember" parameterType="long">
+    <delete id="removeMember">
         DELETE
         FROM chat_room_member
-        WHERE chat_room_member_id = #{chatRoomMemberId}
+        WHERE chat_room_id = #{chatRoomId}
+          AND user_id = #{userId}
     </delete>
+
+
+    <update id="updateChatRoomName">
+        UPDATE chat_room_member
+        SET chat_room_name = #{chatRoomName}
+        WHERE chat_room_id = #{chatRoomId}
+          AND user_id = #{userId}
+    </update>
 </mapper>
 

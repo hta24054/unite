@@ -11,4 +11,6 @@ public class ChatRoomMember {
     private Long chatRoomMemberId;
     private Long chatRoomId;
     private String userId;
+    private String chatRoomName;
+    private Long lastReadMessageId;
 }

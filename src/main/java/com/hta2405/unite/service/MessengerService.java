@@ -5,7 +5,7 @@ import com.hta2405.unite.domain.ChatMessage;
 import com.hta2405.unite.domain.ChatRoom;
 import com.hta2405.unite.domain.ChatRoomMember;
 import com.hta2405.unite.dto.ChatRoomDTO;
-import com.hta2405.unite.mybatis.mapper.EmpMapper;
+import com.hta2405.unite.enums.ChatMessageType;
 import com.hta2405.unite.mybatis.mapper.MessengerMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -41,8 +41,8 @@ public class MessengerService {
         return empService.getIdToENameMap();
     }
 
-    public Map<String, Object> getIdToRoomNameMap() {
-        List<Map<String, Object>> resultList = messengerMapper.getIdToRoomNameMap();
+    public Map<String, Object> getIdToRoomNameMap(String userId) {
+        List<Map<String, Object>> resultList = messengerMapper.getIdToRoomNameMap(userId);
 
         Map<String, Object> resultMap = new HashMap<>();
         for (Map<String, Object> row : resultList) {
@@ -50,8 +50,6 @@ public class MessengerService {
             String chatRoomName = (String) row.get("chat_room_name");
             resultMap.put(chatRoomId, chatRoomName);
         }
-
-        System.out.println("resultMap = " + resultMap);
         return resultMap;
     }
 
@@ -60,11 +58,11 @@ public class MessengerService {
         return messengerMapper.findAllRooms(empId);
     }
 
-    public List<ChatMessage> getChatRoomById(Long chatRoomId) {
-        return messengerMapper.findRoomById(chatRoomId);
+    public List<ChatMessage> getChatMessageById(Long chatRoomId) {
+        return messengerMapper.findMessageListById(chatRoomId);
     }
 
-    public boolean createChatRoom(List<String> userIds, String empId) {
+    public HashMap<String, Object> createChatRoom(List<String> userIds, String empId) {
         if (!Objects.equals(empId, "admin")) {
             userIds.add(empId);
         }
@@ -93,29 +91,53 @@ public class MessengerService {
         }
 
         ChatRoom chatRoom = ChatRoom.builder()
-                .chatRoomName(chatRoomName.toString())
+                .chatRoomDefaultName(chatRoomName.toString())
                 .creatorId(empId).build();
-        messengerMapper.createRoom(chatRoom);
-
-        if (!userIds.isEmpty()) {
-            //초대받은 사용자들에게 알림 전송
-            for (String userId : userIds) {
-                messagingTemplate.convertAndSend("/topic/user/" + userId, userId);
-            }
-            return insertRoomMember(userIds, chatRoom.getChatRoomId());
+        try {
+            messengerMapper.createRoom(chatRoom);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to create chat room", e);
         }
-        return true;
+
+        Boolean check;
+        if (!userIds.isEmpty()) {
+            check = insertRoomMember(userIds, chatRoom);
+
+            if (check) {
+                // DB 저장이 성공한 경우에만 알림 전송
+                for (String userId : userIds) {
+                    messagingTemplate.convertAndSend("/topic/user/" + userId, chatRoom);
+                }
+            }
+        } else {
+            check = true;
+        }
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("chatRoomId", chatRoom.getChatRoomId());
+        map.put("status", check);
+        return map;
     }
 
-    public Boolean insertRoomMember(List<String> userIds, Long chatRoomId) {
+    public Boolean insertRoomMember(List<String> userIds, ChatRoom chatRoom) {
         List<ChatRoomMember> chatRoomMemberList = new ArrayList<>();
         for (String userId : userIds) {
             ChatRoomMember chatRoomMember = ChatRoomMember.builder()
-                    .chatRoomId(chatRoomId)
-                    .userId(userId).build();
+                    .chatRoomId(chatRoom.getChatRoomId())
+                    .userId(userId)
+                    .chatRoomName(chatRoom.getChatRoomDefaultName()).build();
             chatRoomMemberList.add(chatRoomMember);
         }
-        return messengerMapper.insertRoomMember(chatRoomMemberList) > 0;
+
+        try {
+            // Batch insert 수행
+            int insertedRows = messengerMapper.insertRoomMember(chatRoomMemberList);
+            return insertedRows > 0; // 삽입된 행이 있다면 true 반환
+        } catch (Exception e) {
+            // 예외 발생 시 로그 출력 및 false 반환
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public void deleteChatRoom(Long chatRoomId) {
@@ -128,13 +150,14 @@ public class MessengerService {
     }
 
     public void saveMessage(ChatMessage chatMessage) {
-        messengerMapper.saveMessage(chatMessage);
-        Long chatMessageId = chatMessage.getChatMessageId();
-
-        chatMessage = messengerMapper.findMessageById(chatMessageId);
         Long chatRoomId = chatMessage.getChatRoomId();
 
-        messengerMapper.updateRecentMessageDate(chatRoomId);
+        if (!chatMessage.getChatMessageType().equals(ChatMessageType.LEAVE_ALL)) {
+            messengerMapper.saveMessage(chatMessage);
+            messengerMapper.updateRecentMessageDate(chatRoomId);
+
+            chatMessage = messengerMapper.findMessageById(chatMessage.getChatMessageId());
+        }
         messagingTemplate.convertAndSend("/topic/chatRoom/" + chatRoomId, chatMessage); // 브로드캐스트
     }
 
@@ -147,8 +170,58 @@ public class MessengerService {
         messengerMapper.addMember(member);
     }
 
-    public void removeMember(Long chatRoomMemberId) {
-        messengerMapper.removeMember(chatRoomMemberId);
+    public Boolean removeMember(Long chatRoomId, String userId) {
+        try {
+            String creator = messengerMapper.findChatRoomById(chatRoomId).getCreatorId();
+            int deleteRow;
+
+            System.out.println("creator = " + creator + "userId = " + userId);
+            if (creator.equals(userId)) {
+                //채팅방장이 삭제시 모두 방 삭제
+                deleteChatMessage(chatRoomId);
+                deleteRow = deleteMember(chatRoomId);
+                deleteChatRoom(chatRoomId);
+
+                ChatMessage chatMessage = ChatMessage.builder()
+                        .chatRoomId(chatRoomId)
+                        .senderId(userId)
+                        .chatMessageType(ChatMessageType.LEAVE_ALL).build();
+                saveMessage(chatMessage);
+            } else {
+                deleteRow = messengerMapper.removeMember(chatRoomId, userId);
+                List<String> memberList = messengerMapper.findMembersByRoomId(chatRoomId);
+
+                if (memberList.isEmpty()) { // 채팅방에 아무도 없다면 채팅방 삭제
+                    deleteChatMessage(chatRoomId);
+                    deleteChatRoom(chatRoomId);
+                }
+
+                Map<String, String> empMap = getIdToENameMap();
+
+                // 나가기 메시지 생성
+                String messageContent = empMap.get(userId) + "님이 채팅방을 나갔습니다.";
+
+                ChatMessage chatMessage = ChatMessage.builder()
+                        .chatRoomId(chatRoomId)
+                        .senderId(userId)
+                        .chatMessageContent(messageContent)
+                        .chatMessageType(ChatMessageType.LEAVE).build();
+                saveMessage(chatMessage);
+            }
+            return deleteRow > 0;
+        } catch (Exception e) {
+            // 예외 발생 시 로그 출력 및 false 반환
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private void deleteChatMessage(Long chatRoomId) {
+        messengerMapper.deleteMessageById(chatRoomId);
+    }
+
+    private int deleteMember(Long chatRoomId) {
+        return messengerMapper.deleteMember(chatRoomId);
     }
 
     public int getUnreadMessageCount(Long chatRoomId, String userId) {
@@ -165,5 +238,14 @@ public class MessengerService {
         return chatRoomMemberList.stream()
                 .map(ChatRoomMember::getChatRoomId)
                 .collect(Collectors.toList());
+    }
+
+    public ChatRoom getChatRoomById(Long id) {
+        return messengerMapper.findChatRoomById(id);
+    }
+
+    public Boolean updateChatRoomName(Long chatRoomId, String userId, String chatRoomName) {
+        messengerMapper.updateChatRoomName(chatRoomId, userId, chatRoomName);
+        return true;
     }
 }

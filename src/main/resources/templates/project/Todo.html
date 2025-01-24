@@ -43,7 +43,7 @@
             <input type="hidden" th:value="${#authentication.name}" id="user-id">
                 <div class="container mt-5">
                     <h1 class="text-center mb-4 background">
-                        <span th:text="'TODO 리스트 - ' + ${projectName}" class="text"></span>
+                        <span th:text="'TODO List - ' + ${projectName}" class="text"></span>
                     </h1>
                     <form th:action="@{/project/todoForm(projectId=${projectId})}" method="POST" class="mb-4">
                         <div class="input-group">
@@ -55,7 +55,7 @@
                     <h2>할 일 목록</h2>
                     <ul id="todoList" class="list-group">
                         <li th:if="${#lists.isEmpty(todos)}" class="list-group-item text-center">
-                            투두리스트를 추가해주세요.
+                            Todo List를 추가해주세요.
                         </li>
                         <ul class="sortable row box">
                             <li th:each="todo, iterStat : ${todos}" class="list-group-item ui-state-default" th:data-todo-id="${todo.todoId}">

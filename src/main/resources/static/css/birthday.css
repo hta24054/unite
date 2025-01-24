@@ -1,0 +1,33 @@
+.birthday-list {
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.birthday-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.left {
+    flex: 0 0 auto;
+    margin-right: 10px;
+}
+
+.right {
+    flex: 1;
+    text-align: left;
+}
+
+.right .ename {
+    font-weight: bold;
+}
+
+.right .job {
+    color: #888;
+}
+
+hr {
+    margin: 5px;
+}

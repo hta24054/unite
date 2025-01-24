@@ -153,7 +153,8 @@
         select emp_id empId, ename eName, (select d.dept_name from dept d where d.dept_id = e.dept_id) deptName, (select j.job_name from job j where j.job_id = e.job_id) jobName,
                img_path imgPath, img_original imgOriginal, img_uuid imgUUID, img_type imgType, birthday, birthday_type birthdayType
         from emp e
-        where (MONTH(birthday) = #{solMonth} AND DAY(birthday) = #{solDay}) or (MONTH(birthday) = #{lunMonth} AND DAY(birthday) = #{lunDay})
+        where (MONTH(birthday) = #{solMonth} AND DAY(birthday) = #{solDay} AND e.birthday_type = '양력') or (MONTH(birthday) = #{lunMonth} AND DAY(birthday) = #{lunDay} AND e.birthday_type = '음력')
+        order by e.ename;
     </select>
 </mapper>
 

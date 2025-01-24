@@ -1,5 +1,11 @@
 .container {
-    width: 80%
+    max-width: 1200px;
+    margin: 30px auto;
+    background: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 1);
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 20px;
 }
 
 body > div > table > tbody > tr:nth-child(1) {

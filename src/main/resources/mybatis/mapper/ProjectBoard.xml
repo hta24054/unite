@@ -111,6 +111,6 @@
         delete from task_comment where task_comment_id = #{taskId}
     </delete>
     <select id="commentCount" resultType="map">
-        select t.task_id taskId , count(*) commentCount from task t join task_comment tc on t.task_id = tc.task_id where t.project_id = 72 and t.emp_id = '241303' group by t.task_id;
+        select t.task_id taskId , count(*) commentCount from task t join task_comment tc on t.task_id = tc.task_id where t.project_id = #{projectId} and t.emp_id = #{userid} group by t.task_id;
     </select>
 </mapper>

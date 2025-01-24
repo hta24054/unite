@@ -38,7 +38,7 @@
 										<button type="button" class="btn btn-primary btn-sm float-end"
 												th:if="${#strings.replace(role, '[', '').replace(']', '') != 'VIEWER'}"
 												th:onclick="|location.href='@{/project/todo(projectId=${projectId})}';|">
-											투두리스트
+											TodoList
 										</button>
 									</div>
 								</caption>

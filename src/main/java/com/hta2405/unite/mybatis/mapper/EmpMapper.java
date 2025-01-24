@@ -1,10 +1,12 @@
 package com.hta2405.unite.mybatis.mapper;
 
+import com.hta2405.unite.domain.Birthday;
 import com.hta2405.unite.domain.Dept;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.dto.EmpListDTO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -37,4 +39,6 @@ public interface EmpMapper {
     String findDeptManager(String empId);
 
     String findParentDeptManager(String empId);
+
+    List<Birthday> findTodayBirthdays(int solMonth, int solDay, int lunMonth, int lunDay);
 }

@@ -6,16 +6,18 @@
             <title>Unite</title>
             <link th:href="@{/css/popup.css}" rel="stylesheet"/>
             <link th:href="@{/css/currency.css}" rel="stylesheet"/>
+            <link th:href="@{/css/birthday.css}" rel="stylesheet"/>
             <script th:src="@{/js/popup.js}"></script>
             <script th:src="@{/js/currency.js}"></script>
             <script th:src="@{/js/home.js}"></script>
+            <script th:src="@{/js/birthday.js}"></script>
         </head>
         <body class="bg-light">
         <div class="container mt-4">
             <div class="row g-4">
                 <!-- 프로필 정보 표시 -->
                 <div class="col-lg-3">
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm" style="height: 100%;">
                         <div class="card-body text-center">
                             <img th:src="@{/api/emp/profile-image(empId=${#authentication.name})}"
                                  class="rounded-circle mb-3" width="150px" alt="프로필">
@@ -92,6 +94,15 @@
                             </ul>
                         </div>
                     </div>
+                    <div class="card shadow-sm" style="margin-top:30px;">
+                        <div class="card-body" style="height: 100%;">
+                            <h5 class="text-center"><i class="bi bi-cake2-fill"></i>&emsp;오늘의 생일자&emsp;<i class="bi bi-cake2-fill"></i></h5>
+                            <ul class="list-group">
+                                <li class="list-group-item text-center birthday-list" style="margin-top: 10px; padding-bottom: 0px;"></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </div>
 

@@ -15,11 +15,15 @@ $(document).ready(function () {
             fetchListData(),
             fetchSharedListData()
         ]).then(() => {
-            const startMonth = moment().startOf('month').format('YYYY-MM');
-            const endMonth = moment().endOf('month').format('YYYY-MM');
-
-            fetchHolidayData(startMonth, endMonth);
+            holidayCurrentMonth();
         });
+    }
+
+    // 공휴일 현재 달에 맞게 불러오기
+    function holidayCurrentMonth() {
+        const startMonth = moment().startOf('month').format('YYYY-MM');
+        const endMonth = moment().endOf('month').format('YYYY-MM');
+        fetchHolidayData(startMonth, endMonth);
     }
 
     // 공휴일 불러오기
@@ -150,10 +154,7 @@ $(document).ready(function () {
                     }
                 }
 
-                const startMonth = moment().startOf('month').format('YYYY-MM');
-                const endMonth = moment().endOf('month').format('YYYY-MM');
-                fetchHolidayData(startMonth, endMonth);  // 공휴일 데이터 추가
-
+                holidayCurrentMonth();
                 initCalendar();
             },
             error: function (error) {
@@ -175,9 +176,7 @@ $(document).ready(function () {
             initCalendar();
         }
 
-        const startMonth = moment().startOf('month').format('YYYY-MM');
-        const endMonth = moment().endOf('month').format('YYYY-MM');
-        fetchHolidayData(startMonth, endMonth);  // 공휴일 데이터 추가
+        holidayCurrentMonth();
     });
 
     // 부서 일정 리스트 불러오기
@@ -214,10 +213,7 @@ $(document).ready(function () {
                     }
                 }
 
-                const startMonth = moment().startOf('month').format('YYYY-MM');
-                const endMonth = moment().endOf('month').format('YYYY-MM');
-                fetchHolidayData(startMonth, endMonth);
-
+                holidayCurrentMonth();
                 initCalendar();
             },
             error: function (error) {
@@ -267,9 +263,7 @@ $(document).ready(function () {
                     });
                 } else {
                     // 공휴일 데이터를 처음 로드할 때
-                    const startMonth = moment().startOf('month').format('YYYY-MM');
-                    const endMonth = moment().endOf('month').format('YYYY-MM');
-                    fetchHolidayData(startMonth, endMonth);
+                    holidayCurrentMonth();
                 }
 
                 window.holidayDataLoaded = false;
@@ -644,14 +638,11 @@ $(document).ready(function () {
                     click: function() {
                         calendar.prev();
 
+                        // 캘린더에서 갱신된 날짜를 가져와서, 해당 날짜 기준으로 다음 달의 시작일과 종료일을 계산
                         const startMonth = moment(calendar.getDate()).startOf('month').format('YYYY-MM');
                         const endMonth = moment(calendar.getDate()).endOf('month').format('YYYY-MM');
-
-                        alert('Start Month: ' + startMonth + ', End Month: ' + endMonth)
-
-                        // 이전 버튼을 클릭하면 isHolidayDataLoaded 초기화
                         isHolidayDataLoaded = false;
-                        fetchHolidayData(startMonth, endMonth); // 공휴일 데이터 새로 불러오기
+                        fetchHolidayData(startMonth, endMonth);
                     }
                 },
                 customNext: {
@@ -659,13 +650,8 @@ $(document).ready(function () {
                     click: function() {
                         calendar.next();
 
-                        // 캘린더에서 갱신된 날짜를 가져와서, 해당 날짜 기준으로 다음 달의 시작일과 종료일을 계산
                         const startMonth = moment(calendar.getDate()).startOf('month').format('YYYY-MM');
                         const endMonth = moment(calendar.getDate()).endOf('month').format('YYYY-MM');
-
-                        alert('Start Month: ' + startMonth + ', End Month: ' + endMonth)
-
-                        // 다음 버튼을 클릭하면 isHolidayDataLoaded 초기화
                         isHolidayDataLoaded = false;
                         fetchHolidayData(startMonth, endMonth);
                     }
@@ -742,10 +728,7 @@ $(document).ready(function () {
             },
             eventDidMount: function (info) {
                 //console.log("info.event.extendedProps", info.event.extendedProps);
-            },
-            // eventDrop: function (info) {
-            //     updateDragEvent(info);
-            // }
+            }
         });
 
         //선택 상태 해제

@@ -2,6 +2,8 @@ package com.hta2405.unite.controller.api;
 
 import com.hta2405.unite.domain.ChatMessage;
 import com.hta2405.unite.domain.ChatRoom;
+import com.hta2405.unite.domain.ChatRoomMember;
+import com.hta2405.unite.dto.ChatMessageDTO;
 import com.hta2405.unite.dto.ChatRoomDTO;
 import com.hta2405.unite.service.MessengerService;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +44,7 @@ public class MessengerApiController {
     @GetMapping("/rooms/{id}")
     public ResponseEntity<HashMap<String, Object>> getRoomById(@PathVariable Long id,
                                                                @AuthenticationPrincipal UserDetails user) {
-        List<ChatMessage> chatMessageList = messengerService.getChatMessageById(id);
+        List<ChatMessage> chatMessageList = messengerService.getChatMessageById(id, user.getUsername());
         List<String> userIds = messengerService.getMembersByRoomId(id);
         ChatRoom chatRoom = messengerService.getChatRoomById(id);
 
@@ -76,12 +78,12 @@ public class MessengerApiController {
 
     // 메시지 전송 (STOMP 사용)
     @MessageMapping("/chatRoom/{chatRoomId}")
-    public void sendMessage(@RequestBody ChatMessage message,
+    public void sendMessage(@RequestBody ChatMessageDTO messageDTO,
                             @DestinationVariable Long chatRoomId) {
 
-        System.out.println("asdasd message = " + message + "chatRoomId = " + chatRoomId);
+        System.out.println("messageDTO = " + messageDTO + "chatRoomId = " + chatRoomId);
 
-        messengerService.saveMessage(message); // 메시지 저장
+        messengerService.saveMessage(messageDTO); // 메시지 저장
     }
 
     @GetMapping("/chatRoom/{chatRoomId}/unreadCount/{userId}")
@@ -112,6 +114,17 @@ public class MessengerApiController {
 
         Boolean check = messengerService.removeMember(chatRoomId, user.getUsername());
 
+        HashMap<String, Object> response = new HashMap<>();
+        response.put("status", check);
+        return ResponseEntity.ok(response); // JSON 형식으로 반환
+    }
+
+    @PostMapping("/chatRoom/{chatRoomId}/invite")
+    public ResponseEntity<HashMap<String, Object>> inviteChatRoomUserId(@PathVariable Long chatRoomId,
+                                                                        @RequestBody List<String> userIds,
+                                                                        @AuthenticationPrincipal UserDetails user) {
+
+        Boolean check = messengerService.addChatRoomMember(chatRoomId, userIds, user.getUsername());
         HashMap<String, Object> response = new HashMap<>();
         response.put("status", check);
         return ResponseEntity.ok(response); // JSON 형식으로 반환

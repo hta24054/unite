@@ -14,7 +14,7 @@ public interface MessengerMapper {
     // ChatRoom 관련
     List<ChatRoomDTO> findAllRooms(String empId);
 
-    List<ChatMessage> findMessageListById(Long chatRoomId);
+    List<ChatMessage> findMessageListById(Long chatRoomId, String userId);
 
     List<Map<String, Object>> getIdToRoomNameMap(String userId);
 
@@ -23,7 +23,7 @@ public interface MessengerMapper {
     void deleteRoom(Long chatRoomId);
 
     // ChatMessage 관련
-    List<ChatRoomDTO> findLastMessagesByRoomIds(String empId);
+    ChatMessage findLastMessageByRoomId(Long chatRoomId);
 
     List<ChatMessage> findMessagesByRoomId(Long chatRoomId);
 
@@ -34,11 +34,11 @@ public interface MessengerMapper {
 
     ChatRoom findChatRoomById(Long chatRoomId);
 
-    void addMember(ChatRoomMember member);
+//    int addMember(ChatRoomMember member);
 
     int removeMember(Long chatRoomId, String userId);
 
-    int insertRoomMember(List<ChatRoomMember> chatRoomMemberList);
+    int insertRoomMember(List<ChatRoomMember> chatRoomMemberList, boolean newInvite);
 
     int getUnreadMessageCount(Long chatRoomId, String userId);
 

@@ -31,10 +31,14 @@
         ORDER BY chat_room.recent_message_date DESC, chat_room.chat_room_id DESC;
     </select>
 
-    <select id="findMessageListById" parameterType="long" resultType="ChatMessage">
-        SELECT *
-        FROM chat_message
-        WHERE chat_room_id = #{chatRoomId}
+    <select id="findMessageListById" resultType="ChatMessage">
+        SELECT cm.*
+        FROM chat_message cm
+                 JOIN chat_room_member crm ON cm.chat_room_id = crm.chat_room_id
+        WHERE crm.user_id = #{userId}
+          AND cm.chat_message_date >= crm.chat_room_joined_at
+          AND cm.chat_room_id = #{chatRoomId}
+        ORDER BY cm.chat_message_date ASC;
     </select>
 
     <select id="getIdToRoomNameMap" resultType="map">
@@ -65,10 +69,18 @@
     </insert>
 
     <insert id="insertRoomMember">
-        INSERT INTO chat_room_member (chat_room_id, user_id, chat_room_name)
+        INSERT INTO chat_room_member (chat_room_id, user_id, chat_room_name
+        <if test="newInvite">
+            , last_read_message_id
+        </if>
+        )
         VALUES
         <foreach collection="chatRoomMemberList" item="chatRoomMember" separator=",">
-            (#{chatRoomMember.chatRoomId}, #{chatRoomMember.userId}, #{chatRoomMember.chatRoomName})
+            (#{chatRoomMember.chatRoomId}, #{chatRoomMember.userId}, #{chatRoomMember.chatRoomName}
+            <if test="newInvite">
+                , #{chatRoomMember.lastReadMessageId}
+            </if>
+            )
         </foreach>
     </insert>
 
@@ -107,14 +119,11 @@
     </delete>
 
     <!-- ChatMessage 관련 -->
-    <select id="findLastMessagesByRoomIds" parameterType="long" resultType="ChatMessage">
+    <select id="findLastMessageByRoomId" parameterType="Long" resultType="ChatMessage">
         SELECT *
         FROM chat_message
         WHERE chat_room_id = #{chatRoomId}
-        <foreach collection="chatRoomMemberList" item="chatRoomMember" separator=",">
-            (#{chatRoomMember.chatRoomId}, #{chatRoomMember.userId})
-        </foreach>
-        ORDER BY chat_message_date ASC
+        ORDER BY chat_message_date DESC LIMIT 1;
     </select>
 
     <select id="findMessagesByRoomId" parameterType="long" resultType="ChatMessage">
@@ -148,10 +157,10 @@
         WHERE user_id = #{userId}
     </select>
 
-    <insert id="addMember" parameterType="ChatRoomMember">
-        INSERT INTO chat_room_member (chat_room_id, user_id)
-        VALUES (#{chatRoomId}, #{userId})
-    </insert>
+    <!--    <insert id="addMember" parameterType="ChatRoomMember">-->
+    <!--        INSERT INTO chat_room_member (chat_room_id, user_id, chat_room_name, last_read_message_id)-->
+    <!--        VALUES (#{chatRoomId}, #{userId}, #{chatRoomName}, #{lastReadMessageId})-->
+    <!--    </insert>-->
 
     <delete id="removeMember">
         DELETE

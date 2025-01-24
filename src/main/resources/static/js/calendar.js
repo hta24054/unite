@@ -150,6 +150,10 @@ $(document).ready(function () {
                     }
                 }
 
+                const startMonth = moment().startOf('month').format('YYYY-MM');
+                const endMonth = moment().endOf('month').format('YYYY-MM');
+                fetchHolidayData(startMonth, endMonth);  // 공휴일 데이터 추가
+
                 initCalendar();
             },
             error: function (error) {
@@ -209,6 +213,10 @@ $(document).ready(function () {
                         }
                     }
                 }
+
+                const startMonth = moment().startOf('month').format('YYYY-MM');
+                const endMonth = moment().endOf('month').format('YYYY-MM');
+                fetchHolidayData(startMonth, endMonth);
 
                 initCalendar();
             },

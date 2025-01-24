@@ -24,13 +24,8 @@ $(document).ready(function () {
 
     // 공휴일 불러오기
     function fetchHolidayData(startMonth, endMonth) {
-        // 이미 공휴일 데이터가 로드되었으면 다시 불러오지 않음
-        if (isHolidayDataLoaded) {
-            return;
-        }
-
         $.ajax({
-            url: "getHoliday",
+            url: contextPath + "/schedule/getHoliday",
             type: "GET",
             data: {
                 start: startMonth,
@@ -55,6 +50,7 @@ $(document).ready(function () {
                         });
                     });
                 }
+
                 // 기존 공휴일 데이터 소스를 제거
                 if (calendar.getEventSourceById("holidayList") != null) {
                     calendar.getEventSourceById("holidayList").remove();
@@ -65,9 +61,6 @@ $(document).ready(function () {
                     id: "holidayList",
                     events: holidayEvents // 새로운 공휴일 이벤트를 추가
                 });
-
-                // 공휴일 데이터가 로드되었으므로 isHolidayDataLoaded를 true로 설정
-                isHolidayDataLoaded = true;
 
                 // 캘린더에 이벤트 갱신
                 calendar.refetchEvents();
@@ -135,9 +128,6 @@ $(document).ready(function () {
             success: function(data) {
                 if (data != null) {
                     for (let i = 0; i < data.length; i++) {
-
-                        const sharedEmployees = data[i].shareEmp ? data[i].shareEmp.split(",") : [];
-
                         // 중복 체크: schedule_id로 중복 여부 확인
                         if (!events.some(event => event.id === data[i].scheduleId)) {
                             events.push({
@@ -193,8 +183,6 @@ $(document).ready(function () {
                 dept_id: $('#dept_id').val(),
             },
             success: function(data) {
-                console.log("부서 일정 데이터:", data);
-
                 if (data != null) {
                     for (let i = 0; i < data.length; i++) {
 
@@ -257,11 +245,20 @@ $(document).ready(function () {
                     }
                 }
 
-                // 새로운 공휴일 이벤트를 추가
-                calendar.addEventSource({
-                    id: "holidayList",
-                    events: holidayEvents // 새로운 공휴일 이벤트를 추가
-                });
+                // 일정 등록 후 공휴일 데이터가 사라지지 않도록, 기존 공휴일 데이터 추가
+                if (isHolidayDataLoaded) {
+                    calendar.getEventSourceById('holidayList').remove();
+                    // 공휴일 이벤트를 다시 캘린더에 추가
+                    calendar.addEventSource({
+                        id: 'holidayList',
+                        events: holidayEvents
+                    });
+                } else {
+                    // 공휴일 데이터를 처음 로드할 때
+                    const startMonth = moment().startOf('month').format('YYYY-MM');
+                    const endMonth = moment().endOf('month').format('YYYY-MM');
+                    fetchHolidayData(startMonth, endMonth);
+                }
 
                 window.holidayDataLoaded = false;
                 fetchAllData();

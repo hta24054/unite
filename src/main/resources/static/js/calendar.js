@@ -170,6 +170,10 @@ $(document).ready(function () {
             events = events.filter(event => !event.extendedProps.isDept);
             initCalendar();
         }
+
+        const startMonth = moment().startOf('month').format('YYYY-MM');
+        const endMonth = moment().endOf('month').format('YYYY-MM');
+        fetchHolidayData(startMonth, endMonth);  // 공휴일 데이터 추가
     });
 
     // 부서 일정 리스트 불러오기

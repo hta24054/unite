@@ -169,7 +169,7 @@ body {
 }
 
 .leaveMessage {
-    background: aliceblue;
+    background: lavenderblush;
     border-radius: 10px;
     width: 400px;
     margin-top: 10px;
@@ -178,7 +178,7 @@ body {
 }
 
 .inviteMessage {
-    background: lavenderblush;
+    background: aliceblue;
     border-radius: 10px;
     width: 400px;
     margin-top: 10px;

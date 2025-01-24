@@ -92,8 +92,10 @@ function joinChatRoom(chatRoomId) {
 
                 // 읽지 않은 메시지 개수 갱신
                 updateUnreadCount(chatMessage.chatRoomId, chatMessage.senderId);
-            } else if (chatMessage.chatMessageType === 'LEAVE') {
-                displayStateMessage(chatMessage);
+            } else if (chatMessage.chatMessageType === 'INVITE' || chatMessage.chatMessageType === 'LEAVE') {
+                if (chatMessage.chatRoomId === $('.messenger-room-active').data('chat-room')) {
+                    displayStateMessage(chatMessage);
+                }
             } else if (chatMessage.chatMessageType === 'LEAVE_ALL') {
                 displayRemoveChatRoom(chatMessage);
             }
@@ -164,8 +166,6 @@ function openChatRoom(chatRoomId) {
     // 채팅방 메세지 리스트 로드
     loadChatMessageList(chatRoomId);
 
-    // 채팅방 메시지 출력
-    console.log("3");
     // joinChatRoom(chatRoomId);
 }
 
@@ -203,20 +203,36 @@ function leaveChatRoom(chatRoomId) {
 
 function displayStateMessage(chatMessage) {
     const $messengerContentBody = $('.messenger-content-body');
-    let html = '';
-    if (chatMessage.chatMessageType === 'LEAVE') {
-        html += `
+    let html = `
                 <div class="text-center standardDay">
                     <div class="leaveMessage">${chatMessage.chatMessageContent}</div>
                 </div>`;
-    }
 
+
+    if (chatMessage.chatMessageType === 'LEAVE') {
+        console.log('content leave= ' + chatMessage.chatMessageContent)
+        $('.member-' + chatMessage.senderId).remove();
+    } else if (chatMessage.chatMessageType === 'INVITE') {
+        console.log('content invite= ' + chatMessage.chatMessageContent)
+        html += ``;
+
+        if (empMap !== undefined) {
+            let memberHtml = ``;
+            chatMessage.userIds.forEach((userId) => {
+                memberHtml += `
+                            <div class="member member-${userId}" data-user-id="${userId}">
+                                <img class="member-img" src="/api/emp/profile-image?empId=${userId}" alt="프로필" style="width: 30px;height: 30px;">
+                                <span>${empMap[userId]}</span>
+                            </div>`;
+            })
+            $('.btn-invite').before(memberHtml);
+        }
+
+    }
     $messengerContentBody.append(html);
 
     //스크롤바 하단으로 조정
     $messengerContentBody.scrollTop($messengerContentBody.prop("scrollHeight"));
-
-    $('.member-' + chatMessage.senderId).remove();
 }
 
 //채팅방 삭제
@@ -367,6 +383,9 @@ function loadChatRoomData(data, check) {
             latestMessage = '메시지가 없습니다.';
             formattedDate = '';
         }
+        // else if(latestMessage == ){
+        //
+        // }
         let unreadCount = chatRoomDTO.unreadCount;
 
         let html = `
@@ -456,7 +475,7 @@ function loadChatMessageData(data) {
     if (index !== -1) {
         invitedUserMessage = invitedUserMessage.substring(0, index) + invitedUserMessage.substring(index + 2);
     }
-    invitedUserMessage += '님을 채팅방에 초대했습니다.'
+    invitedUserMessage += '님을 채팅방에 초대했습니다.';
     console.log("invitedUserMessage : ", invitedUserMessage)
 
     chatMessageList.forEach((chatMessage) => {
@@ -470,9 +489,7 @@ function loadChatMessageData(data) {
             weekday: 'long', // 요일 추가
         });
 
-        console.log("chatMessage.senderId = ", chatMessage.senderId, " userId = ", userId)
         let html = '';
-
         if (chatMessage.chatMessageType === 'NORMAL') {
 
             if (standardDay !== formattedDated) {
@@ -512,6 +529,22 @@ function loadChatMessageData(data) {
                 </div>
                         `;
             }
+        } else if (chatMessage.chatMessageType === 'INVITE') {
+            check = false; //단체 초대메시지 안나오게 함
+            if (standardDay !== formattedDated) {
+                //기준일 초기화
+                standardDay = formattedDated;
+                html += `
+                        <div class="text-center standardDay">
+                            <div class="standardDay-content">${formattedDated}</div>
+                            <div class="inviteMessage">${chatMessage.chatMessageContent}</div>
+                        </div>`;
+            } else {
+                html += `
+                        <div class="text-center standardDay">
+                            <div class="inviteMessage">${chatMessage.chatMessageContent}</div>
+                        </div>`;
+            }
         } else if (chatMessage.chatMessageType === 'LEAVE') {
             html += `
                 <div class="text-center standardDay">
@@ -547,7 +580,6 @@ function loadChatMessageList(chatRoomId) {
             $messengerMiddle.append(html);
 
             if (response.chatMessageList.length !== 0) {
-                console.log('0이 아님')
                 loadChatMessageData(response);
             }
 
@@ -802,7 +834,7 @@ $(function () {
         $('#user-list').html('');
     })
 
-    //채팅 멤버 추가
+    //채팅 멤버 추가 모달 버튼 클릭
     $(document).on('click', '.btn-invite', function () {
         let label = $('#employeeModalLabel');
         let userList = $('#user-list').html('');
@@ -819,6 +851,36 @@ $(function () {
         console.log("html =" + html)
         userList.html(html);
     })
+
+
+    //채팅 멤버 추가 버튼 클릭
+    $(document).on('click', '#insertMemberBtn', function () {
+        const data = $('#user-list input[name="userId"]')
+            .map(function () {
+                return $(this).val(); // 각 input 요소의 value 값을 추출
+            }).get(); // jQuery 객체를 배열로 변환
+        let chatRoomId = $('.messenger-room-active').data('chat-room');
+        $('#employeeModal').modal('hide');
+        $('#user-list').html('');
+
+        console.log('chatRoomId=', chatRoomId)
+
+        $.ajax({
+            type: 'POST',
+            url: `/api/messenger/chatRoom/${chatRoomId}/invite`,
+            data: JSON.stringify(data),
+            contentType: 'application/json', // JSON 형식 명시
+            dataType: 'json', // 서버에서 JSON 응답을 기대
+            success: function (response) {
+                console.log('Chat room created successfully:', response.status);
+                loadChatRoomList(true);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error creating chat room:', error);
+            }
+        });
+
+    });
 
 });
 

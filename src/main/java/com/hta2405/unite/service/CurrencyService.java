@@ -1,6 +1,7 @@
 package com.hta2405.unite.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hta2405.unite.dto.CurrencyDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -8,22 +9,32 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static java.net.URI.create;
+
 @Service
 @Slf4j
 public class CurrencyService {
     private final String apiKey;
-    private final String URL = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON";
+    private final String URL = "https://ecos.bok.or.kr/api/StatisticSearch";
     private static final String REDIS_KEY = "currency";
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper; // JSON 직렬화/역직렬화
+    //미국, 일본, 유로, 중국 순
+    private final String[][] nationalCode = {
+            {"USD", "0000001"},
+            {"JPY", "0000002"},
+            {"EUR", "0000003"},
+            {"CNH", "0000053"}
+    };
 
     public CurrencyService(@Value("${currency.api.key}") String apiKey,
                            RedisTemplate<String, String> redisTemplate,
@@ -46,7 +57,7 @@ public class CurrencyService {
         }
 
         log.info("Redis cache miss, key = {}", REDIS_KEY);
-        List<CurrencyDTO> currencyDTOList = fetchCurrencyDataWithFallback();
+        List<CurrencyDTO> currencyDTOList = fetchCurrencyData();
 
         try {
             log.debug("Currency data to cache: {}", objectMapper.writeValueAsString(currencyDTOList));
@@ -58,42 +69,52 @@ public class CurrencyService {
         return currencyDTOList;
     }
 
-    // 환율 반환 메서드, 아직 업데이트 안된날은 전날로 시도함
-    private List<CurrencyDTO> fetchCurrencyDataWithFallback() {
-        LocalDate date = LocalDate.now();
-        List<CurrencyDTO> currencyList = fetchCurrencyData(date);
-        while (currencyList.isEmpty()) {
-            date = date.minusDays(1);
-            log.info("환율 정보가 업데이트 되지 않아, 전날로 조회합니다.");
-            currencyList = fetchCurrencyData(date);
-        }
-        log.debug("Fetched currency data: {}", currencyList);
-        return currencyList;
-    }
-
     // API 호출
-    public List<CurrencyDTO> fetchCurrencyData(LocalDate date) {
-        URI uri = URI.create(URL + "?authkey=" + apiKey + "&searchdate=" + date + "&data=AP01");
-        log.info("currency uri = {}", uri);
-        RestTemplate restTemplate = new RestTemplate();
-        try {
-            String jsonResponse = restTemplate.getForObject(uri, String.class);
+    public List<CurrencyDTO> fetchCurrencyData() {
+        ArrayList<CurrencyDTO> list = new ArrayList<>();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        for (String[] code : nationalCode) {
+            String currencyUnit = code[0];
+            String currencyCode = code[1];
+            String url = String.format("%s/%s/json/kr/1/10/731Y001/D/%s/%s/%s",
+                    URL,
+                    apiKey,
+                    LocalDate.now().minusDays(10).toString().replaceAll("-", ""),
+                    LocalDate.now().toString().replaceAll("-", ""),
+                    currencyCode);
+            log.info("currency URL = {}", url);
+            try {
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(create(url))
+                        .GET()
+                        .build();
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<CurrencyDTO> currencies = objectMapper.readValue(jsonResponse, new TypeReference<>() {
-            });
+                // HTTP 요청 전송 및 응답 수신
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    // JSON 파싱
+                    JsonNode root = objectMapper.readTree(response.body());
+                    JsonNode rows = root.path("StatisticSearch").path("row");
 
-            log.info("Filtered currency data: {}", currencies);
-            return new ArrayList<>(currencies);
-
-        } catch (Exception e) {
-            log.error("Failed to fetch currency data from API: {}", e.getMessage());
-            throw new RuntimeException("환율 정보를 가져오는데 실패했습니다.");
+                    if (rows.isArray()) {
+                        // 가장 최근 데이터 가져오기
+                        JsonNode latestRow = rows.get(rows.size() - 1);
+                        // CurrencyDTO 생성
+                        list.add(new CurrencyDTO(currencyUnit, latestRow.path("DATA_VALUE").asText()));
+                    }
+                } else {
+                    log.warn("Failed to fetch currency data for {}: {}", currencyUnit, response.statusCode());
+                }
+            } catch (Exception e) {
+                log.error("Error fetching currency data for {}: {}", currencyUnit, e.getMessage(), e);
+            }
         }
+        log.info("currency data list = {}", list);
+        return list;
     }
 
-    // 1시간마다 데이터 갱신
-    @Scheduled(cron = "0 0 12 * * ?")
+    // 12시간마다 데이터 갱신
+    @Scheduled(cron = "0 0 0/12 * * ?")
     public void deleteRedisCache() {
         try {
             redisTemplate.delete(REDIS_KEY);

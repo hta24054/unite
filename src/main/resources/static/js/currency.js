@@ -7,13 +7,13 @@ $(document).ready(function () {
             const rates = {
                 CNH: "#cnh-rate .rate-value",
                 EUR: "#eur-rate .rate-value",
-                "JPY(100)": "#jpy-rate .rate-value",
+                JPY: "#jpy-rate .rate-value",
                 USD: "#usd-rate .rate-value"
             };
 
             data.forEach(function (currency) {
-                if (rates[currency.cur_unit]) {
-                    $(rates[currency.cur_unit]).text(currency.deal_bas_r+' 원'); // 숫자만 업데이트
+                if (rates[currency.curUnit]) {
+                    $(rates[currency.curUnit]).text(currency.curValue+' 원'); // 숫자만 업데이트
                 }
             });
         },

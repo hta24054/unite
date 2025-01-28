@@ -3,6 +3,7 @@ version: '3.8'
 services:
   app:
     image: unite-app:latest
+    container_name: unite-app
     build:
       context: .
       dockerfile: Dockerfile
@@ -16,5 +17,6 @@ services:
 
   redis:
     image: redis:latest
+    container_name: unite-redis
     ports:
       - "6379:6379"

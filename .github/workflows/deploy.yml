@@ -36,9 +36,9 @@ jobs:
           docker build -t dnghkm/spring-app:latest .
           docker push dnghkm/spring-app:latest
 
-      # 6. EC2로 배포 (필요 시 추가)
-      - name: Deploy to EC2
-        uses: appleboy/scp-action@v1.2.0
+      # 6. docker-compose.yml 파일 전송
+      - name: Deploy docker-compose.yml to EC2
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
@@ -46,3 +46,15 @@ jobs:
           source: docker-compose.yml
           target: /home/ubuntu/app/
 
+      # 7. EC2에서 docker-compose 실행
+      - name: Run Docker Compose on EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd /home/ubuntu/app/
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d

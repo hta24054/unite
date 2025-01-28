@@ -50,6 +50,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           source: docker-compose.yml
           target: /home/ubuntu/app/
+          debug: true
 
       # 8. EC2에서 docker-compose 실행
       - name: Run Docker Compose on EC2

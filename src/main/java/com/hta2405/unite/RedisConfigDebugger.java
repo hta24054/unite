@@ -13,11 +13,15 @@ public class RedisConfigDebugger {
     @Value("${spring.data.redis.port:Not Found}")
     private String redisPort;
 
+    @Value("${cloud.aws.region.static}")
+    private String testAws;
+
     @PostConstruct
     public void debugRedisConfig() {
         System.out.println("==== Redis Configuration ====");
         System.out.println("Redis Host: " + redisHost);
         System.out.println("Redis Port: " + redisPort);
+        System.out.println("testAws: " + testAws);
         System.out.println("=============================");
     }
 }

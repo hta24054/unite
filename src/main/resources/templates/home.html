@@ -5,10 +5,10 @@
         <head>
             <title>Unite</title>
             <link th:href="@{/css/popup.css}" rel="stylesheet"/>
-            <link th:href="@{/css/currency.css}" rel="stylesheet"/>
+            <link th:href="@{/css/economicIndex.css}" rel="stylesheet"/>
             <link th:href="@{/css/birthday.css}" rel="stylesheet"/>
             <script th:src="@{/js/popup.js}"></script>
-            <script th:src="@{/js/currency.js}"></script>
+            <script th:src="@{/js/economicIndex.js}"></script>
             <script th:src="@{/js/home.js}"></script>
             <script th:src="@{/js/birthday.js}"></script>
         </head>
@@ -56,42 +56,65 @@
 
                 <!-- 게시판 -->
                 <div class="col-lg-6">
-                    <div class="card shadow-sm">
+                    <!--좌우 card와 밑단 맞추기 위해서 하단 padding 입력-->
+                    <div class="card shadow-sm" style="padding-bottom: 40px">
                         <div class="card-body">
-                            <!--                캘린더-->
+                            <!--캘린더-->
                             <div th:replace="homeCalendar.html"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 환율 정보 -->
+                <!-- 경제 지표 -->
                 <div class="col-lg-3">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="text-center">환율 정보</h5>
-                            <div class="text-center" style="font-size: 12px; color: gray">* PM 12:00 업데이트</div>
-                            <ul class="list-group">
-                                <li id="usd-rate"
-                                    class="list-group-item d-flex justify-content-between align-items-center">
-                                    <img th:src="@{/image/flags/usa.jpg}" width="30px" class="me-2">
-                                    <span class="rate-value text-end flex-grow-1"></span>
-                                </li>
-                                <li id="jpy-rate"
-                                    class="list-group-item d-flex justify-content-between align-items-center">
-                                    <img th:src="@{/image/flags/japan.jpg}" width="30px" class="me-2">
-                                    <span class="rate-value text-end flex-grow-1"></span>
-                                </li>
-                                <li id="eur-rate"
-                                    class="list-group-item d-flex justify-content-between align-items-center">
-                                    <img th:src="@{/image/flags/eu.png}" width="30px" class="me-2">
-                                    <span class="rate-value text-end flex-grow-1"></span>
-                                </li>
-                                <li id="cnh-rate"
-                                    class="list-group-item d-flex justify-content-between align-items-center">
-                                    <img th:src="@{/image/flags/china.jpg}" width="30px" class="me-2">
-                                    <span class="rate-value text-end flex-grow-1"></span>
-                                </li>
-                            </ul>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="text-center">경제 지표</h5>
+                                <div class="text-center" style="font-size: 12px; color: gray">* PM 12:00 기준</div>
+                                <ul class="list-group">
+                                    <li id="kospi"
+                                        class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>KOSPI</span>
+                                        <span class="rate-value text-end flex-grow-1" id="kospiIndex"></span>
+                                    </li>
+                                    <li id="kosdaq"
+                                        class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>KOSDAQ</span>
+                                        <span class="rate-value text-end flex-grow-1" id="kosdaqIndex"></span>
+                                    </li>
+                                    <li id="usd-rate"
+                                        class="list-group-item d-flex justify-content-between align-items-center">
+                                        <img th:src="@{/image/flags/usa.jpg}" width="30px" class="me-2">
+                                        <span class="rate-value text-end flex-grow-1"></span>
+                                    </li>
+                                    <li id="jpy-rate"
+                                        class="list-group-item d-flex justify-content-between align-items-center">
+                                        <img th:src="@{/image/flags/japan.jpg}" width="30px" class="me-2">
+                                        <span class="rate-value text-end flex-grow-1"></span>
+                                    </li>
+                                    <li id="eur-rate"
+                                        class="list-group-item d-flex justify-content-between align-items-center">
+                                        <img th:src="@{/image/flags/eu.png}" width="30px" class="me-2">
+                                        <span class="rate-value text-end flex-grow-1"></span>
+                                    </li>
+                                    <li id="cnh-rate"
+                                        class="list-group-item d-flex justify-content-between align-items-center">
+                                        <img th:src="@{/image/flags/china.jpg}" width="30px" class="me-2">
+                                        <span class="rate-value text-end flex-grow-1"></span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card shadow-sm" style="margin-top:30px;">
+                            <div class="card-body" style="height: 100%;">
+                                <h5 class="text-center"><i class="bi bi-cake2-fill"></i>&emsp;생일 축하합니다!&emsp;<i
+                                        class="bi bi-cake2-fill"></i></h5>
+                                <ul class="list-group">
+                                    <li class="list-group-item text-center birthday-list"
+                                        style="margin-top: 10px; padding-bottom: 0px;"></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -123,18 +146,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3">
-                    <div class="card shadow-sm" style="margin-top:30px;">
-                        <div class="card-body" style="height: 100%;">
-                            <h5 class="text-center"><i class="bi bi-cake2-fill"></i>&emsp;생일 축하합니다!&emsp;<i
-                                    class="bi bi-cake2-fill"></i></h5>
-                            <ul class="list-group">
-                                <li class="list-group-item text-center birthday-list"
-                                    style="margin-top: 10px; padding-bottom: 0px;"></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
         <!-- 팝업 컨테이너 -->
@@ -147,7 +158,6 @@
                 <button id="popup-dont-show" class="btn btn-secondary btn-sm">모든 공지사항 하루 보지 않기</button>
             </div>
         </div>
-
         </body>
         </html>
     </th:block>

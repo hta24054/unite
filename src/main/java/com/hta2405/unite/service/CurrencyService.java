@@ -36,7 +36,7 @@ public class CurrencyService {
             {"CNH", "0000053"}
     };
 
-    public CurrencyService(@Value("${currency.api.key}") String apiKey,
+    public CurrencyService(@Value("${bankOfKorea.api.key}") String apiKey,
                            RedisTemplate<String, String> redisTemplate,
                            ObjectMapper objectMapper) {
         this.apiKey = apiKey;
@@ -61,7 +61,7 @@ public class CurrencyService {
 
         try {
             log.debug("Currency data to cache: {}", objectMapper.writeValueAsString(currencyDTOList));
-            redisTemplate.opsForValue().set(REDIS_KEY, objectMapper.writeValueAsString(currencyDTOList), 1, TimeUnit.HOURS);
+            redisTemplate.opsForValue().set(REDIS_KEY, objectMapper.writeValueAsString(currencyDTOList), 24, TimeUnit.HOURS);
         } catch (Exception e) {
             log.error("Redis cache error: {}", REDIS_KEY, e);
         }

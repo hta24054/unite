@@ -8,7 +8,7 @@ $(document).ready(function () {
 
     function loadBoardData() {
         $.ajax({
-            url: "/api/home/board", // 서블릿 URL
+            url: contextPath + "/api/home/board", // 서블릿 URL
             type: "GET",
             dataType: "json",
             success: function (data) {

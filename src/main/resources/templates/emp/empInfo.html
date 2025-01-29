@@ -120,7 +120,13 @@
                     </tr>
                     <tr>
                         <th>생년월일</th>
-                        <td><input type="date" name="birthday" th:value="${empInfoDTO.emp.birthday}" readonly></td>
+                        <td style="display: flex; gap: 8px; align-items: center;">
+                            <select name="birthdayType" disabled>
+                                <option value="양력" th:selected="${empInfoDTO.emp.birthdayType}=='양력'">양력</option>
+                                <option value="음력" th:selected="${empInfoDTO.emp.birthdayType}=='음력'">음력</option>
+                            </select>
+                            <input type="date" name="birthday" th:value="${empInfoDTO.emp.birthday}" readonly>
+                        </td>
                         <th>주소</th>
                         <td><input type="text" name="address" th:value="${empInfoDTO.emp.address}" readonly></td>
                     </tr>

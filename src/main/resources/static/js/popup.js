@@ -1,6 +1,4 @@
 $(document).ready(function () {
-    const contextPath = /*[[@{}]]*/ '';
-    console.log(contextPath)
     $.ajax({
         url: contextPath + "/api/home/notice",
         type: "GET",

@@ -16,11 +16,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class BirthdayApiController {
-    private final BirthdayService BirthdayService;
+    private final BirthdayService birthdayService;
 
     @GetMapping
     public ResponseEntity<List<Birthday>> getBirthday() {
-        log.info("컨트롤러");
-        return ResponseEntity.ok(BirthdayService.getTodayBirthdays());
+        return ResponseEntity.ok(birthdayService.getTodayBirthdays());
     }
 }

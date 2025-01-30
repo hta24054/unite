@@ -23,7 +23,7 @@ import static java.net.URI.create;
 public class StockIndexService {
     private final String apiKey;
     private final String URL = "https://ecos.bok.or.kr/api/StatisticSearch";
-    private static final String REDIS_KEY = "stockIndex";
+    private final String REDIS_KEY = "stockIndex";
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
     private final String[] stockIndexCode = {"0001000", "0089000"}; //코스피, 코스닥

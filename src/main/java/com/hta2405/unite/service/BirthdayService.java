@@ -16,19 +16,18 @@ import java.util.List;
 @Service
 @Slf4j
 public class BirthdayService {
-    private static final String BaseURL = "http://apis.data.go.kr/B090041/openapi/service/LrsrCldInfoService/getLunCalInfo";
-    private static final String ServiceKey = "&ServiceKey=";
-    private static String apiKey;
-    private static EmpMapper empMapper;
+    private final String BaseURL = "http://apis.data.go.kr/B090041/openapi/service/LrsrCldInfoService/getLunCalInfo";
+    private final String ServiceKey = "&ServiceKey=";
+    private final String apiKey;
+    private final EmpMapper empMapper;
 
     public BirthdayService(@Value("${birthday.apiKey}") String apiKey, EmpMapper empMapper) {
         this.apiKey = apiKey;
         this.empMapper = empMapper;
     }
 
-    public static BirthdayDTO getLunarDate() {
-        LocalDate today = LocalDate.now();
-        String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    public BirthdayDTO getLunarDate(LocalDate date) {
+        String formattedDate = date.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String year = formattedDate.substring(0, 4);
         String month = formattedDate.substring(4, 6);
         String day = formattedDate.substring(6, 8);
@@ -36,15 +35,14 @@ public class BirthdayService {
         URI uri = URI.create(BaseURL + "?solYear=" + year + "&solMonth=" + month + "&solDay=" + day + ServiceKey + apiKey + "&_type=json");
 
         RestTemplate restTemplate = new RestTemplate();
-        BirthdayDTO response = restTemplate.getForObject(uri, BirthdayDTO.class);
 
-        return response;
+        return restTemplate.getForObject(uri, BirthdayDTO.class);
     }
 
-    public static List<Birthday> getTodayBirthdays() {
+    public List<Birthday> getTodayBirthdays() {
         LocalDate today = LocalDate.now();
 
-        BirthdayDTO lunar = BirthdayService.getLunarDate();
+        BirthdayDTO lunar = getLunarDate(today);
         int lunarMonth = lunar.getResponse().getBody().getItems().getItem().getLunarMonth();
         int lunarDay = lunar.getResponse().getBody().getItems().getItem().getLunarDay();
 

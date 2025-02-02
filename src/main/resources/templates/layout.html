@@ -31,7 +31,8 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
         <!--        stomp-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+                crossorigin="anonymous"></script>
         <script th:src="@{/js/layout.js}"></script>
         <link th:href="@{/css/layout.css}" rel="stylesheet"/>
         <script th:src="@{/js/notification.js}"></script>
@@ -91,16 +92,18 @@
                 </a>
                 <div class="dropdown-list dropdown-menu dropdown-menu-end shadow animated--grow-in"
                      aria-labelledby="messengerDropdown" style="max-height: 300px; overflow-y: auto; min-width: 250px;">
-                    <h6 class="dropdown-header">채팅</h6>
-                    <div id="messengerList" style="padding: 10px;">
+                    <h6 class="dropdown-header chat-header-list">채팅
+                        <button id="MessengerButton" class="btn btn-link text-decoration-none text-black fw-bold"
+                                style="font-size: 15px;">GO MESSENGER
+                        </button>
+                    </h6>
+                    <div id="messengerList" class="messengerList1" style="padding: 10px;">
                         <p id="noMessengerMessage" class="text-center text-muted"
                            style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">채팅을 시작해
                             보세요</p>
                     </div>
                     <div class="text-end small text-gray-500 w-100">
-                        <button id="MessengerButton" class="btn btn-link text-decoration-none text-black fw-bold"
-                                style="font-size: 15px;">GO MESSENGER
-                        </button>
+
                     </div>
                 </div>
             </li>

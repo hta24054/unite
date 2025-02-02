@@ -12,7 +12,7 @@ import java.util.Map;
 @Mapper
 public interface MessengerMapper {
     // ChatRoom 관련
-    List<ChatRoomDTO> findAllRooms(String empId);
+    List<ChatRoomDTO> findAllRooms(String empId, boolean isHomeMessenger);
 
     List<ChatMessage> findMessageListById(Long chatRoomId, String userId);
 
@@ -33,8 +33,6 @@ public interface MessengerMapper {
     List<String> findMembersByRoomId(Long chatRoomId);
 
     ChatRoom findChatRoomById(Long chatRoomId);
-
-//    int addMember(ChatRoomMember member);
 
     int removeMember(Long chatRoomId, String userId);
 

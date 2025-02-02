@@ -44,13 +44,16 @@ $(document).ready(function () {
 
     // 수정 가능한 필드 활성화
     function enableEditableFields() {
-        $('#infoForm').addClass('editing'); // 'editing' 클래스 추가
+
+        // editableFields 배열에 있는 필드만 활성화
         editableFields.forEach(fieldName => {
             const field = $(`[name='${fieldName}']`);
-            field.removeAttr("readonly")
-                .removeAttr("disabled");
+            if (field.length) { // 필드가 존재하는 경우만 처리
+                field.removeAttr("readonly").removeAttr("disabled");
+                field.closest("div, td").addClass("editing"); // 필드가 포함된 부모 요소에 'editing' 클래스 추가
+            }
         });
-        $("#fileUploadSection").show(); // 파일 업로드 섹션 표시
+        $("#fileUploadSection").show();
     }
 
 // 수정 가능한 필드 비활성화

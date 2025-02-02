@@ -26,9 +26,11 @@ public class MessengerApiController {
     }
 
     @GetMapping("/rooms")
-    public ResponseEntity<HashMap<String, Object>> getAllRooms(@AuthenticationPrincipal UserDetails user) {
+    public ResponseEntity<HashMap<String, Object>> getAllRooms(@RequestParam boolean isHomeMessenger,
+                                                               @AuthenticationPrincipal UserDetails user) {
         String empId = user.getUsername();
-        List<ChatRoomDTO> chatRoomDTOList = messengerService.getAllChatRooms(empId);
+        System.out.println("isHomeMessenger=" + isHomeMessenger);
+        List<ChatRoomDTO> chatRoomDTOList = messengerService.getAllChatRooms(empId, isHomeMessenger);
 
         HashMap<String, Object> response = new HashMap<>();
         System.out.println("chatRoomDTOList: " + chatRoomDTOList);
@@ -47,6 +49,9 @@ public class MessengerApiController {
         List<ChatMessage> chatMessageList = messengerService.getChatMessageById(id, user.getUsername());
         List<String> userIds = messengerService.getMembersByRoomId(id);
         ChatRoom chatRoom = messengerService.getChatRoomById(id);
+
+        System.out.println("chatRoom: " + chatRoom);
+        System.out.println("messengerNameMap : " + messengerService.getIdToRoomNameMap(user.getUsername()));
 
         HashMap<String, Object> response = new HashMap<>();
         response.put("messengerNameMap", messengerService.getIdToRoomNameMap(user.getUsername()));

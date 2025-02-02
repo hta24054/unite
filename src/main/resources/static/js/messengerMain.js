@@ -71,33 +71,33 @@ function joinChatRoom(chatRoomId) {
         console.log(`subscribing to chatRoom ${chatRoomId}`);
 
         subscriptions[chatRoomId] = stompClient.subscribe(`/topic/chatRoom/${chatRoomId}`, (message) => {
-            const chatMessage = JSON.parse(message.body);
+            const chatMessageDTO = JSON.parse(message.body);
             let chatRoomId = $('.messenger-room-active').data('chat-room');
             let userId = $('.messenger-header').data('sender-id'); // 현재 사용자 ID
 
-            console.log("chatMessage = ", chatMessage);
-            console.log("chatMessageType = ", chatMessage.chatMessageType);
+            console.log("chatMessageDTO = ", chatMessageDTO);
+            console.log("chatMessageType = ", chatMessageDTO.chatMessageType);
 
-            if (chatMessage.chatMessageType === 'NORMAL') {
-                if (chatMessage.chatRoomId === chatRoomId) {
+            if (chatMessageDTO.chatMessageType === 'NORMAL') {
+                if (chatMessageDTO.chatRoomId === chatRoomId) {
                     // 자신이 보낸 메시지인지 확인
-                    const isMyMessage = chatMessage.senderId === String(userId);
+                    const isMyMessage = chatMessageDTO.senderId === String(userId);
 
                     // 추가된 메시지 업데이트
-                    displayMessage(chatMessage, isMyMessage);
+                    displayMessage(chatMessageDTO, isMyMessage);
                 }
 
                 // 채팅방 목록 업데이트
-                updateChatRoomList(chatMessage);
+                updateChatRoomList(chatMessageDTO);
 
                 // 읽지 않은 메시지 개수 갱신
-                updateUnreadCount(chatMessage.chatRoomId, chatMessage.senderId);
-            } else if (chatMessage.chatMessageType === 'INVITE' || chatMessage.chatMessageType === 'LEAVE') {
-                if (chatMessage.chatRoomId === $('.messenger-room-active').data('chat-room')) {
-                    displayStateMessage(chatMessage);
+                updateUnreadCount(chatMessageDTO.chatRoomId, chatMessageDTO.senderId);
+            } else if (chatMessageDTO.chatMessageType === 'INVITE' || chatMessageDTO.chatMessageType === 'LEAVE') {
+                if (chatMessageDTO.chatRoomId === $('.messenger-room-active').data('chat-room')) {
+                    displayStateMessage(chatMessageDTO);
                 }
-            } else if (chatMessage.chatMessageType === 'LEAVE_ALL') {
-                displayRemoveChatRoom(chatMessage);
+            } else if (chatMessageDTO.chatMessageType === 'LEAVE_ALL') {
+                displayRemoveChatRoom(chatMessageDTO);
             }
         });
 
@@ -203,6 +203,7 @@ function leaveChatRoom(chatRoomId) {
 
 function displayStateMessage(chatMessage) {
     const $messengerContentBody = $('.messenger-content-body');
+
     let html = `
                 <div class="text-center standardDay">
                     <div class="leaveMessage">${chatMessage.chatMessageContent}</div>
@@ -435,8 +436,10 @@ function loadNoChatRoom() {
 //채팅방 리스트 불러오기
 function loadChatRoomList(check = false) {
     return new Promise((resolve, reject) => {
+        const isHomeMessenger = false; // 메신저 메인화면이면 false, 아니면 true
+
         $.ajax({
-            url: '/api/messenger/rooms',
+            url: `/api/messenger/rooms?isHomeMessenger=${isHomeMessenger}`,
             contentType: 'application/json',
             dataType: 'json',
             success: function (response) {

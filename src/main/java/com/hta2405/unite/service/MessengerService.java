@@ -47,8 +47,8 @@ public class MessengerService {
     }
 
     // ChatRoom 관련
-    public List<ChatRoomDTO> getAllChatRooms(String empId) {
-        return messengerMapper.findAllRooms(empId);
+    public List<ChatRoomDTO> getAllChatRooms(String empId, boolean isHomeMessenger) {
+        return messengerMapper.findAllRooms(empId, isHomeMessenger);
     }
 
     public List<ChatMessage> getChatMessageById(Long chatRoomId, String userId) {
@@ -56,10 +56,7 @@ public class MessengerService {
     }
 
     public HashMap<String, Object> createChatRoom(List<String> userIds, String empId) {
-        if (!Objects.equals(empId, "admin")) {
-            userIds.add(empId);
-        }
-
+        userIds.add(empId);
         Map<String, String> empMap = getIdToENameMap();
         StringBuilder chatRoomName = new StringBuilder();
 
@@ -76,11 +73,6 @@ public class MessengerService {
                 chatRoomName = new StringBuilder(chatRoomName.substring(0, 30));
                 break;
             }
-        }
-
-        //userIds 비어있다는 것은 admin 혼자 채팅방에 있을 경우
-        if (chatRoomName.toString().isEmpty()) {
-            chatRoomName.append("admin");
         }
 
         ChatRoom chatRoom = ChatRoom.builder()

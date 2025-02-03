@@ -12,8 +12,6 @@ public interface ReservationMapper {
 
     public int resourceReservation(ReservationDTO reservationDTO);
 
-//    public int checkReservationOverlap(ReservationDTO reservationDTO);
-
     public List<ReservationDTO> getAllReservation();
 
     public List<ReservationDTO> getReservationByResourceIdAndName(Long resourceId, String resourceName, String name);

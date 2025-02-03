@@ -261,12 +261,11 @@ $(document).ready(function () {
 	});
 
 	function updateTodoList(todos, row) {
-		// 투두 리스트가 없으면 '작성하신 투두 리스트가 없습니다' 메시지 추가
 		if (!todos || todos.length === 0) {
 			console.log("투두 리스트가 없습니다.");
 			var todoRow = $("<tr class='todo-row' style='font-size:30px; background-color: gray; color: white;'></tr>");  // 새로운 tr 태그 생성
 			var todoData = `
-            <td colspan="3" style="text-align: center">작성하신 투두 리스트가 없습니다</td>
+            <td colspan="3" style="text-align: center">작성된 투두 리스트가 없습니다</td>
         `;
 			todoRow.append(todoData);  // 해당 데이터를 tr에 추가
 			row.after(todoRow);  // 클릭된 행 바로 아래에 삽입
@@ -287,30 +286,5 @@ $(document).ready(function () {
 		});
 	}
 
-	function color(){
-		const projectId = $("#project-id").val();
-		const memberId = $("#user-id").val();
-		$.ajax({
-			url: "/api/project/color",
-			type: "GET",
-			data: {
-				projectId: projectId,
-				memberId: memberId
-			},
-			success: function(data) {
-				console.log("투두 리스트 데이터:");
-				if(data.bgColor == 'rgb(255,255,255)' || data.bgColor == '#ffffff') updateColor('rgb(248,249,250)', data.textColor);
-				else updateColor(data.bgColor, data.textColor);
-			},
-			error: function(xhr, status, error) {
-				console.log("ssdfsdfsdf");
-				console.error("AJAX 오류 발생:", status, error);
-				alert("오류가 발생했습니다. 다시 시도해 주세요.");
-			}
-		});
-	}
-	function updateColor(bgColor, textColor) {
-		$("#background").css('background-color', bgColor);
-		$("#text").css('color', textColor);
-	}
+
 });

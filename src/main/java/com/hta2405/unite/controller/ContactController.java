@@ -28,12 +28,12 @@ public class ContactController {
         mv.addObject("title", "사내 주소록");
         mv.addObject("message", message);
         mv.addObject("empList", empList);
-        mv.setViewName("/contact/innerContact");
+        mv.setViewName("contact/innerContact");
         return mv;
     }
 
     @GetMapping("/outer")
     public String showOuterContact() {
-        return "/contact/outerContact";
+        return "contact/outerContact";
     }
 }

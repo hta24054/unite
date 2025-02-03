@@ -1,365 +1,203 @@
-<th:block th:replace="layout :: setContent(~{this::content})">
+<th:block th:replace="layout :: setContent(~{this::content})" xmlns:th="http://www.w3.org/1999/html">
     <th:block th:fragment="content">
         <!DOCTYPE html>
-        <html lang="en">
+        <html xmlns:th="http://www.thymeleaf.org" lang="en">
         <head>
             <title>나의 인사정보</title>
             <link rel="stylesheet" type="text/css" th:href="@{/css/empInfo.css}">
             <script th:src="@{/js/empInfo.js}"></script>
-            <style>
-                table, .table {
-                    width: 80%;
-                    border-collapse: collapse;
-                    margin: auto;
-                }
-
-                th {
-                    background-color: #f2f2f2;
-                    font-weight: bold;
-                }
-
-                table {
-                    margin-top: 10px;
-                }
-
-                td, th {
-                    border: 2px solid black;
-                    padding: 15px;
-                    color: black;
-                    vertical-align: middle;
-                    text-align: center;
-                    width: 14%;
-                }
-
-                #tr {
-                    border-top: 2px solid black;
-                }
-
-                h2 {
-                    text-align: left;
-                    color: rgb(51, 68, 102);
-                    margin: 0;
-                }
-
-                /* h2의 기본 여백 제거 */
-                caption {
-                    caption-side: top;
-                    margin-bottom: 30px;
-                }
-
-                /* 캡션과 테이블 간격 설정 */
-                #main_title {
-                    color: #334466;
-                    margin-left: 500px;
-                    /*margin-bottom: 20px;*/
-                    font-weight: bold;
-                }
-
-                .main-container {
-                    padding-top: 0;
-                }
-
-                .cert-item, .lang-item {
-                    display: flex;
-                    align-items: center;
-                    margin-bottom: 10px; /* 각 행 간격 추가 */
-                }
-
-                .cert-input, .lang-input {
-                    flex: 1;
-                }
-
-                .cert-add, .lang-add {
-                    position: absolute;
-                    right: 10px;
-                    bottom: 10px;
-                }
-
-                #certifications, #languages {
-                    position: relative;
-                    padding-bottom: 40px; /* 추가 버튼과 입력 필드 간 간격 확보 */
-                }
-
-                button {
-                    margin-left: 10px;
-                }
-
-                .cert-item button, .lang-item button {
-                    margin-left: 5px;
-                }
-
-                .table, .table th, .table td {
-                    border: 2px solid black;
-                }
-
-                td, th {
-                    border: 2px solid black;
-                    padding: 4px; /* 기존 15px에서 줄임 */
-                    line-height: 1.5; /* 텍스트 줄 간격 설정 */
-                    color: black;
-                    vertical-align: middle; /* 텍스트 수직 중앙 정렬 */
-                    text-align: center;
-                    width: 14%;
-                    height: 40px; /* 최소 높이 설정 */
-                }
-
-                .table, .table th, .table td {
-                    border: 2px solid black;
-                }
-
-                .button-container {
-                    width: 80%; /* 테이블과 동일한 너비로 설정 */
-                    margin: 10px auto 0; /* 위쪽 간격 추가, 중앙 정렬 */
-                    text-align: right; /* 버튼을 오른쪽 정렬 */
-                }
-
-                .lang-add {
-                    display: none;
-                }
-
-                .cert-add {
-                    display: none;
-                }
-            </style>
 
         </head>
         <body>
-        <div class="main-container">
-            <div class="content">
-                <form id="infoForm">
-                    <input type="hidden" name="empId" th:value="${empInfoDTO.emp.empId}">
-                    <table class="table">
-                        <caption>
-                            <h2>인사정보</h2>
-                        </caption>
-                        <tr>
-                            <th rowspan="4" id="photo">
-                        <span id="showImage">
+        <div class="container">
+            <h2>나의 인사정보 ([[${empInfoDTO.emp.ename}]])</h2>
+            <form id="infoForm" enctype="multipart/form-data" method="post" th:action="@{/updateEmployeeInfo}">
+                <input type="hidden" name="empId" th:value="${empInfoDTO.emp.empId}">
+                <div class="profile-img-container">
+                <span id="showImage">
                             <img th:src="@{/api/emp/profile-image(empId=${empInfoDTO.emp.empId})}"
-                                 width="200px" alt="profile" id="over_view"/>
+                                 width="200px" class="profile-img" alt="profile" id="over_view"/>
                                 <th:block th:if="${empInfoDTO.emp.getImgUUID()!=null}">
                                 <img th:src="@{/image/cancel.png}" alt="파일삭제" width="20px" class="remove_img"
                                      style="display: none"/>
                                 </th:block>
                         </span>
-                                <div id="fileUploadSection" style="display: none;">
-                                    <br>
-                                    현재 파일 :
-                                    <span id="fileName"
-                                          th:text="${empInfoDTO.emp.imgOriginal != null ? empInfoDTO.emp.imgOriginal : '파일 없음'}"></span>
-                                    <br>
-                                    <input type="file" name="file" id="file" accept="image/*">
-                                </div>
-                            </th>
-                            <th>이름</th>
-                            <th>성별</th>
-                            <th>이메일</th>
-                            <th>내선번호</th>
-                        </tr>
-                        <tr>
-                            <td><input name="ename" th:value="${empInfoDTO.emp.ename}" required readonly></td>
-                            <td>
-                                <label>
-                                    <select name="gender" disabled required>
-                                        <option value="남" th:selected="${empInfoDTO.emp.gender == '남'}">남성</option>
-                                        <option value="여" th:selected="${empInfoDTO.emp.gender == '여'}">여성</option>
-                                    </select>
-                                </label>
-                            </td>
-                            <td>
-                                <label for="email">
-                                    <input type="text" name="email" id="email" th:value="${empInfoDTO.emp.email}"
-                                           required
-                                           readonly>
-                                </label>
-                            </td>
-                            <td>
-                                <label for="tel">
-                                    <input type="text" name="tel" id="tel" th:value="${empInfoDTO.emp.tel}" required
-                                           readonly>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>부서</th>
-                            <th>사번</th>
-                            <th>직책</th>
-                            <th>휴대폰번호</th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <th:block th:if="${empInfoDTO.emp.role=='ROLE_ADMIN'}">
-                                    관리자
-                                </th:block>
-                                <th:block th:if="${empInfoDTO.emp.role!='ROLE_ADMIN'}">
-                                    <select name="deptId" data-name="부서" disabled required>
-                                        <th:block th:each="dept : ${empInfoDTO.deptList}">
-                                            <option
-                                                    th:value="${dept.deptId}"
-                                                    th:selected="${empInfoDTO.emp.deptId == dept.deptId}"
-                                                    th:text="${#strings.endsWith(dept.deptName, '본부') ? '  '
-                                                    + dept.deptName : (#strings.endsWith(dept.deptName, '팀') ? '    '
-                                                    + dept.deptName : dept.deptName)}">
-                                            </option>
-                                        </th:block>
-                                    </select>
-                                </th:block>
-                            </td>
-                            <td th:text="${empInfoDTO.emp.empId}">사번</td>
-                            <td>
-                                <th:block th:if="${empInfoDTO.emp.role=='ROLE_ADMIN'}">
-                                    관리자
-                                </th:block>
-                                <th:block th:if="${empInfoDTO.emp.role!='ROLE_ADMIN'}">
-                                    <select name="jobId" data-name="직책" disabled required>
-                                        <th:block th:each="job : ${empInfoDTO.jobList}">
-                                            <option th:value="${job.jobId}"
-                                                    th:selected="${empInfoDTO.emp.jobId== job.jobId}"
-                                                    th:text="${job.jobName}">직위명
-                                            </option>
-                                        </th:block>
-                                    </select>
-                                </th:block>
-                            </td>
-                            <td>
-                                <input type="text" name="mobile" class="editable"
-                                       id="mobile" th:value="${empInfoDTO.emp.mobile}" required readonly>
-                            </td>
-                        </tr>
-                    </table>
-                    <table>
-                        <tr>
-                            <th>입사일</th>
-                            <td>
-                                <label>
-                                    <input type="date" name="hireDate"
-                                           placeholder="YYYY/MM/DD" th:value="${empInfoDTO.emp.hireDate}" required
-                                           readonly>
-                                </label>
-                            </td>
-                            <th>은행</th>
-                            <td><input type="text" name="bank" th:value="${empInfoDTO.emp.bank}" required readonly></td>
-                            <th>계좌번호</th>
-                            <td><input type="text" name="account" th:value="${empInfoDTO.emp.account}" required
-                                       readonly></td>
-                        </tr>
-                        <tr>
-                            <th>긴급연락처</th>
-                            <td><input type="text" name="mobile2" class="editable"
-                                       id="mobile2" th:value="${empInfoDTO.emp.mobile2}" required readonly></td>
-                            <th>채용구분</th>
-                            <td>
-                                <select name="hireType" required disabled>
-                                    <option value="경력" th:selected="${empInfoDTO.emp.hireType}=='경력'">경력</option>
-                                    <option value="신입" th:selected="${empInfoDTO.emp.hireType}=='신입'">신입</option>
-                                    <option value="인턴" th:selected="${empInfoDTO.emp.hireType}=='인턴'">인턴</option>
-                                </select>
-                            </td>
-                            <th>직원구분</th>
-                            <td>
-                                <label>
-                                    <select name="etype" required disabled>
-                                        <option value="정규직" th:selected="${empInfoDTO.emp.etype}=='정규직'">정규직</option>
-                                        <option value="계약직" th:selected="${empInfoDTO.emp.etype}=='계약직'">계약직</option>
-                                        <option value="퇴직" th:selected="${empInfoDTO.emp.etype}=='퇴직'">퇴직</option>
-                                    </select>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>생년월일</th>
-                            <td>
-                                <label>
-                                    <input type="text" name="birthday"
-                                           placeholder="YYYY/MM/DD" th:value="${empInfoDTO.emp.birthday}" required
-                                           readonly>
-                                </label>
-                                <label>
-                                    <select name="birthdayType" disabled>
-                                        <option value="양력" th:selected="${empInfoDTO.emp.birthdayType}=='양력'">양력
-                                        </option>
-                                        <option value="음력" th:selected="${empInfoDTO.emp.birthdayType}=='음력'">음력
-                                        </option>
-                                    </select>
-                                </label>
-                            </td>
-                            <th>주소</th>
-                            <td>
-                                <label>
-                                    <input type="text" name="address" th:value="${empInfoDTO.emp.address}"
-                                           required readonly style="width: 100%;"
-                                           title="[[${empInfoDTO.emp.address}]]">
-                                </label>
-                            </td>
-                            <th>자녀</th>
-                            <td>
-                                <select name="child" required disabled>
-                                    <option th:value="true" th:selected="${empInfoDTO.emp.child}=='1'">Y</option>
-                                    <option th:value="false" th:selected="${empInfoDTO.emp.child}=='0'">N</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>결혼여부</th>
-                            <td>
-                                <label>
-                                    <select name="married" required disabled>
-                                        <option th:value="true" th:selected="${empInfoDTO.emp.married}==true">Y</option>
-                                        <option th:value="false" th:selected="${empInfoDTO.emp.married}==false">N
-                                        </option>
-                                    </select>
-                                </label>
-                            </td>
-                            <th>최종학력</th>
-                            <td><input type="text" name="school" th:value="${empInfoDTO.emp.school}" required readonly>
-                            </td>
-                            <th>전공</th>
-                            <td><input type="text" name="major" th:value="${empInfoDTO.emp.major}" required readonly>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>자격증</th>
-                            <td colspan="2" id="certifications" style="position: relative;">
-                                <th:block th:each="cert : ${empInfoDTO.certList}">
-                                    <div class="cert-item">
-                                        <input type="text" name="cert" th:value="${cert.certName}"
-                                               data-name="자격증" placeholder="자격증명" readonly
-                                               required>
-                                        <button type="button" style="display: none"
-                                                class="btn btn-sm btn-light remove-cert">-
-                                        </button>
-                                    </div>
-                                </th:block>
-                                <!-- 추가 버튼 -->
-                                <div class="cert-add">
-                                    <button type="button" class="btn btn-sm btn-light add-cert">추가</button>
-                                </div>
-                            </td>
-                            <th rowspan="2">외국어</th>
-                            <td colspan="2" id="languages" rowspan="2" style="position: relative;">
-                                <th:block th:each="lang : ${empInfoDTO.langList}">
-                                    <div class="lang-item">
-                                        <input type="text" name="lang" th:value="${lang.langName}"
-                                               class="lang-input" data-name="외국어" placeholder="외국어능력" readonly
-                                               required>
-                                        <button type="button" style="display: none"
-                                                class="btn btn-sm btn-light remove-lang">-
-                                        </button>
-                                    </div>
-                                </th:block>
-                                <!-- 추가 버튼 -->
-                                <div class="lang-add">
-                                    <button type="button" class="btn btn-sm btn-light add-lang">추가</button>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                    <div class="button-container">
-                        <button type="button" id="editButton" class="btn btn-primary">수정</button>
-                        <button type="submit" id="saveButton" class="btn btn-secondary" disabled>저장</button>
+                    <div id="fileUploadSection" style="display: none;">
+                        <br>
+                        현재 파일 :
+                        <span id="fileName"
+                              th:text="${empInfoDTO.emp.imgOriginal != null ? empInfoDTO.emp.imgOriginal : '파일 없음'}"></span>
+                        <br>
+                        <input type="file" name="file" id="file" accept="image/*">
                     </div>
-                </form>
-            </div>
+                </div>
+
+                <table class="table">
+                    <caption><h3>기본 정보</h3></caption>
+                    <tbody>
+                    <tr>
+                        <th>사번</th>
+                        <td><input type="text" name="empId" th:value="${empInfoDTO.emp.empId}" readonly></td>
+                        <th>이름</th>
+                        <td><input type="text" name="ename" th:value="${empInfoDTO.emp.ename}" readonly></td>
+                    </tr>
+                    <tr>
+                        <th>성별</th>
+                        <td>
+                            <select name="gender" disabled>
+                                <option value="남" th:selected="${empInfoDTO.emp.gender == '남'}">남성</option>
+                                <option value="여" th:selected="${empInfoDTO.emp.gender == '여'}">여성</option>
+                            </select>
+                        </td>
+                        <th>이메일</th>
+                        <td><input type="email" name="email" th:value="${empInfoDTO.emp.email}" readonly></td>
+                    </tr>
+                    <tr>
+                        <th>내선번호</th>
+                        <td><input type="text" name="tel" th:value="${empInfoDTO.emp.tel}" readonly></td>
+                        <th>휴대폰번호</th>
+                        <td><input type="text" name="mobile" th:value="${empInfoDTO.emp.mobile}" readonly></td>
+                    </tr>
+                    <tr>
+                        <th>부서</th>
+                        <td>
+                            <th:block th:if="${empInfoDTO.emp.role.toString() == 'ROLE_ADMIN'}">
+                                관리자
+                            </th:block>
+                            <th:block th:if="${empInfoDTO.emp.role.toString() != 'ROLE_ADMIN'}">
+                                <select name="deptId" disabled>
+                                    <option th:each="dept : ${empInfoDTO.deptList}"
+                                            th:value="${dept.deptId}"
+                                            th:text="${dept.deptName}"
+                                            th:selected="${empInfoDTO.emp.deptId == dept.deptId}"></option>
+                                </select>
+                            </th:block>
+                        </td>
+                        <th>직책</th>
+                        <td>
+                            <th:block th:if="${empInfoDTO.emp.role.toString() == 'ROLE_ADMIN'}">
+                                관리자
+                            </th:block>
+                            <th:block th:if="${empInfoDTO.emp.role.toString() != 'ROLE_ADMIN'}">
+                                <select name="jobId" disabled>
+                                    <option th:each="job : ${empInfoDTO.jobList}"
+                                            th:value="${job.jobId}"
+                                            th:text="${job.jobName}"
+                                            th:selected="${empInfoDTO.emp.jobId == job.jobId}"></option>
+                                </select>
+                            </th:block>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>입사일</th>
+                        <td><input type="date" name="hireDate" th:value="${empInfoDTO.emp.hireDate}" readonly></td>
+                        <th>은행</th>
+                        <td><input type="text" name="bank" th:value="${empInfoDTO.emp.bank}" readonly></td>
+                    </tr>
+                    <tr>
+                        <th>계좌번호</th>
+                        <td><input type="text" name="account" th:value="${empInfoDTO.emp.account}" readonly></td>
+                        <th>긴급연락처</th>
+                        <td><input type="text" name="mobile2" th:value="${empInfoDTO.emp.mobile2}" readonly></td>
+                    </tr>
+                    <tr>
+                        <th>채용구분</th>
+                        <td>
+                            <select name="hireType" disabled>
+                                <option value="경력" th:selected="${empInfoDTO.emp.hireType == '경력'}">경력</option>
+                                <option value="신입" th:selected="${empInfoDTO.emp.hireType == '신입'}">신입</option>
+                                <option value="인턴" th:selected="${empInfoDTO.emp.hireType == '인턴'}">인턴</option>
+                            </select>
+                        </td>
+                        <th>직원구분</th>
+                        <td>
+                            <select name="etype" disabled>
+                                <option value="정규직" th:selected="${empInfoDTO.emp.etype == '정규직'}">정규직</option>
+                                <option value="계약직" th:selected="${empInfoDTO.emp.etype == '계약직'}">계약직</option>
+                                <option value="퇴직" th:selected="${empInfoDTO.emp.etype == '퇴직'}">퇴직</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>생년월일</th>
+                        <td style="display: flex; gap: 8px; align-items: center;">
+                            <select name="birthdayType" disabled>
+                                <option value="양력" th:selected="${empInfoDTO.emp.birthdayType}=='양력'">양력</option>
+                                <option value="음력" th:selected="${empInfoDTO.emp.birthdayType}=='음력'">음력</option>
+                            </select>
+                            <input type="date" name="birthday" th:value="${empInfoDTO.emp.birthday}" readonly>
+                        </td>
+                        <th>주소</th>
+                        <td><input type="text" name="address" th:value="${empInfoDTO.emp.address}" readonly></td>
+                    </tr>
+                    <tr>
+                        <th>자녀</th>
+                        <td>
+                            <select name="child" disabled>
+                                <option value="true" th:selected="${empInfoDTO.emp.child}">Y</option>
+                                <option value="false" th:selected="!${empInfoDTO.emp.child}">N</option>
+                            </select>
+                        </td>
+                        <th>결혼여부</th>
+                        <td>
+                            <select name="married" disabled>
+                                <option value="true" th:selected="${empInfoDTO.emp.married}">Y</option>
+                                <option value="false" th:selected="!${empInfoDTO.emp.married}">N</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>최종학력</th>
+                        <td><input type="text" name="school" th:value="${empInfoDTO.emp.school}" readonly></td>
+                        <th>전공</th>
+                        <td><input type="text" name="major" th:value="${empInfoDTO.emp.major}" readonly></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <table class="table">
+                    <caption>자격증 및 외국어</caption>
+                    <tbody>
+                    <tr>
+                        <th>자격증</th>
+                        <td colspan="3" id="certifications">
+                            <th:block th:each="cert : ${empInfoDTO.certList}">
+                                <div class="cert-item">
+                                    <input type="text" name="cert" th:value="${cert.certName}"
+                                           class="form-control cert-input" readonly>
+                                    <button type="button" class="btn btn-sm btn-light remove-cert"
+                                            style="display: none;">-
+                                    </button>
+                                </div>
+                            </th:block>
+                            <div class="cert-add" style="display: none;">
+                                <button type="button" class="btn btn-sm btn-light add-cert">자격증 추가</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>외국어</th>
+                        <td colspan="3" id="languages">
+                            <th:block th:each="lang : ${empInfoDTO.langList}">
+                                <div class="lang-item">
+                                    <input type="text" name="lang" th:value="${lang.langName}"
+                                           class="form-control lang-input" readonly>
+                                    <button type="button" class="btn btn-sm btn-light remove-lang"
+                                            style="display: none;">-
+                                    </button>
+                                </div>
+                            </th:block>
+                            <div class="lang-add" style="display: none;">
+                                <button type="button" class="btn btn-sm btn-light add-lang">외국어 추가</button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="btn-container">
+                    <button type="button" class="btn btn-primary" id="editButton">수정</button>
+                    <button type="submit" class="btn btn-success" id="saveButton" disabled>저장</button>
+                </div>
+            </form>
         </div>
         </body>
         </html>

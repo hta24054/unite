@@ -41,6 +41,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
             if (jwtUtil.isExpired(token)) {
                 removeToken(response);
+                response.sendRedirect("/auth/login");
+                return;
             }
             try {
                 Claims claims = jwtUtil.validateToken(token);

@@ -44,58 +44,39 @@ $(document).ready(function () {
 
     // 수정 가능한 필드 활성화
     function enableEditableFields() {
+
+        // editableFields 배열에 있는 필드만 활성화
         editableFields.forEach(fieldName => {
             const field = $(`[name='${fieldName}']`);
-            field.removeAttr("readonly")
-                .removeAttr("disabled")
-                .css({
-                    "border": "2px solid #007bff", // 테두리 강조
-                    "background-color": "#f9f9f9" // 수정 가능 배경색
-                });
+            if (field.length) { // 필드가 존재하는 경우만 처리
+                field.removeAttr("readonly").removeAttr("disabled");
+                field.closest("div, td").addClass("editing"); // 필드가 포함된 부모 요소에 'editing' 클래스 추가
+            }
         });
-        $("#fileUploadSection").show(); // 파일 업로드 섹션 표시
+        $("#fileUploadSection").show();
     }
 
-    // 수정 가능한 필드 비활성화
+// 수정 가능한 필드 비활성화
     function resetEditableFields() {
-        console.log(originalValues);
+        $('#infoForm').removeClass('editing'); // 'editing' 클래스 제거
         editableFields.forEach(fieldName => {
             const fields = $(`[name='${fieldName}']`);
             if (fieldName === "lang" || fieldName === "cert") {
                 fields.each(function (index) {
                     const originalValue = originalValues[fieldName][index];
-                    if (originalValue) {
-                        $(this)
-                            .val(originalValue[fieldName === "lang" ? "langName" : "certName"]) // 필드명 맞춤
-                            .attr("readonly", "readonly")
-                            .attr("disabled", "disabled")
-                            .css({
-                                "border": "none",
-                                "background-color": "#fff"
-                            });
-                    } else {
-                        $(this).val("")
-                            .attr("readonly", "readonly")
-                            .attr("disabled", "disabled")
-                            .css({
-                                "border": "none",
-                                "background-color": "#fff"
-                            });
-                    }
+                    $(this).val(originalValue ? originalValue[fieldName === "lang" ? "langName" : "certName"] : "")
+                        .attr("readonly", "readonly")
+                        .attr("disabled", "disabled");
                 });
             } else {
-                // 단일 필드 처리
                 fields.val(originalValues[fieldName])
                     .attr("readonly", "readonly")
-                    .attr("disabled", "disabled")
-                    .css({
-                        "border": "none", // 기본 테두리
-                        "background-color": "#fff" // 기본 배경색
-                    });
+                    .attr("disabled", "disabled");
             }
         });
         $("#fileUploadSection").hide(); // 파일 업로드 섹션 숨기기
     }
+
 
     // 수정 버튼 클릭 이벤트
     $("#editButton").click(function () {

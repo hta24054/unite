@@ -60,7 +60,7 @@ public class S3FileService implements FileService {
 
     public ResponseEntity<Resource> downloadFile(String subDirectory, String fileUUID, String fileName) {
         String filePath = subDirectory.substring(1) + "/" + fileUUID + "_" + fileName;
-        log.error("filePath = {}", filePath);
+        log.info("filePath = {}", filePath);
         try {
             // S3에서 파일 가져오기
             S3Object s3Object = amazonS3Client.getObject(new GetObjectRequest(bucket, filePath));
@@ -86,7 +86,7 @@ public class S3FileService implements FileService {
     @Override
     public void deleteFile(String fileUUID, String subDirectory, String originalFileName) {
         String filePath = subDirectory.substring(1) + "/" + fileUUID + "_" + originalFileName;
-        log.error("delete filePath = {}", filePath);
+        log.info("delete filePath = {}", filePath);
         amazonS3Client.deleteObject(bucket, filePath);
     }
 }

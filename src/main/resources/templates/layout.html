@@ -33,6 +33,8 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
                 crossorigin="anonymous"></script>
+        <!--마크다운-->
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         <script th:src="@{/js/layout.js}"></script>
         <link th:href="@{/css/layout.css}" rel="stylesheet"/>
         <script th:src="@{/js/notification.js}"></script>
@@ -63,21 +65,10 @@
                         <span id="currentTemp" style="font-size: 14px; font-weight: bold;"></span>°C
                     </div>
                     <div>
-                        <span id="maxTemp"></span>°C / <span id="minTemp"></span>°C
+                        <span id="maxTemp"></span> / <span id="minTemp"></span>°C
                     </div>
                 </div>
             </div>
-
-            <!-- Navbar Search -->
-            <form class="d-none d-md-inline-block form-inline ms-auto me-3 my-2 my-md-0" style="width: 300px;">
-                <div class="input-group">
-                    <input class="form-control" type="text" placeholder="통합검색" aria-label="Search for..."
-                           aria-describedby="btnNavbarSearch"/>
-                    <button class="btn btn-secondary" id="btnNavbarSearch" type="button">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </form>
         </div>
 
         <!-- Navbar-->
@@ -134,7 +125,6 @@
                                               width="30px" style="border-radius: 50%; background-color: white;"></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" th:href="@{/emp/password}">비밀번호 변경</a></li>
-                    <li><a class="dropdown-item" href="#!">Activity Log</a></li>
                     <li>
                         <hr class="dropdown-divider"/>
                     </li>
@@ -285,22 +275,24 @@
 
 
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
-                           data-bs-target="#collapseCustomMenu6" aria-expanded="false"
-                           aria-controls="collapseCustomMenu6">
+                           data-bs-target="#collapseCustomMenu6" aria-expanded="true"
+                           aria-controls="collapseCustomMenu6" id="collapseRemove">
                             <div class="sb-nav-link-icon"><i class="fa-solid fa-flag"></i></div>
                             프로젝트
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
-                        <div class="collapse" id="collapseCustomMenu6" aria-labelledby="heading6"
+                        <div class="collapse show" id="collapseCustomMenu6" aria-labelledby="heading6"
                              data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" th:href="@{/project/main}">진행 중 프로젝트</a>
+                                <th:block th:if="${not #lists.isEmpty(left)}">
+                                    <a th:href="@{/project/detail(projectId=${projectId})}" th:text="|- ${left}|" class="nav-link"  style="padding:0px 0px 10px 20px;"></a>
+                                </th:block>
                                 <a class="nav-link" th:href="@{/api/project/done?state=2}">완료 프로젝트</a>
                                 <a class="nav-link" th:href="@{/api/project/done?state=1}">취소 프로젝트</a>
                                 <a class="nav-link" th:href="@{/project/create}">프로젝트 추가</a>
                             </nav>
                         </div>
-
 
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
                            data-bs-target="#collapseCustomMenu7" aria-expanded="false"
@@ -435,8 +427,28 @@
         </div>
     </div>
 
-    <!--토스트 컨테이너-->
     <div id="toastContainer" style="position: fixed; bottom: 10px; right: 10px; z-index: 9999;"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const collapseMenu = document.getElementById("collapseCustomMenu6");
+            const collapseRemove = document.getElementById("collapseRemove");
+            const isMenuOpen = localStorage.getItem("menuOpen");
+
+            if (isMenuOpen === "true") {
+                collapseMenu.classList.add("show");
+                collapseRemove.classList.remove("collapsed");
+            } else {
+                collapseMenu.classList.remove("show");
+            }
+        });
+
+        document.getElementById("collapseCustomMenu6").addEventListener("shown.bs.collapse", function () {
+            localStorage.setItem("menuOpen", "true");
+        });
+        document.getElementById("collapseCustomMenu6").addEventListener("hidden.bs.collapse", function () {
+            localStorage.setItem("menuOpen", "false");
+        });
+    </script>
 
     </body>
     </html>

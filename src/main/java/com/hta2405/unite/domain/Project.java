@@ -25,10 +25,10 @@ public class Project {
     private float avgProgress;
 
 
-    private String project_file_path;
+    private String projectFilePath;
     private String projectFileOriginal;
-    private String project_file_uuid;
-    private String project_file_type;
+    private String projectFileUuid;
+    private String projectFileType;
     private int project_finished;
     private int project_canceled;
 }

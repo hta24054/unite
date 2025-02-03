@@ -10,8 +10,7 @@ $(function () {
                                                             <br>1. 일정확인
                                                             <br>2. 일정추가
                                                             <br>3. 사용자 연락처 조회
-                                                            <br>4. 텍스트 요약
-                                                            <br>5. 휴가 신청</div>`);
+                                                            <br>4. 휴가 신청</div>`);
 
     // 뱃지 클릭 시 채팅창 표시/숨김
     $aiBadge.on("click", function () {
@@ -54,10 +53,11 @@ $(function () {
             contentType: 'application/json', // 요청 데이터 형식
             data: JSON.stringify({message: message}), // JSON 형식으로 데이터 전송
             success: function (response) {
+                const markedResp = marked.parse(response);
                 // 로딩 애니메이션 제거
                 hideLoading();
                 // 서버 응답 메시지 추가
-                $chatBody.append(`<div class="chat-message chat-response">${response.resultMessage}</div>`);
+                $chatBody.append(`<div class="chat-message chat-response">${markedResp}</div>`);
                 scrollToBottom();
             },
             error: function (xhr, status, error) {

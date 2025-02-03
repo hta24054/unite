@@ -80,11 +80,11 @@ public class BoardPostService {
         return boardPostMapper.getBoardAndManagement(boardId);
     }
 
-    public List<BoardPostEmpDTO> getBoardListAll(String empId) {
+    public List<BoardPostEmpDTO> getBoardListAll(String empId, Integer limit) {
         Emp emp = empService.getEmpById(empId);
         Long deptId = emp.getDeptId();
 
-        List<BoardPostEmpDTO> boardPostEmpDTOList = boardPostMapper.getBoardListAll(deptId);
+        List<BoardPostEmpDTO> boardPostEmpDTOList = boardPostMapper.getBoardListAll(deptId, limit);
 
         if (boardPostEmpDTOList.isEmpty()) {
             log.warn("No board data found for deptId: " + deptId);

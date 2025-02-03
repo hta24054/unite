@@ -35,6 +35,6 @@ public class BuyDocWriteViewer implements DocWriteViewer {
 
     @Override
     public String getView() {
-        return "/doc/buy_write";
+        return "doc/buy_write";
     }
 }

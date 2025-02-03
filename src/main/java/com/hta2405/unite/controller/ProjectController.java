@@ -3,8 +3,6 @@ package com.hta2405.unite.controller;
 import com.hta2405.unite.controller.api.ProjectApiController;
 import com.hta2405.unite.domain.Project;
 import com.hta2405.unite.dto.ProjectDetailDTO;
-import com.hta2405.unite.dto.ProjectRoleDTO;
-import com.hta2405.unite.dto.ProjectTaskDTO;
 import com.hta2405.unite.dto.ProjectTodoDTO;
 import com.hta2405.unite.service.ProjectService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -74,28 +72,20 @@ public class ProjectController {
     public ModelAndView detail(int projectId, ModelAndView mv, @AuthenticationPrincipal UserDetails user) {
         String userid = user.getUsername();
 
-        String left = projectService.getProjectName(projectId);
-        String projectContent = projectService.getProjectContent(projectId);
         List<ProjectDetailDTO> detail_Progress = projectService.getProjectDetail1(projectId, userid);
         for (ProjectDetailDTO projectDetail : detail_Progress) {
-            if (projectDetail.getManagerId() != null && projectDetail.getManagerId().equals(userid)) {
-                projectDetail.setIsManager(true);
-            } else {
-                projectDetail.setIsManager(false);
-            }
+            if (projectDetail.getManagerId() != null && projectDetail.getManagerId().equals(userid)) projectDetail.setIsManager(true);
+            else projectDetail.setIsManager(false);
         }
-        List<ProjectTaskDTO> project = projectService.getProjectDetail2(projectId);
-        List<ProjectRoleDTO> role = projectService.getRole(projectId, userid);
 
         mv.setViewName("project/project_detail");
-        mv.addObject("left", left);
+        mv.addObject("left", projectService.getProjectName(projectId));
         mv.addObject("project", detail_Progress);
-        mv.addObject("project2", project);
-        mv.addObject("role", role);
+        mv.addObject("projectContent", projectService.getProjectContent(projectId));
+        mv.addObject("project2", projectService.getProjectDetail2(projectId));
+        mv.addObject("role", projectService.getRole(projectId, userid));
         mv.addObject("projectId", projectId);
         mv.addObject("memberId", userid);
-        mv.addObject("projectContent", projectContent);
-
         return mv;
     }
 
@@ -103,6 +93,7 @@ public class ProjectController {
     public String todo(int projectId, Model model, @AuthenticationPrincipal UserDetails user){
         String userid = user.getUsername();
         List<ProjectTodoDTO> todos = projectService.getTodoList(projectId, userid);
+        model.addAttribute("left", projectService.getProjectName(projectId));
         model.addAttribute("projectName",projectService.getProjectName(projectId));
         model.addAttribute("todos", todos);
         model.addAttribute("projectId", projectId);

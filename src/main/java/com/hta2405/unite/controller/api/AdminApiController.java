@@ -97,6 +97,19 @@ public class AdminApiController {
         return resourceService.deleteResource(list);
     }
 
+    @GetMapping("/notice")
+    public Notice getNotice(Long id){
+        return noticeService.getNoticeById(id);
+    }
+
+    @GetMapping("/noticeList")
+    public Map<String,Object> getNoticeList(){
+        // DataTables가 요구하는 JSON 구조 생성
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", noticeService.getAllNotice());
+        return response;
+    }
+
     @PostMapping("/notice")
     public int addNotice(Notice notice) {
         return noticeService.addNotice(notice);

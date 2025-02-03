@@ -327,8 +327,6 @@
                                 </nav>
                             </div>
                         </th:block>
-
-
                         <!--                    이중메뉴!!-->
                         <!--                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages"-->
                         <!--                       aria-expanded="false" aria-controls="collapsePages">-->
@@ -382,10 +380,8 @@
                         <!--                    </a>-->
                     </div>
                 </div>
-
-
                 <div class="sb-sidenav-footer">
-                    <div class="small" style="font-weight: bold">로그인한 사용자: [[${#authentication.name}]]</div>
+                    <div class="small" style="font-weight: bold">로그인한 사용자 : [[${#authentication.name}]]</div>
                     <div id="user-info" style="display: none" th:data-username="${#authentication.name}"></div>
                 </div>
             </nav>

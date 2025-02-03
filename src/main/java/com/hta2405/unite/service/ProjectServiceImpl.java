@@ -6,16 +6,15 @@ import com.hta2405.unite.dto.*;
 import com.hta2405.unite.enums.NotificationCategory;
 import com.hta2405.unite.mybatis.mapper.ProjectMapper;
 import com.hta2405.unite.util.ConfigUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
+@Slf4j
 @Service
 public class ProjectServiceImpl implements ProjectService {
     private static final String FILE_DIR = ConfigUtil.getProperty("project.upload.directory");
@@ -175,7 +174,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         for (ProjectDetailDTO projectDetailDTO : user) {
             String recipent = projectDetailDTO.getMemberId();
-            if(recipent.equals(userid)) {
+            if(!recipent.equals(userid)) {
                 NotificationDTO notification = builder.recipientId(recipent).build();
                 notificationService.sendNotification(notification);
             }
@@ -199,7 +198,6 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     public Map<String, String> getColor(int projectId, String memberId) {
-        // 프로젝트와 회원에 맞는 색상 정보 가져오는 로직
         Project project = dao.findMemberInfoById(projectId, memberId);
 
         String bgColor = project.getBgColor();
@@ -210,5 +208,23 @@ public class ProjectServiceImpl implements ProjectService {
         colorInfo.put("textColor", textColor);
 
         return colorInfo;
+    }
+
+    public List<Long> updateTodoOrder(List<Long> orderedIds, int projectId, String userid) {
+        List<ProjectTodoDTO> orderedTodos = dao.getTodoList(projectId, userid);
+
+        for (int i = 0; i < orderedIds.size(); i++) {
+            log.info("orderedIds={}", orderedIds.get(i));
+            log.info("orderedTodos={}", orderedTodos.get(i).getTodoId());
+        }
+
+        for (ProjectTodoDTO todo : orderedTodos) {
+            Long num = (long) todo.getTodoId();
+            int index = orderedIds.indexOf(num);
+            todo.setOrderColumn(index);
+            dao.updateTodoOrder(todo);
+        }
+
+        return orderedIds;
     }
 }

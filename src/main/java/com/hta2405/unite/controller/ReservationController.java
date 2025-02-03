@@ -30,7 +30,7 @@ public class ReservationController {
 
     @GetMapping("/reservationCalender")
     public String reservationCalender() {
-        return "/reservation/reservationCalender";
+        return "reservation/reservationCalender";
     }
 
     @ResponseBody
@@ -56,8 +56,52 @@ public class ReservationController {
 
             reservationDTOList.add(reservationDTO);
         }
+
         return reservationDTOList;
     }
+
+    @ResponseBody
+    @GetMapping("/resourceSelectReservation")
+    public List<ReservationDTO> resourceSelectReservation(@RequestParam("resourceType") String resourceType) {
+        List<Resource> resources = reservationService.resourceSelectChange(resourceType);
+        List<ReservationDTO> reservations = new ArrayList<>();
+
+        if (resourceType != null && !resources.isEmpty()) {
+            for (Resource resource : resources) {
+                // 예약 DTO 생성
+                ReservationDTO reservationDTO = new ReservationDTO();
+                reservationDTO.setResourceId(resource.getResourceId());
+                reservationDTO.setResourceType(resource.getResourceType());
+                reservationDTO.setResourceName(resource.getResourceName());
+                reservationDTO.setResourceUsable(resource.isResourceUsable());
+
+                // 자원에 해당하는 예약 목록을 가져와서 DTO에 추가
+                List<ReservationDTO> resourceReservations = reservationService.getReservationsByResourceId(resource.getResourceId());
+
+                for (ReservationDTO reservation : resourceReservations) {
+                    ReservationDTO reservationDetails = new ReservationDTO();
+                    reservationDTO.setReservationId(reservation.getReservationId());
+                    reservationDTO.setResourceId(reservation.getResourceId());
+                    reservationDTO.setResourceType(reservation.getResourceType());
+                    reservationDTO.setResourceName(reservation.getResourceName());
+                    reservationDTO.setResourceUsable(reservation.isResourceUsable());
+                    reservationDTO.setReservationStart(reservation.getReservationStart());
+                    reservationDTO.setReservationEnd(reservation.getReservationEnd());
+                    reservationDTO.setReservationInfo(reservation.getReservationInfo());
+                    reservationDTO.setReservationAllDay(reservation.getReservationAllDay());
+
+                    reservationDTO.addReservation(reservationDetails);
+                }
+
+                reservations.add(reservationDTO);
+            }
+
+            System.out.println(reservations);
+        }
+
+        return reservations;
+    }
+
 
     @ResponseBody
     @PostMapping("/resourceReservation")

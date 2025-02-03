@@ -26,7 +26,7 @@ public class JwtUtil {
 
     public String generateToken(String username, String role, Long deptId) {
         log.info("generateToken username = {}", username);
-        long EXPIRED_MS = 60 * 60 * 1000L;
+        long EXPIRED_MS = 24 * 60 * 60 * 1000L; //24시간
         String generatedToken = Jwts.builder()
                 .claim("empId", username)
                 .claim("role", role)

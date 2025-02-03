@@ -60,7 +60,7 @@ public class BoardController {
     @GetMapping(value = "/homeProcess")
     public Object boardProcess(@AuthenticationPrincipal UserDetails user) {
         String empId = user.getUsername();
-        List<BoardPostEmpDTO> boardPostEmpDTOList = boardPostService.getBoardListAll(empId);
+        List<BoardPostEmpDTO> boardPostEmpDTOList = boardPostService.getBoardListAll(empId, null);
 
         if (boardPostEmpDTOList.isEmpty()) {
             return null;

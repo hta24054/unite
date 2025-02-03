@@ -1,9 +1,12 @@
 package com.hta2405.unite.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hta2405.unite.domain.Holiday;
 import com.hta2405.unite.mybatis.mapper.HolidayMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -22,7 +25,9 @@ import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 
@@ -31,15 +36,46 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 public class HolidayService {
     private final HolidayMapper holidayMapper;
     private final String apiKey;
+    private static final String REDIS_KEY_PREFIX = "holidays:";
+    private final RedisTemplate<String, String> redisTemplate;
+    private final ObjectMapper objectMapper; // JSON 직렬화/역직렬화
 
     public HolidayService(HolidayMapper holidayMapper,
-                          @Value("${holiday.apiKey}") String apiKey) {
+                          @Value("${holiday.apiKey}") String apiKey,
+                          RedisTemplate<String, String> redisTemplate,
+                          ObjectMapper objectMapper) {
         this.holidayMapper = holidayMapper;
         this.apiKey = apiKey;
+        this.redisTemplate = redisTemplate;
+        this.objectMapper = objectMapper;
     }
 
     public List<Holiday> getHolidayList(LocalDate startDate, LocalDate endDate) {
-        return holidayMapper.getHolidayList(startDate, endDate);
+        String redisKey =
+                REDIS_KEY_PREFIX + startDate + ":" + endDate;
+
+        try {
+            String cachedData = redisTemplate.opsForValue().get(redisKey);
+            if (cachedData != null) {
+                log.info("Redis cache hit : {}", redisKey);
+                return objectMapper.readValue(cachedData, new TypeReference<>() {
+                });
+            }
+
+            // 2. Redis 캐시 미스 - DB에서 데이터 가져오기
+            log.info("Redis cache miss : {}", redisKey);
+            List<Holiday> holidayList = holidayMapper.getHolidayList(startDate, endDate);
+
+            // 3. Redis에 데이터 캐싱
+            redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(holidayList), 24, TimeUnit.HOURS);
+
+            return holidayList;
+
+        } catch (Exception e) {
+            log.error("Redis cache error: {}", redisKey, e);
+            // Redis 실패 시 DB에서 가져온 데이터 반환
+            return holidayMapper.getHolidayList(startDate, endDate);
+        }
     }
 
     public int addHoliday(Holiday holiday) {
@@ -47,11 +83,23 @@ public class HolidayService {
             throw new IllegalArgumentException("이미 등록된 휴일입니다.");
         }
 
-        return holidayMapper.insertHoliday(holiday);
+        // DB에 추가
+        int result = holidayMapper.insertHoliday(holiday);
+
+        // Redis 캐시 갱신
+        if (result > 0) {
+            deleteRedisCache();
+        }
+        return result;
     }
 
     public int deleteHoliday(LocalDate date) {
-        return holidayMapper.deleteHoliday(date);
+        int result = holidayMapper.deleteHoliday(date);
+
+        if (result > 0) {
+            deleteRedisCache();
+        }
+        return result;
     }
 
     public boolean addWeekend(LocalDate startDate, LocalDate endDate) {
@@ -68,22 +116,37 @@ public class HolidayService {
         return true;
     }
 
-    private boolean isWeekend(DayOfWeek dayOfWeek) {
-        return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
-    }
-
     public boolean insertYearlyHoliday() {
         TreeMap<LocalDate, String> map = getYearlyHolidays(apiKey);
-
         for (LocalDate date : map.keySet()) {
             String savedHolidayName = holidayMapper.getHolidayName(date); //이미 저장된 휴일 명 DB에서 확인
             Holiday holiday = Holiday.builder().holidayDate(date).holidayName(map.get(date)).build();
-
             if (savedHolidayName == null || !savedHolidayName.equals(map.get(date))) {
-                holidayMapper.insertHoliday(holiday);
+                int result = holidayMapper.insertHoliday(holiday);
+                if (result > 0) {
+                    deleteRedisCache();
+                }
             }
         }
         return true;
+    }
+
+    private void deleteRedisCache() {
+        try {
+            String pattern = REDIS_KEY_PREFIX + "*";
+
+            Set<String> keys = redisTemplate.keys(pattern);
+            if (keys != null && !keys.isEmpty()) {
+                redisTemplate.delete(keys);
+                log.info("Redis key 삭제, pattern: {}", pattern);
+            }
+        } catch (Exception e) {
+            log.error("Redis 서버 오류 또는 캐시 삭제 오류(holiday)", e);
+        }
+    }
+
+    private boolean isWeekend(DayOfWeek dayOfWeek) {
+        return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
     }
 
     private static TreeMap<LocalDate, String> getYearlyHolidays(String apiKey) {

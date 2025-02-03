@@ -19,8 +19,6 @@ public interface ProjectMapper {
 
     void addProjectMember(int projectId, String memberName, String memberId, String role);
 
-    void addProjectMembers(int projectId, String memberName, String memberId, String role);
-
     void createTask(int projectId, String empId, String memberName);
 
     List<Project> getMainList(String userid);
@@ -51,4 +49,6 @@ public interface ProjectMapper {
     boolean todoUpdate(int projectId, String userid, int todoId, String newSubject);
     boolean deleteTodo(int todoId);
     Project findMemberInfoById(int projectId, String userid);
+
+    void updateTodoOrder(ProjectTodoDTO orderedTodos);
 }

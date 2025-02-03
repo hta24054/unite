@@ -5,62 +5,157 @@
         <head>
             <title>Unite</title>
             <link th:href="@{/css/popup.css}" rel="stylesheet"/>
-            <link th:href="@{/css/home.css}" rel="stylesheet"/>
+            <link th:href="@{/css/economicIndex.css}" rel="stylesheet"/>
+            <link th:href="@{/css/birthday.css}" rel="stylesheet"/>
             <script th:src="@{/js/popup.js}"></script>
+            <script th:src="@{/js/economicIndex.js}"></script>
             <script th:src="@{/js/home.js}"></script>
+            <script th:src="@{/js/birthday.js}"></script>
         </head>
-        <body class="sb-nav-fixed">
-        <div class="container" style=" max-width: 1500px;">
-            <div class="left">
-                <div class="user">
-                    <img th:src="@{/api/emp/profile-image(empId=${#authentication.name})}" class="user_img" alt="프로필">
-                    <div>
-                        <span th:text="${name}"></span> / <span th:text="${job}"></span>
+        <body class="bg-light">
+        <div class="container mt-4">
+            <div class="row g-4">
+                <!-- 프로필 정보 표시 -->
+                <div class="col-lg-3">
+                    <div class="card shadow-sm" style="height: 100%;">
+                        <div class="card-body text-center">
+                            <img th:src="@{/api/emp/profile-image(empId=${#authentication.name})}"
+                                 class="rounded-circle mb-3" width="150px" alt="프로필">
+                            <h5 th:text="${name}" class="card-title mb-1"></h5>
+                            <p th:text="${job}" class="text-muted small mb-2"></p>
+                            <p th:text="${email}" class="text-muted small"></p>
+                            <hr>
+                            <div class="text-start">
+                                <p>
+                                    결재 대기 문서: <a th:href="@{/doc/waiting}" class="text-decoration-none text-secondary">
+                                    <span th:text="${waiting}"></span>
+                                </a>
+                                </p>
+                                <p>
+                                    결재 진행 문서: <a th:href="@{/doc/inProgress}"
+                                                 class="text-decoration-none text-secondary">
+                                    <span th:text="${inProgress}"></span>
+                                </a>
+                                </p>
+                            </div>
+                            <div class="d-flex justify-content-around mt-4">
+                                <a href="/contact/inner" id="inner">
+                                    <img th:src="@{/image/inner.png}" style="width:50px; height:50px;">
+                                </a>
+                                <a href="/contact/outer" id="outer">
+                                    <img th:src="@{/image/outer.png}" style="width:50px; height:50px;">
+                                </a>
+                            </div>
+                            <div class="d-flex justify-content-around mt-2">
+                                <span>사내주소록</span>
+                                <span>외부주소록</span>
+                            </div>
+                        </div>
                     </div>
-                    <span th:text="${email}"></span>
-                    <div id="user_bottom">
-                        <span style="float:left; padding-bottom: 10px;">결재 대기 문서</span><a th:href="@{/doc/waiting}"><span style="padding-bottom: 10px;float:right; color: gray;" th:text="${waiting}"></span></a>
-                        <span style="float:left">결재 진행 문서</span><a th:href="@{/doc/inProgress}"><span style="float:right; color: gray;" th:text="${inProgress}"></span></a>
-
-                    </div><br><br><br>
-
-                    <span id="inner" style="float:left; padding-left:45px;" onclick="window.location.href='/contact/inner'"><img th:src="@{/image/inner.png}" style="width:50px; height: 50px;"></span>
-                    <span id="outer" style="float:right; padding-right:45px;" onclick="window.location.href='/contact/outer'"><img th:src="@{/image/outer.png}" style="width:50px; height: 50px;"></span>
-                    <span style="float:left; margin-left: 30px">사내주소록</span><span style="float:right; margin-right: 30px">외부주소록</span><br>
                 </div>
-                <br>
-                <div style="border: 2px solid #ccc; width: 300px; border-radius:20px;">
-                    <span class="attend"><div th:replace="attend/attendBox.html"></div></span>
-                </div><br>
+
+                <!-- 게시판 -->
+                <div class="col-lg-6">
+                    <!--좌우 card와 밑단 맞추기 위해서 하단 padding 입력-->
+                    <div class="card shadow-sm" style="padding-bottom: 40px">
+                        <div class="card-body">
+                            <!--캘린더-->
+                            <div th:replace="homeCalendar.html"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 경제 지표 -->
+                <div class="col-lg-3">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="text-center">경제 지표</h5>
+                                <div class="text-center" style="font-size: 12px; color: gray">* PM 12:00 기준</div>
+                                <ul class="list-group">
+                                    <li id="kospi"
+                                        class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>KOSPI</span>
+                                        <span class="rate-value text-end flex-grow-1" id="kospiIndex"></span>
+                                    </li>
+                                    <li id="kosdaq"
+                                        class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>KOSDAQ</span>
+                                        <span class="rate-value text-end flex-grow-1" id="kosdaqIndex"></span>
+                                    </li>
+                                    <li id="usd-rate"
+                                        class="list-group-item d-flex justify-content-between align-items-center">
+                                        <img th:src="@{/image/flags/usa.jpg}" width="30px" class="me-2">
+                                        <span class="rate-value text-end flex-grow-1"></span>
+                                    </li>
+                                    <li id="jpy-rate"
+                                        class="list-group-item d-flex justify-content-between align-items-center">
+                                        <img th:src="@{/image/flags/japan.jpg}" width="30px" class="me-2">
+                                        <span class="rate-value text-end flex-grow-1"></span>
+                                    </li>
+                                    <li id="eur-rate"
+                                        class="list-group-item d-flex justify-content-between align-items-center">
+                                        <img th:src="@{/image/flags/eu.png}" width="30px" class="me-2">
+                                        <span class="rate-value text-end flex-grow-1"></span>
+                                    </li>
+                                    <li id="cnh-rate"
+                                        class="list-group-item d-flex justify-content-between align-items-center">
+                                        <img th:src="@{/image/flags/china.jpg}" width="30px" class="me-2">
+                                        <span class="rate-value text-end flex-grow-1"></span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card shadow-sm" style="margin-top:30px;">
+                            <div class="card-body" style="height: 100%;">
+                                <h5 class="text-center"><i class="bi bi-cake2-fill"></i>&emsp;생일 축하합니다!&emsp;<i
+                                        class="bi bi-cake2-fill"></i></h5>
+                                <ul class="list-group">
+                                    <li class="list-group-item text-center birthday-list"
+                                        style="margin-top: 10px; padding-bottom: 0px;"></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <!-- 가운데 위 -->
-            <div class="center">
-                <div class="c_table" style="padding-top: 20px;">
-                    <h5><a th:href="@{/board/home}" style="text-decoration: none; color: black; margin-left: 15px;">게시판</a></h5>
-                    <table class="styled-table">
-                        <tbody>
-                            <tr><td>게시글이 없습니다</td><td></td></tr>
-                        </tbody>
-                    </table>
+        <div class="container mt-4">
+            <!-- 출근 버튼 박스 -->
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div th:replace="attend/attendBox.html"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="c_table">
-                    <div id="calendar-container" style="position: relative;">
-                      <span id="custom-text" style="position: absolute; top: 5px; right: 220px; color: black; padding: 5px;" onclick="window.location.href='/schedule/calender'">
-                            +
-                        </span>
-                        <div th:replace="/schedule.html"></div>
+                <div class="col-lg-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5><a th:href="@{/board/home}" class="text-decoration-none text-dark">게시판</a></h5>
+                            <table class="table table-striped board_table">
+                                <tbody>
+                                <tr>
+                                    <td>게시글이 없습니다</td>
+                                    <td></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         <!-- 팝업 컨테이너 -->
-        <div id="popup-container">
-            <p id="popup-content"></p>
-            <div class="button-container">
-                <button id="popup-close" class="btn btn-sm btn-light" style="font-size: 10px">닫기</button>
-                <button id="popup-dont-show" class="btn btn-sm btn-secondary" style="font-size: 10px">모든 공지사항 하루 보지 않기
-                </button>
+        <div id="popup-container"
+             class="position-fixed top-50 start-50 translate-middle p-4 bg-white border rounded shadow-lg"
+             style="width: 300px; display: none; z-index: 1050;">
+            <p id="popup-content" class="mb-3 text-center"></p>
+            <div class="d-flex justify-content-between">
+                <button id="popup-close" class="btn btn-light btn-sm">닫기</button>
+                <button id="popup-dont-show" class="btn btn-secondary btn-sm">모든 공지사항 하루 보지 않기</button>
             </div>
         </div>
         </body>

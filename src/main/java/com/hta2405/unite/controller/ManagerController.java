@@ -3,6 +3,7 @@ package com.hta2405.unite.controller;
 import com.hta2405.unite.domain.Dept;
 import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.dto.EmpListDTO;
+import com.hta2405.unite.enums.Role;
 import com.hta2405.unite.service.DeptService;
 import com.hta2405.unite.service.EmpService;
 import lombok.AllArgsConstructor;
@@ -52,7 +53,7 @@ public class ManagerController {
     private List<Dept> getAvailableDeptList(UserDetails user) {
         Emp emp = empService.getEmpById(user.getUsername());
         List<Dept> deptList;
-        if (empService.isHrDeptEmp(emp)) {
+        if (empService.isHrDeptEmp(emp) || emp.getRole() == Role.ROLE_ADMIN) {
             deptList = deptService.getAllDept();
         } else {
             deptList = deptService.getSubDeptList(emp.getDeptId());

@@ -4,8 +4,6 @@
 		<html xmlns:th="http://www.thymeleaf.org">
 		<head>
 			<title>Insert title here</title>
-		<!--	<jsp:include page="../common/header.jsp"/>-->
-		<!--	<jsp:include page="project_leftbar.jsp"/>-->
 			<link rel="stylesheet" th:href="@{/css/view.css}" type="text/css">
 			<script th:src="@{/js/project_view.js}"></script>
 			<script>
@@ -20,10 +18,10 @@
 				<input type="hidden" th:value="${#authentication.name}" id="loginId">
 				<table class="table">
 					<tr>
-						<th colspan="2" th:text="${projectName}"></th>
+						<th colspan="2" style="text-align: center; font-size: 30px;" th:text="${projectName}"></th>
 					</tr>
 					<tr>
-						<td><div>투두리스트</div></td>
+						<td><div>카테고리</div></td>
 						<td><div th:text="${task.toDo}"></div></td>
 					</tr>
 					<tr>
@@ -50,7 +48,6 @@
 									<img th:src="@{/image/down.png}" style="width: 10px; vertical-align: middle;">&nbsp;
 									<span th:text="${task.taskFileOriginal}" style="color: inherit;"></span>
 								</a>
-
 							</td>
 						</th:block>
 						<th:block th:if="${#strings.isEmpty(task.taskFileOriginal)}">

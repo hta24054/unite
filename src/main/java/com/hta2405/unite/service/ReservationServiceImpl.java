@@ -80,4 +80,9 @@ public class ReservationServiceImpl implements ReservationService {
     public List<ReservationDTO> getMyReservationList(String empId) {
         return reservationDAO.getMyReservationList(empId);
     }
+
+    @Override
+    public List<ReservationDTO> getReservationsByResourceId(Long resourceId) {
+        return reservationDAO.getReservationsByResourceId(resourceId);
+    }
 }

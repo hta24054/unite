@@ -155,5 +155,31 @@ $(document).ready(function() {
 			});
 		}
 	});
-
+	$(".sortable").sortable({
+		handle: ".bi-arrows-expand",
+		update: function(event, ui) {
+			var orderedIds = [];
+			$(this).children("li").each(function(index) {
+				orderedIds.push($(this).data("todo-id"));
+				$(this).find("span:first").text(index + 1);
+			});
+			console.log(orderedIds);
+			let currentProjectId = $('#project-id').val();
+			$.ajax({
+				url: '/api/project/updateTodoOrder',
+				type: 'POST',
+				data: {
+					orderedIds: orderedIds,
+					projectId: currentProjectId
+				},
+				success: function(response) {
+					console.log("순서 변경 완료");
+				},
+				error: function(error) {
+					console.log("오류 발생", error);
+				}
+			});
+		}
+	});
+	$(".sortable").disableSelection();
 });

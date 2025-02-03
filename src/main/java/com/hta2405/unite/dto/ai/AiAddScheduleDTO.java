@@ -1,17 +1,19 @@
-package com.hta2405.unite.dto;
+package com.hta2405.unite.dto.ai;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class AiScheduleResponseDTO {
+public class AiAddScheduleDTO {
     private String scheduleName;
     private String scheduleContent;
-    private String scheduleStart;
-    private String scheduleEnd;
+    private LocalDateTime scheduleStart;
+    private LocalDateTime scheduleEnd;
 }

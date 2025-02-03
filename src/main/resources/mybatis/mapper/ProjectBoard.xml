@@ -17,6 +17,7 @@
     <select id="getRecentPosts" resultType="com.hta2405.unite.dto.ProjectTaskDTO">
         SELECT
             t.member_name AS taskWriter,
+            (select j.job_name from emp e join job j on e.job_id=j.job_id where e.emp_id in (select member_id from project_member where project_id = #{projectId} and e.emp_id=m.member_id)) jobName,
             IFNULL(t.task_subject, '글을 작성해주세요') AS taskSubject,
             SUBSTRING(COALESCE(t.task_update_date, t.task_date), 1, 10) AS taskDate,
             m.member_id AS memberId
@@ -109,4 +110,7 @@
     <delete id="deleteComment">
         delete from task_comment where task_comment_id = #{taskId}
     </delete>
+    <select id="commentCount" resultType="map">
+        select t.task_id taskId , count(*) commentCount from task t join task_comment tc on t.task_id = tc.task_id where t.project_id = #{projectId} and t.emp_id = #{userid} group by t.task_id;
+    </select>
 </mapper>

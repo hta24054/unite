@@ -7,6 +7,10 @@
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>TODO 리스트</title>
                 <script th:src="@{/js/project_todo.js}"></script>
+                <script th:src="@{/js/project_color.js}"></script>
+                <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+                <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+
                 <style>
                     .progress-bar-container {
                         background-color: #f3f3f3; /* 배경색 */
@@ -27,11 +31,20 @@
                         line-height: 20px; /* 컨테이너 높이에 맞춘 라인 높이 */
                         transition: width 0.3s ease-in-out; /* 너비 변화 시 부드러운 애니메이션 */
                     }
+                    #todoList .list-group-item {
+                        display: flex;
+                        width: 100%;
+                    }
+                    .col-1{text-align: center;}
                 </style>
             </head>
             <body>
+            <input type="hidden" th:value="${projectId}" id="project-id">
+            <input type="hidden" th:value="${#authentication.name}" id="user-id">
                 <div class="container mt-5">
-                    <h1 class="text-center mb-4"><span th:text="${projectName}"></span> - TODO 리스트</h1>
+                    <h1 class="text-center mb-4 background">
+                        <span th:text="'TODO List - ' + ${projectName}" class="text"></span>
+                    </h1>
                     <form th:action="@{/project/todoForm(projectId=${projectId})}" method="POST" class="mb-4">
                         <div class="input-group">
                             <input type="text" id="task" name="task" class="form-control" placeholder="할 일을 입력하세요" required>
@@ -42,26 +55,26 @@
                     <h2>할 일 목록</h2>
                     <ul id="todoList" class="list-group">
                         <li th:if="${#lists.isEmpty(todos)}" class="list-group-item text-center">
-                            투두리스트를 추가해주세요.
+                            Todo List를 추가해주세요.
                         </li>
-                        <li th:each="todo, iterStat : ${todos}" class="list-group-item">
-                            <div class="row">
+                        <ul class="sortable row box">
+                            <li th:each="todo, iterStat : ${todos}" class="list-group-item ui-state-default" th:data-todo-id="${todo.todoId}">
                                 <div class="col-1">
-                                    <span th:text="${iterStat.index + 1}"></span> <!-- 번호 -->
+                                    <span th:text="${iterStat.index + 1}"></span>
                                 </div>
                                 <div class="col-5">
                                     <span class="todoSubject" th:text="${todo.todoSubject}" th:data-todoid="${todo.todoId}"></span> <!-- 할 일 제목 -->
                                 </div>
                                 <div class="col-3">
-                               <span class="progress-btn" role="button" data-toggle="modal" data-target="#progressModal"
-                                     th:data-todo-id="${todo.todoId}" th:data-progress-rate="${todo.progressRate}" th:data-projectid="${projectId}">
-                                   <div class="progress-bar-container">
-                                      <span class="progress-bar" role="progressbar"
-                                            th:style="'width:' + ${todo.progressRate} + '%'">
-                                      <span th:text="${todo.progressRate} + '%'"></span>
+                                    <span class="progress-btn" role="button" data-toggle="modal" data-target="#progressModal"
+                                         th:data-todo-id="${todo.todoId}" th:data-progress-rate="${todo.progressRate}" th:data-projectid="${projectId}">
+                                       <div class="progress-bar-container">
+                                          <span class="progress-bar" role="progressbar"
+                                                th:style="'width:' + ${todo.progressRate} + '%'">
+                                          <span th:text="${todo.progressRate} + '%'"></span>
+                                        </span>
+                                        </div>
                                     </span>
-                                    </div>
-                                </span>
                                 </div>
                                 <div class="col-1">
                                     <button type="button" class="btn btn-warning edit-btn" th:data-todoid="${todo.todoId}" th:data-todo-subject="${todo.todoSubject}" th:data-projectid="${projectId}">수정</button>
@@ -69,10 +82,10 @@
                                 <div class="col-1">
                                     <button type="button" class="btn btn-danger delete-btn" th:data-todo-id="${todo.todoId}" th:data-projectid="${projectId}">삭제</button>
                                 </div>
-                            </div>
-                        </li>
+                                <i class="bi bi-arrows-expand" style="line-height: 37px; cursor: pointer;"></i>
+                            </li>
+                        </ul>
                     </ul>
-
                 </div>
                 <div class="modal fade" id="progressModal" tabindex="-1" aria-labelledby="progressModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">

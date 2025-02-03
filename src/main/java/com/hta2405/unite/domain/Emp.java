@@ -59,6 +59,7 @@ public class Emp {
         this.hireType = dto.getHireType();
         this.etype = dto.getEtype();
         this.birthday = dto.getBirthday();
+        this.birthdayType = dto.getBirthdayType();
         this.address = dto.getAddress();
         this.married = dto.isMarried();
         this.major = dto.getMajor();

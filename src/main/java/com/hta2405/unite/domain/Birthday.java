@@ -20,10 +20,4 @@ public class Birthday {
     private String eName;
     private String deptName;
     private String jobName;
-    private String imgPath;
-    private String imgOriginal;
-    private String imgUUID;
-    private String imgType;
-    private LocalDate birthday;
-    private String birthdayType;
 }

@@ -143,7 +143,8 @@
     </select>
     <select id="getProjectDetail1" resultType="com.hta2405.unite.dto.ProjectDetailDTO">
         select p.project_id as projectId, m.member_id as memberId, p.manager_id as managerId, m.member_name as participantNames, m.member_designated as memberDesign,
-       (select round(coalesce(avg(t.progress_rate),0)) from todo t where t.member_id = m.member_id and t.project_id = p.project_id) as memberProgressRate,  CASE WHEN p.manager_id = #{userid} THEN true ELSE false END as isManager, j.job_name jobName
+       (select round(coalesce(avg(t.progress_rate),0)) from todo t where t.member_id = m.member_id and t.project_id = p.project_id) as memberProgressRate,  CASE WHEN p.manager_id = #{userid} THEN true ELSE false END as isManager, j.job_name jobName,
+       (select count(*) from todo t where t.member_id = m.member_id and t.project_id = p.project_id) todoNum
         from project_member m join project p on m.project_id = p.project_id join emp e on e.emp_id = m.member_id join job j on j.job_id = e.job_id where p.project_id=#{projectId} and m.member_role != 'VIEWER' order by j.job_rank, m.member_name;
     </select>
 

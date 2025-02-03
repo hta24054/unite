@@ -14,6 +14,7 @@ function getList(state) {
         },
         dataType: "json",
         success: function (rdata) {
+            console.log(rdata);
             $('#count').text(rdata.listcount).css('font-family', 'arial,sans-serif');
             let red1 = (state == 1) ? 'red' : 'gray';
             let red2 = (state == 2) ? 'red' : 'gray';

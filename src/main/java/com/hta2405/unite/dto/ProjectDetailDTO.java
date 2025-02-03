@@ -22,4 +22,5 @@ public class ProjectDetailDTO {
         this.isManager = isManager;
     }
     private String jobName; //직책
+    private int todoNum;
 }

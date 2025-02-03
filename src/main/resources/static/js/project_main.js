@@ -5,6 +5,7 @@ $(document).ready(function () {
     $("#viewcount").change(function () {
         go(1); //보여줄 페이지를 1페이지로 설정
     });
+
 });
 $(document).on('click', '#toggle-projects', function () {
     const container = $('#project-container');
@@ -162,6 +163,7 @@ $(document).on('click', '.project-card img', function () {
     $('#settingType').val('color');  // 'color'를 기본 선택하도록 설정
     $('#colorSettings').show();  // 배경 및 글자 색 변경 화면 표시
     $('#projectSettings').hide();  // 프로젝트 상태 변경 화면 숨김
+    $('#memberSettings').hide();  // 프로젝트 상태 변경 화면 숨김
     $('#changeColorButton').show();  // 배경 및 글자 색 변경 버튼 보이기
     $('#saveProjectStatus').hide();  // 프로젝트 상태 저장 버튼 숨기기
 
@@ -174,11 +176,13 @@ $(document).on('click', '.project-card img', function () {
             // 배경 및 글자 색 변경 화면
             $('#colorSettings').show();
             $('#projectSettings').hide();
+            $('#memberSettings').hide();
             $('#changeColorButton').show();
             $('#saveProjectStatus').hide();
         } else if (settingType === 'project') {
             // 프로젝트 상태 변경 화면
             $('#colorSettings').hide();
+            $('#memberSettings').hide();
             $('#projectSettings').show();
             $('#changeColorButton').hide();
 
@@ -478,4 +482,3 @@ function updateProjectColors(projects) {
         }
     });
 }
-

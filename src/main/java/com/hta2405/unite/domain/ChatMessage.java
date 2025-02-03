@@ -1,5 +1,6 @@
 package com.hta2405.unite.domain;
 
+import com.hta2405.unite.enums.ChatMessageType;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @ToString
 @Builder
 public class ChatMessage {
+    private ChatMessageType chatMessageType;
     private Long chatMessageId;
     private Long chatRoomId;
     private String senderId;

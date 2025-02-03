@@ -146,8 +146,8 @@
                                     <a th:href="@{modify(no=${postDetailDTO.postId},boardName1=${boardDTO.getBoardName1()},boardName2=${boardDTO.getBoardName2()})}">
                                         <button class="btn board_view_btn postModify-link">수정</button></a>
 
-                                    <button class="btn board_view_btn" data-toggle="modal"
-                                            data-target="#myModal">삭제</button>
+                                    <button class="btn board_view_btn" data-bs-toggle="modal" data-bs-target="#myModal">삭제</button>
+
                                 </th:block>
                                 <a th:href="@{reply(no=${postDetailDTO.postId},boardName1=${boardDTO.getBoardName1()},boardName2=${boardDTO.getBoardName2()})}">
                                     <button class="btn board_view_btn postReply-link">답글</button></a>
@@ -203,22 +203,24 @@
                     <!-- modal 시작 -->
                     <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel"
                          aria-hidden="true">
-                        <div class="modal-dialog">
+                        <div class="modal-dialog" style="top: 30%;">
                             <div class="modal-content">
                                 <div class="modal-body">
-                                    <form name="deleteForm" action="delete" method="post">
+                                    <form name="deleteForm" action="delete" method="post" style="padding:0 10px">
                                         <input type="hidden" name="page" th:value="${page}">
                                         <input type="hidden" name="boardName1" th:value="${boardDTO.boardName1}">
                                         <input type="hidden" name="boardName2" th:value="${boardDTO.boardName2}">
                                         <input type="hidden" name="no" th:value="${postDetailDTO.postId}" id="postId">
-                                        <div class="form-group">
+                                        <div class="form-group fs-5" style="padding: 10px 0;">
                                             <label>정말 삭제하시겠습니까? <br> 복구가 불가능합니다.</label>
                                         </div>
-                                        <button type="submit" class="btn btn-primary"
-                                                style="background-color: #334466; border-color: #334466;">삭제
-                                        </button>
                                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
-                                                style="background-color: #33446699; border-color: #33446644;">취소
+                                                style="background-color: #33446699; border-color: #33446644;float: right;">
+                                            취소
+                                        </button>
+                                        <button type="submit" class="btn btn-primary"
+                                                style="background-color: #334466; border-color: #334466;float: right; margin-right: 5px;">
+                                            삭제
                                         </button>
                                     </form>
                                 </div>
@@ -240,7 +242,8 @@
                         </ul>
                         <div class="comment-write-container">
                             <span class="comment-photo">
-                                <img th:src="@{|/api/emp/profile-image?empId=${id}|}" class="profileImg" width=36 height=36>
+                                <img th:src="@{|/api/emp/profile-image?empId=${id}|}" class="profileImg" width=36
+                                     height=36>
                             </span>
                             <div class="comment-write">
                                 <div class="comment-write-area">

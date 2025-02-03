@@ -12,18 +12,18 @@ import java.util.Map;
 @Mapper
 public interface MessengerMapper {
     // ChatRoom 관련
-    List<ChatRoomDTO> findAllRooms(String empId);
+    List<ChatRoomDTO> findAllRooms(String empId, boolean isHomeMessenger);
 
-    List<ChatMessage> findRoomById(Long chatRoomId);
+    List<ChatMessage> findMessageListById(Long chatRoomId, String userId);
 
-    List<Map<String, Object>> getIdToRoomNameMap();
+    List<Map<String, Object>> getIdToRoomNameMap(String userId);
 
     void createRoom(ChatRoom chatRoom);
 
     void deleteRoom(Long chatRoomId);
 
     // ChatMessage 관련
-    List<ChatRoomDTO> findLastMessagesByRoomIds(String empId);
+    ChatMessage findLastMessageByRoomId(Long chatRoomId);
 
     List<ChatMessage> findMessagesByRoomId(Long chatRoomId);
 
@@ -32,15 +32,25 @@ public interface MessengerMapper {
     // ChatRoomMember 관련
     List<String> findMembersByRoomId(Long chatRoomId);
 
-    void addMember(ChatRoomMember member);
+    ChatRoom findChatRoomById(Long chatRoomId);
 
-    void removeMember(Long chatRoomMemberId);
+    int removeMember(Long chatRoomId, String userId);
 
-    int insertRoomMember(List<ChatRoomMember> chatRoomMemberList);
+    int insertRoomMember(List<ChatRoomMember> chatRoomMemberList, boolean newInvite);
 
     int getUnreadMessageCount(Long chatRoomId, String userId);
+
+    void updateRecentMessageDate(Long chatRoomId);
 
     void updateLastReadMessageId(Long chatRoomId, String userId);
 
     ChatMessage findMessageById(Long chatMessageId);
+
+    List<ChatRoomMember> getChatRoomsById(String userId);
+
+    void updateChatRoomName(Long chatRoomId, String userId, String chatRoomName);
+
+    void deleteMessageById(Long chatRoomId);
+
+    int deleteMember(Long chatRoomId);
 }

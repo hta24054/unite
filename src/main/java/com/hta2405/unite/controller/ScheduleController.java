@@ -83,6 +83,7 @@ public class ScheduleController {
         return "schedule/scheduleShare";
     }
 
+    // 공유 일정 불러오기
     @ResponseBody
     @GetMapping("/sharedScheduleList")
     public List<ScheduleDTO> getListSharedSchedule() {
@@ -97,21 +98,10 @@ public class ScheduleController {
         return scheduleService.getSharedSchedules(empId);
     }
 
+    // 공유 일정 등록
     @ResponseBody
     @PostMapping("/scheduleShareAdd")
     public int insertScheduleShare(@RequestBody ScheduleDTO scheduleDTO) {
-        Schedule schedule = scheduleDTO.getSchedule();
-
-        // CalendarDateTimeUtil을 사용하여 날짜 변환
-        if (schedule != null) {
-            String scheduleStartStr = scheduleDTO.getScheduleStart();
-            String scheduleEndStr = scheduleDTO.getScheduleEnd();
-
-            // "T" 제거 후 LocalDateTime으로 변환
-            schedule.setScheduleStart(CalendarDateTimeUtil.parseDateTimeWithoutT(scheduleStartStr));
-            schedule.setScheduleEnd(CalendarDateTimeUtil.parseDateTimeWithoutT(scheduleEndStr));
-        }
-
         return scheduleService.insertScheduleShare(scheduleDTO);
     }
 

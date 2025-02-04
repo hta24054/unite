@@ -4,6 +4,7 @@ import com.hta2405.unite.domain.Schedule;
 import com.hta2405.unite.domain.ScheduleShare;
 import com.hta2405.unite.dto.ScheduleDTO;
 import com.hta2405.unite.mybatis.mapper.ScheduleMapper;
+import com.hta2405.unite.util.CalendarDateTimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,8 +57,21 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public int insertScheduleShare(ScheduleDTO scheduleDTO) {
-        scheduleDAO.insertScheduleShare(scheduleDTO.getSchedule());
+        Schedule schedule = scheduleDTO.getSchedule();
 
+        // CalendarDateTimeUtil을 사용하여 날짜 변환
+        if (schedule != null) {
+            String scheduleStartStr = scheduleDTO.getScheduleStart();
+            String scheduleEndStr = scheduleDTO.getScheduleEnd();
+
+            // "T" 제거 후 LocalDateTime으로 변환
+            schedule.setScheduleStart(CalendarDateTimeUtil.parseDateTimeWithoutT(scheduleStartStr));
+            schedule.setScheduleEnd(CalendarDateTimeUtil.parseDateTimeWithoutT(scheduleEndStr));
+        }
+
+        scheduleDAO.insertScheduleShare(schedule);
+
+        // 공유 직원 저장
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("scheduleId", scheduleDTO.getSchedule().getScheduleId());
         hashMap.put("shareEmp", scheduleDTO.getScheduleShare().getShareEmp());
@@ -65,7 +79,6 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleDAO.insertScheduleShareUsers(hashMap);
     }
 
-    // 공유 일정
     @Override
     public List<ScheduleDTO> getSharedSchedules(String empId) {
         List<Schedule> sharedSchedules = scheduleDAO.getListSharedSchedule(empId);

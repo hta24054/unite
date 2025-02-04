@@ -27,12 +27,9 @@ public class AdminController {
         return "admin/resource";
     }
 
-
     @GetMapping("/notice")
-    public ModelAndView showNoticePage(ModelAndView mv) {
-        mv.addObject("noticeList", noticeService.getAllNotice());
-        mv.setViewName("admin/notice");
-        return mv;
+    public String showNoticePage() {
+        return "admin/notice";
     }
 
     @GetMapping("/emp-manage")

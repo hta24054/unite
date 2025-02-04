@@ -33,4 +33,8 @@ public class NoticeService {
     public List<Notice> getAliveNotice() {
         return noticeMapper.getAliveNotice();
     }
+
+    public Notice getNoticeById(Long id) {
+        return noticeMapper.getNoticeById(id);
+    }
 }

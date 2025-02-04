@@ -142,11 +142,12 @@ $(document).ready(function () {
                                 backgroundColor: data[i].scheduleColor,
                                 description: data[i].scheduleContent,
                                 allDay: data[i].scheduleAllDay,
-                                editable: false, // 수정 불가
+                                // editable: false, // 수정 불가
                                 droppable: false, // 드래그 불가
                                 extendedProps: {
                                     isShared: true, // 공유 일정
                                     shareEmpNames: data[i].shareEmpNames, // 공유자 이름 목록
+                                    empId: data[i].empId, // 본인의 empId (등록자 empId)
                                     empIdName: data[i].empIdName, // 본인 이름
                                 },
                             })
@@ -427,8 +428,16 @@ $(document).ready(function () {
         // 공유 일정
         if (event.extendedProps.isShared === true) {
             $(".modal-header").find("h5").text("공유 일정");
-            $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", true);
-            $(".modal-body").find(".btn_wrap").remove();
+            // 등록자/참여자 구별
+            if (event.extendedProps.empId === $("#emp_id").val()) {  // 등록자일 경우
+                $(".modal-body").find(".btn_wrap").html(`
+                    <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
+                    <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
+                `);
+            } else { // 참여자일 경우
+                $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", true);
+                $(".modal-body").find(".btn_wrap").html(``);
+            }
 
             if ($(".modal-body").find(".form-group.share-info").length === 0) {
                 $(".modal-body").find(".form-group:nth-of-type(1)").after(`
@@ -441,6 +450,8 @@ $(document).ready(function () {
                     </div>
                 `);
             }
+            $(".modal-body").find(".form-group.share-info").show();
+
         } else if(event.extendedProps.isDept === true) { // 부서 일정
             $(".modal-header").find("h5").text("부서 일정");
             //$("form[name='scheduleEvent'] input, form[name='scheduleEvent'] textarea").prop("disabled", true);
@@ -449,6 +460,7 @@ $(document).ready(function () {
 	            <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
 	            <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
 	        `);
+            $(".modal-body").find(".form-group.share-info").hide();
 
         } else {
             $(".modal-header").find("h5").text("상세 일정");
@@ -458,6 +470,7 @@ $(document).ready(function () {
 	            <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
 	            <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
 	        `);
+            $(".modal-body").find(".form-group.share-info").hide();
         }
 
         // 일정 수정
@@ -511,6 +524,8 @@ $(document).ready(function () {
 	        <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
 	    `);
 
+        $(".modal-body").find(".form-group.share-info").hide();
+
         // 등록 버튼에 이벤트 바인딩
         $("#btnRegister").off("click").on("click", function (e) {
             e.preventDefault();
@@ -523,8 +538,6 @@ $(document).ready(function () {
                 description: $("#description").val(),
                 allDay: $("#allDay").prop("checked"),
             };
-
-            console.log('eventData', eventData)
 
             if (validateForm()) {
                 addEvent(eventData);
@@ -540,6 +553,7 @@ $(document).ready(function () {
         });
 
         $("#startAt, #endAt").prop("type", "datetime-local").val("");
+        $(".modal-body").find(".form-group.share-info").hide();
     });
 
     // form 유효성 검사

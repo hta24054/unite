@@ -1,17 +1,16 @@
 const contextPath = /*[[@{/}]]*/ '';
 $(document).ready(function () {
     let originalValues = {};
-    let editableFields = [];
+    let editableFields = []; // 서버에서 가져온 수정 가능한 필드 목록
     let role;
-    let fileChange = 0;
 
-    /** 🟢 서버에서 수정 가능한 필드 가져오기 */
+    // 서버에서 editable-field 데이터를 가져옴
     function fetchEditableFields() {
         return $.ajax({
             url: contextPath + '/api/emp/editable-field',
             method: 'GET',
             success: function (data) {
-                editableFields = data.field;
+                editableFields = data.field; // 수정 가능한 필드 목록
                 role = data.role;
             },
             error: function () {
@@ -20,69 +19,126 @@ $(document).ready(function () {
         });
     }
 
-    /** 🟢 기존 값 저장 */
+    // 기존 값을 저장
     function saveOriginalValues() {
-        originalValues = {}; // 기존 값 초기화
         editableFields.forEach(fieldName => {
             const fields = $(`[name='${fieldName}']`);
+
             if (fieldName === "lang" || fieldName === "cert") {
-                originalValues[fieldName] = fields.map(function () {
-                    return { name: $(this).val() };
-                }).get();
+                // lang 또는 cert 배열 처리
+                originalValues[fieldName] = []; // 배열로 초기화
+                fields.each(function () {
+                    const value = $(this).val();
+                    if (value) {
+                        originalValues[fieldName].push({
+                            [fieldName === "lang" ? "langName" : "certName"]: value
+                        });
+                    }
+                });
             } else {
-                originalValues[fieldName] = fields.val();
+                // 단일 필드 처리
+                originalValues[fieldName] = fields.val(); // 단일 값 저장
             }
         });
     }
 
-    /** 🟢 수정 가능한 필드만 활성화 */
+    // 수정 가능한 필드 활성화
     function enableEditableFields() {
+
+        // editableFields 배열에 있는 필드만 활성화
         editableFields.forEach(fieldName => {
             const field = $(`[name='${fieldName}']`);
-            if (field.length) {
-                field.removeAttr("readonly").removeAttr("disabled").addClass("editing");
+            if (field.length) { // 필드가 존재하는 경우만 처리
+                field.removeAttr("readonly").removeAttr("disabled");
+                field.closest("div, td").addClass("editing"); // 필드가 포함된 부모 요소에 'editing' 클래스 추가
             }
         });
         $("#fileUploadSection").show();
-        // 🔥 lang 또는 cert가 있는 경우에만 추가 버튼 표시
-        if (editableFields.includes("lang")) {
-            $(".lang-add").show();
-            $(".remove-lang").show();
-        }
-        if (editableFields.includes("cert")) {
-            $(".cert-add").show();
-            $(".remove-cert").show();
-        }
-
-        $(".remove_img").show();
     }
 
-    /** 🟢 취소 시 이전 상태 복구 */
+// 수정 가능한 필드 비활성화
     function resetEditableFields() {
+        $('#infoForm').removeClass('editing'); // 'editing' 클래스 제거
         editableFields.forEach(fieldName => {
             const fields = $(`[name='${fieldName}']`);
-            fields.each(function (index) {
-                const originalValue = originalValues[fieldName]?.[index]?.name || originalValues[fieldName] || "";
-                $(this).val(originalValue).attr("readonly", true).attr("disabled", true).removeClass("editing");
-            });
+            if (fieldName === "lang" || fieldName === "cert") {
+                fields.each(function (index) {
+                    const originalValue = originalValues[fieldName][index];
+                    $(this).val(originalValue ? originalValue[fieldName === "lang" ? "langName" : "certName"] : "")
+                        .attr("readonly", "readonly")
+                        .attr("disabled", "disabled");
+                });
+            } else {
+                fields.val(originalValues[fieldName])
+                    .attr("readonly", "readonly")
+                    .attr("disabled", "disabled");
+            }
         });
-        $("#fileUploadSection").hide();
-        $(".cert-add, .lang-add, .remove-lang, .remove-cert, .remove_img").hide();
+        $("#fileUploadSection").hide(); // 파일 업로드 섹션 숨기기
     }
 
-    /** 🟢 수정 버튼 클릭 이벤트 */
+
+    // 수정 버튼 클릭 이벤트
     $("#editButton").click(function () {
         if ($(this).text() === "수정") {
-            saveOriginalValues();
-            enableEditableFields();
-            $(this).text("취소").attr("id", "cancelButton").removeClass("btn-primary").addClass("btn-secondary");
-            $("#saveButton").removeAttr("disabled").removeClass("btn-secondary").addClass("btn-success");
-        } else {
-            resetEditableFields();
-            $(this).text("수정").attr("id", "editButton").removeClass("btn-secondary").addClass("btn-primary");
-            $("#saveButton").attr("disabled", "disabled").removeClass("btn-success").addClass("btn-secondary");
+            saveOriginalValues(); // 기존 값 저장
+            enableEditableFields(); // 수정 가능한 필드 활성화
+            $('.cert-add').show();
+            $('.lang-add').show();
+            $('.remove-lang').show();
+            $('.remove-cert').show();
+            $(".remove_img").show();
+            // 버튼 상태 변경
+            $(this).text("취소")
+                .attr("id", "cancelButton")
+                .removeClass("btn-primary")
+                .addClass("btn-secondary");
+
+            $("#saveButton")
+                .removeAttr("disabled")
+                .removeClass("btn-secondary")
+                .addClass("btn-success"); // 저장 버튼 활성화
+
+        } else if ($(this).text() === "취소") {
+            resetEditableFields(); // 기존 값 복원
+            $('.cert-add').hide();
+            $('.lang-add').hide();
+            $('.remove-lang').hide();
+            $('.remove-cert').hide();
+            $(".remove_img").hide();
+            // 버튼 상태 변경
+            $(this).text("수정")
+                .attr("id", "editButton")
+                .removeClass("btn-secondary")
+                .addClass("btn-primary")
+
+            $("#saveButton").attr("disabled", "disabled")
+                .removeClass("btn-success")
+                .addClass("btn-secondary"); // 저장 버튼 비활성화
         }
     });
+
+    let fileChange = 0;
+    $("#file").change(function (event) {
+        fileChange++; //파일이 변경되면 fileChange 값 0 -> 1
+        const maxSizeInBytes = 5 * 1024 * 1024;
+        const file = this.files[0];
+        if (file.size > maxSizeInBytes) {
+            alert("업로드 파일 용량 제한 : 5MB");
+            $(this).val('');
+        }
+        const fileURL = URL.createObjectURL(file);
+        $('#over_view').attr('src', fileURL);
+    });
+
+    $('.remove_img').click(function () {
+        if (confirm("첨부파일을 삭제하시겠습니까?")) {
+            $("#fileName").text('');
+            $(this).css('display', 'none');
+            $("#over_view").attr('src', '/image/profile_navy.png');
+        }
+    })
+
     // 저장 버튼 클릭 이벤트
     $("#infoForm").submit(function (event) {
         event.preventDefault();
@@ -161,35 +217,37 @@ $(document).ready(function () {
             }
         });
     });
-    /** 🟢 서버에서 수정 가능한 필드 가져오기 */
-    fetchEditableFields().then(() => console.log("Editable fields loaded:", editableFields));
 
-    /** 🟢 자격증 추가 */
+    // 페이지 로드 시 서버에서 수정 가능한 필드 가져오기
+    fetchEditableFields().then(function () {
+        console.log("Editable fields loaded:", editableFields);
+    });
+    // 자격증 추가 버튼 클릭
     $('#certifications').on('click', '.add-cert', function () {
-        $(this).closest('.cert-add').before(`
-            <div class="cert-item">
-                <input type="text" name="cert" class="form-control cert-input" placeholder="자격증명" required>
-                <button type="button" class="btn btn-sm btn-light remove-cert">-</button>
-            </div>
-        `);
+        const newCert = `
+				<div class="cert-item">
+					<input type="text" name="cert" class="form-control cert-input" placeholder="자격증명" data-name="자격증" required>
+					<button type="button" class="btn btn-sm btn-light remove-cert">-</button>
+				</div>`;
+        $(this).closest('.cert-add').before(newCert);
     });
 
-    /** 🟢 자격증 삭제 */
+    // 자격증 삭제 버튼 클릭
     $('#certifications').on('click', '.remove-cert', function () {
         $(this).closest('.cert-item').remove();
     });
 
-    /** 🟢 외국어 추가 */
+    // 외국어능력 추가 버튼 클릭
     $('#languages').on('click', '.add-lang', function () {
-        $(this).closest('.lang-add').before(`
-            <div class="lang-item">
-                <input type="text" name="lang" class="form-control lang-input" placeholder="외국어명" required>
-                <button type="button" class="btn btn-sm btn-light remove-lang">-</button>
-            </div>
-        `);
+        const newLang = `
+				<div class="lang-item">
+					<input type="text" name="lang" class="form-control lang-input" placeholder="외국어명"  data-name="외국어" required>
+					<button type="button" class="btn btn-sm btn-light remove-lang">-</button>
+				</div>`;
+        $(this).closest('.lang-add').before(newLang);
     });
 
-    /** 🟢 외국어 삭제 */
+    // 외국어능력 삭제 버튼 클릭
     $('#languages').on('click', '.remove-lang', function () {
         $(this).closest('.lang-item').remove();
     });

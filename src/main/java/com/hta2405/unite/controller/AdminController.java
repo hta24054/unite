@@ -29,8 +29,10 @@ public class AdminController {
 
 
     @GetMapping("/notice")
-    public String showNoticePage() {
-        return "admin/notice";
+    public ModelAndView showNoticePage(ModelAndView mv) {
+        mv.addObject("noticeList", noticeService.getAllNotice());
+        mv.setViewName("admin/notice");
+        return mv;
     }
 
     @GetMapping("/emp-manage")

@@ -19,7 +19,7 @@
         WHERE chat_message.chat_room_id = chat_room.chat_room_id
         AND chat_message.chat_message_date >= chat_room_member.chat_room_joined_at
         AND chat_message.chat_message_type = 'NORMAL'
-        ) -- chat_message_type 관련 조건 제거
+        )
         LEFT JOIN (
         SELECT chat_room_id, COUNT(*) AS unread_count
         FROM chat_message
@@ -29,14 +29,15 @@
         WHERE crm.chat_room_id = chat_message.chat_room_id
         AND crm.user_id = #{empId}
         )
+        AND chat_message_type = 'NORMAL'
         GROUP BY chat_room_id
         ) AS unread_counts
         ON chat_room.chat_room_id = unread_counts.chat_room_id
         WHERE chat_room_member.user_id = #{empId}
-        ORDER BY chat_room.recent_message_date DESC, chat_room.chat_room_id DESC
         <if test="isHomeMessenger">
-            LIMIT 5
+            AND unread_counts.unread_count > 0
         </if>
+        ORDER BY chat_room.recent_message_date DESC, chat_room.chat_room_id DESC;
     </select>
 
     <select id="findMessageListById" resultType="ChatMessage">
@@ -69,6 +70,7 @@
                                  FROM chat_room_member
                                  WHERE chat_room_id = #{chatRoomId}
                                    AND user_id = #{userId})
+          AND chat_message_type = 'NORMAL'
     </select>
 
     <insert id="createRoom" parameterType="ChatRoom" useGeneratedKeys="true" keyProperty="chatRoomId">

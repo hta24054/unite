@@ -12973,6 +12973,10 @@ body {
     display: inline-block;
 }
 
+.messenger-chat-room1:hover{
+    cursor: pointer;
+}
+
 .unread-message-count1 {
     margin: 10px 10px;
     background: aquamarine;

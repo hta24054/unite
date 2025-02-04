@@ -57,7 +57,7 @@
                 <!-- 게시판 -->
                 <div class="col-lg-6">
                     <!--좌우 card와 밑단 맞추기 위해서 하단 padding 입력-->
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm" style="padding-bottom: 40px">
                         <div class="card-body">
                             <!--캘린더-->
                             <div th:replace="homeCalendar.html"></div>
@@ -106,6 +106,16 @@
                                 </ul>
                             </div>
                         </div>
+                        <div class="card shadow-sm" style="margin-top:30px;">
+                            <div class="card-body" style="height: 100%;">
+                                <h5 class="text-center"><i class="bi bi-cake2-fill"></i>&emsp;생일 축하합니다!&emsp;<i
+                                        class="bi bi-cake2-fill"></i></h5>
+                                <ul class="list-group">
+                                    <li class="list-group-item text-center birthday-list"
+                                        style="margin-top: 10px; padding-bottom: 0px;"></li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -133,18 +143,6 @@
                                 </tr>
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="text-center"><i class="bi bi-cake2-fill"></i>&emsp;생일 축하합니다!&emsp;<i
-                                    class="bi bi-cake2-fill"></i></h5>
-                            <ul class="list-group">
-                                <li class="list-group-item text-center birthday-list"
-                                    style="margin-top: 10px; padding-bottom: 0px;"></li>
-                            </ul>
                         </div>
                     </div>
                 </div>

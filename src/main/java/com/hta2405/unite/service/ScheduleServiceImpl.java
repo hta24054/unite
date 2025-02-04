@@ -125,7 +125,18 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     public int insertScheduleDept(ScheduleDTO scheduleDTO) {
-        scheduleDAO.insertScheduleDept(scheduleDTO.getSchedule());
+        Schedule schedule = scheduleDTO.getSchedule();
+
+        if (schedule != null) {
+            String scheduleStartStr = scheduleDTO.getScheduleStart();
+            String scheduleEndStr = scheduleDTO.getScheduleEnd();
+
+            schedule.setScheduleStart(CalendarDateTimeUtil.parseDateTimeWithoutT(scheduleStartStr));
+            schedule.setScheduleEnd(CalendarDateTimeUtil.parseDateTimeWithoutT(scheduleEndStr));
+        }
+
+        schedule.setEmpId(scheduleDTO.getEmpId());
+        scheduleDAO.insertScheduleDept(schedule);
 
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("scheduleId", scheduleDTO.getSchedule().getScheduleId());

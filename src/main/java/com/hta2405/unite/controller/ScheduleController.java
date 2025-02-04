@@ -111,22 +111,13 @@ public class ScheduleController {
         return "schedule/scheduleDept";
     }
 
+    // 부서 일정 등록
     @ResponseBody
     @PostMapping("/scheduleDeptAdd")
     public int insertScheduleDept(@RequestBody ScheduleDTO scheduleDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String empId = authentication.getName();
-
-        scheduleDTO.getSchedule().setEmpId(empId);
-        Schedule schedule = scheduleDTO.getSchedule();
-
-        if (schedule != null) {
-            String scheduleStartStr = scheduleDTO.getScheduleStart();
-            String scheduleEndStr = scheduleDTO.getScheduleEnd();
-
-            schedule.setScheduleStart(CalendarDateTimeUtil.parseDateTimeWithoutT(scheduleStartStr));
-            schedule.setScheduleEnd(CalendarDateTimeUtil.parseDateTimeWithoutT(scheduleEndStr));
-        }
+        scheduleDTO.setEmpId(empId);
 
         return scheduleService.insertScheduleDept(scheduleDTO);
     }

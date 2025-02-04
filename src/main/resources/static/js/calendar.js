@@ -633,7 +633,7 @@ $(document).ready(function () {
     // 캘린더 생성
     function initCalendar() {
         const calendarEl = document.getElementById('calendar');
-        if (!calendarEl) return;
+        if (!calendarEl || $('#calendar').length === 0) return;
 
         calendar = new FullCalendar.Calendar(calendarEl, {
             expandRows: true, // 화면에 맞게 높이 재설정

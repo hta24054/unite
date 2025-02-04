@@ -46,6 +46,11 @@ public class AdminApiController {
         return holidayService.getHolidayList(startDate, endDate);
     }
 
+    @GetMapping("/holiday/calendar")
+    public List<Holiday> getCalendarHolidayList(int year, int month) {
+        return holidayService.getCalendarHolidayList(year, month);
+    }
+
     @PostMapping("/holiday")
     public int addCustomHoliday(LocalDate date, String holidayName) {
         Holiday holiday = Holiday.builder().holidayDate(date).holidayName(holidayName).build();

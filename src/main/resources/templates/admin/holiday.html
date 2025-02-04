@@ -89,7 +89,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-success" id="saveHoliday">등록</button>
                         <button type="button" class="btn btn-danger" id="deleteHoliday">삭제</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                     </div>
                 </div>
             </div>
@@ -120,11 +120,16 @@
                         selectable: true,
 
                         events: function (info, successCallback, failureCallback) {
-                            const startMonth = info.startStr.substring(0, 7);
-                            const endMonth = info.endStr.substring(0, 7);
+                            // 시작 날짜와 끝 날짜의 중앙값 구하기
+                            const midTimestamp = (info.start.getTime() + info.end.getTime()) / 2;
+                            const midDate = new Date(midTimestamp);// 연도와 월 추출
+                            const year = midDate.getFullYear();
+                            const month = midDate.getMonth() + 1; // 0부터 시작하므로 +1 필요
+
+                            console.log(year, month); // 2025 3
 
                             $.ajax({
-                                url: contextPath + "/api/admin/holiday?start=" + startMonth + "&end=" + endMonth,
+                                url: contextPath + "/api/admin/holiday/calendar?year=" + year + "&month=" + month,
                                 type: 'GET',
                                 dataType: 'json',
                                 success: function (data) {

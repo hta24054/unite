@@ -124,56 +124,6 @@ $(document).ready(function () {
         }
     }
 
-    notice();
-
-    function notice() {
-        $.ajax({
-            url: contextPath + "/project/notice",
-            method: 'GET',
-            success: function (notifications) {
-                console.log("응답 데이터:", notifications);
-
-                // 알림 데이터를 담을 컨테이너 요소
-                const postListContainer = $(".notification-content tbody");
-
-                // 기존 내용을 지우고 새로운 알림을 추가
-                postListContainer.empty();
-
-                if (notifications && notifications.length > 0) {
-                    // 상위 4개의 데이터만 처리
-                    const topNotifications = notifications.slice(0, 4);
-
-                    topNotifications.forEach(notice => {
-                        const action = notice.taskUpdateDate
-                            ? "수정(변경)하였습니다"
-                            : "등록하였습니다";
-
-                        const actionDate = notice.taskUpdateDate
-                            ? notice.taskUpdateDate
-                            : notice.taskDate;
-
-                        const postRow = `
-	                        <tr>
-	                        	<td><img src="${contextPath}/api/emp/profile-image?UUID=${notice.task_file_uuid}"style="width:36px; height: 36px; border-radius:50%; border: 1px solid gray;"></td>
-	                            <td>${notice.taskWriter} ${notice.Jobname}님이<br>${notice.ProjectName} - ${notice.taskTitle}을(를)<br>${action}<br><br><small>${actionDate}</small></td>
-	                        </tr>
-	                    `;
-                        postListContainer.append(postRow);
-                    });
-                } else {
-	                // 알림이 없는 경우
-	                postListContainer.append(`
-	                    <tr>
-	                        <td colspan="2">게시글이 없습니다</td>
-	                    </tr>
-	                `);
-	            }
-	        },
-	        error: function (error) {
-	            console.error("알림 데이터를 가져오는 데 실패했습니다:", error);
-	        }
-	    });
-	}
 	$('#writeModal').on('show.bs.modal', function() {
 		const projectId = $("#projectId").val();
 		const memberId = $("#userid").val();
@@ -204,26 +154,6 @@ $(document).ready(function () {
 		});
 	});
 	
-	/*function fetchNotifications() {
-	    $.ajax({
-	        url: contextPath + "/project/notification",
-	        method: 'GET',
-	        success: function(notifications) {
-	            const notificationContainer = $('#notificationContainer');
-	            notificationContainer.empty(); // 기존 알림 초기화
-	            notifications.forEach(notification => {
-	                const notificationElement = `<div>${notification.message} - ${notification.time}</div>`;
-	                notificationContainer.append(notificationElement);
-	            });
-	        },
-	        error: function(error) {
-	            console.error("알림 데이터를 가져오는 데 실패했습니다:", error);
-	        }
-	    });
-	}
-	
-	// 3초마다 알림 업데이트
-	setInterval(fetchNotifications, 1000);*/
 	$(".clickable-participant").on("click", function() {
 		// 'this'를 변수에 저장하여 정확히 참조
 		const that = this;

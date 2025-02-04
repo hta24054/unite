@@ -48,40 +48,40 @@ public class MessengerService {
 
     // ChatRoom 관련
     public List<ChatRoomDTO> getAllChatRooms(String empId, boolean isHomeMessenger) {
-        List<ChatRoomDTO> chatRoomDTOList = messengerMapper.findAllRooms(empId, isHomeMessenger);
-//        if(isHomeMessenger){
-//
-//            messagingTemplate.convertAndSend("/topic/messenger/" + chatRoomId, chatMessageDTO);
-//        }
-        return chatRoomDTOList;
+        return messengerMapper.findAllRooms(empId, isHomeMessenger);
     }
 
     public List<ChatMessage> getChatMessageById(Long chatRoomId, String userId) {
         return messengerMapper.findMessageListById(chatRoomId, userId);
     }
 
-    public HashMap<String, Object> createChatRoom(List<String> userIds, String empId) {
+    public HashMap<String, Object> createChatRoom(List<String> userIds, String chatRoomName, String empId) {
         userIds.add(empId);
         Map<String, String> empMap = getIdToENameMap();
-        StringBuilder chatRoomName = new StringBuilder();
 
-        for (int i = 0; i < userIds.size(); i++) {
-            String userId = userIds.get(i);
-            chatRoomName.append(empMap.get(userId));
+        System.out.println("chatRoomName = "+chatRoomName);
 
-            // 마지막 요소가 아니면 ',' 추가
-            if (i < userIds.size() - 1) {
-                chatRoomName.append(",");
+        if(chatRoomName.isEmpty()) {
+            StringBuilder chatRoomNameBuilder = new StringBuilder();
+            for (int i = 0; i < userIds.size(); i++) {
+                String userId = userIds.get(i);
+                chatRoomNameBuilder.append(empMap.get(userId));
+
+                // 마지막 요소가 아니면 ',' 추가
+                if (i < userIds.size() - 1) {
+                    chatRoomNameBuilder.append(",");
+                }
+
+                if (chatRoomNameBuilder.length() > 30) {
+                    chatRoomNameBuilder = new StringBuilder(chatRoomNameBuilder.substring(0, 30));
+                    break;
+                }
             }
-
-            if (chatRoomName.length() > 30) {
-                chatRoomName = new StringBuilder(chatRoomName.substring(0, 30));
-                break;
-            }
+            chatRoomName = chatRoomNameBuilder.toString();
         }
 
         ChatRoom chatRoom = ChatRoom.builder()
-                .chatRoomDefaultName(chatRoomName.toString())
+                .chatRoomDefaultName(chatRoomName)
                 .creatorId(empId).build();
         try {
             messengerMapper.createRoom(chatRoom);
@@ -100,6 +100,8 @@ public class MessengerService {
                 for (String userId : userIds) {
                     messagingTemplate.convertAndSend("/topic/user/" + userId, chatRoom);
                 }
+                userIds.remove(empId);
+                inviteMessage(chatRoom, userIds, empId);
             }
         } else {
             check = true;

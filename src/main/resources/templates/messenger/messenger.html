@@ -13,10 +13,9 @@
             <!-- Sidebar -->
             <div class="sidebar">
                 <div class="messenger-header" th:data-sender-id="${empId}">
-                    <div>
+                    <div class="messenger-header-profile">
                         <img class="messenger-sender-img" th:src="|/api/emp/profile-image?empId=${empId}|" alt="프로필">
-                        <span id="senderName" class="fw-semibold fs-3" th:text="${empMap.get(empId)}"
-                              style="margin-left: 10px; vertical-align: middle;"></span>
+                        <span id="senderName" class="fw-semibold fs-3" th:text="${empMap.get(empId)}"></span>
                     </div>
                     <a href="javascript:void(0);" th:attr="data-target='employeeModal'"
                        id="addChat" style="margin-right: 10px;">
@@ -78,10 +77,15 @@
                     <div class="modal-footer">
                         <div id="user-list" class="modal-operator-list" style="width: 100%;">
                         </div>
-                        <button type="button" class="btn mt-2 border-1 border-secondary" id="insertMemberBtn"
-                                style="display: none">추가
+                        <div class="modal-setRoomName">
+                            <label class="modal-roomName">방이름</label>
+                            <input type="text" class="input-modal-roomName" placeholder="방이름 없을 시 임의로 생성">
+                        </div>
+                        <button type="button" class="btn mt-2 border-1 border-secondary" id="insertChatRoomNameBtn">방이름 설정
                         </button>
-                        <button type="button" class="btn mt-2 border-1 border-secondary" id="insertEmpBtn">채팅방 개설
+                        <button type="button" class="btn mt-2 border-1 border-secondary" id="insertMemberBtn" style="display: none">추가
+                        </button>
+                        <button type="button" class="btn mt-2 border-1 border-secondary" id="insertChatRoomBtn">채팅방 개설
                         </button>
                     </div>
                 </div>
@@ -97,8 +101,11 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div>채팅방 이름 변경</div>
-                        <input type="text" class="input-modal-rename">
+                        <div style="display: flex;justify-content: space-between;">
+                            <div class="fw-bold" style="margin: 0 0 5px 3px;">방이름 변경</div>
+                            <div id="renameCharCount" style="margin-right: 10px;">0 / 50</div>
+                        </div>
+                        <input type="text" class="input-modal-rename" maxlength="50">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>

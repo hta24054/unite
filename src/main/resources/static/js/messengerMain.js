@@ -746,6 +746,10 @@ $(function () {
     $(document).on('click', '.btn-info-title', function () {
         chatRoomName = $('#chatRoomName').text();
         $('.input-modal-rename').val(chatRoomName);
+
+        console.log("length=",chatRoomName)
+
+        $('#renameCharCount').text(" / 50");
     })
 
     //채팅방 이름 변경
@@ -755,7 +759,7 @@ $(function () {
         const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
 
         let chatRoomId = $('.messenger-room-active').data('chat-room');
-        let updateChatRoomName = $('.input-modal-rename').val();
+        let updateChatRoomName = $('.input-modal-rename').val().trim();
         if (updateChatRoomName === chatRoomName) {
             alert("채팅방 이름이 이전과 같습니다.\n방이름을 변경해주세요.");
             return;

@@ -4,6 +4,7 @@
     <!-- ChatRoom 관련 -->
     <select id="findAllRooms" resultType="com.hta2405.unite.dto.ChatRoomDTO">
         SELECT chat_room.chat_room_id,
+        chat_room.creator_id,
         chat_room_member.chat_room_name,
         chat_message.chat_message_content AS latestMessage,
         chat_room.recent_message_date AS latestMessageDate,

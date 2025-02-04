@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @ToString
 public class ChatRoomDTO {
     private Long chatRoomId;
+    private String creatorId;
     private String chatRoomName;
     private String latestMessage;
     private LocalDateTime latestMessageDate;

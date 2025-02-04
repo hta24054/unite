@@ -5,6 +5,7 @@ import com.hta2405.unite.domain.ChatRoom;
 import com.hta2405.unite.domain.ChatRoomMember;
 import com.hta2405.unite.dto.ChatMessageDTO;
 import com.hta2405.unite.dto.ChatRoomDTO;
+import com.hta2405.unite.dto.ChatRoomRequestDTO;
 import com.hta2405.unite.service.MessengerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -63,11 +64,14 @@ public class MessengerApiController {
     }
 
     @PostMapping("/rooms")
-    public ResponseEntity<HashMap<String, Object>> createRoom(@RequestBody List<String> userIds,
+    public ResponseEntity<HashMap<String, Object>> createRoom(@RequestBody ChatRoomRequestDTO chatRoomRequestDTO,
                                                               @AuthenticationPrincipal UserDetails user) {
         String empId = user.getUsername();
 
-        HashMap<String, Object> map = messengerService.createChatRoom(userIds, empId);
+        List<String> userIds = chatRoomRequestDTO.getUserIds();
+        String chatRoomName = chatRoomRequestDTO.getRoomName();
+
+        HashMap<String, Object> map = messengerService.createChatRoom(userIds, chatRoomName, empId);
 
         HashMap<String, Object> response = new HashMap<>();
         response.put("status", map.get("status"));

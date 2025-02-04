@@ -76,7 +76,7 @@ $(document).ready(function () {
         const selectedCategory = $(this).val(); // 선택된 분류명
         if (!selectedCategory) {
             $resourceNameCategory.empty().hide();
-            getReservationList($resourceNameCategory.find("option:first").val(), $resourceNameCategory.find("option:first").text()); // 분류명이 비어 있으면 모든 예약 목록 불러오기
+            getReservationList($resourceNameCategory.find("option:first").val(), $resourceNameCategory.find("option:first").text());
         } else {
             loadResourceName($resourceTypeCategory, $resourceNameCategory, null, function() {
                 // 자원명 로드된 후 첫 번째 자원 자동 선택하여 예약 목록 불러오기
@@ -95,14 +95,11 @@ $(document).ready(function () {
 
         if (selectedResourceId && selectedResourceName) {
             getReservationList(selectedResourceId, selectedResourceName); // 자원 예약 목록
-        } else {
-            getReservationList(); // 모든 예약 목록
         }
     });
 
     // 모달에서 자원 선택 시 자원명 목록 불러오기
     $resourceType.on("change", function () {
-
         const selectedType = $(this).val(); // 선택된 분류명
         if (!selectedType) {
             $resourceName.empty().hide();
@@ -178,7 +175,6 @@ $(document).ready(function () {
             loadResourceName($resourceTypeCategory, $resourceNameCategory, selectedResourceName);
         }
     }
-
 
     // 자원 예약 하기
     function resourceReservation(eventData) {
@@ -298,7 +294,12 @@ $(document).ready(function () {
                 success: function (data) {
                     if (data === 1) {
                         alert("예약이 취소되었습니다.");
-                        getReservationList();
+
+                        // 예약 취소 후, 선택된 자원에 대한 예약 목록 갱신
+                        const selectedResourceId = $resourceNameCategory.val();
+                        const selectedResourceName = $("#resourceNameCategory option:selected").text();
+                        getReservationList(selectedResourceId, selectedResourceName);
+
                         $("#reservationDetailModal").modal("hide");
                     } else {
                         alert("예약 취소 실패");

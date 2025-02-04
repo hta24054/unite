@@ -1,45 +1,5 @@
 const contextPath = /*[[@{/}]]*/ '';
 $(document).ready(function () {
-    const lang_kor = {
-        "decimal": "",
-        "emptyTable": "데이터가 없습니다.",
-        "info": "_START_-_END_ (총 _TOTAL_건)",
-        "infoEmpty": "0건",
-        "infoFiltered": "(전체 _MAX_건 중 검색 결과)",
-        "infoPostFix": "",
-        "thousands": ",",
-        "lengthMenu": "_MENU_개씩 보기",
-        "loadingRecords": "로딩중...",
-        "processing": "처리중...",
-        "search": "검색:",
-        "zeroRecords": "검색된 데이터가 없습니다.",
-        "paginate": {"first": "첫 페이지", "last": "마지막 페이지", "next": "다음", "previous": "이전"},
-        "aria": {"sortAscending": ":오름차순 정렬", "sortDescending": ":내림차순 정렬"}
-    };
-
-    // DataTable 초기화
-    $('#noticeTable').DataTable({
-        language: lang_kor,
-        ajax: {
-            url: contextPath + "/api/admin/noticeList",
-            dataSrc: 'data',
-        },
-        columns: [
-            {data: 'noticeId'},
-            {
-                data: 'noticeSubject',
-                render: function (data, type, row) {
-                    return '<span style="cursor:pointer; color:blue; text-decoration:underline;" onclick="openDetailModal(' + row.noticeId + ')">' + data + '</span>';
-                }
-            },
-            {data: 'noticeEndDate'},
-        ],
-        columnDefs: [
-            {width: "10%", targets: 0} // 첫 번째 열(공지 ID) 폭 10%로 설정
-        ]
-    });
-
-
     $('.summernote').summernote({
         height: 500, // set editor height
         minHeight: 500, // set minimum height of editor
@@ -96,33 +56,22 @@ function insertNotice() {
 }
 
 // 게시글 내용 클릭 시 수정/삭제 버튼을 보이도록 설정하는 함수
-function openDetailModal(id) {
-    $.ajax({
-        url: contextPath + `/api/admin/notice?id=` + id,
-        method: 'GET',
-        success: function (data) {
-            console.log(data)
-            if (data != null) {
-                const noticeId = data.noticeId;
-                const noticeSubject = data.noticeSubject;
-                const noticeContent = data.noticeContent;
-                const noticeEndDate = data.noticeEndDate;
-                $('#noticeId').val(noticeId);
-                $('#subject').val(noticeSubject);
-                $('#content').summernote('code', noticeContent); // Summernote에 HTML 콘텐츠 설정
-                $('#endDate').val(noticeEndDate);
-                $('#noticeWriteModal').modal('show'); // 모달 열기
+function openDetailModal(element) {
+    // data-* 속성에서 데이터를 가져옵니다.
+    const noticeId = element.dataset.id;
+    const noticeSubject = element.dataset.subject;
+    const noticeContent = element.dataset.content;
+    const noticeEndDate = element.dataset.enddate;
 
-                $('#insertNotice').hide(); // 등록 버튼 숨기기
-                $('#updateNotice, #deleteNotice').show(); // 수정/삭제 버튼 보이기
-            } else {
-                alert("공지사항 불러오기 오류");
-            }
-        },
-        error: function () {
-            alert("공지사항 불러오기 오류");
-        }
-    });
+    $('#noticeId').val(noticeId);
+    $('#subject').val(noticeSubject);
+    $('#content').summernote('code', noticeContent); // Summernote에 HTML 콘텐츠 설정
+    $('#endDate').val(noticeEndDate);
+
+    $('#insertNotice').hide(); // 등록 버튼 숨기기
+    $('#updateNotice, #deleteNotice').show(); // 수정/삭제 버튼 보이기
+
+    $('#noticeWriteModal').modal('show'); // 모달 열기
 }
 
 //수정

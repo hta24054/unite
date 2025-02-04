@@ -65,8 +65,8 @@ input[readonly], select[disabled] {
 }
 
 /* 수정 상태 */
-.editing {
-    border: 2px solid #334466; /* 활성화된 테두리 */
+.editing input, .editing select {
+    border: 2px solid #007bff; /* 활성화된 테두리 */
     background-color: #ffffff; /* 활성화된 배경색 */
     color: #212529; /* 활성화된 글자 색상 */
     cursor: text; /* 수정 가능 커서 */

@@ -42,6 +42,7 @@
         <script th:src="@{/js/layout_ai.js}"></script>
         <link th:href="@{/css/layout_ai.css}" rel="stylesheet"/>
         <script th:src="@{/js/messenger.js}"></script>
+<!--        <script type="module" th:src="@{/js/messengerMain.js}" th:inline="javascript"></script>-->
 
     </head>
     <body class="sb-nav-fixed">
@@ -83,15 +84,14 @@
                 </a>
                 <div class="dropdown-list dropdown-menu dropdown-menu-end shadow animated--grow-in"
                      aria-labelledby="messengerDropdown" style="max-height: 300px; overflow-y: auto; min-width: 250px;">
-                    <h6 class="dropdown-header chat-header-list">채팅
+                    <h6 class="dropdown-header chat-header-list">채팅 알림
                         <button id="MessengerButton" class="btn btn-link text-decoration-none text-black fw-bold"
-                                style="font-size: 15px;">GO MESSENGER
+                                style="font-size: 15px;padding: 0;">GO MESSENGER
                         </button>
                     </h6>
                     <div id="messengerList" class="messengerList1" style="padding: 10px;">
                         <p id="noMessengerMessage" class="text-center text-muted"
-                           style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">채팅을 시작해
-                            보세요</p>
+                           style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">새로운 메시지가 없습니다.</p>
                     </div>
                     <div class="text-end small text-gray-500 w-100">
 
@@ -327,6 +327,8 @@
                                 </nav>
                             </div>
                         </th:block>
+
+
                         <!--                    이중메뉴!!-->
                         <!--                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages"-->
                         <!--                       aria-expanded="false" aria-controls="collapsePages">-->
@@ -380,8 +382,10 @@
                         <!--                    </a>-->
                     </div>
                 </div>
+
+
                 <div class="sb-sidenav-footer">
-                    <div class="small" style="font-weight: bold">로그인한 사용자 : [[${#authentication.name}]]</div>
+                    <div class="small" style="font-weight: bold">로그인한 사용자: [[${#authentication.name}]]</div>
                     <div id="user-info" style="display: none" th:data-username="${#authentication.name}"></div>
                 </div>
             </nav>

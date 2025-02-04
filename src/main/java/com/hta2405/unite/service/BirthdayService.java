@@ -27,6 +27,7 @@ public class BirthdayService {
     private final EmpMapper empMapper;
     private final RedisTemplate<String, String> redisTemplate;
     private static final String REDIS_KEY_PREFIX = "birthday:";
+    private final ObjectMapper objectMapper = new ObjectMapper().configure(SerializationFeature.WRITE_NULL_MAP_VALUES, true);
 
     public BirthdayService(@Value("${birthday.apiKey}") String apiKey, EmpMapper empMapper, RedisTemplate<String, String> redisTemplate) {
         this.apiKey = apiKey;
@@ -46,7 +47,6 @@ public class BirthdayService {
 
         return restTemplate.getForObject(uri, BirthdayDTO.class);
     }
-
     public List<Birthday> getTodayBirthdays() {
         LocalDate today = LocalDate.now();
         String redisKey = REDIS_KEY_PREFIX + today;
@@ -55,13 +55,9 @@ public class BirthdayService {
         int lunarMonth = lunar.getResponse().getBody().getItems().getItem().getLunarMonth();
         int lunarDay = lunar.getResponse().getBody().getItems().getItem().getLunarDay();
 
-        // Redis에서 생일자 조회
-        String cachedBirthdays = redisTemplate.opsForValue().get(redisKey);
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, true);
-
         // Redis에 없으면 DB에서 조회 후 캐싱
         try {
+            String cachedBirthdays = redisTemplate.opsForValue().get(redisKey);
             if (cachedBirthdays != null) return objectMapper.readValue(cachedBirthdays, new TypeReference<>(){});
             List<Birthday> birthdays = empMapper.findTodayBirthdays(today.getMonthValue(), today.getDayOfMonth(), lunarMonth, lunarDay);
             redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(birthdays), 24, TimeUnit.HOURS);

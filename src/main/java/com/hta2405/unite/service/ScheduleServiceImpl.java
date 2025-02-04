@@ -4,11 +4,13 @@ import com.hta2405.unite.domain.Schedule;
 import com.hta2405.unite.domain.ScheduleShare;
 import com.hta2405.unite.dto.ScheduleDTO;
 import com.hta2405.unite.mybatis.mapper.ScheduleMapper;
+import com.hta2405.unite.util.CalendarDateTimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -55,8 +57,21 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public int insertScheduleShare(ScheduleDTO scheduleDTO) {
-        scheduleDAO.insertScheduleShare(scheduleDTO.getSchedule());
+        Schedule schedule = scheduleDTO.getSchedule();
 
+        // CalendarDateTimeUtil을 사용하여 날짜 변환
+        if (schedule != null) {
+            String scheduleStartStr = scheduleDTO.getScheduleStart();
+            String scheduleEndStr = scheduleDTO.getScheduleEnd();
+
+            // "T" 제거 후 LocalDateTime으로 변환
+            schedule.setScheduleStart(CalendarDateTimeUtil.parseDateTimeWithoutT(scheduleStartStr));
+            schedule.setScheduleEnd(CalendarDateTimeUtil.parseDateTimeWithoutT(scheduleEndStr));
+        }
+
+        scheduleDAO.insertScheduleShare(schedule);
+
+        // 공유 직원 저장
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("scheduleId", scheduleDTO.getSchedule().getScheduleId());
         hashMap.put("shareEmp", scheduleDTO.getScheduleShare().getShareEmp());
@@ -65,8 +80,33 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<Schedule> getListSharedSchedule(String empId) {
-        return scheduleDAO.getListSharedSchedule(empId);
+    public List<ScheduleDTO> getSharedSchedules(String empId) {
+        List<Schedule> sharedSchedules = scheduleDAO.getListSharedSchedule(empId);
+        List<ScheduleDTO> scheduleDTOList = new ArrayList<>();
+
+        for (Schedule schedule : sharedSchedules) {
+            ScheduleDTO scheduleDTO = new ScheduleDTO();
+            scheduleDTO.setScheduleId((long) schedule.getScheduleId());
+            scheduleDTO.setEmpId(schedule.getEmpId());
+
+            // Schedule 객체에서 직접 shareEmp 값을 가져오기 위해 ScheduleShare 조회
+            List<ScheduleShare> scheduleShares = getScheduleSharesByScheduleId(schedule.getScheduleId());
+            scheduleDTO.setShareEmp(scheduleShares.isEmpty() ? "" : scheduleShares.get(0).getShareEmp());
+
+            scheduleDTO.setScheduleName(schedule.getScheduleName());
+            scheduleDTO.setScheduleContent(String.valueOf(schedule.getScheduleContent()));
+            scheduleDTO.setScheduleStart(String.valueOf(schedule.getScheduleStart()));
+            scheduleDTO.setScheduleEnd(String.valueOf(schedule.getScheduleEnd()));
+            scheduleDTO.setScheduleColor(schedule.getScheduleColor());
+            scheduleDTO.setScheduleAllDay(schedule.isScheduleAllDay());
+
+            scheduleDTO.setShareEmpNames(getShareEmpNames(schedule.getScheduleId())); // 공유된 직원들 이름 조회
+            scheduleDTO.setEmpIdName(getEmpIdName(schedule.getEmpId()));
+
+            scheduleDTOList.add(scheduleDTO);
+        }
+
+        return scheduleDTOList;
     }
 
     @Override
@@ -85,7 +125,18 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     public int insertScheduleDept(ScheduleDTO scheduleDTO) {
-        scheduleDAO.insertScheduleDept(scheduleDTO.getSchedule());
+        Schedule schedule = scheduleDTO.getSchedule();
+
+        if (schedule != null) {
+            String scheduleStartStr = scheduleDTO.getScheduleStart();
+            String scheduleEndStr = scheduleDTO.getScheduleEnd();
+
+            schedule.setScheduleStart(CalendarDateTimeUtil.parseDateTimeWithoutT(scheduleStartStr));
+            schedule.setScheduleEnd(CalendarDateTimeUtil.parseDateTimeWithoutT(scheduleEndStr));
+        }
+
+        schedule.setEmpId(scheduleDTO.getEmpId());
+        scheduleDAO.insertScheduleDept(schedule);
 
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("scheduleId", scheduleDTO.getSchedule().getScheduleId());
@@ -97,14 +148,39 @@ public class ScheduleServiceImpl implements ScheduleService {
     // 사용자의 부서 ID 조회
     @Override
     public String getDeptIdByEmpId(String empId) {
-        String deptId = scheduleDAO.getDeptIdByEmpId(empId);
-        System.out.println("\n *** Dept ID for empId 사용자의 부서 ID 조회 = " + empId + ": " + deptId);
-        return deptId;
+        return scheduleDAO.getDeptIdByEmpId(empId);
     }
 
     @Override
     public List<Schedule> getListDeptSchedule(String deptId, String empId) {
         List<Schedule> deptSchedule = scheduleDAO.getScheduleForDept(deptId, empId);
         return deptSchedule;
+    }
+
+    public List<ScheduleDTO> getScheduleDTOList(String empId) {
+        // 부서 ID를 얻기 위해 사용자 정보로부터 부서 조회
+        String deptId = getDeptIdByEmpId(empId);  // 로그인한 사용자의 부서 ID
+
+        // 부서 일정 조회, 등록자 제외
+        List<Schedule> deptSchedules = getListDeptSchedule(deptId, empId); // 등록자 empId도 전달
+
+        List<ScheduleDTO> scheduleDTOList = new ArrayList<>();
+        // 각 일정 객체 DTO로 변환
+        for (Schedule schedule : deptSchedules) {
+            ScheduleDTO scheduleDTO = new ScheduleDTO();
+            scheduleDTO.setScheduleId((long) schedule.getScheduleId());
+            scheduleDTO.setEmpId(schedule.getEmpId());
+
+            // 부서 일정을 등록한 직원의 정보를 가져옴
+            scheduleDTO.setScheduleName(schedule.getScheduleName());
+            scheduleDTO.setScheduleContent(String.valueOf(schedule.getScheduleContent()));
+            scheduleDTO.setScheduleStart(String.valueOf(schedule.getScheduleStart()));
+            scheduleDTO.setScheduleEnd(String.valueOf(schedule.getScheduleEnd()));
+            scheduleDTO.setScheduleColor(schedule.getScheduleColor());
+            scheduleDTO.setScheduleAllDay(schedule.isScheduleAllDay());
+
+            scheduleDTOList.add(scheduleDTO);
+        }
+        return scheduleDTOList;
     }
 }

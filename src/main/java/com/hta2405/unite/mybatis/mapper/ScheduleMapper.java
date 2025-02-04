@@ -10,10 +10,8 @@ import java.util.List;
 
 @Mapper
 public interface ScheduleMapper {
-
     // 일정 리스트
     public List<Schedule> getListSchedule(String id);
-
 
     // 오늘 일정 리스트
     List<Schedule> getDailyScheduleList(String empId, LocalDate date);
@@ -52,9 +50,4 @@ public interface ScheduleMapper {
     public String getDeptIdByEmpId(String empId);
 
     public List<Schedule> getScheduleForDept(String deptId, String empId);
-
-    // 공휴일 리스트
-    // public List<Holiday> getHoliday(LocalDate startDate, LocalDate endDate);
-
-
 }

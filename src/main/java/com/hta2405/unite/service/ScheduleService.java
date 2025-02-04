@@ -23,7 +23,7 @@ public interface ScheduleService {
 
     public int insertScheduleShare(ScheduleDTO scheduleDTO);
 
-    public List<Schedule> getListSharedSchedule(String empId);
+    public List<ScheduleDTO> getSharedSchedules(String empId);
 
     // scheduleId에 해당하는 ScheduleShare 리스트 가져오는 메서드 추가
     public List<ScheduleShare> getScheduleSharesByScheduleId(int scheduleId);
@@ -38,4 +38,6 @@ public interface ScheduleService {
     public String getDeptIdByEmpId(String empId);
 
     public List<Schedule> getListDeptSchedule(String deptId, String empId);
+
+    public List<ScheduleDTO> getScheduleDTOList(String empId);
 }

@@ -284,6 +284,9 @@ $(document).ready(function () {
 
     // 일정 수정
     function updateEvent(eventData) {
+        const startAt = moment($("#startAt").val()).format('YYYY-MM-DD HH:mm');
+        const endAt = moment($("#endAt").val() || $("#startAt").val()).format('YYYY-MM-DD HH:mm');
+
         $.ajax({
             url: contextPath + "/schedule/scheduleUpdate",
             type: "post",
@@ -292,8 +295,8 @@ $(document).ready(function () {
                 empId: $("#emp_id").val(),
                 scheduleId: eventData.schedule_id,
                 scheduleName: eventData.schedule_name,
-                scheduleStart: moment($("#startAt").val()).format('YYYY-MM-DD HH:mm'),
-                scheduleEnd: moment($("#endAt").val()).format('YYYY-MM-DD HH:mm'),
+                scheduleStart: startAt,
+                scheduleEnd: endAt,
                 scheduleColor: eventData.bgColor,
                 scheduleContent: eventData.description,
                 scheduleAllDay: eventData.allDay ? 1 : 0
@@ -316,11 +319,13 @@ $(document).ready(function () {
 
     // 일정 수정 - 드래그 이벤트 (시작/종료 날짜 수정)
     function updateDragEvent(info) {
-        let endAt = info.event.end ? moment(info.event.end).format('YYYY-MM-DD HH:mm') : null;
         const startAt = moment(info.event.start).format('YYYY-MM-DD HH:mm');
+        let endAt;
 
-        if (info.event.allDay && endAt === null) {
-            endAt = startAt;  // allDay 일정의 경우 시작 날짜와 종료 날짜를 동일하게 설정
+        if (info.event.allDay) {
+            endAt = startAt;
+        } else {
+            endAt = info.event.end ? moment(info.event.end).format('YYYY-MM-DD HH:mm') : startAt;
         }
 
         $.ajax({
@@ -331,7 +336,7 @@ $(document).ready(function () {
                 empId: $("#emp_id").val(),
                 scheduleId: info.event.id,
                 scheduleStart: startAt,
-                scheduleEnd: endAt || startAt,
+                scheduleEnd: endAt,
                 scheduleAllDay: info.event.allDay ? 1 : 0
             },
             success: function () {

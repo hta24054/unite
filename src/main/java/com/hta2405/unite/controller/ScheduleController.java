@@ -8,13 +8,14 @@ import com.hta2405.unite.service.ScheduleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,16 +39,9 @@ public class ScheduleController {
 
     @ResponseBody
     @GetMapping("/scheduleList")
-    public List<Schedule> getListSchedule() {
-        // 현재 인증된 사용자 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new IllegalStateException("로그인되지 않은 사용자입니다.");
-        }
-
-        String id = authentication.getName(); // 로그인한 사용자의 ID (username)
+    public List<Schedule> getListSchedule(@AuthenticationPrincipal UserDetails user) {
+        String id = user.getUsername();
         List<Schedule> schedules = scheduleService.getListSchedule(id);
-
         return schedules;
     }
 
@@ -84,15 +78,8 @@ public class ScheduleController {
     // 공유 일정 불러오기
     @ResponseBody
     @GetMapping("/sharedScheduleList")
-    public List<ScheduleDTO> getListSharedSchedule() {
-        // 현재 인증된 사용자 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return new ArrayList<>();
-        }
-        String empId = authentication.getName(); // 로그인한 사용자의 ID (username)
-
-        // 서비스 레이어에서 처리된 공유 일정 목록을 가져옴
+    public List<ScheduleDTO> getListSharedSchedule(@AuthenticationPrincipal UserDetails user) {
+        String empId = user.getUsername();
         return scheduleService.getSharedSchedules(empId);
     }
 
@@ -122,14 +109,8 @@ public class ScheduleController {
 
     @ResponseBody
     @GetMapping("/deptScheduleList")
-    public List<ScheduleDTO> getListDeptSchedule() {
-        // 현재 인증된 사용자 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return new ArrayList<>();
-        }
-        String empId = authentication.getName(); // 로그인한 사용자의 ID (username)
-
+    public List<ScheduleDTO> getListDeptSchedule(@AuthenticationPrincipal UserDetails user) {
+        String empId = user.getUsername();
         List<ScheduleDTO> scheduleDTOList = scheduleService.getScheduleDTOList(empId);
         return scheduleDTOList;
     }
@@ -140,7 +121,6 @@ public class ScheduleController {
     public List<Holiday> getHoliday(String start, String end) {
         String[] startString = start.split("-");
         String[] endString = end.split("-");
-
 
         LocalDate startDate = LocalDate.of(Integer.parseInt(startString[0]), Integer.parseInt(startString[1]), 1);
         YearMonth endYearMonth = YearMonth.of(Integer.parseInt(endString[0]), Integer.parseInt(endString[1]));

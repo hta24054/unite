@@ -6,12 +6,16 @@
         FROM notice
         ORDER BY NOTICE_END_DATE
     </select>
-
     <select id="getAliveNotice" resultType="Notice">
         SELECT *
         FROM notice
         where NOTICE_END_DATE >= now()
         ORDER BY NOTICE_ID desc
+    </select>
+    <select id="getNoticeById" resultType="Notice">
+        SELECT *
+        FROM notice
+        where notice.notice_id = #{id}
     </select>
     <insert id="insertNotice" parameterType="Notice">
         INSERT INTO notice(NOTICE_SUBJECT, NOTICE_CONTENT, NOTICE_END_DATE)

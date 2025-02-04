@@ -46,6 +46,11 @@ public class AdminApiController {
         return holidayService.getHolidayList(startDate, endDate);
     }
 
+    @GetMapping("/holiday/calendar")
+    public List<Holiday> getCalendarHolidayList(int year, int month) {
+        return holidayService.getCalendarHolidayList(year, month);
+    }
+
     @PostMapping("/holiday")
     public int addCustomHoliday(LocalDate date, String holidayName) {
         Holiday holiday = Holiday.builder().holidayDate(date).holidayName(holidayName).build();
@@ -97,6 +102,17 @@ public class AdminApiController {
         return resourceService.deleteResource(list);
     }
 
+    @GetMapping("/notice")
+    public Notice getNotice(Long id){
+        return noticeService.getNoticeById(id);
+    }
+    @GetMapping("/noticeList")
+    public Map<String,Object> getNoticeList(){
+        // DataTables가 요구하는 JSON 구조 생성
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", noticeService.getAllNotice());
+        return response;
+    }
     @PostMapping("/notice")
     public int addNotice(Notice notice) {
         return noticeService.addNotice(notice);

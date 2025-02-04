@@ -24,8 +24,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
@@ -36,7 +36,7 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 public class HolidayService {
     private final HolidayMapper holidayMapper;
     private final String apiKey;
-    private static final String REDIS_KEY_PREFIX = "holidays:";
+    private static final String REDIS_KEY_PREFIX = "holiday:";
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper; // JSON 직렬화/역직렬화
 
@@ -51,8 +51,15 @@ public class HolidayService {
     }
 
     public List<Holiday> getHolidayList(LocalDate startDate, LocalDate endDate) {
-        String redisKey =
-                REDIS_KEY_PREFIX + startDate + ":" + endDate;
+        return holidayMapper.getHolidayList(startDate, endDate);
+    }
+
+    public List<Holiday> getCalendarHolidayList(int year, int month) {
+        String redisKey = REDIS_KEY_PREFIX + year + String.format("%02d", month);
+
+        LocalDate currDate = LocalDate.of(year, month, 1); //현재 캘린더에서 표시할 월 ex)2025-2월 -> 2025-02-01
+        LocalDate startDate = currDate.minusMonths(1); //한달 전 -> 2025-01-01
+        LocalDate endDate = currDate.plusMonths(2).minusDays(1); //한달 후 -> 2025-03-01
 
         try {
             String cachedData = redisTemplate.opsForValue().get(redisKey);
@@ -88,7 +95,7 @@ public class HolidayService {
 
         // Redis 캐시 갱신
         if (result > 0) {
-            deleteRedisCache();
+            deleteRedisCache(holiday.getHolidayDate());
         }
         return result;
     }
@@ -97,7 +104,7 @@ public class HolidayService {
         int result = holidayMapper.deleteHoliday(date);
 
         if (result > 0) {
-            deleteRedisCache();
+            deleteRedisCache(date);
         }
         return result;
     }
@@ -124,24 +131,26 @@ public class HolidayService {
             if (savedHolidayName == null || !savedHolidayName.equals(map.get(date))) {
                 int result = holidayMapper.insertHoliday(holiday);
                 if (result > 0) {
-                    deleteRedisCache();
+                    deleteRedisCache(holiday.getHolidayDate());
                 }
             }
         }
         return true;
     }
 
-    private void deleteRedisCache() {
-        try {
-            String pattern = REDIS_KEY_PREFIX + "*";
+    /*
+        한 휴일이 변경되면, 공휴일은 달력에 보여지는 3개월치 단위로 캐싱되고있으므로
+        변경된 휴일이 포함된 달 기준 -1, 0 ,1 월 캐시를 모두 삭제함
+     */
+    private void deleteRedisCache(LocalDate date) {
+        List<String> list = new ArrayList<>();
+        list.add(date.toString().replaceAll("-", "").substring(0, 6));
+        list.add(date.minusMonths(1).toString().replaceAll("-", "").substring(0, 6));
+        list.add(date.plusMonths(1).toString().replaceAll("-", "").substring(0, 6));
 
-            Set<String> keys = redisTemplate.keys(pattern);
-            if (keys != null && !keys.isEmpty()) {
-                redisTemplate.delete(keys);
-                log.info("Redis key 삭제, pattern: {}", pattern);
-            }
-        } catch (Exception e) {
-            log.error("Redis 서버 오류 또는 캐시 삭제 오류(holiday)", e);
+        for (String key : list) {
+            redisTemplate.delete(REDIS_KEY_PREFIX + key);
+            log.info("Redis key 삭제, key: {}", REDIS_KEY_PREFIX + key);
         }
     }
 

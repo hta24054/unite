@@ -246,7 +246,7 @@ $(document).ready(function () {
                             id: data[i].scheduleId,
                             title: data[i].scheduleName,
                             start: data[i].scheduleStart,
-                            end: data[i].scheduleEnd,
+                            end: data[i].scheduleEnd || data[i].scheduleStart, // 종료시간이 같으면 시작시간을 사용
                             backgroundColor: data[i].scheduleColor,
                             description: data[i].scheduleContent,
                             allDay: isAllDay
@@ -331,7 +331,7 @@ $(document).ready(function () {
                 empId: $("#emp_id").val(),
                 scheduleId: info.event.id,
                 scheduleStart: startAt,
-                scheduleEnd: endAt,
+                scheduleEnd: endAt || startAt,
                 scheduleAllDay: info.event.allDay ? 1 : 0
             },
             success: function () {
@@ -402,15 +402,17 @@ $(document).ready(function () {
 
         const startDate = moment(event.start).format("YYYY-MM-DD");
         const startDateTime = moment(event.start).format("YYYY-MM-DDTHH:mm");
-        const endDateTime = moment(event.end).format("YYYY-MM-DDTHH:mm");
-
+        const endDateTime = moment(event.end || event.start).format("YYYY-MM-DDTHH:mm");
         $("#startAt").val(startDateTime);
         $("#endAt").val(endDateTime);
 
-        const description = event.extendedProps && event.extendedProps.description ? event.extendedProps.description : '';
-        $("#description").val(description);
+        console.log($("#startAt").val(startDateTime))
+        console.log($("#endAt").val(endDateTime))
 
         $("#bgColor").val(event.backgroundColor);
+
+        const description = event.extendedProps && event.extendedProps.description ? event.extendedProps.description : '';
+        $("#description").val(description);
 
         // allDay 체크 여부
         if (event.allDay) {
@@ -552,7 +554,7 @@ $(document).ready(function () {
             this.reset();
         });
 
-        $("#startAt, #endAt").prop("type", "datetime-local").val("");
+        //$("#startAt, #endAt").prop("type", "datetime-local").val("");
         $(".modal-body").find(".form-group.share-info").hide();
     });
 
@@ -699,7 +701,7 @@ $(document).ready(function () {
 
                 $("#schedule_name").val("");
                 $("#startAt").prop("type", "datetime-local").val(startDate.format("YYYY-MM-DD HH:mm"));
-                $("#endAt").prop("type", "datetime-local").val("");
+                // $("#endAt").prop("type", "datetime-local").val("");
                 $("#description").val("");
                 $("#bgColor").val("#1e3a8a");
                 $("#allDay").prop("checked", false);

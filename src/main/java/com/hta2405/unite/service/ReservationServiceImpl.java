@@ -87,13 +87,78 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    public List<ReservationDTO> getReservationsByResourceType(String resourceType) {
+        List<Resource> resources = reservationDAO.resourceSelectChange(resourceType);
+        List<ReservationDTO> reservations = new ArrayList<>();
+
+        if (resourceType != null && !resources.isEmpty()) {
+            for (Resource resource : resources) {
+                // 예약 DTO 생성
+                ReservationDTO reservationDTO = new ReservationDTO();
+                reservationDTO.setResourceId(resource.getResourceId());
+                reservationDTO.setResourceType(resource.getResourceType());
+                reservationDTO.setResourceName(resource.getResourceName());
+                reservationDTO.setResourceUsable(resource.isResourceUsable());
+
+                // 자원에 해당하는 예약 목록을 가져와서 DTO에 추가
+                List<ReservationDTO> resourceReservations = getReservationsByResourceId(resource.getResourceId());
+
+                for (ReservationDTO reservation : resourceReservations) {
+                    ReservationDTO reservationDetails = new ReservationDTO();
+                    reservationDetails.setReservationId(reservation.getReservationId());
+                    reservationDetails.setResourceId(reservation.getResourceId());
+                    reservationDetails.setResourceType(reservation.getResourceType());
+                    reservationDetails.setResourceName(reservation.getResourceName());
+                    reservationDetails.setResourceUsable(reservation.isResourceUsable());
+                    reservationDetails.setReservationStart(reservation.getReservationStart());
+                    reservationDetails.setReservationEnd(reservation.getReservationEnd());
+                    reservationDetails.setReservationInfo(reservation.getReservationInfo());
+                    reservationDetails.setReservationAllDay(reservation.getReservationAllDay());
+
+                    reservationDTO.addReservation(reservationDetails);
+                }
+
+                reservations.add(reservationDTO);
+            }
+        }
+
+        return reservations;
+    }
+
+    @Override
     public List<ReservationDTO> getAllReservation() {
         return reservationDAO.getAllReservation();
     }
 
+    // 자원 ID와 이름에 해당하는 예약 목록 가져오기
     @Override
     public List<ReservationDTO> getReservationByResourceIdAndName(Long resourceId, String resourceName, String name) {
         return reservationDAO.getReservationByResourceIdAndName(resourceId, resourceName, name);
+    }
+
+    @Override
+    public List<ReservationDTO> getReservationList(Long resourceId, String resourceName, String empId) {
+        List<ReservationDTO> reservations;
+
+        if (resourceId != null && resourceName != null) {
+            // 선택된 자원 예약 목록 불러오기
+            reservations = getReservationByResourceIdAndName(resourceId, resourceName, empId);
+        } else {
+            // 자원 ID가 없으면 모든 예약 목록 불러오기
+            reservations = getAllReservation();
+        }
+
+        // 예약 목록을 순회하면서 로그인한 사용자의 예약 여부를 설정
+        for (ReservationDTO reservation : reservations) {
+            // 예약을 추가한 사용자가 로그인한 사용자와 동일하면 isMyReservation을 true로 설정
+            if (reservation.getEmpId().equals(empId)) {
+                reservation.setIsMyReservation(true);  // 본인 예약
+            } else {
+                reservation.setIsMyReservation(false);
+            }
+        }
+
+        return reservations;
     }
 
     @Override

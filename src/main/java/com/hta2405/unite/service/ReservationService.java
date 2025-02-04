@@ -12,11 +12,15 @@ public interface ReservationService {
 
     public int resourceReservation(ReservationDTO reservationDTO);
 
-    public List<ReservationDTO> getReservationByResourceIdAndName(Long resourceId, String resourceName, String name);
+    public int checkReservationOverlap(ReservationDTO reservationDTO);
+
+    public List<ReservationDTO> getReservationsByResourceType(String resourceType);
 
     public List<ReservationDTO> getAllReservation();
 
-    public int checkReservationOverlap(ReservationDTO reservationDTO);
+    public List<ReservationDTO> getReservationByResourceIdAndName(Long resourceId, String resourceName, String name);
+
+    public List<ReservationDTO> getReservationList(Long resourceId, String resourceName, String empId);
 
     public ReservationDTO getReservationModal(Long reservationId);
 
@@ -25,4 +29,5 @@ public interface ReservationService {
     public List<ReservationDTO> getMyReservationList(String empId);
 
     public List<ReservationDTO> getReservationsByResourceId(Long resourceId);
+
 }

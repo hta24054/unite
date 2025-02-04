@@ -2,11 +2,9 @@ package com.hta2405.unite.controller;
 
 import com.hta2405.unite.domain.Holiday;
 import com.hta2405.unite.domain.Schedule;
-import com.hta2405.unite.domain.ScheduleShare;
 import com.hta2405.unite.dto.ScheduleDTO;
 import com.hta2405.unite.service.HolidayService;
 import com.hta2405.unite.service.ScheduleService;
-import com.hta2405.unite.util.CalendarDateTimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -132,30 +130,7 @@ public class ScheduleController {
         }
         String empId = authentication.getName(); // 로그인한 사용자의 ID (username)
 
-        // 부서 ID를 얻기 위해 사용자 정보로부터 부서 조회
-        String deptId = scheduleService.getDeptIdByEmpId(empId);  // 로그인한 사용자의 부서 ID
-
-        // 부서 일정을 조회, 등록자 제외
-        List<Schedule> deptSchedules = scheduleService.getListDeptSchedule(deptId, empId);  // 등록자 empId도 전달
-        List<ScheduleDTO> scheduleDTOList = new ArrayList<>();
-
-        // 각 일정 객체를 DTO로 변환
-        for (Schedule schedule : deptSchedules) {
-
-            ScheduleDTO scheduleDTO = new ScheduleDTO();
-            scheduleDTO.setScheduleId((long) schedule.getScheduleId());
-            scheduleDTO.setEmpId(schedule.getEmpId());
-
-            // 부서 일정을 등록한 직원의 정보를 가져옴
-            scheduleDTO.setScheduleName(schedule.getScheduleName());
-            scheduleDTO.setScheduleContent(String.valueOf(schedule.getScheduleContent()));
-            scheduleDTO.setScheduleStart(String.valueOf(schedule.getScheduleStart()));
-            scheduleDTO.setScheduleEnd(String.valueOf(schedule.getScheduleEnd()));
-            scheduleDTO.setScheduleColor(schedule.getScheduleColor());
-            scheduleDTO.setScheduleAllDay(schedule.isScheduleAllDay());
-
-            scheduleDTOList.add(scheduleDTO);
-        }
+        List<ScheduleDTO> scheduleDTOList = scheduleService.getScheduleDTOList(empId);
         return scheduleDTOList;
     }
 

@@ -38,4 +38,6 @@ public interface ScheduleService {
     public String getDeptIdByEmpId(String empId);
 
     public List<Schedule> getListDeptSchedule(String deptId, String empId);
+
+    public List<ScheduleDTO> getScheduleDTOList(String empId);
 }

@@ -148,14 +148,39 @@ public class ScheduleServiceImpl implements ScheduleService {
     // 사용자의 부서 ID 조회
     @Override
     public String getDeptIdByEmpId(String empId) {
-        String deptId = scheduleDAO.getDeptIdByEmpId(empId);
-        System.out.println("\n *** Dept ID for empId 사용자의 부서 ID 조회 = " + empId + ": " + deptId);
-        return deptId;
+        return scheduleDAO.getDeptIdByEmpId(empId);
     }
 
     @Override
     public List<Schedule> getListDeptSchedule(String deptId, String empId) {
         List<Schedule> deptSchedule = scheduleDAO.getScheduleForDept(deptId, empId);
         return deptSchedule;
+    }
+
+    public List<ScheduleDTO> getScheduleDTOList(String empId) {
+        // 부서 ID를 얻기 위해 사용자 정보로부터 부서 조회
+        String deptId = getDeptIdByEmpId(empId);  // 로그인한 사용자의 부서 ID
+
+        // 부서 일정 조회, 등록자 제외
+        List<Schedule> deptSchedules = getListDeptSchedule(deptId, empId); // 등록자 empId도 전달
+
+        List<ScheduleDTO> scheduleDTOList = new ArrayList<>();
+        // 각 일정 객체 DTO로 변환
+        for (Schedule schedule : deptSchedules) {
+            ScheduleDTO scheduleDTO = new ScheduleDTO();
+            scheduleDTO.setScheduleId((long) schedule.getScheduleId());
+            scheduleDTO.setEmpId(schedule.getEmpId());
+
+            // 부서 일정을 등록한 직원의 정보를 가져옴
+            scheduleDTO.setScheduleName(schedule.getScheduleName());
+            scheduleDTO.setScheduleContent(String.valueOf(schedule.getScheduleContent()));
+            scheduleDTO.setScheduleStart(String.valueOf(schedule.getScheduleStart()));
+            scheduleDTO.setScheduleEnd(String.valueOf(schedule.getScheduleEnd()));
+            scheduleDTO.setScheduleColor(schedule.getScheduleColor());
+            scheduleDTO.setScheduleAllDay(schedule.isScheduleAllDay());
+
+            scheduleDTOList.add(scheduleDTO);
+        }
+        return scheduleDTOList;
     }
 }

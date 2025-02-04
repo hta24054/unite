@@ -33,30 +33,18 @@ public class ReservationController {
         return "reservation/reservationCalender";
     }
 
+    // 자원목록
     @ResponseBody
     @GetMapping("/getResourceList")
     public List<Resource> getResourceList() {
         return resourceService.getResourceList();
     }
 
+    // 자원목록 셀렉트 이벤트
     @ResponseBody
     @GetMapping("/resourceSelectChange")
     public List<ReservationDTO> resourceSelectChange(@RequestParam("resourceType") String resourceType) {
-
-        List<Resource> resources = reservationService.resourceSelectChange(resourceType);
-        List<ReservationDTO> reservationDTOList = new ArrayList<>();
-
-        // 리소스마다 DTO 생성하여 리스트에 추가
-        for (Resource resource : resources) {
-            ReservationDTO reservationDTO = new ReservationDTO();
-            reservationDTO.setResourceId(resource.getResourceId());
-            reservationDTO.setResourceType(resource.getResourceType());
-            reservationDTO.setResourceName(resource.getResourceName());
-            reservationDTO.setResourceUsable(resource.isResourceUsable());
-
-            reservationDTOList.add(reservationDTO);
-        }
-
+        List<ReservationDTO> reservationDTOList = reservationService.resourceSelectDTOList(resourceType);
         return reservationDTOList;
     }
 
@@ -101,7 +89,6 @@ public class ReservationController {
 
         return reservations;
     }
-
 
     @ResponseBody
     @PostMapping("/resourceReservation")

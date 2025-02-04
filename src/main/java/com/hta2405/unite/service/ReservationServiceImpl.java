@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -22,6 +23,22 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<Resource> resourceSelectChange(String resourceType) {
         return reservationDAO.resourceSelectChange(resourceType);
+    }
+
+    public List<ReservationDTO> resourceSelectDTOList(String resourceType) {
+        List<Resource> resources = reservationDAO.resourceSelectChange(resourceType);
+
+        List<ReservationDTO> reservationDTOList = new ArrayList<>();
+        for (Resource resource : resources) {
+            ReservationDTO reservationDTO = new ReservationDTO();
+            reservationDTO.setResourceId(resource.getResourceId());
+            reservationDTO.setResourceType(resource.getResourceType());
+            reservationDTO.setResourceName(resource.getResourceName());
+            reservationDTO.setResourceUsable(resource.isResourceUsable());
+            reservationDTOList.add(reservationDTO);
+        }
+
+        return reservationDTOList;
     }
 
     @Override

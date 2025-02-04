@@ -8,6 +8,8 @@ import java.util.List;
 public interface ReservationService {
     public List<Resource> resourceSelectChange(String resourceType);
 
+    public List<ReservationDTO> resourceSelectDTOList(String resourceType);
+
     public int resourceReservation(ReservationDTO reservationDTO);
 
     public List<ReservationDTO> getReservationByResourceIdAndName(Long resourceId, String resourceName, String name);

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -64,9 +65,35 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleDAO.insertScheduleShareUsers(hashMap);
     }
 
+    // 공유 일정
     @Override
-    public List<Schedule> getListSharedSchedule(String empId) {
-        return scheduleDAO.getListSharedSchedule(empId);
+    public List<ScheduleDTO> getSharedSchedules(String empId) {
+        List<Schedule> sharedSchedules = scheduleDAO.getListSharedSchedule(empId);
+        List<ScheduleDTO> scheduleDTOList = new ArrayList<>();
+
+        for (Schedule schedule : sharedSchedules) {
+            ScheduleDTO scheduleDTO = new ScheduleDTO();
+            scheduleDTO.setScheduleId((long) schedule.getScheduleId());
+            scheduleDTO.setEmpId(schedule.getEmpId());
+
+            // Schedule 객체에서 직접 shareEmp 값을 가져오기 위해 ScheduleShare 조회
+            List<ScheduleShare> scheduleShares = getScheduleSharesByScheduleId(schedule.getScheduleId());
+            scheduleDTO.setShareEmp(scheduleShares.isEmpty() ? "" : scheduleShares.get(0).getShareEmp());
+
+            scheduleDTO.setScheduleName(schedule.getScheduleName());
+            scheduleDTO.setScheduleContent(String.valueOf(schedule.getScheduleContent()));
+            scheduleDTO.setScheduleStart(String.valueOf(schedule.getScheduleStart()));
+            scheduleDTO.setScheduleEnd(String.valueOf(schedule.getScheduleEnd()));
+            scheduleDTO.setScheduleColor(schedule.getScheduleColor());
+            scheduleDTO.setScheduleAllDay(schedule.isScheduleAllDay());
+
+            scheduleDTO.setShareEmpNames(getShareEmpNames(schedule.getScheduleId())); // 공유된 직원들 이름 조회
+            scheduleDTO.setEmpIdName(getEmpIdName(schedule.getEmpId()));
+
+            scheduleDTOList.add(scheduleDTO);
+        }
+
+        return scheduleDTOList;
     }
 
     @Override

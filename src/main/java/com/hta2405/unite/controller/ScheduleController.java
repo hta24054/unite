@@ -93,37 +93,8 @@ public class ScheduleController {
         }
         String empId = authentication.getName(); // 로그인한 사용자의 ID (username)
 
-        List<Schedule> sharedSchedules = scheduleService.getListSharedSchedule(empId);
-        List<ScheduleDTO> scheduleDTOList = new ArrayList<>();
-
-        for (Schedule schedule : sharedSchedules) {
-            ScheduleDTO scheduleDTO = new ScheduleDTO();
-            scheduleDTO.setScheduleId((long) schedule.getScheduleId());
-            scheduleDTO.setEmpId(schedule.getEmpId());
-
-            // Schedule 객체에서 직접 shareEmp 값을 가져오기 위해 ScheduleShare 조회
-            List<ScheduleShare> scheduleShares = scheduleService.getScheduleSharesByScheduleId(schedule.getScheduleId());
-            if (scheduleShares != null && !scheduleShares.isEmpty()) {
-                // 첫 번째 공유 직원만 가져오는 예시 (다수의 공유 직원이 있을 수 있음)
-                scheduleDTO.setShareEmp(scheduleShares.get(0).getShareEmp());
-            } else {
-                scheduleDTO.setShareEmp("");  // 공유 직원이 없으면 빈 값 설정
-            }
-
-            scheduleDTO.setScheduleName(schedule.getScheduleName());
-            scheduleDTO.setScheduleContent(String.valueOf(schedule.getScheduleContent()));
-            scheduleDTO.setScheduleStart(String.valueOf(schedule.getScheduleStart()));
-            scheduleDTO.setScheduleEnd(String.valueOf(schedule.getScheduleEnd()));
-            scheduleDTO.setScheduleColor(schedule.getScheduleColor());
-            scheduleDTO.setScheduleAllDay(schedule.isScheduleAllDay());
-
-            scheduleDTO.setShareEmpNames(scheduleService.getShareEmpNames(schedule.getScheduleId())); //공유된 직원들 이름조회
-            scheduleDTO.setEmpIdName(scheduleService.getEmpIdName(schedule.getEmpId()));
-
-            scheduleDTOList.add(scheduleDTO);
-        }
-
-        return scheduleDTOList;
+        // 서비스 레이어에서 처리된 공유 일정 목록을 가져옴
+        return scheduleService.getSharedSchedules(empId);
     }
 
     @ResponseBody

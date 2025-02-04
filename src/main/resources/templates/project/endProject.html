@@ -12,7 +12,12 @@
         <body>
         <main>
             <div class="container-fluid px-4">
-                <h1 class="mt-4" style="color: #334466; font-weight: bold; padding-top: 30px;">[[${doneName}]] 프로젝트</h1><br>
+                <h1 class="mt-4" style="color: #334466; font-weight: bold;">[[${doneName}]] 프로젝트</h1><br>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        [[${message}]]
+                    </div>
+                </div>
                 <br>
                 <div class="card mb-4">
                     <div class="card-header">
@@ -56,7 +61,7 @@
                                             <a th:href="@{/projectBoard/down(fileuuid=${project.projectFileUuid},originalFilename=${project.projectFileOriginal})}"
                                                th:title="${project.projectFileOriginal}" style="text-decoration: none; color: inherit;">
                                                 <img th:src="@{/image/down.png}" style="width: 10px; vertical-align: middle;">&nbsp;
-                                                <span th:text="${#strings.abbreviate(project.projectFileOriginal,10)}" style="color: inherit;"></span>
+                                                <span th:text="${project.projectFileOriginal}" style="color: inherit;"></span>
                                             </a>
                                         </td>
                                     </th:block>
@@ -76,7 +81,7 @@
             const lang_kor = {
                 "decimal": "",
                 "emptyTable": "데이터가 없습니다.",
-                "info": "_START_ - _END_ (총 _TOTAL_건)",
+                "info": "_START_-_END_ (총 _TOTAL_명)",
                 "infoEmpty": "0건",
                 "infoFiltered": "(전체 _MAX_건 중 검색 결과)",
                 "infoPostFix": "",

@@ -145,8 +145,12 @@ public class ProjectBoardController {
         Map<String, Object> response = new HashMap<>();
         response.put("listcount", listCount);
         response.put("commentlist", commentList);
+        //response.put("emp", empService.getEmpById(userid));
 
-        return ResponseEntity.ok(response);
+        if (commentList != null && !commentList.isEmpty()) {
+            return ResponseEntity.ok(response);
+        }
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/reply")

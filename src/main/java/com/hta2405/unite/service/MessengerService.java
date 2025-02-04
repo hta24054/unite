@@ -48,7 +48,12 @@ public class MessengerService {
 
     // ChatRoom 관련
     public List<ChatRoomDTO> getAllChatRooms(String empId, boolean isHomeMessenger) {
-        return messengerMapper.findAllRooms(empId, isHomeMessenger);
+        List<ChatRoomDTO> chatRoomDTOList = messengerMapper.findAllRooms(empId, isHomeMessenger);
+//        if(isHomeMessenger){
+//
+//            messagingTemplate.convertAndSend("/topic/messenger/" + chatRoomId, chatMessageDTO);
+//        }
+        return chatRoomDTOList;
     }
 
     public List<ChatMessage> getChatMessageById(Long chatRoomId, String userId) {

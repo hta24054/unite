@@ -53,9 +53,7 @@ function subscribeToInvitations(userId) {
                     chatRoom.addClass('messenger-room-active');
                     chatRoom.find('.messenger-chat').addClass('messenger-chat-active');
                     openChatRoom(chatRoomId);
-                    console.log("초대당함");
                 })
-            console.log("초대")
         });
 
     });
@@ -680,6 +678,10 @@ $(function () {
                 return $(this).val(); // 각 input 요소의 value 값을 추출
             }).get(); // jQuery 객체를 배열로 변환
 
+        if(data.length === 0){
+            alert("채팅방을 같이 사용할 사용자를 최소 1명 추가해주세요.");
+            return;
+        }
         $('#employeeModal').modal('hide');
         $('#user-list').html('');
 

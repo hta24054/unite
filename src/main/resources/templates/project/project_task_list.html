@@ -66,17 +66,17 @@
 											<th:block th:each="task, status : ${boardlist}">
 												<tr th:onclick="|GoProjectComm('${task.taskId}')|">
 													<td th:text="${status.index + 1}">번호</td>
-													<td th:text="${task.toDo != null ? #strings.abbreviate(task.toDo,20) : ''}">카테고리</td>
+													<td th:text="${task.toDo != null ? task.toDo : ''}">카테고리</td>
 													<th:block th:if="${not #strings.isEmpty(comm[task.taskId])}">
-														<td th:text="|${#strings.abbreviate(task.taskSubject,20)} [${comm[task.taskId]}]|">제목</td>
+														<td th:text="|${task.taskSubject} [${comm[task.taskId]}]|">제목</td>
 													</th:block>
 													<th:block th:unless="${not #strings.isEmpty(comm[task.taskId])}">
-														<td th:text="${#strings.abbreviate(task.taskSubject,20)}">제목</td>
+														<td th:text="${task.taskSubject}">제목</td>
 													</th:block>
-													<td th:text="${#strings.abbreviate(task.taskContent,50)}">내용</td>
+													<td th:text="${task.taskContent}">내용</td>
 													<td th:text="${task.taskDate}">작성일</td>
 													<td th:text="${task.taskUpdateDate}">수정일</td>
-													<td th:text="${#strings.abbreviate(task.taskFileOriginal,10)}">첨부파일</td>
+													<td th:text="${task.taskFileOriginal}">첨부파일</td>
 												</tr>
 											</th:block>
 										</tbody>
@@ -87,28 +87,9 @@
 					</div>
 				</main>
 				<script th:inline="javascript">
-					const lang_kor = {
-						"decimal": "",
-						"emptyTable": "데이터가 없습니다.",
-						"info": "_START_ - _END_ (총 _TOTAL_건)",
-						"infoEmpty": "0건",
-						"infoFiltered": "(전체 _MAX_건 중 검색 결과)",
-						"infoPostFix": "",
-						"thousands": ",",
-						"lengthMenu": "_MENU_건씩 보기",
-						"loadingRecords": "로딩중...",
-						"processing": "처리중...",
-						"search": "검색:",
-						"zeroRecords": "검색된 데이터가 없습니다.",
-						"paginate": {"first": "첫 페이지", "last": "마지막 페이지", "next": "다음", "previous": "이전"},
-						"aria": {"sortAscending": ":오름차순 정렬", "sortDescending": ":내림차순 정렬"}
-					};
-					// $(document).ready( function () {
-					// 	$('#taskListTable').DataTable();
-					// } );
-					$('#taskListTable').DataTable({
-						language: lang_kor
-					});
+					$(document).ready( function () {
+						$('#taskListTable').DataTable();
+					} );
 					function GoProjectComm(taskId) {
 						let projectId = /*[[${projectId}]]*/0;
 						let memberId = /*[[${memberId}]]*/0;

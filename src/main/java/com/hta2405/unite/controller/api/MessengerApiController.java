@@ -30,11 +30,9 @@ public class MessengerApiController {
     public ResponseEntity<HashMap<String, Object>> getAllRooms(@RequestParam boolean isHomeMessenger,
                                                                @AuthenticationPrincipal UserDetails user) {
         String empId = user.getUsername();
-        System.out.println("isHomeMessenger=" + isHomeMessenger);
         List<ChatRoomDTO> chatRoomDTOList = messengerService.getAllChatRooms(empId, isHomeMessenger);
 
         HashMap<String, Object> response = new HashMap<>();
-        System.out.println("chatRoomDTOList: " + chatRoomDTOList);
         response.put("chatRoomDTOList", chatRoomDTOList);
         return ResponseEntity.ok(response);
     }
@@ -50,9 +48,6 @@ public class MessengerApiController {
         List<ChatMessage> chatMessageList = messengerService.getChatMessageById(id, user.getUsername());
         List<String> userIds = messengerService.getMembersByRoomId(id);
         ChatRoom chatRoom = messengerService.getChatRoomById(id);
-
-        System.out.println("chatRoom: " + chatRoom);
-        System.out.println("messengerNameMap : " + messengerService.getIdToRoomNameMap(user.getUsername()));
 
         HashMap<String, Object> response = new HashMap<>();
         response.put("messengerNameMap", messengerService.getIdToRoomNameMap(user.getUsername()));
@@ -90,8 +85,6 @@ public class MessengerApiController {
     public void sendMessage(@RequestBody ChatMessageDTO messageDTO,
                             @DestinationVariable Long chatRoomId) {
 
-        System.out.println("messageDTO = " + messageDTO + "chatRoomId = " + chatRoomId);
-
         messengerService.saveMessage(messageDTO); // 메시지 저장
     }
 
@@ -109,7 +102,6 @@ public class MessengerApiController {
     public ResponseEntity<HashMap<String, Object>> renameChatRoomName(@PathVariable Long chatRoomId,
                                                                       @RequestBody String chatRoomName,
                                                                       @AuthenticationPrincipal UserDetails user) {
-        System.out.println(chatRoomName);
         Boolean check = messengerService.updateChatRoomName(chatRoomId, user.getUsername(), chatRoomName);
 
         HashMap<String, Object> response = new HashMap<>();

@@ -59,8 +59,6 @@ public class MessengerService {
         userIds.add(empId);
         Map<String, String> empMap = getIdToENameMap();
 
-        System.out.println("chatRoomName = "+chatRoomName);
-
         if(chatRoomName.isEmpty()) {
             StringBuilder chatRoomNameBuilder = new StringBuilder();
             for (int i = 0; i < userIds.size(); i++) {
@@ -201,7 +199,6 @@ public class MessengerService {
             String creator = messengerMapper.findChatRoomById(chatRoomId).getCreatorId();
             int deleteRow;
 
-            System.out.println("creator = " + creator + "userId = " + userId);
             if (creator.equals(userId)) {
                 //채팅방장이 삭제시 모두 방 삭제
                 deleteChatMessage(chatRoomId);

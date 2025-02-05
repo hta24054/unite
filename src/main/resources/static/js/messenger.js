@@ -710,7 +710,13 @@ function loadChatMessageList(chatRoomId) {
 
             let html = `<div class="messenger-header">
                                 <span class="messenger-chat-room">${response.messengerNameMap[response.chatRoom.chatRoomId]}</span>
-                                <button id="info-toggle"><i class="bi bi-list fs-1" style="color:azure"></i></button>
+                                <div>
+                                    <div class="tooltip-message">
+                                      <button id="AI-summary"><div class="AI-logo1">AI</div><i class="bi bi-chat-square fs-1" style="color:azure"></i></button>
+                                      <span class="tooltiptext tooltip-left">AI 채팅 요약하기</span>
+                                    </div>
+                                    <button id="info-toggle"><i class="bi bi-list fs-1" style="color:azure"></i></button>
+                                </div>
                                </div>
                                <div class="messenger-content-body scrollbar">`;
             $messengerMiddle.append(html);
@@ -1106,6 +1112,17 @@ connectWebSocket();
                 $('.input-modal-roomName').val('');
             }
         }
+    });
+
+    $(document).on('click', '#AI-summary',function (){
+        let chatRoomId = $('.messenger-room-active').data('chat-room');
+        $.get(`/api/ai/summarize?chatRoomId=${chatRoomId}`)
+            .done(function (data) {
+                $('#AISummeryContent').text(data);
+            })
+            .fail(function (error) {
+                console.error('Error loading summarize:', error);
+            });
     });
 
 });

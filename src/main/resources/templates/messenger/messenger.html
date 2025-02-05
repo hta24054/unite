@@ -131,6 +131,22 @@
             </div>
         </div>
 
+
+        <div class="modal fade" id="AISummeryModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+             aria-hidden="true" style="top: 30%;">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="AISummeryModalLabel">AI 요약 완료</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="AISummeryContent" class="fw-bold" style="margin: 0 0 5px 3px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script>
             const $messengerContentBody = $('.messenger-content-body');
             let chatRoomName;

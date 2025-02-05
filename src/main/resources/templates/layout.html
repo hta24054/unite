@@ -430,26 +430,34 @@
     <div id="toastContainer" style="position: fixed; bottom: 10px; right: 10px; z-index: 9999;"></div>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const collapseMenu = document.getElementById("collapseCustomMenu6");
-            const collapseRemove = document.getElementById("collapseRemove");
-            const isMenuOpen = localStorage.getItem("menuOpen");
+            const collapsibleMenus = document.querySelectorAll(".collapse");
 
-            if (isMenuOpen === "true") {
-                collapseMenu.classList.add("show");
-                collapseRemove.classList.remove("collapsed");
-            } else {
-                collapseMenu.classList.remove("show");
-            }
-        });
+            collapsibleMenus.forEach((menu) => {
+                const menuId = menu.id;
+                const isMenuOpen = localStorage.getItem(menuId);
 
-        document.getElementById("collapseCustomMenu6").addEventListener("shown.bs.collapse", function () {
-            localStorage.setItem("menuOpen", "true");
-        });
-        document.getElementById("collapseCustomMenu6").addEventListener("hidden.bs.collapse", function () {
-            localStorage.setItem("menuOpen", "false");
+                if (isMenuOpen === "true") {
+                    menu.classList.add("show");
+                    const trigger = document.querySelector(`[data-bs-target="#${menuId}"]`);
+                    if (trigger) {
+                        trigger.classList.remove("collapsed");
+                    }
+                } else {
+                    menu.classList.remove("show");
+                }
+
+                // 메뉴가 열릴 때 상태 저장
+                menu.addEventListener("shown.bs.collapse", function () {
+                    localStorage.setItem(menuId, "true");
+                });
+
+                // 메뉴가 닫힐 때 상태 저장
+                menu.addEventListener("hidden.bs.collapse", function () {
+                    localStorage.setItem(menuId, "false");
+                });
+            });
         });
     </script>
-
     </body>
     </html>
 </th:block>

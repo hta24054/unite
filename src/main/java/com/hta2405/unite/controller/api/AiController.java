@@ -1,5 +1,6 @@
 package com.hta2405.unite.controller.api;
 
+import com.hta2405.unite.dto.ai.AiChatSummarizeDTO;
 import com.hta2405.unite.service.AiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class AiController {
     }
 
     @GetMapping("/summarize")
-    public String summarizeChatRoom(Long chatRoomId) {
+    public AiChatSummarizeDTO summarizeChatRoom(Long chatRoomId) {
         return aiService.summarizeChatRoom(chatRoomId);
     }
 }

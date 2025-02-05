@@ -801,9 +801,12 @@ connectWebSocket();
     $("#addChat").on("click", function (e) {
         e.preventDefault();
 
+        const modalSetRoomName = $(".modal-setRoomName");
         const targetId = $(this).data('target');
         localStorage.setItem('selectedEmpId', targetId);
 
+        modalSetRoomName.find('.input-modal-roomName').val('');
+        modalSetRoomName.css("display","none");
         $('#employeeModal').modal('show');
     });
 
@@ -1046,6 +1049,7 @@ connectWebSocket();
         $('#insertChatRoomNameBtn').css('display', 'block');
         $('#insertMemberBtn').css('display', 'none');
         $('#user-list').html('');
+        $('.search-container-inline #searchInput').val('');
     })
 
     //채팅 멤버 추가 모달 버튼 클릭
@@ -1058,12 +1062,13 @@ connectWebSocket();
         $('#insertMemberBtn').css('display', 'block');
 
         userList.html('');
+        $('.search-container-inline #searchInput').val('');
+
         let html = "";
         $('.member').each(function () {
             let userId = $(this).data('user-id');
             html += `<input type="hidden" name="alreadyUserId" value="${userId}"/>`;
         });
-        console.log("html =" + html)
         userList.html(html);
     })
 
@@ -1118,6 +1123,7 @@ connectWebSocket();
         let chatRoomId = $('.messenger-room-active').data('chat-room');
         $.get(`/api/ai/summarize?chatRoomId=${chatRoomId}`)
             .done(function (data) {
+                $('#AISummeryModal').modal('show');
                 $('#AISummeryContent').text(data);
             })
             .fail(function (error) {

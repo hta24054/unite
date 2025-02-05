@@ -1,5 +1,5 @@
 $(function () {
-// const loggedInUser = $('#user-info').data('username'); // 로그인한 사용자
+    const loggedInUser = $('#user-info').data('username'); // 로그인한 사용자
     let messengerMessages; // 전체 메신저 메시지 데이터
     let notReadMessages = []; // 읽지 않은 메신저 메시지 데이터
 
@@ -131,7 +131,6 @@ $(function () {
 
 // WebSocket 연결
     function connectWebSocket() {
-        const loggedInUser = $('#user-info').data('username'); // 로그인한 사용자
         const socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
 
@@ -381,8 +380,16 @@ $(function () {
     function displayRemoveChatRoom(chatMessage) {
         leaveChatRoom(chatMessage.chatRoomId).then(() => {
             if (window.location.pathname === "/messenger") {
+                if (loggedInUser !== chatMessage.senderId) {
+                    alert("[ " + chatMessage.chatRoomName + " ] 채팅방이 방장에 의해 삭제되었습니다.");
+                }
                 location.href = "/messenger";
             }
+        });
+
+
+        leaveChatRoom(chatRoomId).then(() => {
+            location.href = "/messenger";
         });
     }
 
@@ -486,7 +493,6 @@ $(function () {
     function loadChatRoomData(data, check) {
         const chatRoomDTOList = data.chatRoomDTOList;
         const $messengerBody = $('#messenger-body');
-        const loggedInUser = $('#user-info').data('username'); // 로그인한 사용자
         $messengerBody.removeClass('messenger-no-chat');
         $messengerBody.html('');
         console.log("chatRoomDTOList=", chatRoomDTOList[0].chatRoomId)
@@ -676,7 +682,7 @@ $(function () {
                                 <span class="messenger-chat-room">${response.messengerNameMap[response.chatRoom.chatRoomId]}</span>
                                 <div>
                                     <div class="tooltip-message">
-                                      <button id="AI-summary"><div class="AI-logo1">AI</div><i class="bi bi-chat-square fs-1" style="color:azure"></i></button>
+                                      <button id="AI-summary"><div class="AI-logo1">AI</div><i class="bi bi-chat-square fs-1" style="color: floralwhite;"></i></button>
                                       <span class="tooltiptext tooltip-left">AI 채팅 요약하기</span>
                                     </div>
                                     <button id="info-toggle"><i class="bi bi-list fs-1" style="color:azure"></i></button>
@@ -994,10 +1000,6 @@ $(function () {
             dataType: 'json', // 서버에서 JSON 응답을 기대
             success: function (response) {
                 console.log('Chat room created successfully:', response.status);
-
-                leaveChatRoom(chatRoomId).then(() => {
-                    location.href = "/messenger";
-                });
             },
             error: function (xhr, status, error) {
                 console.error('Error creating chat room:', error);
@@ -1023,6 +1025,7 @@ $(function () {
         let label = $('#employeeModalLabel');
         let userList = $('#user-list').html('');
         label.html('대화상대 추가');
+        $('.modal-setRoomName').css('display', 'none');
         $('#insertChatRoomBtn').css('display', 'none');
         $('#insertChatRoomNameBtn').css('display', 'none');
         $('#insertMemberBtn').css('display', 'block');

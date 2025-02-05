@@ -1,5 +1,6 @@
 package com.hta2405.unite.controller;
 
+import com.hta2405.unite.domain.BoardManagement;
 import com.hta2405.unite.domain.PaginationResult;
 import com.hta2405.unite.domain.PostFile;
 import com.hta2405.unite.dto.*;
@@ -49,7 +50,7 @@ public class BoardController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String empId = auth.getName();
         List<Object> boardScope = boardPostService.getBoardListByEmpId(empId);
-        List<BoardAndManagementDTO> boardManagementList = boardPostService.getBoardAndManagement(null);
+        List<BoardAndManagementDTO> boardManagementList = boardPostService.getBoardAndManagement(empId, null);
 
         model.addAttribute("userId", empId);
         model.addAttribute("boardManagementList", boardManagementList);
@@ -67,7 +68,7 @@ public class BoardController {
         }
         HashMap<String, Object> ajaxMap = new HashMap<>();
         ajaxMap.put("list", boardPostEmpDTOList);
-        ajaxMap.put("empMap", boardPostService.getIdToENameMap());
+        ajaxMap.put("empMap", empService.getIdToENameMap());
         return ajaxMap;
     }
 
@@ -82,6 +83,7 @@ public class BoardController {
         boardSidebarDept(model);
         session.setAttribute("referer", "list");
 
+        Long boardId = boardPostService.getBoardId(boardDTO);
         HashMap<String, Object> map = boardPostService.getBoardListAndListCount(page, limit, boardDTO);
         PaginationResult result = new PaginationResult(page, limit, (int) map.get("listCount"));
 
@@ -94,7 +96,9 @@ public class BoardController {
         model.addAttribute("limit", limit);
         model.addAttribute("boardName1", boardDTO.getBoardName1());
         model.addAttribute("boardName2", boardDTO.getBoardName2());
-        model.addAttribute("empMap", boardPostService.getIdToENameMap());
+        model.addAttribute("empMap", empService.getIdToENameMap());
+        model.addAttribute("boardManagements", boardPostService.getBoardModify(boardId));
+        model.addAttribute("boardComment", null);
         return "board/boardList";
     }
 
@@ -125,7 +129,7 @@ public class BoardController {
             ajaxMap.put("limit", limit);
             ajaxMap.put("boardName1", boardDTO.getBoardName1());
             ajaxMap.put("boardName2", boardDTO.getBoardName2());
-            ajaxMap.put("empMap", boardPostService.getIdToENameMap());
+            ajaxMap.put("empMap", empService.getIdToENameMap());
         }
         return ajaxMap;
     }
@@ -154,7 +158,7 @@ public class BoardController {
         ajaxMap.put("limit", limit);
         ajaxMap.put("boardName1", boardDTO.getBoardName1());
         ajaxMap.put("boardName2", boardDTO.getBoardName2());
-        ajaxMap.put("empMap", boardPostService.getIdToENameMap());
+        ajaxMap.put("empMap", empService.getIdToENameMap());
         return ajaxMap;
     }
 
@@ -194,9 +198,12 @@ public class BoardController {
         PostDetailDTO postDetailDTO = boardPostService.getDetail(no);
 
         if (postDetailDTO.getPostId() != null) {
-            model.addAttribute("empMap", boardPostService.getIdToENameMap());
+            List<BoardAndManagementDTO> boardManagements = boardPostService.getBoardModify(postDetailDTO.getBoardId());
+
+            model.addAttribute("empMap", empService.getIdToENameMap());
             model.addAttribute("postDetailDTO", postDetailDTO);
             model.addAttribute("boardDTO", boardDTO);
+            model.addAttribute("boardManagements", boardManagements);
             model.addAttribute("id", id);
             model.addAttribute("postId", no);
             model.addAttribute("page", page);
@@ -340,6 +347,8 @@ public class BoardController {
                               @AuthenticationPrincipal UserDetails user) {
         boardSidebarDept(model);
 
+        String empId = user.getUsername();
+
         if (!user.getUsername().equals("admin")) {
             List<String> boardManagerList = boardPostService.findBoardManagerById(boardId);
             if (boardManagerList == null) {
@@ -353,25 +362,27 @@ public class BoardController {
             }
         }
 
-        List<BoardAndManagementDTO> boardManagementList = boardPostService.getBoardModify(boardId);
+        List<BoardAndManagementDTO> boardManagements = boardPostService.getBoardModify(boardId);
 
-        model.addAttribute("empMap", boardPostService.getIdToENameMap());
-        model.addAttribute("empId", user.getUsername());
-        model.addAttribute("boardManagementList", boardManagementList);
+        model.addAttribute("empMap", empService.getIdToENameMap());
+        model.addAttribute("empId", empId);
+        model.addAttribute("boardManagements", boardManagements);
         return "board/boardModify";
     }
 
     @PostMapping("/modifyProcess")
     public String boardModifyProcess(@AuthenticationPrincipal UserDetails user, BoardRequestDTO boardRequestDTO,
                                      RedirectAttributes rattr) {
-        if (!user.getUsername().equals("admin")) {
+        String empId = user.getUsername();
+
+        if (!empId.equals("admin")) {
             if (Objects.equals(boardRequestDTO.getBoardName1(), "전사게시판")) {
                 rattr.addFlashAttribute("message", "fail");
                 return "redirect:/board/home";
             }
         }
 
-        boolean result = boardPostService.modifyBoard(boardRequestDTO);
+        boolean result = boardPostService.modifyBoard(empId, boardRequestDTO);
 
         if (result) {
             rattr.addFlashAttribute("message", "수정 성공");

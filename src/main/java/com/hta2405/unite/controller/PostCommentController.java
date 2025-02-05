@@ -3,7 +3,9 @@ package com.hta2405.unite.controller;
 import com.hta2405.unite.domain.PostComment;
 import com.hta2405.unite.dto.PostCommentRequestDTO;
 import com.hta2405.unite.dto.PostCommentUpdateDTO;
+import com.hta2405.unite.service.BoardPostService;
 import com.hta2405.unite.service.PostCommentService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -14,22 +16,23 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/comments")
 @Slf4j
 public class PostCommentController {
     private final PostCommentService postCommentService;
-
-    public PostCommentController(PostCommentService postCommentService) {
-        this.postCommentService = postCommentService;
-    }
+    private final BoardPostService boardPostService;
 
     @PostMapping("/list")
     public HashMap<String, Object> commentList(Long postId, int commentListOrder) {
+        Long boardId = (Long) boardPostService.selectPostInfo(postId).get("board_id");
+
         HashMap<String, Object> map = new HashMap<>();
         map.put("empMap", postCommentService.getIdToENameMap());
         map.put("postCommentList", postCommentService.getCommentList(postId, commentListOrder));
         map.put("listCount", postCommentService.getListCount(postId));
+        map.put("boardManagements", boardPostService.getBoardModify(boardId));
         return map;
     }
 

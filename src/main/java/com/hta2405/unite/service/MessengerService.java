@@ -196,7 +196,10 @@ public class MessengerService {
 
     public Boolean removeMember(Long chatRoomId, String userId) {
         try {
-            String creator = messengerMapper.findChatRoomById(chatRoomId).getCreatorId();
+            ChatRoomDTO chatRoomDTO = messengerMapper.getCreatorAndChatRoomName(chatRoomId, userId);
+            String creator = chatRoomDTO.getCreatorId();
+            String chatRoomName = chatRoomDTO.getChatRoomName();
+
             int deleteRow;
 
             if (creator.equals(userId)) {
@@ -207,6 +210,7 @@ public class MessengerService {
 
                 ChatMessageDTO chatMessageDTO = ChatMessageDTO.builder()
                         .chatRoomId(chatRoomId)
+                        .chatRoomName(chatRoomName)
                         .senderId(userId)
                         .chatMessageType(ChatMessageType.LEAVE_ALL).build();
                 saveMessage(chatMessageDTO);

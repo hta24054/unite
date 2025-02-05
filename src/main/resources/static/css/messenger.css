@@ -584,3 +584,7 @@ tr td {
     left: 27%;
     color: azure;
 }
+
+#AISummeryTopic, #AISummeryContent {
+    margin-bottom: 20px;
+}

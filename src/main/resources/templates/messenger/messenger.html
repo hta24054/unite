@@ -140,13 +140,21 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="AISummeryModalLabel" style="width: 100%;text-align: center;font-weight: bold;">AI
+                        <h1 class="modal-title fs-5" id="AISummeryModalLabel"
+                            style="width: 100%;text-align: center;font-weight: bold;">AI
                             요약 완료</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                                 style="margin:0"></button>
                     </div>
                     <div class="modal-body">
-                        <div id="AISummeryContent" class="fw-bold" style="margin: 0 0 5px 3px;"></div>
+                        <div id="AISummeryTopic">
+                            <span class="fw-bold">대화 주제</span>
+                            <div class="summary-content"></div>
+                        </div>
+                        <div id="AISummeryContent">
+                            <span class="fw-bold">대화 내용 요약</span>
+                            <div class="summary-content"></div>
+                        </div>
                     </div>
                 </div>
             </div>

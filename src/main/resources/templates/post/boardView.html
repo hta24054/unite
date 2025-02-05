@@ -142,13 +142,23 @@
                                 <th:block th:text="${postDetailDTO.postSubject}"/>
                             </span>
                                 <span class="right_btns">
-                                <th:block th:if="${postDetailDTO.postWriter == id||id == 'admin'}">
+                                <th:block th:if="${postDetailDTO.postWriter == id}">
                                     <a th:href="@{modify(no=${postDetailDTO.postId},boardName1=${boardDTO.getBoardName1()},boardName2=${boardDTO.getBoardName2()})}">
                                         <button class="btn board_view_btn postModify-link">수정</button></a>
 
                                     <button class="btn board_view_btn" data-bs-toggle="modal" data-bs-target="#myModal">삭제</button>
-
                                 </th:block>
+                                <th:block th:each="boardManagement : ${boardManagements}">
+                                    <th:block
+                                            th:if="${postDetailDTO.postWriter != id && id == boardManagement.boardManager}">
+                                        <a th:href="@{modify(no=${postDetailDTO.postId},boardName1=${boardDTO.getBoardName1()},boardName2=${boardDTO.getBoardName2()})}">
+                                            <button class="btn board_view_btn postModify-link">수정</button></a>
+
+                                        <button class="btn board_view_btn" data-bs-toggle="modal"
+                                                data-bs-target="#myModal">삭제</button>
+                                    </th:block>
+                                </th:block>
+
                                 <a th:href="@{reply(no=${postDetailDTO.postId},boardName1=${boardDTO.getBoardName1()},boardName2=${boardDTO.getBoardName2()})}">
                                     <button class="btn board_view_btn postReply-link">답글</button></a>
 
@@ -160,7 +170,8 @@
                         </tr>
                         <tr>
                             <td colspan="3" style="padding-top: 10px;">
-                                <img th:src="@{|/api/emp/profile-image?empId=${postDetailDTO.postWriter}|}" alt="프로필 이미지" class="icon viewIcon">
+                                <img th:src="@{|/api/emp/profile-image?empId=${postDetailDTO.postWriter}|}"
+                                     alt="프로필 이미지" class="icon viewIcon">
                                 <div class="username">[[${empMap.get(postDetailDTO.postWriter)}]]</div>
                                 <div class="date"> [[${postDetailDTO.getFormattedPostDate()}]]</div>
                             </td>

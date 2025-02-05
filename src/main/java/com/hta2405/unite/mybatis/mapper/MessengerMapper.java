@@ -48,6 +48,8 @@ public interface MessengerMapper {
 
     List<ChatRoomMember> getChatRoomsById(String userId);
 
+    ChatRoomDTO getCreatorAndChatRoomName(Long chatRoomId, String userId);
+
     void updateChatRoomName(Long chatRoomId, String userId, String chatRoomName);
 
     void deleteMessageById(Long chatRoomId);

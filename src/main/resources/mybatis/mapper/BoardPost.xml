@@ -23,26 +23,26 @@
 
     <select id="getBoardListAll" parameterType="Long" resultType="com.hta2405.unite.dto.BoardPostEmpDTO">
         select post.*,
-               board.*,
-               IFNULL(postCommentCnt, 0) as postCommentCnt,
-               emp.ename,
-               emp.img_path,
-               emp.img_original,
-               emp.img_uuid,
-               emp.img_type
+        board.*,
+        IFNULL(postCommentCnt, 0) as postCommentCnt,
+        emp.ename,
+        emp.img_path,
+        emp.img_original,
+        emp.img_uuid,
+        emp.img_type
         from post
-                 left join (select post_id, count(*) as postCommentCnt
-                            from post_comment
-                            group by post_id) pc on post.post_id = pc.post_id
-                 join board on board.board_id = post.board_id
-                 join emp on emp.emp_id = post.post_writer
+        left join (select post_id, count(*) as postCommentCnt
+        from post_comment
+        group by post_id) pc on post.post_id = pc.post_id
+        join board on board.board_id = post.board_id
+        join emp on emp.emp_id = post.post_writer
         where board.dept_id = 0
-           or #{deptId} in (0000, 1000, 1001)
-           or (#{deptId} = 1100 and board.dept_id between 1100 and 1199)
-           or (#{deptId} = 1200 and board.dept_id between 1200 and 1299)
-           or (#{deptId} = 1300 and board.dept_id between 1300 and 1399)
-           or (#{deptId} = 1400 and board.dept_id between 1400 and 1499)
-           or board.dept_id = #{deptId}
+        or #{deptId} in (0000, 1000, 1001)
+        or (#{deptId} = 1100 and board.dept_id between 1100 and 1199)
+        or (#{deptId} = 1200 and board.dept_id between 1200 and 1299)
+        or (#{deptId} = 1300 and board.dept_id between 1300 and 1399)
+        or (#{deptId} = 1400 and board.dept_id between 1400 and 1499)
+        or board.dept_id = #{deptId}
         order by post_date desc
         <if test="limit != null and limit > 0">
             limit #{limit}
@@ -301,12 +301,15 @@
     </insert>
 
     <select id="getBoardAndManagement" resultType="com.hta2405.unite.dto.BoardAndManagementDTO">
-        select board_management.board_id, board_name1, board_name2, board_manager
-        from board
-        natural join board_management
+        SELECT bm.board_id, b.board_name1, b.board_name2, bm.board_manager
+        FROM board_management bm
+        INNER JOIN board b ON bm.board_id = b.board_id
         <where>
+            <if test="boardManager != null">
+                bm.board_manager = #{boardManager}
+            </if>
             <if test="boardId != null">
-                board_management.board_id = #{boardId}
+                AND bm.board_id = #{boardId}
             </if>
         </where>
     </select>

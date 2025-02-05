@@ -59,7 +59,7 @@ public class MessengerService {
         userIds.add(empId);
         Map<String, String> empMap = getIdToENameMap();
 
-        if(chatRoomName.isEmpty()) {
+        if (chatRoomName.isEmpty()) {
             StringBuilder chatRoomNameBuilder = new StringBuilder();
             for (int i = 0; i < userIds.size(); i++) {
                 String userId = userIds.get(i);

@@ -125,7 +125,7 @@ body {
     min-height: 100px;
 }
 
-.messenger-header-profile{
+.messenger-header-profile {
     display: flex;
     align-items: center;
 }
@@ -254,8 +254,8 @@ body {
     max-height: 500px;
 }
 
-#chatMessageContent:focus{
-    border:none;
+#chatMessageContent:focus {
+    border: none;
     outline: 2px solid #c7bcef;
 }
 
@@ -508,17 +508,17 @@ tr td {
     padding: 5px 10px;
 }
 
-.modal-setRoomName{
-    display:none;
-    width:90%;
+.modal-setRoomName {
+    display: none;
+    width: 90%;
 }
 
-.modal-roomName{
+.modal-roomName {
     width: 10%;
     font-weight: bold;
 }
 
-.input-modal-roomName{
+.input-modal-roomName {
     width: 80%;
     border-radius: 5px;
     border: none;
@@ -526,11 +526,11 @@ tr td {
     padding: 5px 10px;
 }
 
-.input-modal-roomName:focus-visible{
-    outline:none;
+.input-modal-roomName:focus-visible {
+    outline: none;
 }
 
-#senderName{
+#senderName {
     margin-left: 10px;
     vertical-align: middle;
     overflow: hidden;
@@ -577,7 +577,7 @@ tr td {
     opacity: 1;
 }
 
-.AI-logo1{
+.AI-logo1 {
     position: absolute;
     top: 24%;
     display: inline;

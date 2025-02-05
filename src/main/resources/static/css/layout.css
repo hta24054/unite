@@ -12973,6 +12973,12 @@ body {
     display: inline-block;
 }
 
+.messenger-chat-room1{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .messenger-chat-room1:hover{
     cursor: pointer;
 }
@@ -13012,4 +13018,22 @@ body {
     justify-content: space-between;
     align-items: center;
     font-weight: 600;
+}
+
+.messenger-message-date{
+    margin-left: 10px;
+}
+
+.messenger-message-content{
+    font-size: 16px;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.messenger-message-title{
+    display: flex;
+    justify-content: space-between;
+    max-width: 296px;
 }

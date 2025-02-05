@@ -50,11 +50,13 @@ function addMessengerMessage(messengerMessage) {
     const noMessengerMessage = $('#noMessengerMessage'); // "채팅을 시작해보세요" 메시지
     let formattedDate = formattedLocalDate(messengerMessage.latestMessageDate); // 날짜 포맷 함수
     const newMessengerMessage = $(`
-            <a class="dropdown-item d-flex align-items-center messenger-chat-room1" id="MessengerChatRoom-${messengerMessage.chatRoomId}"
+            <a class="dropdown-item align-items-center messenger-chat-room1" id="MessengerChatRoom-${messengerMessage.chatRoomId}"
                 data-id="${messengerMessage.chatRoomId}">
                 <div>
-                    <div class="small text-gray-500 messenger-message-date">${formattedDate}</div>
-                    <span class="font-weight-bold" style="font-size: 16px; font-weight: bold">${messengerMessage.chatRoomName}</span><br>
+                    <div class="messenger-message-title">
+                        <span class="font-weight-bold messenger-message-content">${messengerMessage.chatRoomName}</span><br>
+                        <div class="small text-gray-500 messenger-message-date">${formattedDate}</div>
+                    </div>
                     <div class="messenger-room-content1">
                     <span class="messenger-last-message1" style="font-size: 12px;">
                         ${
@@ -114,19 +116,6 @@ function updateMessengerBadge(change) {
     } else {
         messengerBadge.hide();
     }
-}
-
-//날짜 계산 함수
-function formattedLocalDate(latestMessageDate) {
-    let formattedDate = new Date(latestMessageDate).toLocaleString();
-    let today = new Date();
-
-    if (formattedDate.substring(0, 12) === today.toLocaleString().substring(0, 12)) {
-        formattedDate = formattedDate.substring(12);
-    } else {
-        formattedDate = formattedDate.substring(0, 12)
-    }
-    return formattedDate;
 }
 
     loadMessengerMessages();
@@ -212,8 +201,9 @@ function joinChatRoom(chatRoomId) {
         console.log(`subscribing to chatRoom ${chatRoomId}`);
 
         subscriptions[chatRoomId] = stompClient.subscribe(`/topic/chatRoom/${chatRoomId}`, (message) => {
+            const $messengerRoomActive = $('.messenger-room-active');
             const chatMessageDTO = JSON.parse(message.body);
-            let chatRoomId = $('.messenger-room-active').data('chat-room');
+            let chatRoomId = $messengerRoomActive.data('chat-room');
             let userId = $('#user-info').data('username'); // 로그인한 사용자
 
             console.log("chatMessageDTO = ", chatMessageDTO);
@@ -246,7 +236,7 @@ function joinChatRoom(chatRoomId) {
                     updateUnreadCount(chatMessageDTO.chatRoomId, chatMessageDTO.senderId);
                 }
             } else if (chatMessageDTO.chatMessageType === 'INVITE' || chatMessageDTO.chatMessageType === 'LEAVE') {
-                if (chatMessageDTO.chatRoomId === $('.messenger-room-active').data('chat-room')) {
+                if (chatMessageDTO.chatRoomId === $messengerRoomActive.data('chat-room')) {
                     displayStateMessage(chatMessageDTO);
                 }
             } else if (chatMessageDTO.chatMessageType === 'LEAVE_ALL') {
@@ -400,30 +390,8 @@ function displayRemoveChatRoom(chatMessage) {
 // 메시지 출력
 function displayMessage(chatMessage, isMyMessage) {
     const $messengerContentBody = $('.messenger-content-body');
-    let creatorId = $('.bi-star-fill').parent().find('span').text(); // 생성자 ID
-    let invitedUserMessage = creatorId + '님이'; // 초대 메시지 시작 부분
-    let userIds = [creatorId]; // 배열로 초기화
-    $('.member').each(function () {
-        let memberId = $(this).find('span').text(); // 각 멤버의 ID 추출
-        if (memberId) {
-            userIds.push(memberId); // userIds 배열에 추가
-        }
-    });
-    // for (const userId of userIds) {
-    //     if (creatorId !== userId) {
-    //         invitedUserMessage += '님, ' + userId;
-    //     }
-    // }
-    // let index = invitedUserMessage.indexOf('님,');
-    // if (index !== -1) {
-    //     invitedUserMessage = invitedUserMessage.substring(0, index) + invitedUserMessage.substring(index + 2);
-    // }
-    // invitedUserMessage += '님을 채팅방에 초대했습니다.'
-    // console.log("invitedUserMessage : ", invitedUserMessage)
-
-    console.log("date=" + chatMessage.chatMessageDate)
+    const $inviteMessage = $('.inviteMessage');
     let formattedDate = new Date(chatMessage.chatMessageDate).toLocaleString().substring(12, 20);
-
     let formattedDated = new Date(chatMessage.chatMessageDate).toLocaleDateString('ko-KR', {
         year: 'numeric',
         month: 'long',
@@ -432,20 +400,17 @@ function displayMessage(chatMessage, isMyMessage) {
     });
 
     let standardDay = String($('.standardDay-content').last().text());
-    let check = $('.inviteMessage').text() === "";
+    let check = $inviteMessage.text() === "";
     let html = '';
 
     console.log("check=", check)
-    console.log("$('.inviteMessage').text()=", $('.inviteMessage').text())
+    console.log("$('.inviteMessage').text()=", $inviteMessage.text())
 
     if (standardDay !== formattedDated) {
         html += `
                 <div class="text-center standardDay">
-                    <div class="standardDay-content">${formattedDated}</div>`;
-        // if (check) {
-        //     html += `<div class="inviteMessage">${invitedUserMessage}</div>`;
-        // }
-        html += `</div>`;
+                    <div class="standardDay-content">${formattedDated}</div>
+                </div>`;
     }
 
     if (isMyMessage) {
@@ -511,7 +476,7 @@ function formattedLocalDate(latestMessageDate) {
     let today = new Date();
 
     if (formattedDate.substring(0, 12) === today.toLocaleString().substring(0, 12)) {
-        formattedDate = formattedDate.substring(12);
+        formattedDate = formattedDate.slice(12, -3);
     } else {
         formattedDate = formattedDate.substring(0, 12)
     }
@@ -911,6 +876,8 @@ connectWebSocket();
 
         //메시지 입력란 초기화
         chatMessageContent.val('');
+
+        $messengerContentBody.scrollTop($messengerContentBody.prop("scrollHeight"));
     })
 
     $(document).on('input', '#chatMessageContent', function () {

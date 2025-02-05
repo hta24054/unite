@@ -12977,10 +12977,16 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    background: white;
+    border-radius: 10px;
+    margin-bottom: 10px;
 }
 
 .messenger-chat-room1:hover{
+    background: white;
+    opacity: 50%;
     cursor: pointer;
+    border: 1px solid #e7e7e7;
 }
 
 .unread-message-count1 {
@@ -13011,6 +13017,18 @@ body {
 
 .messengerList1 {
     border-top: 1px solid #ccc;
+    background: #e7e7e7;
+    padding: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#noMessengerMessage{
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 21.5px 0;
 }
 
 .chat-header-list {

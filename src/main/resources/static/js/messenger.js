@@ -5,7 +5,7 @@ let notReadMessages = []; // 읽지 않은 메신저 메시지 데이터
 
 // 전체 메신저 메시지 로드
 function loadMessengerMessages() {
-    const noMessengerMessage = $('#noMessengerMessage'); // "채팅을 시작해보세요" 메시지
+    const noMessengerMessage = $('#noMessengerMessage');
     const isHomeMessenger = true; // 메신저 메인화면이면 false, 아니면 true
     $.get(`/api/messenger/rooms?isHomeMessenger=${isHomeMessenger}`)
         .done(function (data) {
@@ -1086,8 +1086,11 @@ connectWebSocket();
         }
     });
 
-    $(document).on('click', '#AI-summary',function (){
+    $(document).on('click', '#AI-summary', function () {
         let chatRoomId = $('.messenger-room-active').data('chat-room');
+
+        $('body').css('cursor', 'wait');
+
         $.get(`/api/ai/summarize?chatRoomId=${chatRoomId}`)
             .done(function (data) {
                 $('#AISummeryModal').modal('show');
@@ -1095,6 +1098,10 @@ connectWebSocket();
             })
             .fail(function (error) {
                 console.error('Error loading summarize:', error);
+            })
+            .always(function () {
+                // AJAX 완료 후 커서를 원래대로 되돌림
+                $('body').css('cursor', 'default');
             });
     });
 

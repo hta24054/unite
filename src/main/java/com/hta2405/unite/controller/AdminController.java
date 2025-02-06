@@ -44,7 +44,7 @@ public class AdminController {
 
     @GetMapping("/emp-manage/register")
     public ModelAndView showEmpRegister(ModelAndView mv) {
-        mv.setViewName("/emp/empRegister");
+        mv.setViewName("emp/empRegister");
         mv.addObject("registerDTO", empService.getRegisterPageData());
         return mv;
     }

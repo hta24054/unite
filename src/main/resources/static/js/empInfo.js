@@ -83,6 +83,27 @@ $(document).ready(function () {
             $("#saveButton").attr("disabled", "disabled").removeClass("btn-success").addClass("btn-secondary");
         }
     });
+
+    $("#file").change(function (event) {
+        fileChange++; //파일이 변경되면 fileChange 값 0 -> 1
+        const maxSizeInBytes = 5 * 1024 * 1024;
+        const file = this.files[0];
+        if (file.size > maxSizeInBytes) {
+            alert("업로드 파일 용량 제한 : 5MB");
+            $(this).val('');
+        }
+        const fileURL = URL.createObjectURL(file);
+        $('#over_view').attr('src', fileURL);
+    });
+
+    $('.remove_img').click(function () {
+        if (confirm("첨부파일을 삭제하시겠습니까?")) {
+            $("#fileName").text('');
+            $(this).css('display', 'none');
+            $("#over_view").attr('src', '/image/profile_navy.png');
+        }
+    })
+
     // 저장 버튼 클릭 이벤트
     $("#infoForm").submit(function (event) {
         event.preventDefault();

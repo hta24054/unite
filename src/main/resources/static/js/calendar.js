@@ -455,12 +455,12 @@ $(document).ready(function () {
                     </div>
                 `);
             }
+            $(".modal-body").find(".form-group.color-group").show();
             $(".modal-body").find(".form-group.share-info").show();
 
         } else if(event.extendedProps.isDept === true) { // 부서 일정
             $(".modal-header").find("h5").text("부서 일정");
-            //$("form[name='scheduleEvent'] input, form[name='scheduleEvent'] textarea").prop("disabled", true);
-            $(".modal-body").find(".form-group.color-group").remove();
+            $(".modal-body").find(".form-group.color-group").hide();
             $(".modal-body").find(".btn_wrap").html(`
 	            <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
 	            <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
@@ -475,6 +475,7 @@ $(document).ready(function () {
 	            <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
 	            <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
 	        `);
+            $(".modal-body").find(".form-group.color-group").show();
             $(".modal-body").find(".form-group.share-info").hide();
         }
 
@@ -530,6 +531,7 @@ $(document).ready(function () {
 	    `);
 
         $(".modal-body").find(".form-group.share-info").hide();
+        $(".modal-body").find(".form-group.color-group").show();
 
         // 등록 버튼에 이벤트 바인딩
         $("#btnRegister").off("click").on("click", function (e) {
@@ -709,6 +711,7 @@ $(document).ready(function () {
                 $("#bgColor").val("#1e3a8a");
                 $("#allDay").prop("checked", false);
                 $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);
+                $(".modal-body").find(".form-group.color-group").show();
 
                 $("#scheduleModal").modal("show");
 

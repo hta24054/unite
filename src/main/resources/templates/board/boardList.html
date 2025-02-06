@@ -108,6 +108,38 @@
                 .table > :not(:last-child) > :last-child > * {
                     border-bottom: 2px solid #dee2e6;
                 }
+
+                .content_info_wrap {
+                    position: relative;
+                    min-width: 500px;
+                    margin: 10px 24px;
+                    padding: 10px 10px 14px;
+                    background-color: #f9f9f9;
+                    border: 1px solid #dcdcdc;
+                    /* border-top: 1px solid #9b9b9b; */
+                    border-radius: 4px;
+                    font-size: 13px;
+                }
+
+                .simple_info {
+                    overflow: hidden;
+                    position: relative;
+                    margin-right: 25px;
+                }
+
+                .detail_info {
+                    border-top: 1px solid #eee;
+                    padding: 8px 0 0 0;
+                    margin: 8px 0 0 0;
+                }
+
+                .simple_info div, .detail_info div {
+                    padding-bottom: 0;
+                    padding-top: 1px;
+                    min-height: 22px;
+                    line-height: 1.5;
+                    background-position: -1px 7px;
+                }
             </style>
             <script type="module" th:src="@{/js/boardList.js}"></script>
         </head>
@@ -117,6 +149,24 @@
 
             <div class="content">
                 <div class="boardTitle">[[${boardName2}]]</div>
+                <div class="content_info_wrap">
+                    <div class="simple_info">
+                        <span>게시판 주소:</span>
+                        <input type="text" id="boardUrl" style="border: none;background:#f9f9f9;color:black" readonly>
+                        <button id="copyBoardUrlBtn">복사</button>
+                    </div>
+                    <div class="detail_info">
+                        <div th:if="${boardManagements != null}">
+                            운영자 :
+                            <th:block th:each="boardManagement : ${boardManagements}">
+                                [[${empMap.get(boardManagement.boardManager)}]]
+                            </th:block>
+                        </div>
+                        <div th:if="${boardComment == null}">
+                            [[${boardName2}]]
+                        </div>
+                    </div>
+                </div>
                 <input type="hidden" id="boardName1" th:value="${boardName1}">
                 <input type="hidden" id="boardName2" th:value="${boardName2}">
                 <div class="container">

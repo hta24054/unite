@@ -42,7 +42,6 @@
         <script th:src="@{/js/layout_ai.js}"></script>
         <link th:href="@{/css/layout_ai.css}" rel="stylesheet"/>
         <script th:src="@{/js/messenger.js}"></script>
-<!--        <script type="module" th:src="@{/js/messengerMain.js}" th:inline="javascript"></script>-->
 
     </head>
     <body class="sb-nav-fixed">
@@ -83,19 +82,16 @@
                     <span class="badge badge-danger badge-counter" id="messengerBadge" style="display:none;">0</span>
                 </a>
                 <div class="dropdown-list dropdown-menu dropdown-menu-end shadow animated--grow-in"
-                     aria-labelledby="messengerDropdown" style="max-height: 300px; overflow-y: auto; min-width: 250px;">
+                     aria-labelledby="messengerDropdown" style="width: 350px;">
                     <h6 class="dropdown-header chat-header-list">채팅 알림
                         <button id="MessengerButton" class="btn btn-link text-decoration-none text-black fw-bold"
                                 style="font-size: 15px;padding: 0;">GO MESSENGER
                         </button>
                     </h6>
-                    <div id="messengerList" class="messengerList1" style="padding: 10px;">
-                        <p id="noMessengerMessage" class="text-center text-muted"
-                           style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">새로운 메시지가 없습니다.</p>
+                    <div id="messengerList" class="messengerList1">
+                        <p id="noMessengerMessage" class="text-center text-muted">새로운 메시지가 없습니다.</p>
                     </div>
-                    <div class="text-end small text-gray-500 w-100">
-
-                    </div>
+                    <div class="text-end small text-gray-500 w-100"></div>
                 </div>
             </li>
             <!-- 알림 -->
@@ -430,26 +426,34 @@
     <div id="toastContainer" style="position: fixed; bottom: 10px; right: 10px; z-index: 9999;"></div>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const collapseMenu = document.getElementById("collapseCustomMenu6");
-            const collapseRemove = document.getElementById("collapseRemove");
-            const isMenuOpen = localStorage.getItem("menuOpen");
+            const collapsibleMenus = document.querySelectorAll(".collapse");
 
-            if (isMenuOpen === "true") {
-                collapseMenu.classList.add("show");
-                collapseRemove.classList.remove("collapsed");
-            } else {
-                collapseMenu.classList.remove("show");
-            }
-        });
+            collapsibleMenus.forEach((menu) => {
+                const menuId = menu.id;
+                const isMenuOpen = localStorage.getItem(menuId);
 
-        document.getElementById("collapseCustomMenu6").addEventListener("shown.bs.collapse", function () {
-            localStorage.setItem("menuOpen", "true");
-        });
-        document.getElementById("collapseCustomMenu6").addEventListener("hidden.bs.collapse", function () {
-            localStorage.setItem("menuOpen", "false");
+                if (isMenuOpen === "true") {
+                    menu.classList.add("show");
+                    const trigger = document.querySelector(`[data-bs-target="#${menuId}"]`);
+                    if (trigger) {
+                        trigger.classList.remove("collapsed");
+                    }
+                } else {
+                    menu.classList.remove("show");
+                }
+
+                // 메뉴가 열릴 때 상태 저장
+                menu.addEventListener("shown.bs.collapse", function () {
+                    localStorage.setItem(menuId, "true");
+                });
+
+                // 메뉴가 닫힐 때 상태 저장
+                menu.addEventListener("hidden.bs.collapse", function () {
+                    localStorage.setItem(menuId, "false");
+                });
+            });
         });
     </script>
-
     </body>
     </html>
 </th:block>

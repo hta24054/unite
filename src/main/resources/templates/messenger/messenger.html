@@ -6,7 +6,7 @@
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Messenger UI</title>
-            <link th:href="@{/css/messengerMain.css}" rel="stylesheet"/>
+            <link th:href="@{/css/messenger.css}" rel="stylesheet"/>
         </head>
         <body>
         <div class="container-messenger m-auto">
@@ -18,8 +18,9 @@
                         <span id="senderName" class="fw-semibold fs-3" th:text="${empMap.get(empId)}"></span>
                     </div>
                     <a href="javascript:void(0);" th:attr="data-target='employeeModal'"
-                       id="addChat" style="margin-right: 10px;">
+                       id="addChat" class="tooltip-message" style="margin-right: 10px;">
                         <i class="bi bi-chat-dots fs-1" style="color:azure"></i>
+                        <span class="tooltiptext tooltip-left" style="left: -259%;">채팅방 만들기</span>
                     </a>
                 </div>
                 <div id="messenger-body" class="messenger-body scroll messenger-no-chat" style="padding:0">
@@ -81,9 +82,11 @@
                             <label class="modal-roomName">방이름</label>
                             <input type="text" class="input-modal-roomName" placeholder="방이름 없을 시 임의로 생성">
                         </div>
-                        <button type="button" class="btn mt-2 border-1 border-secondary" id="insertChatRoomNameBtn">방이름 설정
+                        <button type="button" class="btn mt-2 border-1 border-secondary" id="insertChatRoomNameBtn">방이름
+                            설정
                         </button>
-                        <button type="button" class="btn mt-2 border-1 border-secondary" id="insertMemberBtn" style="display: none">추가
+                        <button type="button" class="btn mt-2 border-1 border-secondary" id="insertMemberBtn"
+                                style="display: none">추가
                         </button>
                         <button type="button" class="btn mt-2 border-1 border-secondary" id="insertChatRoomBtn">채팅방 개설
                         </button>
@@ -126,6 +129,32 @@
                     <div class="modal-footer" style="border-top: none;">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                         <button type="button" class="btn btn-danger" id="outChatRoomBtn">나가기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="AISummeryModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+             aria-hidden="true" style="top: 30%;">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="AISummeryModalLabel"
+                            style="width: 100%;text-align: center;font-weight: bold;">AI
+                            요약 완료</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                style="margin:0"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="AISummeryTopic">
+                            <span class="fw-bold">대화 주제</span>
+                            <div class="summary-content"></div>
+                        </div>
+                        <div id="AISummeryContent">
+                            <span class="fw-bold">대화 내용 요약</span>
+                            <div class="summary-content"></div>
+                        </div>
                     </div>
                 </div>
             </div>

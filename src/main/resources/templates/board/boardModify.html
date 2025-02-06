@@ -131,7 +131,7 @@
                 }
 
                 $(function () {
-                    let boardName1Value = '[(${boardManagementList.get(0).getBoardName1})]';
+                    let boardName1Value = '[(${boardManagements.get(0).getBoardName1})]';
                     $('#boardName1').val(boardName1Value);
 
                     $('#boardName1').change(function () {
@@ -200,7 +200,7 @@
                 <div class="boardTitle">게시판 수정</div>
                 <div class="boardContent">
                     <form method="post" name="boardform" action="modifyProcess">
-                        <input type="hidden" name="boardId" th:value="${boardManagementList[0].boardId}">
+                        <input type="hidden" name="boardId" th:value="${boardManagements[0].boardId}">
                         <table class="table" style="line-height: 10px">
                             <tbody>
                             <tr>
@@ -215,7 +215,7 @@
                                         <option th:if="${empId != 'admin'}" value="일반게시판" selected>일반게시판</option>
                                     </select>
                                     <input type="hidden" name="OriginalBoardName1"
-                                           th:value="${boardManagementList[0].boardName1}">
+                                           th:value="${boardManagements[0].boardName1}">
                                 </th>
                             </tr>
                             <tr>
@@ -223,9 +223,9 @@
                                 <td style="padding: 10px .75rem">
                                     <input name="boardName2" id="boardName2" type="text" maxlength="100"
                                            class="form-control2" style="padding-left: 10px;"
-                                           th:value="${boardManagementList[0].boardName2}">
+                                           th:value="${boardManagements[0].boardName2}">
                                     <input type="hidden" name="OriginalBoardName2"
-                                           th:value="${boardManagementList[0].boardName2}">
+                                           th:value="${boardManagements[0].boardName2}">
                                 </td>
                             </tr>
                             <tr>
@@ -239,7 +239,7 @@
                                 <td>
                                     <div id="operator-list" style="display: inline-block;">
                                         <input type="hidden" name="managerId" th:value="${empId}"/>
-                                        <th:block th:each="boardManagement : ${boardManagementList}">
+                                        <th:block th:each="boardManagement : ${boardManagements}">
                                             <th:block
                                                     th:if="${boardManagement.boardManager != 'admin' && boardManagement.boardManager != empId}">
                                                 <div class="operator-tag">

@@ -59,9 +59,7 @@ public class MessengerService {
         userIds.add(empId);
         Map<String, String> empMap = getIdToENameMap();
 
-        System.out.println("chatRoomName = "+chatRoomName);
-
-        if(chatRoomName.isEmpty()) {
+        if (chatRoomName.isEmpty()) {
             StringBuilder chatRoomNameBuilder = new StringBuilder();
             for (int i = 0; i < userIds.size(); i++) {
                 String userId = userIds.get(i);
@@ -198,10 +196,12 @@ public class MessengerService {
 
     public Boolean removeMember(Long chatRoomId, String userId) {
         try {
-            String creator = messengerMapper.findChatRoomById(chatRoomId).getCreatorId();
+            ChatRoomDTO chatRoomDTO = messengerMapper.getCreatorAndChatRoomName(chatRoomId, userId);
+            String creator = chatRoomDTO.getCreatorId();
+            String chatRoomName = chatRoomDTO.getChatRoomName();
+
             int deleteRow;
 
-            System.out.println("creator = " + creator + "userId = " + userId);
             if (creator.equals(userId)) {
                 //채팅방장이 삭제시 모두 방 삭제
                 deleteChatMessage(chatRoomId);
@@ -210,6 +210,7 @@ public class MessengerService {
 
                 ChatMessageDTO chatMessageDTO = ChatMessageDTO.builder()
                         .chatRoomId(chatRoomId)
+                        .chatRoomName(chatRoomName)
                         .senderId(userId)
                         .chatMessageType(ChatMessageType.LEAVE_ALL).build();
                 saveMessage(chatMessageDTO);

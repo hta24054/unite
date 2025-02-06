@@ -125,7 +125,7 @@ body {
     min-height: 100px;
 }
 
-.messenger-header-profile{
+.messenger-header-profile {
     display: flex;
     align-items: center;
 }
@@ -254,8 +254,8 @@ body {
     max-height: 500px;
 }
 
-#chatMessageContent:focus{
-    border:none;
+#chatMessageContent:focus {
+    border: none;
     outline: 2px solid #c7bcef;
 }
 
@@ -508,17 +508,17 @@ tr td {
     padding: 5px 10px;
 }
 
-.modal-setRoomName{
-    display:none;
-    width:90%;
+.modal-setRoomName {
+    display: none;
+    width: 90%;
 }
 
-.modal-roomName{
+.modal-roomName {
     width: 10%;
     font-weight: bold;
 }
 
-.input-modal-roomName{
+.input-modal-roomName {
     width: 80%;
     border-radius: 5px;
     border: none;
@@ -526,15 +526,65 @@ tr td {
     padding: 5px 10px;
 }
 
-.input-modal-roomName:focus-visible{
-    outline:none;
+.input-modal-roomName:focus-visible {
+    outline: none;
 }
 
-#senderName{
+#senderName {
     margin-left: 10px;
     vertical-align: middle;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 200px;
     white-space: nowrap;
+}
+
+.tooltip-message {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip-message .tooltiptext {
+    visibility: hidden;
+    width: 150px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 21%;
+    left: -160%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip-message .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 35%;
+    left: 103%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent transparent #555;
+}
+
+.tooltip-message:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+.AI-logo1 {
+    position: absolute;
+    top: 24%;
+    display: inline;
+    left: 27%;
+    color: ghostwhite;
+}
+
+#AISummeryTopic, #AISummeryContent {
+    margin-bottom: 20px;
 }

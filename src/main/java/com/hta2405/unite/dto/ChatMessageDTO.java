@@ -17,6 +17,7 @@ public class ChatMessageDTO {
     private ChatMessageType chatMessageType;
     private Long chatMessageId;
     private Long chatRoomId;
+    private String chatRoomName;
     private String senderId;
     private String chatMessageContent;
     private LocalDateTime chatMessageDate;

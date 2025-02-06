@@ -10,8 +10,11 @@ services:
     ports:
       - "8088:8088"
     environment:
+      TZ: Asia/Seoul
+      JAVA_OPTS: "-Duser.timezone=Asia/Seoul"
       SPRING_PROFILES_ACTIVE: prod
       REDIS_HOST: redis
+
     depends_on:
       - redis
 

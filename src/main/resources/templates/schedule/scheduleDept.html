@@ -4,10 +4,6 @@
 		<html xmlns:th="http://www.thymeleaf.org">
 			<head>
 				<title>캘린더 - 부서 일정 등록</title>
-				<script th:src="@{https://cdn.jsdelivr.net/npm/moment@2.27.0/min/moment.min.js}"></script>
-				<script th:src="@{https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js}"></script>
-				<script th:src="@{https://cdn.jsdelivr.net/npm/@fullcalendar/moment@6.1.15/index.global.min.js}"></script>
-				<script th:src="@{/js/calendar.js}"></script>
 				<style>
 					textarea {
 						width: 100%;
@@ -93,6 +89,10 @@
 					</div>
 				</div>
 
+				<script th:src="@{https://cdn.jsdelivr.net/npm/moment@2.27.0/min/moment.min.js}"></script>
+				<script th:src="@{https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js}"></script>
+				<script th:src="@{https://cdn.jsdelivr.net/npm/@fullcalendar/moment@6.1.15/index.global.min.js}"></script>
+				<script th:src="@{/js/calendar.js}"></script>
 				<script>
 					// 부서 정보
 					const departments = [

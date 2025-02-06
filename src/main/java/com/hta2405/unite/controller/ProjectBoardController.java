@@ -141,7 +141,6 @@ public class ProjectBoardController {
 
         List<ProjectComment> commentList = projectBoardService.getCommentList(taskId, state);
 
-        // 응답 데이터를 하나의 Map으로 묶기
         Map<String, Object> response = new HashMap<>();
         response.put("listcount", listCount);
         response.put("commentlist", commentList);

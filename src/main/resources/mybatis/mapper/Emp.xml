@@ -148,7 +148,6 @@
                       ON currentDept.parent_deptId = parentDept.dept_id
         WHERE emp.emp_id = #{empId}
     </select>
-
     <select id="findTodayBirthdays" resultType="Birthday">
         select emp_id empId, ename eName, (select d.dept_name from dept d where d.dept_id = e.dept_id) deptName, (select j.job_name from job j where j.job_id = e.job_id) jobName
         from emp e

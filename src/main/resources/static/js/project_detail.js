@@ -156,7 +156,6 @@ $(document).ready(function () {
 
 
 	$(".clickable-participant").on("click", function() {
-		// 'this'를 변수에 저장하여 정확히 참조
 		const that = this;
 		const projectId = $(that).data("id");  // 프로젝트 ID 가져오기
 		const memberId = $(that).data("memberid");  // 멤버 ID 가져오기

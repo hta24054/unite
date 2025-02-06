@@ -379,9 +379,25 @@
 
                     $('#scheduleShareModal').on('hidden.bs.modal', function() {
                         empData = [];
+
                         $('input[name="selectedEmp"]').prop('checked', false);
                         $('#employeeTableBody').empty();
                         $('#selectedEmployees').empty();
+
+                        // 트리 초기화
+                        $("#tree").fancytree("getTree").getRootNode().visit(function(node) {
+                            if (node.getLevel() === 1) {
+                                node.setExpanded(true);
+                            } else if (node.getLevel() >= 2) {
+                                node.setExpanded(false);
+                            }
+                        });
+
+                        $('#tree').find('.fancytree-expanded').each(function() {
+                            if (!$(this).closest('li[role="treeitem"]').is(':first-child')) {
+                                $(this).removeClass('fancytree-expanded');
+                            }
+                        });
 
                         $('#tree').removeClass('fancytree-plain');
                         $('#tree').find('.fancytree-active').removeClass('fancytree-active');

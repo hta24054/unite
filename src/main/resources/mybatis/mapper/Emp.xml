@@ -145,7 +145,6 @@
         and e.hired = 1 and e.role != 'ROLE_ADMIN'
         order by e.job_id, e.emp_id
     </select>
-
     <select id="getIdToENameMap" resultType="map">
         SELECT emp_id, ename
         FROM emp
@@ -183,16 +182,7 @@
         WHERE 1=1;
     </update>
     <select id="findTodayBirthdays" resultType="Birthday">
-        select emp_id                                                       empId,
-               ename                                                        eName,
-               (select d.dept_name from dept d where d.dept_id = e.dept_id) deptName,
-               (select j.job_name from job j where j.job_id = e.job_id)     jobName,
-               img_path                                                     imgPath,
-               img_original                                                 imgOriginal,
-               img_uuid                                                     imgUUID,
-               img_type                                                     imgType,
-               birthday,
-               birthday_type                                                birthdayType
+        select emp_id empId, ename eName, (select d.dept_name from dept d where d.dept_id = e.dept_id) deptName, (select j.job_name from job j where j.job_id = e.job_id) jobName
         from emp e
         where (MONTH(birthday) = #{solMonth} AND DAY(birthday) = #{solDay} AND e.birthday_type = '양력')
            or (MONTH(birthday) = #{lunMonth} AND DAY(birthday) = #{lunDay} AND e.birthday_type = '음력')

@@ -32,10 +32,6 @@ public class BoardPostService {
     private final EmpService empService;
     private final FileService fileService;
 
-    public Map<String, String> getIdToENameMap() {
-        return empService.getIdToENameMap();
-    }
-
     public HashMap<String, Object> getBoardNames(String empId) {
         Emp emp = empService.getEmpById(empId);
         Long deptId = emp.getDeptId();
@@ -76,8 +72,12 @@ public class BoardPostService {
         return boardScope;
     }
 
-    public List<BoardAndManagementDTO> getBoardAndManagement(Long boardId) {
-        return boardPostMapper.getBoardAndManagement(boardId);
+    public Long getBoardId(BoardDTO boardDTO) {
+        return boardPostMapper.findBoardIdByName1Name2(boardDTO);
+    }
+
+    public List<BoardAndManagementDTO> getBoardAndManagement(String boardManager, Long boardId) {
+        return boardPostMapper.getBoardAndManagement(boardManager, boardId);
     }
 
     public List<BoardPostEmpDTO> getBoardListAll(String empId, Integer limit) {
@@ -380,7 +380,7 @@ public class BoardPostService {
     }
 
     public List<BoardAndManagementDTO> getBoardModify(Long boardId) {
-        List<BoardAndManagementDTO> boardManagementList = getBoardAndManagement(boardId);
+        List<BoardAndManagementDTO> boardManagementList = getBoardAndManagement(null, boardId);
 
         BoardAndManagementDTO boardManagement = new BoardAndManagementDTO();
         if (boardManagementList.isEmpty()) {
@@ -395,7 +395,7 @@ public class BoardPostService {
     }
 
     @Transactional
-    public boolean modifyBoard(BoardRequestDTO boardRequestDTO) {
+    public boolean modifyBoard(String boardManager, BoardRequestDTO boardRequestDTO) {
         String ceoId = empService.getEmpListByDeptId(1000L).get(0).getEmpId();
         List<String> managerIdList = boardRequestDTO.getManagerId();
         if (managerIdList == null) {
@@ -428,7 +428,7 @@ public class BoardPostService {
 
         int updateResult = boardPostMapper.updateBoard(board);
 
-        List<BoardAndManagementDTO> boardAndManagementDTOS = boardPostMapper.getBoardAndManagement(boardId);
+        List<BoardAndManagementDTO> boardAndManagementDTOS = boardPostMapper.getBoardAndManagement(boardManager, boardId);
         boolean check = false;
         for (BoardAndManagementDTO boardAndManagementDTO : boardAndManagementDTOS) {
             if (!managerIdList.contains(boardAndManagementDTO.getBoardManager())) {

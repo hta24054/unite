@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.ToString;
 
 @Getter
-//@Setter
 @AllArgsConstructor
 @ToString
 @Builder
@@ -22,4 +21,5 @@ public class ProjectDetailDTO {
         this.isManager = isManager;
     }
     private String jobName; //직책
+    private int todoNum; //투두
 }

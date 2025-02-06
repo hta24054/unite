@@ -65,7 +65,7 @@ public interface BoardPostMapper {
 
     List<Board> getBoardListByName1(String boardName1);
 
-    List<BoardAndManagementDTO> getBoardAndManagement(Long boardId);
+    List<BoardAndManagementDTO> getBoardAndManagement(String boardManager, Long boardId);
 
     int updateBoard(Board board);
 

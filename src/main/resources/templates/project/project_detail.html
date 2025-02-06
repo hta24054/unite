@@ -12,9 +12,6 @@
 				var contextPath = "${pageContext.request.contextPath}";
 				var projectName = "${left}";
 			</script>
-		<!--	<jsp:include page="../common/header.jsp"/>-->
-		<!--	<th:block th:replace="~{project/project_leftbar :: leftbar}"/>-->
-
 		</head>
 		<body>
 			<input type="hidden" th:value="${projectId}" id="project-id">
@@ -29,7 +26,7 @@
 
 				<hr style="margin-top: 20px;">
 				<div class="row">
-					<div class="col-md-8">
+					<div class="col-md-12">
 						<div class="detail-section">
 							<table class="table">
 								<caption>
@@ -60,7 +57,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr th:each="project : ${project}">
+									<tr th:each="project : ${project}" th:style="${project.todoNum == 0} ? 'color: gray;' : ''">
 										<input type="hidden" th:value="${project.projectId}" id="projectId">
 										<td th:text="|${project.participantNames} ${project.jobName}|"
 											th:data-id="${project.projectId}"
@@ -74,8 +71,8 @@
 												  th:data-content="${project.memberDesign}">
 												<span th:text="${project.memberDesign == null ? '업무를 지정해주세요' : project.memberDesign}">sdf</span>
 											</span>
-															</td>
-															<td>
+										</td>
+										<td>
 											<span th:classappend="${project.memberId == #authentication.name} ? 'progress-rate clickable' : 'progress-rate'"
 												  th:data-id="${project.projectId}"
 												  th:data-memberid="${project.memberId}"

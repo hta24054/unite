@@ -32,7 +32,6 @@
         VALUES (#{memberId}, #{projectId}, #{role}, NOW(), #{memberName})
     </insert>
 
-    <!-- 작업 생성 -->
     <insert id="createTask">
         INSERT INTO task (emp_id, project_id, member_name)
         VALUES (#{empId}, #{projectId}, #{memberName})
@@ -48,6 +47,7 @@
           and project_canceled = 0
         order by p.project_id
     </select>
+
     <select id="getMainList" resultType="Project">
         select p.project_name projectName, p.project_id projectId, (select m.member_name from project_member m where m.project_id = p.project_id and m.member_id = manager_id) as managerName, substring(p.project_end_date, 1, 10) projectEndDate, m.project_favorite projectFavorite,
                (select group_concat(member_name) from project_member m where m.project_id=p.project_id and member_role = 'PARTICIPANT') as participants,

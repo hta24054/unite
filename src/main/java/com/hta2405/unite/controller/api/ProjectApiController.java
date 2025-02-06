@@ -58,7 +58,6 @@ public class ProjectApiController {
         return response;
     }
 
-
     @PostMapping("/toggleFavorite")
     public Map<String, Object> toggleFavorite(@RequestParam int projectId, @AuthenticationPrincipal UserDetails user) {
         String userid = user.getUsername();

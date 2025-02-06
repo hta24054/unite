@@ -154,7 +154,6 @@ $(document).ready(function () {
 		});
 	});
 
-
 	$(".clickable-participant").on("click", function() {
 		const that = this;
 		const projectId = $(that).data("id");  // 프로젝트 ID 가져오기

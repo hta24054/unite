@@ -47,6 +47,7 @@ public class BirthdayService {
 
         return restTemplate.getForObject(uri, BirthdayDTO.class);
     }
+
     public List<Birthday> getTodayBirthdays() {
         LocalDate today = LocalDate.now();
         String redisKey = REDIS_KEY_PREFIX + today;

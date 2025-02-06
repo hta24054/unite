@@ -138,7 +138,6 @@ public class ProjectBoardController {
 
         int listCount = projectBoardService.getListCount(taskId);
         log.info("listCount={}", listCount);
-
         List<ProjectComment> commentList = projectBoardService.getCommentList(taskId, state);
 
         Map<String, Object> response = new HashMap<>();

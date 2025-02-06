@@ -267,11 +267,13 @@
 
                         // 현재 임시 저장된 직원 ID 가져오기
                         let currentIds = tempShareEmp ? tempShareEmp.split(',') : [];
+                        let duplicateNames = []; // 중복된 직원 이름 저장
 
                         selectedEmpData.forEach(emp => {
                             // 중복 확인
                             if (currentIds.includes(emp.id) || empData.map(e => e.id).includes(emp.id)) {
-                                alert('이 직원은 이미 추가되었습니다: ' + emp.name);
+                                duplicateNames.push(emp.name); // 중복된 이름을 배열에 추가
+                                $('input[name="selectedEmp"][value="' + emp.id + '"]').prop('checked', false);
                                 return;
                             }
 
@@ -304,7 +306,11 @@
                             });
                         });
 
-                        alert('선택된 직원 : ' + selectedEmpData.map(emp => emp.name).join(', '));
+                        if (duplicateNames.length > 0) {
+                            alert('이미 추가된 직원입니다: ' + duplicateNames.join(', '));
+                        } else {
+                            alert('선택된 직원 : ' + selectedEmpData.map(emp => emp.name).join(', '));
+                        }
                     }
 
                     // 공유자 선택 버튼 클릭 시

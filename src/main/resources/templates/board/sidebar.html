@@ -133,6 +133,60 @@
         a {
             text-decoration: none;
         }
+
+        a:hover {
+            color: black;
+        }
+
+        .config-tool-button :hover {
+            opacity: 50%;
+        }
+
+        .config-tool-button-gear {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+
+
+        .tooltip-message {
+            position: relative;
+            display: inline-block;
+            left: 90%;
+        }
+
+        .tooltip-message .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 6%;
+            left: -370%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip-message .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 35%;
+            left: 104%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent transparent #555;
+        }
+
+        .tooltip-message:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
     <script>
         function sendPost(element, url) {
@@ -183,13 +237,28 @@
 
         $(function () {
             //설정 버튼을 클릭한 경우
-            $(".nav-link").on('click', '.config-tool-button', function () {
+            $(".nav-link").on('click', '.config-tool-button-gear', function () {
                 //더보기를 클릭하면 수정과 삭제 영역이 나타나고 다시 클릭하면 사라져요
                 $(this).next().toggle();
 
                 //클릭 한 곳만 수정 삭제 영역이 나타나도록 합니다.
-                $(".config-tool-button").not(this).next().hide();
+                $(".config-tool-button-gear").not(this).next().hide();
             })
+
+            $(".config-tool-button-ALL").on('click', function () {
+                const $configGear = $('.config-tool-button-gear');
+
+                if ($configGear.css('visibility') === 'hidden') {
+                    $configGear.css({visibility: 'visible', opacity: 1});
+                } else {
+                    $configGear.css({opacity: 0});
+
+                    setTimeout(() => {
+                        $configGear.css('visibility', 'hidden');
+                    }, 300);
+                }
+            });
+
         })
     </script>
     <div class="layoutSidenav_nav_board" id="layoutSidenav_nav">
@@ -203,6 +272,13 @@
                     <div class="sb-sidenav-menu-heading sb-sidenav-menu-heading-board">
                         <a th:href="'/board/post/postWrite' + ( ${boardName2 != null} ? '?boardName2=' + ${boardName2} : '')">
                             <button class="writeBtn">글쓰기</button>
+                        </a>
+                    </div>
+
+                    <div class="sb-sidenav-menu-heading" style="padding: 0 16px;">
+                        <a href="#" class="config-tool-button config-tool-button-ALL tooltip-message">
+                            <i class="bi bi-pen fs-5" style="color: darkgray;"></i>
+                            <span class="tooltiptext tooltip-left">게시판 설정</span>
                         </a>
                     </div>
 
@@ -225,7 +301,7 @@
                                        class="nav-link-board boardName2" th:text="${board.boardName2}"></a>
 
                                     <th:block th:if="${userId == 'admin'}">
-                                        <a href="#" class="config-tool-button">
+                                        <a href="#" class="config-tool-button config-tool-button-gear">
                                             <i class="bi bi-gear"></i>
                                         </a>
                                         <div id='comment-list-item-layer2_1' class='config-LayerMore'>
@@ -246,7 +322,7 @@
                                                        && boardManagement.boardName2 == board.boardName2
                                                        && boardManagement.boardManager == userId
                                                        && boardManagement.boardManager != 'admin'}"
-                                           href="#" class="config-tool-button">
+                                           href="#" class="config-tool-button config-tool-button-gear">
                                             <i class="bi bi-gear"></i>
                                         </a>
                                         <div id='comment-list-item-layer2' class='config-LayerMore'>
@@ -293,7 +369,7 @@
                                        class="nav-link-board boardName2" th:text="${board.boardName2}"></a>
 
                                     <th:block th:if="${userId == 'admin'}">
-                                        <a href="#" class="config-tool-button">
+                                        <a href="#" class="config-tool-button config-tool-button-gear">
                                             <i class="bi bi-gear"></i>
                                         </a>
                                         <div id='comment-list-item-layer3_1' class='config-LayerMore'>
@@ -314,7 +390,7 @@
                                                        && boardManagement.boardName2 == board.boardName2
                                                        && boardManagement.boardManager == userId
                                                        && boardManagement.boardManager != 'admin'}"
-                                           href="#" class="config-tool-button">
+                                           href="#" class="config-tool-button config-tool-button-gear">
                                             <i class="bi bi-gear"></i>
                                         </a>
                                         <div id='comment-list-item-layer3' class='config-LayerMore'>

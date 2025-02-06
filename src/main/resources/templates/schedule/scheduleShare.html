@@ -242,6 +242,8 @@
                     }
 
                     let empData = []; // 직원 정보 저장 배열
+                    let tempShareEmp = ''; // 임시 저장용 변수
+
                     function insertEmp() {
                         const targetEmpId = localStorage.getItem('selectedEmpId');
 
@@ -263,19 +265,19 @@
                             return;
                         }
 
-                        // 현재 #share_emp에 이미 존재하는 직원 ID 가져오기
-                        let currentIds = $('#share_emp').val().split(',');
+                        // 현재 임시 저장된 직원 ID 가져오기
+                        let currentIds = tempShareEmp ? tempShareEmp.split(',') : [];
 
                         selectedEmpData.forEach(emp => {
-                            // 중복 확인: #share_emp에 이미 해당 직원 ID가 있는지 확인
-                            if (currentIds.map(id => id).includes(emp.id) || empData.map(e => e.id).includes(emp.id)) {
+                            // 중복 확인
+                            if (currentIds.includes(emp.id) || empData.map(e => e.id).includes(emp.id)) {
                                 alert('이 직원은 이미 추가되었습니다: ' + emp.name);
                                 return;
                             }
 
-                            // #share_emp 값 갱신
+                            // 임시 배열에 저장
                             currentIds.push(emp.id);
-                            $('#share_emp').val(currentIds.join(','));
+                            tempShareEmp = currentIds.join(',');
 
                             empData.push(emp);
 
@@ -292,11 +294,11 @@
                             empEl.on('click', function() {
                                 $(this).remove();
 
-                                // #share_emp에서 해당 직원 ID 제거
-                                let currentIds = $('#share_emp').val().split(',');
+                                // 임시 저장소에서 해당 직원 ID 제거
+                                let currentIds = tempShareEmp.split(',');
                                 const empIdToRemove = emp.id;
                                 currentIds = currentIds.filter(id => id !== empIdToRemove);
-                                $('#share_emp').val(currentIds);
+                                tempShareEmp = currentIds.join(',');
 
                                 empData = empData.filter(e => e.id !== emp.id);
                             });
@@ -339,13 +341,15 @@
                         $('input[name="selectedEmp"][value="' + empIdToRemove + '"]').prop('checked', false);
                     });
 
-
                     // 저장버튼 클릭 시
                     $('#btnSave').on('click', function() {
                         if (empData.length === 0) {
                             alert("직원이 추가되지 않았습니다.");
                             return;
                         }
+
+                        // 임시 저장된 값을 실제 share_emp에 저장
+                        $('#share_emp').val(tempShareEmp);
 
                         // 선택된 직원들이 저장된 배열을 #scheduleShareEmp에 출력
                         empData.forEach(emp => {
@@ -362,7 +366,7 @@
                             empEl.on('click', function() {
                                 $(this).remove();
 
-                                // #share_emp에서 해당 직원 ID 제거
+                                // share_emp에서 해당 직원 ID 제거
                                 let currentIds = $('#share_emp').val().split(',');
                                 const empIdToRemove = emp.id;
                                 currentIds = currentIds.filter(id => id !== empIdToRemove);
@@ -378,7 +382,11 @@
                     });
 
                     $('#scheduleShareModal').on('hidden.bs.modal', function() {
-                        empData = [];
+                        // 저장버튼을 누르지 않고 닫았을 경우 초기화
+                        if (!$('#share_emp').val()) {
+                            empData = [];
+                            tempShareEmp = '';
+                        }
 
                         $('input[name="selectedEmp"]').prop('checked', false);
                         $('#employeeTableBody').empty();

@@ -168,6 +168,14 @@
         WHERE user_id = #{userId}
     </select>
 
+    <select id="getCreatorAndChatRoomName" resultType="com.hta2405.unite.dto.ChatRoomDTO">
+        SELECT creator_id, chat_room_name
+        FROM chat_room_member
+                 NATURAL JOIN chat_room
+        WHERE chat_room_id = #{chatRoomId}
+          AND user_id = #{userId}
+    </select>
+
     <delete id="removeMember">
         DELETE
         FROM chat_room_member

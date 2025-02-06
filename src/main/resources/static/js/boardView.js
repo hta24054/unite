@@ -45,20 +45,41 @@ function getList(num) {
 
                     //로그인한 사람이 댓글 작성자인 경우
                     var empValue = $("#empId").val();
-                    let toolButtons = empValue === comment.postCommentWriter || empValue === 'admin' ? `
-						<div class='comment-tool'>
-							<div title='더보기' class='comment-tool-button'>
-								<div>&#46;&#46;&#46;</div>
-							</div>
-							<div id='comment-list-item-layer${comment.commentId}' class='LayerMore'>
-								<ul class='layer-item'>
-									<li class='layer-list'>
-										<a href='javascript:updateForm(${comment.commentId},"${comment.postCommentFileOriginal}","${comment.postCommentFileUUID}")' class='layer-button'>수정</a>
-										<a href='javascript:del(${comment.commentId})' class='layer-button'>삭제</a>
-									</li>
-								</ul>
-							</div>
-						</div>` : '';
+
+                    let toolButtons = "";
+                    if (empValue === comment.postCommentWriter) {
+                        toolButtons =
+                            `<div class='comment-tool'>
+                                <div title='더보기' class='comment-tool-button'>
+                                    <div>&#46;&#46;&#46;</div>
+                                </div>
+                                <div id='comment-list-item-layer${comment.commentId}' class='LayerMore'>
+                                    <ul class='layer-item'>
+                                        <li class='layer-list'>
+                                            <a href='javascript:updateForm(${comment.commentId},"${comment.postCommentFileOriginal}","${comment.postCommentFileUUID}")' class='layer-button'>수정</a>
+                                            <a href='javascript:del(${comment.commentId})' class='layer-button'>삭제</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>`;
+                    } else {
+                        rdata.boardManagements.forEach(boardManagement => {
+                            toolButtons = empValue === boardManagement.boardManager ? `
+                            <div class='comment-tool'>
+                                <div title='더보기' class='comment-tool-button'>
+                                    <div>&#46;&#46;&#46;</div>
+                                </div>
+                                <div id='comment-list-item-layer${comment.commentId}' class='LayerMore'>
+                                    <ul class='layer-item'>
+                                        <li class='layer-list'>
+                                            <a href='javascript:updateForm(${comment.commentId},"${comment.postCommentFileOriginal}","${comment.postCommentFileUUID}")' class='layer-button'>수정</a>
+                                            <a href='javascript:del(${comment.commentId})' class='layer-button'>삭제</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>` : '';
+                        });
+                    }
 
                     output +=
                         `<li id='${comment.commentId}' class='comment-list-item ${replayClass}'>

@@ -160,6 +160,19 @@ function searchAjax(sdata) {
 
 $(function () {
 
+    let currentUrl = window.location.href;
+
+    $('#boardUrl').val(currentUrl);
+
+    // 주소 복사 기능
+    $('#copyBoardUrlBtn').click(function () {
+        let urlField = $('#boardUrl');
+        urlField.select(); // 텍스트 선택
+        document.execCommand('copy');
+
+        alert('게시판 주소가 복사되었습니다.');
+    });
+
     $("#viewCount").change(function () {
         go(1);//보여줄 페이지를 1페이지로 설정합니다.
     });//change end

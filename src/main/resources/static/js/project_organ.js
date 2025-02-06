@@ -17,7 +17,7 @@ $(document).ready(function () {
         } else if (targetId === 'viewers') {
             inputValue = $('#viewers').val();
         }
-
+        let empId;
         if (inputValue) {
             // 쉼표로 구분된 값을 배열로 나누어 반복 처리
             inputValue.split(', ').forEach(function (empName) {
@@ -27,7 +27,7 @@ $(document).ready(function () {
                     if (employeeNameInModal === empName) {
                         $(this).prop('checked', true);  // 체크박스 체크
                     }
-                    const empId = $(this).val(); // 선택된 empId
+                    empId = $(this).val(); // 선택된 empId
                     if (!alluserid.includes(empId)) {
                         alluserid.push(empId); // empId를 alluserid 배열에 추가
                     }
@@ -36,7 +36,7 @@ $(document).ready(function () {
                 // 선택된 직원 이름을 div에 추가
                 const selectedEmployeesDiv = $('#selectedEmployees');
                 const empLine = `
-	                <div class="emp-line" data-name="${empName}" style="display: flex; align-items: center; margin-bottom: 5px;">
+	                <div class="emp-line" data-empid="${empId}" data-name="${empName}" style="display: flex; align-items: center; margin-bottom: 5px;">
 	                    <span style="flex-grow: 1;">${empName}</span>
 	                    <img src="/image/delete.png" class="remove-icon" 
 	                         style="cursor: pointer; width: 16px; height: 16px;" alt="삭제">
@@ -109,6 +109,7 @@ $(document).ready(function () {
 
     // 추가 버튼 클릭 시 선택된 직원의 이름을 쉼표로 구분해 textarea에 추가
     $('#addEmpBtn').on('click', function () {
+        console.log("alluserfirst", alluserid); // alluserid 배열 상태 출력
         const selectedEmpNames = $('input[name="selectedEmp"]:checked')
             .map(function () {
                 return $(this).closest('tr').find('td:eq(2)').text().trim(); // 직원 이름
@@ -151,7 +152,7 @@ $(document).ready(function () {
                 selectedEmployeesDiv.append(empLine);
             });
 
-            console.log(alluserid); // alluserid 배열 상태 출력
+            console.log("alluserlast", alluserid); // alluserid 배열 상태 출력
 
             // 선택된 직원 후 체크박스 모두 해제
             $('input[name="selectedEmp"]').prop('checked', false);
@@ -160,13 +161,12 @@ $(document).ready(function () {
         }
     });
 
-
     // 삭제 아이콘 클릭 이벤트 처리
     $(document).on('click', '.remove-icon', function () {
         const empLine = $(this).parent('.emp-line'); // 삭제할 직원 줄
         const empName = empLine.data('name'); // 삭제할 직원 이름
         const empId = empLine.data('emp-id'); // empId를 가져옵니다. (emp-line에 저장된 emp-id 값)
-
+        console.log(empId);
         // checkbox 체크 해제
         $('input[name="selectedEmp"]').each(function () {
             const checkboxRow = $(this).closest('tr'); // 현재 체크박스가 있는 행
@@ -196,15 +196,13 @@ $(document).ready(function () {
 
         const selectedEmployees = $('#selectedEmployees .emp-line');
         const selectedEmpNames = [];
-        const selectedEmpIds = [];
-
+        console.log(selectedEmpNames);
         selectedEmployees.each(function () {
             const empName = $(this).data('name');
             const empId = $(this).data('emp-id');
             selectedEmpNames.push(empName);
-            selectedEmpIds.push(empId);
         });
-
+        console.log("selectEmpNames", selectedEmpNames);
         if (selectedEmpNames.length === 0) {
             $('#' + targetInputId).val('');
             $('#orgChartModal').modal('hide');
@@ -221,14 +219,13 @@ $(document).ready(function () {
         const targetInput = $('#' + targetInputId);
         targetInput.prop('readonly', false);
 
-        // 직원들의 이름과 ID를 '이름 (ID)' 형식으로 설정
         const formattedNamesAndIds = selectedEmpNames.map((name, index) => {
-            return `${name} (${selectedEmpIds[index]})`;
+            return `${name}`;
         }).join(', ');
 
         targetInput.val(formattedNamesAndIds);
         targetInput.prop('readonly', true);
-
+        console.log('formattedNamesAndIds', formattedNamesAndIds);
         alert('등록된 직원: ' + formattedNamesAndIds);
         $('#orgChartModal').modal('hide');
     });

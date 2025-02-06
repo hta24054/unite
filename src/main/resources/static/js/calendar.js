@@ -56,24 +56,25 @@ $(document).ready(function () {
                 }
 
                 // 기존 공휴일 데이터 소스를 제거
-                if (calendar.getEventSourceById("holidayList") != null) {
+                if (calendar && calendar.getEventSourceById("holidayList") != null) {
                     calendar.getEventSourceById("holidayList").remove();
                 }
 
-                // 새로운 공휴일 이벤트를 추가
-                calendar.addEventSource({
-                    id: "holidayList",
-                    events: holidayEvents // 새로운 공휴일 이벤트를 추가
-                });
+                if (calendar && calendar.addEventSource) {
+                    // 새로운 공휴일 이벤트 추가
+                    calendar.addEventSource({
+                        id: "holidayList",
+                        events: holidayEvents // 새로운 공휴일 이벤트를 추가
+                    });
+                }
 
-                // 캘린더에 이벤트 갱신
-                calendar.refetchEvents();
-
-                // calendar.addEventSource(holidayEvents);  // 새로 추가된 이벤트를 캘린더에 반영
-                // calendar.refetchEvents();
-                //
-                // // 공휴일 데이터가 로드되었으므로 isHolidayDataLoaded를 true로 설정
-                // isHolidayDataLoaded = true;
+                // 캘린더 이벤트 갱신
+                if (typeof calendar !== 'undefined' && calendar !== null) {
+                    // 캘린더가 있을 때만 refetchEvents 호출
+                    if (typeof calendar.refetchEvents === 'function') {
+                        calendar.refetchEvents();
+                    }
+                }
             },
             error: function (error) {
                 console.log('공휴일 불러오기 오류', error);
@@ -411,10 +412,6 @@ $(document).ready(function () {
         const endDateTime = moment(event.end || event.start).format("YYYY-MM-DDTHH:mm");
         $("#startAt").val(startDateTime);
         $("#endAt").val(endDateTime);
-
-        console.log($("#startAt").val(startDateTime))
-        console.log($("#endAt").val(endDateTime))
-
         $("#bgColor").val(event.backgroundColor);
 
         const description = event.extendedProps && event.extendedProps.description ? event.extendedProps.description : '';
@@ -747,9 +744,6 @@ $(document).ready(function () {
                     event.end = moment(event.end).add(1, 'days'); // 종료 날짜를 하루 더함
                 }
                 return event; // 수정된 이벤트 반환
-            },
-            eventDidMount: function (info) {
-                //console.log("info.event.extendedProps", info.event.extendedProps);
             }
         });
 

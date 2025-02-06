@@ -130,7 +130,7 @@
                             <div class="modal-body">
                                 <div th:include="common/empTree.html"></div>
                                 <div class="text-area-container mt-3">
-                                    <div id="selectedEmployees" style="border: 1px solid #ccc; width: 100%; min-height: 50px; display: flex; align-items: center; gap: 10px;"></div>
+                                    <div id="selectedEmployees" style="border: 1px solid #ccc; width: 100%; min-height: 50px; display: flex; align-items: center; gap: 10px; padding: 0 10px;"></div>
                                     <button type="button" id="addEmpBtn" class="btn btn-primary mt-2">추가</button>
                                 </div>
                             </div>
@@ -279,7 +279,7 @@
 
                             empData.push(emp);
 
-                            const empEl = $('<button class="mr-2 btn btn-sm btn-outline-secondary">')
+                            const empEl = $('<button class="selected_emp mr-2 btn btn-sm btn-outline-secondary">')
                                 .append(emp.name)
                                 .append(
                                     $('<img src="/image/delete.png" class="remove-icon" style="width: 16px; height: 16px; margin-left: 10px;" alt="삭제"/>')
@@ -321,9 +321,9 @@
                         insertEmp();
                     });
 
-                    // #selectedEmployees에서 삭제 기능을 위한 이벤트 위임
-                    $('#selectedEmployees').on('click', '.remove-icon', function() {
-                        const empBtn = $(this).closest('button');
+                    // 추가한 직원 클릭시 삭제
+                    $(document).on('click', '.selected_emp', function() {
+                        const empBtn = $(this);
                         const empIdToRemove = empBtn.val();
 
                         // #share_emp에서 해당 직원 ID 제거
@@ -334,9 +334,11 @@
                         // empData에서 해당 직원 삭제
                         empData = empData.filter(emp => emp.id !== empIdToRemove);
 
-                        // 버튼 삭제
                         empBtn.remove();
+
+                        $('input[name="selectedEmp"][value="' + empIdToRemove + '"]').prop('checked', false);
                     });
+
 
                     // 저장버튼 클릭 시
                     $('#btnSave').on('click', function() {

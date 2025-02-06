@@ -208,6 +208,7 @@ $(document).ready(function () {
                                 droppable: false, // 드래그 불가
                                 extendedProps: {
                                     isDept: true, // 부서 일정
+                                    isShared: false
                                 },
                             })
                         }

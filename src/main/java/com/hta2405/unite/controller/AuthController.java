@@ -40,18 +40,18 @@ public class AuthController {
 
     @GetMapping("/findPassword")
     public String showFindPasswordPage() {
-        return "/auth/findPassword";
+        return "auth/findPassword";
     }
 
     @PostMapping("/findPassword/verifyUser")
     public String showVerifyUserForm(String empId, HttpSession session) {
         session.setAttribute("pwEmpId", empId);
-        return "/auth/verifyUser";
+        return "auth/verifyUser";
     }
 
     @GetMapping("/resetPassword")
     public String showChangePasswordPage(HttpSession session, Model model) {
         model.addAttribute("empId", session.getAttribute("pwEmpId"));
-        return "/auth/resetPassword";
+        return "auth/resetPassword";
     }
 }

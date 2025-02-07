@@ -385,6 +385,8 @@ $(document).ready(function () {
 
     // 팝업
     function openDetailModal(event) {
+        $(".modal-body").find(".form-group.share-info").remove(); // 공유자 정보
+
         $(".modal-header").find("h5").text("일정 등록");
         $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);
         $(".modal-body").find(".btn_wrap").html(`
@@ -410,13 +412,6 @@ $(document).ready(function () {
         const startDate = moment(event.start).format("YYYY-MM-DD");
         const startDateTime = moment(event.start).format("YYYY-MM-DDTHH:mm");
         const endDateTime = moment(event.end || event.start).format("YYYY-MM-DDTHH:mm");
-        $("#startAt").val(startDateTime);
-        $("#endAt").val(endDateTime);
-        $("#bgColor").val(event.backgroundColor);
-
-        const description = event.extendedProps && event.extendedProps.description ? event.extendedProps.description : '';
-        $("#description").val(description);
-
         // allDay 체크 여부
         if (event.allDay) {
             $("#allDay").prop("checked", true);
@@ -430,9 +425,27 @@ $(document).ready(function () {
             $("#endAt").val(endDateTime);
         }
 
+        $("#bgColor").val(event.backgroundColor);
+        const description = event.extendedProps && event.extendedProps.description ? event.extendedProps.description : '';
+        $("#description").val(description);
+
+
+
         // 공유 일정
         if (event.extendedProps.isShared === true) {
             $(".modal-header").find("h5").text("공유 일정");
+
+            const shareInfoHtml = `
+                <div class="form-group share-info">
+                    <p style="margin-bottom: 5px;">공유자 정보</p>
+                    <ul>
+                        <li><span>등록자:</span> ${event.extendedProps.empIdName}</li>
+                        <li><span>참여자:</span> ${event.extendedProps.shareEmpNames}</li>
+                    </ul>
+                </div>
+            `;
+            $(".modal-body").find(".form-group:nth-of-type(1)").after(shareInfoHtml);
+
             // 등록자/참여자 구별
             if (event.extendedProps.empId === $("#emp_id").val()) {  // 등록자일 경우
                 $(".modal-body").find(".btn_wrap").html(`
@@ -444,17 +457,6 @@ $(document).ready(function () {
                 $(".modal-body").find(".btn_wrap").html(``);
             }
 
-            if ($(".modal-body").find(".form-group.share-info").length === 0) {
-                $(".modal-body").find(".form-group:nth-of-type(1)").after(`
-                    <div class="form-group share-info">
-                        <p style="margin-bottom: 5px;">공유자 정보</p>
-                        <ul>
-                            <li><span>등록자:</span> ${event.extendedProps.empIdName}</li>
-                            <li><span>참여자:</span> ${event.extendedProps.shareEmpNames}</li>
-                        </ul>
-                    </div>
-                `);
-            }
             $(".modal-body").find(".form-group.color-group").show();
             $(".modal-body").find(".form-group.share-info").show();
 
@@ -465,8 +467,6 @@ $(document).ready(function () {
 	            <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
 	            <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
 	        `);
-            $(".modal-body").find(".form-group.share-info").hide();
-
         } else {
             $(".modal-header").find("h5").text("상세 일정");
             $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);
@@ -476,7 +476,6 @@ $(document).ready(function () {
 	            <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
 	        `);
             $(".modal-body").find(".form-group.color-group").show();
-            $(".modal-body").find(".form-group.share-info").hide();
         }
 
         // 일정 수정
@@ -490,7 +489,6 @@ $(document).ready(function () {
                 description: $("#description").val(),
                 allDay: $("#allDay").prop("checked")
             };
-
             updateEvent(eventData);
         });
 
@@ -499,7 +497,6 @@ $(document).ready(function () {
             const eventData = {
                 schedule_id: $("#schedule_id").val()
             };
-
             deleteEvent(eventData);
         });
 
@@ -510,7 +507,6 @@ $(document).ready(function () {
     $(".btn.btn-lg[data-bs-toggle='modal']").on("click", function () {
         initializeModalForRegistration();
     });
-
 
     // 등록 버튼 클릭 시 모달 강제 초기화
     function initializeModalForRegistration() {
@@ -530,7 +526,7 @@ $(document).ready(function () {
 	        <button type="submit" class="btn btn-info" id="btnRegister">등록</button>
 	    `);
 
-        $(".modal-body").find(".form-group.share-info").hide();
+        $(".modal-body").find(".form-group.share-info").remove();
         $(".modal-body").find(".form-group.color-group").show();
 
         // 등록 버튼에 이벤트 바인딩
@@ -559,7 +555,6 @@ $(document).ready(function () {
             this.reset();
         });
 
-        //$("#startAt, #endAt").prop("type", "datetime-local").val("");
         $(".modal-body").find(".form-group.share-info").hide();
     });
 

@@ -11,12 +11,24 @@ $(document).ready(function () {
     function fetchAllData() {
         events = []; // 배열 초기화
 
+        const startDate = moment().startOf('month').subtract(7, 'days').format('YYYY-MM-DD');
+        const endDate = moment().endOf('month').add(7, 'days').format('YYYY-MM-DD');
+        // const startDate = moment(calendar.getDate()).startOf('month').subtract(7, 'days').format('YYYY-MM-DD');
+        // const endDate = moment(calendar.getDate()).endOf('month').add(7, 'days').format('YYYY-MM-DD');
+
         Promise.all([
-            fetchListData(),
+            fetchListData(startDate, endDate),
             fetchSharedListData()
         ]).then(() => {
             holidayCurrentMonth();
         });
+
+        // if (calendar) {
+        //     const startMonth = moment(calendar.getDate()).startOf('month').format('YYYY-MM');
+        //     const endMonth = moment(calendar.getDate()).endOf('month').format('YYYY-MM');
+        //     isHolidayDataLoaded = false;
+        //     fetchHolidayData(startMonth, endMonth);
+        // }
     }
 
     // 공휴일 현재 달에 맞게 불러오기
@@ -24,6 +36,13 @@ $(document).ready(function () {
         const startMonth = moment().startOf('month').format('YYYY-MM');
         const endMonth = moment().endOf('month').format('YYYY-MM');
         fetchHolidayData(startMonth, endMonth);
+    }
+
+    // 일정 리스트 현재 달에 맞게 불러오기
+    function listDataCurrent() {
+        const startDate = moment().startOf('month');  // 현재 월의 첫 날
+        const endDate = moment().endOf('month');    // 현재 월의 마지막 날
+        fetchListData(startDate, endDate);
     }
 
     // 공휴일 불러오기
@@ -83,13 +102,15 @@ $(document).ready(function () {
     }
 
     // 일정 리스트 불러오기
-    function fetchListData() {
+    function fetchListData(startDate, endDate) {
         $.ajax({
             url:  contextPath + "/schedule/scheduleList",
             type: "get",
             dataType: "json",
             data: {
-                emp_id: $("#emp_id").val()
+                emp_id: $("#emp_id").val(),
+                startDate: startDate,
+                endDate: endDate
             },
             success: function (data) {
                 if (data != null) {
@@ -113,7 +134,16 @@ $(document).ready(function () {
                     }
                 }
 
-                initCalendar();
+                // 기존 일정 데이터 소스를 제거
+                if (calendar.getEventSourceById("scheduleList") != null) {
+                    calendar.getEventSourceById("scheduleList").remove();
+                }
+
+                // 새로운 일정 이벤트 추가
+                calendar.addEventSource({
+                    id: "scheduleList",
+                    events: events
+                });
             },
             error: function (error) {
                 console.log('개인 일정 리스트 불러오기 오류', error);
@@ -271,6 +301,7 @@ $(document).ready(function () {
 
                 window.holidayDataLoaded = false;
                 fetchAllData();
+                // holidayCurrentMonth();
                 $("#scheduleModal").modal("hide");
 
                 // 부서 일정 체크
@@ -555,6 +586,7 @@ $(document).ready(function () {
             this.reset();
         });
 
+        $("#startAt, #endAt").prop("type", "datetime-local");
         $(".modal-body").find(".form-group.share-info").hide();
     });
 
@@ -632,6 +664,37 @@ $(document).ready(function () {
         }
     });
 
+    function loadCalendarEvents(direction) {
+        const currentStart = moment(calendar.getDate()).startOf('month');  // 현재 월의 시작
+        const currentEnd = moment(calendar.getDate()).endOf('month');  // 현재 월의 끝
+
+        let startDate, endDate;
+
+        if (direction === 'prev' || direction === 'next') {
+            startDate = moment(currentStart)
+                .subtract(1, 'month')
+                .endOf('month')
+                .subtract(7, 'days')
+                .format('YYYY-MM-DD');
+
+            endDate = moment(currentEnd)
+                .add(1, 'month')
+                .startOf('month')
+                .add(7, 'days')
+                .format('YYYY-MM-DD');
+        } else {
+            startDate = moment(currentStart).subtract(7, 'days').format('YYYY-MM-DD');
+            endDate = moment(currentEnd).add(7, 'days').format('YYYY-MM-DD');
+        }
+
+        // 모든 이벤트 소스 제거
+        let sources = calendar.getEventSources();
+        sources.forEach(source => source.remove());
+
+        // 일정 데이터를 가져와서 업데이트
+        fetchListData(startDate, endDate);
+    }
+
     // 캘린더 생성
     function initCalendar() {
         const calendarEl = document.getElementById('calendar');
@@ -659,6 +722,8 @@ $(document).ready(function () {
                         const endMonth = moment(calendar.getDate()).endOf('month').format('YYYY-MM');
                         isHolidayDataLoaded = false;
                         fetchHolidayData(startMonth, endMonth);
+
+                        loadCalendarEvents('prev');
                     }
                 },
                 customNext: {
@@ -670,6 +735,8 @@ $(document).ready(function () {
                         const endMonth = moment(calendar.getDate()).endOf('month').format('YYYY-MM');
                         isHolidayDataLoaded = false;
                         fetchHolidayData(startMonth, endMonth);
+
+                        loadCalendarEvents('next');
                     }
                 }
             },
@@ -727,11 +794,9 @@ $(document).ready(function () {
                 });
             },
             eventClick: function (info) {
-                if (info.event.extendedProps.isHoliday) {
-                    return;
+                if (!info.event.extendedProps.isHoliday) {
+                    openDetailModal(info.event);
                 }
-
-                openDetailModal(info.event);
             },
             eventChange: function (info) {
                 updateDragEvent(info);
@@ -742,6 +807,9 @@ $(document).ready(function () {
                     event.end = moment(event.end).add(1, 'days'); // 종료 날짜를 하루 더함
                 }
                 return event; // 수정된 이벤트 반환
+            },
+            eventRender: function(info) {
+                info.el.style.transition = 'none';
             }
         });
 

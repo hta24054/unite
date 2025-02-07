@@ -26,8 +26,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<Schedule> getListSchedule(String id) {
-        return scheduleDAO.getListSchedule(id);
+    public List<Schedule> getListSchedule(String empId, String startDate, String endDate) {
+        return scheduleDAO.getListSchedule(empId, startDate, endDate);
     }
 
     @Override

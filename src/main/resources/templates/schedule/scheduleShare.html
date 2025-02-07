@@ -4,10 +4,6 @@
         <html xmlns:th="http://www.thymeleaf.org">
             <head>
                 <title>캘린더 - 공유 일정 등록</title>
-                <script th:src="@{https://cdn.jsdelivr.net/npm/moment@2.27.0/min/moment.min.js}"></script>
-                <script th:src="@{https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js}"></script>
-                <script th:src="@{https://cdn.jsdelivr.net/npm/@fullcalendar/moment@6.1.15/index.global.min.js}"></script>
-                <script th:src="@{/js/calendar.js}"></script>
                 <style>
                     textarea {
                         width: 100%;
@@ -100,7 +96,7 @@
 
                         <div class="form-group row mb-3">
                             <p class="col-sm-2">공유자</p>
-                            <div class="col-sm-8" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <div class="col-sm-8" style="display: flex; align-items: center; flex-wrap: wrap;">
                                 <div id="scheduleShareEmp" style="display: flex; align-items: center; gap: 10px;"></div>
                                 <a href="javascript:void(0);" th:attr="data-target='scheduleShareModal'" id="scheduleShareBtn">+ 공유자 선택</a>
                             </div>
@@ -129,6 +125,10 @@
                             </div>
                             <div class="modal-body">
                                 <div th:include="common/empTree.html"></div>
+                                <div class="text-area-container mt-3">
+                                    <div id="selectedEmployees" style="border: 1px solid #ccc; width: 100%; min-height: 50px; display: flex; align-items: center; gap: 10px; padding: 0 10px;"></div>
+                                    <button type="button" id="addEmpBtn" class="btn btn-primary mt-2">추가</button>
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <div class="btn_wrap">
@@ -138,22 +138,14 @@
                         </div>
                     </div>
                 </div>
+                <script th:src="@{https://cdn.jsdelivr.net/npm/moment@2.27.0/min/moment.min.js}"></script>
+                <script th:src="@{https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js}"></script>
+                <script th:src="@{https://cdn.jsdelivr.net/npm/@fullcalendar/moment@6.1.15/index.global.min.js}"></script>
+                <script th:src="@{/js/calendar.js}"></script>
                 <script>
-                    sharedEmployees();
-
-                    $("#scheduleShareBtn").on("click", function(e) {
-                        e.preventDefault();
-
-                        const targetId = $(this).data('target');
-                        localStorage.setItem('selectedEmpId', targetId);
-
-                        $('#scheduleShareModal').modal('show');
-                    });
-
                     // "선택" 열 추가
                     $('#employeeTableContainer thead tr').prepend('<th>선택</th>');
                     $('#employeeTableContainer thead tr th:nth-child(n+5):nth-child(-n+7)').hide();
-
 
                     // 직원 목록 행에 체크박스를 추가하는 함수
                     function addCheckboxes() {
@@ -171,11 +163,6 @@
                     // AJAX 후 체크박스를 다시 추가
                     $(document).on('ajaxSuccess', function () {
                         addCheckboxes();
-                    });
-
-                    // 저장 버튼 클릭 시 직원 정보 등록
-                    $('#btnSave').on('click', function() {
-                        insertEmp();
                     });
 
                     $('#btnShareRegister').on('click', function(e) {
@@ -254,6 +241,182 @@
                         };
                     }
 
+                    let empData = []; // 직원 정보 저장 배열
+                    let tempShareEmp = ''; // 임시 저장용 변수
+
+                    function insertEmp() {
+                        const targetEmpId = localStorage.getItem('selectedEmpId');
+
+                        if (!targetEmpId) {
+                            alert('유효한 입력 필드가 선택되지 않았습니다.');
+                            return;
+                        }
+
+                        // 선택된 직원의 ID, 이름 가져오기
+                        const selectedEmpData = $('input[name="selectedEmp"]:checked').map(function() {
+                            return {
+                                id: $(this).val(),
+                                name: $(this).closest('tr').find('td:eq(2)').text().trim()
+                            };
+                        }).get();
+
+                        if (selectedEmpData.length === 0) {
+                            alert('직원 정보를 선택해 주세요.');
+                            return;
+                        }
+
+                        // 현재 임시 저장된 직원 ID 가져오기
+                        let currentIds = tempShareEmp ? tempShareEmp.split(',') : [];
+                        let duplicateNames = []; // 중복된 직원 이름 저장
+
+                        selectedEmpData.forEach(emp => {
+                            // 중복 확인
+                            if (currentIds.includes(emp.id) || empData.map(e => e.id).includes(emp.id)) {
+                                duplicateNames.push(emp.name); // 중복된 이름을 배열에 추가
+                                $('input[name="selectedEmp"][value="' + emp.id + '"]').prop('checked', false);
+                                return;
+                            }
+
+                            // 임시 배열에 저장
+                            currentIds.push(emp.id);
+                            tempShareEmp = currentIds.join(',');
+
+                            empData.push(emp);
+
+                            const empEl = $('<button class="selected_emp mr-2 btn btn-sm btn-outline-secondary">')
+                                .append(emp.name)
+                                .append(
+                                    $('<img src="/image/delete.png" class="remove-icon" style="width: 16px; height: 16px; margin-left: 10px;" alt="삭제"/>')
+                                )
+                                .val(emp.id);
+
+                            $('#selectedEmployees').append(empEl);
+
+                            // 삭제 기능
+                            empEl.on('click', function() {
+                                $(this).remove();
+
+                                // 임시 저장소에서 해당 직원 ID 제거
+                                let currentIds = tempShareEmp.split(',');
+                                const empIdToRemove = emp.id;
+                                currentIds = currentIds.filter(id => id !== empIdToRemove);
+                                tempShareEmp = currentIds.join(',');
+
+                                empData = empData.filter(e => e.id !== emp.id);
+                            });
+                        });
+
+                        if (duplicateNames.length > 0) {
+                            alert('이미 추가된 직원입니다: ' + duplicateNames.join(', '));
+                        } else {
+                            alert('선택된 직원 : ' + selectedEmpData.map(emp => emp.name).join(', '));
+                        }
+                    }
+
+                    // 공유자 선택 버튼 클릭 시
+                    $("#scheduleShareBtn").on("click", function(e) {
+                        empData = [];
+                        e.preventDefault();
+
+                        const targetId = $(this).data('target');
+                        localStorage.setItem('selectedEmpId', targetId);
+
+                        $('#scheduleShareModal').modal('show');
+                    });
+
+                    // 추가 버튼 클릭 시
+                    $("#addEmpBtn").on('click', function() {
+                        insertEmp();
+                    });
+
+                    // 추가한 직원 클릭시 삭제
+                    $(document).on('click', '.selected_emp', function() {
+                        const empBtn = $(this);
+                        const empIdToRemove = empBtn.val();
+
+                        // #share_emp에서 해당 직원 ID 제거
+                        let currentIds = $('#share_emp').val().split(',');
+                        currentIds = currentIds.filter(id => id !== empIdToRemove);
+                        $('#share_emp').val(currentIds);
+
+                        // empData에서 해당 직원 삭제
+                        empData = empData.filter(emp => emp.id !== empIdToRemove);
+
+                        empBtn.remove();
+
+                        $('input[name="selectedEmp"][value="' + empIdToRemove + '"]').prop('checked', false);
+                    });
+
+                    // 저장버튼 클릭 시
+                    $('#btnSave').on('click', function() {
+                        if (empData.length === 0) {
+                            alert("직원이 추가되지 않았습니다.");
+                            return;
+                        }
+
+                        // 임시 저장된 값을 실제 share_emp에 저장
+                        $('#share_emp').val(tempShareEmp);
+
+                        // 선택된 직원들이 저장된 배열을 #scheduleShareEmp에 출력
+                        empData.forEach(emp => {
+                            const empEl = $('<button class="mr-2 btn btn-sm btn-outline-secondary">')
+                                .append(emp.name)
+                                .append(
+                                    $('<img src="/image/delete.png" class="remove-icon" style="width: 16px; height: 16px; margin-left: 10px;" alt="삭제"/>')
+                                );
+
+                            // #scheduleShareEmp에 버튼 추가
+                            $('#scheduleShareEmp').append(empEl);
+
+                            // 삭제 기능
+                            empEl.on('click', function() {
+                                $(this).remove();
+
+                                // share_emp에서 해당 직원 ID 제거
+                                let currentIds = $('#share_emp').val().split(',');
+                                const empIdToRemove = emp.id;
+                                currentIds = currentIds.filter(id => id !== empIdToRemove);
+                                $('#share_emp').val(currentIds.join(','));
+
+                                // empData에서 해당 직원 삭제
+                                empData = empData.filter(e => e.id !== emp.id);
+                            });
+                        });
+
+                        // 모달 닫기
+                        $('#scheduleShareModal').modal('hide');
+                    });
+
+                    $('#scheduleShareModal').on('hidden.bs.modal', function() {
+                        // 저장버튼을 누르지 않고 닫았을 경우 초기화
+                        if (!$('#share_emp').val()) {
+                            empData = [];
+                            tempShareEmp = '';
+                        }
+
+                        $('input[name="selectedEmp"]').prop('checked', false);
+                        $('#employeeTableBody').empty();
+                        $('#selectedEmployees').empty();
+
+                        // 트리 초기화
+                        $("#tree").fancytree("getTree").getRootNode().visit(function(node) {
+                            if (node.getLevel() === 1) {
+                                node.setExpanded(true);
+                            } else if (node.getLevel() >= 2) {
+                                node.setExpanded(false);
+                            }
+                        });
+
+                        $('#tree').find('.fancytree-expanded').each(function() {
+                            if (!$(this).closest('li[role="treeitem"]').is(':first-child')) {
+                                $(this).removeClass('fancytree-expanded');
+                            }
+                        });
+
+                        $('#tree').removeClass('fancytree-plain');
+                        $('#tree').find('.fancytree-active').removeClass('fancytree-active');
+                    });
+
                     function validateForm() {
                         const $scheduleName = $("#schedule_name");
                         const $start = $("#startAt");
@@ -289,73 +452,6 @@
                         }
 
                         return true;
-                    }
-
-                    $('#scheduleShareModal').on('hidden.bs.modal', function() {
-                        $('input[name="selectedEmp"]').prop('checked', false);
-                    });
-
-                    function sharedEmployees() {
-                        const shareEmpVal = $('#share_emp').val();
-                        const shareEmpArr = shareEmpVal.split(',');
-                        const targetEmp = $('#scheduleShareEmp');
-
-                        targetEmp.empty();
-                        shareEmpArr.forEach(empId => {
-                            const employeeSpan = $('<span class="selected-emp mr-2">').text(empId);
-                            targetEmp.append(employeeSpan);
-                        });
-                    }
-
-                    function insertEmp() {
-                        const targetEmpId = localStorage.getItem('selectedEmpId');
-
-                        if (!targetEmpId) {
-                            alert('유효한 입력 필드가 선택되지 않았습니다.');
-                            return;
-                        }
-
-                        // 선택된 직원의 ID, 이름 가져오기
-                        const selectedEmpData = $('input[name="selectedEmp"]:checked').map(function() {
-                            return {
-                                id: $(this).val(),
-                                name: $(this).closest('tr').find('td:eq(2)').text().trim()
-                            };
-                        }).get();
-
-                        if (selectedEmpData.length === 0) {
-                            alert('직원 정보를 선택해 주세요.');
-                            return;
-                        }
-
-                        $('#share_emp').val(selectedEmpData.map(emp => emp.id).join(','));
-                        sharedEmployees();
-
-                        // 선택된 직원 이름
-                        const targetEmp = $('#scheduleShareEmp');
-                        targetEmp.empty();
-
-                        selectedEmpData.forEach(emp => {
-                            const empEl = $('<button class="selected_emp mr-2 btn btn-sm btn-outline-secondary">')
-                                .append(emp.name) // 직원 이름 추가
-                                .append(
-                                    $('<img src="/image/delete.png" class="remove-icon" style="width: 16px; height: 16px; margin-left: 10px;" alt="삭제"/>')
-                                );
-                            targetEmp.append(empEl);
-
-                            empEl.on('click', function() {
-                                $(this).remove();
-
-                                let currentIds = $('#share_emp').val().split(',');
-                                const empIdToRemove = emp.id;
-
-                                currentIds = currentIds.filter(id => id !== empIdToRemove);
-                                $('#share_emp').val(currentIds.join(','));
-                            });
-                        });
-
-                        alert('선택된 직원 : ' + selectedEmpData.map(emp => emp.name).join(', '));
-                        $('#scheduleShareModal').modal('hide');
                     }
 
                     $('#resetButton').on('click', function() {

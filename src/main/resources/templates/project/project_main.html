@@ -11,7 +11,6 @@
             <script th:inline="javascript">
                 const contextPath = "${pageContext.request.contextPath}";
             </script>
-            <!--	<jsp:include page="../common/header.jsp"/>-->
         </head>
             <body>
                 <div style="margin: 50px 0px 30px 170px;" id="favorite">
@@ -20,10 +19,8 @@
                             <span id="toggle-icon-f" class="fs-1" style="color: black; text-decoration: none; display: inline-block;">∨</span>
                         </button>
                     </h2>
-
                     <div id="project-favorite" style="display: block;"></div>
                 </div>
-
                 <div style="margin-left: 170px;" id="ongoing">
                     <h2>진행 중 프로젝트
                         <button id="toggle-projects" class="btn btn-link p-0" style="font-size: 1.5rem;">
@@ -61,8 +58,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- 배경 색과 글자 색 변경 모달 -->
                 <div id="colorModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -103,6 +98,7 @@
                                 <button type="button" class="btn btn-primary" id="changeColorButton">변경</button>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                             </div>
+
                         </div>
                     </div>
                 </div>

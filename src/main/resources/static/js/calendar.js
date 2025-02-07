@@ -56,24 +56,25 @@ $(document).ready(function () {
                 }
 
                 // 기존 공휴일 데이터 소스를 제거
-                if (calendar.getEventSourceById("holidayList") != null) {
+                if (calendar && calendar.getEventSourceById("holidayList") != null) {
                     calendar.getEventSourceById("holidayList").remove();
                 }
 
-                // 새로운 공휴일 이벤트를 추가
-                calendar.addEventSource({
-                    id: "holidayList",
-                    events: holidayEvents // 새로운 공휴일 이벤트를 추가
-                });
+                if (calendar && calendar.addEventSource) {
+                    // 새로운 공휴일 이벤트 추가
+                    calendar.addEventSource({
+                        id: "holidayList",
+                        events: holidayEvents // 새로운 공휴일 이벤트를 추가
+                    });
+                }
 
-                // 캘린더에 이벤트 갱신
-                calendar.refetchEvents();
-
-                // calendar.addEventSource(holidayEvents);  // 새로 추가된 이벤트를 캘린더에 반영
-                // calendar.refetchEvents();
-                //
-                // // 공휴일 데이터가 로드되었으므로 isHolidayDataLoaded를 true로 설정
-                // isHolidayDataLoaded = true;
+                // 캘린더 이벤트 갱신
+                if (typeof calendar !== 'undefined' && calendar !== null) {
+                    // 캘린더가 있을 때만 refetchEvents 호출
+                    if (typeof calendar.refetchEvents === 'function') {
+                        calendar.refetchEvents();
+                    }
+                }
             },
             error: function (error) {
                 console.log('공휴일 불러오기 오류', error);
@@ -208,6 +209,7 @@ $(document).ready(function () {
                                 droppable: false, // 드래그 불가
                                 extendedProps: {
                                     isDept: true, // 부서 일정
+                                    isShared: false
                                 },
                             })
                         }
@@ -410,10 +412,6 @@ $(document).ready(function () {
         const endDateTime = moment(event.end || event.start).format("YYYY-MM-DDTHH:mm");
         $("#startAt").val(startDateTime);
         $("#endAt").val(endDateTime);
-
-        console.log($("#startAt").val(startDateTime))
-        console.log($("#endAt").val(endDateTime))
-
         $("#bgColor").val(event.backgroundColor);
 
         const description = event.extendedProps && event.extendedProps.description ? event.extendedProps.description : '';
@@ -457,12 +455,12 @@ $(document).ready(function () {
                     </div>
                 `);
             }
+            $(".modal-body").find(".form-group.color-group").show();
             $(".modal-body").find(".form-group.share-info").show();
 
         } else if(event.extendedProps.isDept === true) { // 부서 일정
             $(".modal-header").find("h5").text("부서 일정");
-            //$("form[name='scheduleEvent'] input, form[name='scheduleEvent'] textarea").prop("disabled", true);
-            $(".modal-body").find(".form-group.color-group").remove();
+            $(".modal-body").find(".form-group.color-group").hide();
             $(".modal-body").find(".btn_wrap").html(`
 	            <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
 	            <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
@@ -477,6 +475,7 @@ $(document).ready(function () {
 	            <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
 	            <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
 	        `);
+            $(".modal-body").find(".form-group.color-group").show();
             $(".modal-body").find(".form-group.share-info").hide();
         }
 
@@ -532,6 +531,7 @@ $(document).ready(function () {
 	    `);
 
         $(".modal-body").find(".form-group.share-info").hide();
+        $(".modal-body").find(".form-group.color-group").show();
 
         // 등록 버튼에 이벤트 바인딩
         $("#btnRegister").off("click").on("click", function (e) {
@@ -711,6 +711,7 @@ $(document).ready(function () {
                 $("#bgColor").val("#1e3a8a");
                 $("#allDay").prop("checked", false);
                 $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", false);
+                $(".modal-body").find(".form-group.color-group").show();
 
                 $("#scheduleModal").modal("show");
 
@@ -746,9 +747,6 @@ $(document).ready(function () {
                     event.end = moment(event.end).add(1, 'days'); // 종료 날짜를 하루 더함
                 }
                 return event; // 수정된 이벤트 반환
-            },
-            eventDidMount: function (info) {
-                //console.log("info.event.extendedProps", info.event.extendedProps);
             }
         });
 

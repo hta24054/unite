@@ -60,6 +60,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
         jwtCookie.setPath("/"); // 모든 경로에서 쿠키 사용 가능
         jwtCookie.setHttpOnly(true); // JavaScript에서 접근 불가 (보안 강화)
         jwtCookie.setMaxAge(60 * 60 * 24); // 쿠키 유효 기간: 1일
+        log.info("유저 로그인 성공, 유저 = {}", username);
         response.addCookie(jwtCookie);
 
         response.setContentType("application/json");

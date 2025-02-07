@@ -85,7 +85,14 @@
         WHERE IMG_UUID = #{fileUUID}
     </select>
     <select id="getHiredEmpListByDeptId">
-        SELECT e.emp_id, e.ename, d.dept_name, j.job_name, j.job_id, e.email, e.tel, e.mobile
+        SELECT e.emp_id,
+               e.ename,
+               d.dept_name,
+               j.job_name,
+               j.job_id,
+               e.email,
+               e.tel,
+               e.mobile
         FROM emp e
                  join job j on e.job_id = j.job_id
                  join dept d on e.dept_id = d.dept_id
@@ -95,7 +102,14 @@
         order by e.job_id, e.emp_id
     </select>
     <select id="getAllEmpListDTO">
-        SELECT e.emp_id, e.ename, d.dept_name, j.job_name, j.job_id, e.email, e.tel, e.mobile
+        SELECT e.emp_id,
+               e.ename,
+               d.dept_name,
+               j.job_name,
+               j.job_id,
+               e.email,
+               e.tel,
+               e.mobile
         FROM emp e
                  join job j on e.job_id = j.job_id
                  join dept d on e.dept_id = d.dept_id
@@ -104,7 +118,14 @@
         order by e.job_id, e.emp_id
     </select>
     <select id="getHiredEmpListByName">
-        SELECT e.emp_id, e.ename, d.dept_name, j.job_name, j.job_id, e.email, e.tel, e.mobile
+        SELECT e.emp_id,
+               e.ename,
+               d.dept_name,
+               j.job_name,
+               j.job_id,
+               e.email,
+               e.tel,
+               e.mobile
         FROM emp e
                  join job j on e.job_id = j.job_id
                  join dept d on e.dept_id = d.dept_id
@@ -124,13 +145,13 @@
         and e.hired = 1 and e.role != 'ROLE_ADMIN'
         order by e.job_id, e.emp_id
     </select>
-
     <select id="getIdToENameMap" resultType="map">
         SELECT emp_id, ename
         FROM emp
     </select>
     <update id="changePassword">
-        update emp set password = #{encodedPassword}
+        update emp
+        set password = #{encodedPassword}
         where emp_id = #{empId}
     </update>
     <select id="findDeptManager" resultType="String">
@@ -148,12 +169,23 @@
                       ON currentDept.parent_deptId = parentDept.dept_id
         WHERE emp.emp_id = #{empId}
     </select>
-
+    <update id="updateVacationCount">
+        UPDATE emp
+        SET VACATION_COUNT = CASE
+                                 WHEN TIMESTAMPDIFF(MONTH, HIREDATE, CURDATE()) >= 36
+                                     THEN GREATEST(0, LEAST(25, 15 + FLOOR((TIMESTAMPDIFF(MONTH, HIREDATE, CURDATE()) / 12 - 2) / 2)))
+                                 WHEN TIMESTAMPDIFF(MONTH, HIREDATE, CURDATE()) >= 12
+                                     THEN 15
+                                 ELSE
+                                     GREATEST(0, FLOOR(TIMESTAMPDIFF(MONTH, HIREDATE, CURDATE()) / 12))
+            END
+        WHERE 1=1;
+    </update>
     <select id="findTodayBirthdays" resultType="Birthday">
-        select emp_id empId, ename eName, (select d.dept_name from dept d where d.dept_id = e.dept_id) deptName, (select j.job_name from job j where j.job_id = e.job_id) jobName,
-               img_path imgPath, img_original imgOriginal, img_uuid imgUUID, img_type imgType, birthday, birthday_type birthdayType
+        select emp_id empId, ename eName, (select d.dept_name from dept d where d.dept_id = e.dept_id) deptName, (select j.job_name from job j where j.job_id = e.job_id) jobName
         from emp e
-        where (MONTH(birthday) = #{solMonth} AND DAY(birthday) = #{solDay} AND e.birthday_type = '양력') or (MONTH(birthday) = #{lunMonth} AND DAY(birthday) = #{lunDay} AND e.birthday_type = '음력')
+        where (MONTH(birthday) = #{solMonth} AND DAY(birthday) = #{solDay} AND e.birthday_type = '양력')
+           or (MONTH(birthday) = #{lunMonth} AND DAY(birthday) = #{lunDay} AND e.birthday_type = '음력')
         order by e.ename;
     </select>
 </mapper>

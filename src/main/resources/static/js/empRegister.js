@@ -77,11 +77,15 @@ $(document).ready(function () {
             contentType: false,
             data: formData,
             success: function (data) {
-                alert(data);
-                location.reload();
+                if (data) {
+                    alert(data.empId + "(" + data.ename + ")" + " 직원 등록이 완료되었습니다.");
+                } else {
+                    alert("직원 등록 중 오류가 발생했습니다.");
+                }
+                history.back();
             },
             error: function () {
-                alert("등록 중 오류가 발생했습니다.");
+                alert("직원 등록 중 오류가 발생했습니다.");
             }
         });
     }

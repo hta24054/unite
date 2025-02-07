@@ -1,11 +1,4 @@
 $(document).ready(function () {
-    let index = 0;
-    // const targetElement2 = document.querySelector("body > div.container > div.col-md-4.notification");
-    // targetElement2.classList.remove("col-md-4");
-    // targetElement2.classList.remove("notification");
-    // const targetElement = document.querySelector("body > div > div.center > div:nth-child(2) > div");
-    // targetElement.classList.remove("container");
-
     function loadBoardData() {
         $.ajax({
             url: contextPath + "/api/home/board", // 서블릿 URL
@@ -70,5 +63,4 @@ $(document).ready(function () {
 
     loadBoardData();  // 페이지 로드 시 데이터 로드
     //setInterval(loadBoardData, 3000);  // 3초마다 데이터 갱신
-
 });

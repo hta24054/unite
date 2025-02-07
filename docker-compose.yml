@@ -1,6 +1,18 @@
 version: '3.8'
 
 services:
+  nginx:
+    image: nginx:latest
+    container_name: unite-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro  # 로컬의 nginx.conf를 컨테이너 설정으로 사용
+    depends_on:
+      - app
+    networks:
+      - unite-network
+
   app:
     image: dnghkm/unite-app:latest
     container_name: unite-app
@@ -14,12 +26,19 @@ services:
       JAVA_OPTS: "-Duser.timezone=Asia/Seoul"
       SPRING_PROFILES_ACTIVE: prod
       REDIS_HOST: redis
-
     depends_on:
       - redis
+    networks:
+      - unite-network
 
   redis:
     image: redis:latest
     container_name: unite-redis
     ports:
       - "6379:6379"
+    networks:
+      - unite-network
+
+networks:
+  unite-network:
+    driver: bridge

@@ -10,6 +10,7 @@ import com.hta2405.unite.dto.ai.AiVacationDTO;
 import com.hta2405.unite.enums.AttendType;
 import com.hta2405.unite.enums.DocType;
 import com.hta2405.unite.enums.Role;
+import com.hta2405.unite.service.AttendService;
 import com.hta2405.unite.service.DocService;
 import com.hta2405.unite.service.EmpService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import java.util.List;
 public class ApplyVacationCallback implements FunctionCallback {
     private final EmpService empService;
     private final DocService docService;
+    private final AttendService attendService;
 
     @Override
     public String getName() {
@@ -81,6 +83,16 @@ public class ApplyVacationCallback implements FunctionCallback {
             AttendType vacationType = AttendType.fromString(dto.getVacationType());
 
             int vacationCount = docService.countVacation(startDate, endDate);
+
+
+            //연차사용의 경우 잔여 연차가 있는지 확인
+            if(vacationType==AttendType.ANNUAL_VACATION){
+                int usedVacCount = attendService.getAnnualAppliedVacationCount(loginEmpId, LocalDate.now().getYear());
+                if (emp.getVacationCount() - usedVacCount < vacationCount) {
+                    return "잔여 연차 부족으로 휴가 신청할 수 없음을 안내 바랍니다.";
+                }
+            }
+
 
             Doc doc = Doc.builder().docWriter(loginEmpId)
                     .docType(DocType.VACATION)

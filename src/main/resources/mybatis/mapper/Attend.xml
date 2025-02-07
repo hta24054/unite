@@ -42,6 +42,7 @@
         FROM doc JOIN doc_vacation on doc.doc_id = doc_vacation.doc_id
         WHERE DOC_WRITER = #{empId}
           AND year(VACATION_START) = #{year}
+            and doc.sign_finish = true
         order by DOC_CREATE_DATE
     </select>
     <insert id="insertVacation">

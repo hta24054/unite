@@ -52,7 +52,7 @@ jobs:
           target: /home/ubuntu/app/
           debug: true
 
-      # 8. EC2에서 docker-compose 실행
+      # 8. EC2에서 docker-compose 실행, 재시작은 app만 함
       - name: Run Docker Compose on EC2
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -63,5 +63,5 @@ jobs:
           script: |
             cd /home/ubuntu/app/
             docker-compose pull
-            docker-compose up -d app redis
+            docker-compose up -d app
             docker image prune -af

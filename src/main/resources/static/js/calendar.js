@@ -376,13 +376,19 @@ $(document).ready(function () {
                 window.holidayDataLoaded = false;
                 fetchAllData();
 
-                // 부서 일정 체크
+                // 부서 일정 체크: isDeptSchedule이 true일 경우만 한 번 호출하도록 방지
                 if (isDeptSchedule) {
-                    fetchDeptListData();
+                    if (!window.isDeptListLoading) {
+                        window.isDeptListLoading = true;
+                        fetchDeptListData();
+                    }
                 }
             },
             error: function () {
                 alert("drag 일정 업데이트 중 오류가 발생했습니다.");
+            },
+            complete: function() {
+                window.isDeptListLoading = false;   // 요청 완료 후 부서 일정 상태 초기화
             }
         });
     }

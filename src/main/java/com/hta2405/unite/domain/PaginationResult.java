@@ -15,6 +15,7 @@ public class PaginationResult {
         //현재 페이지에 보여줄 마지막 페이지 수(10, 20, 30 등..)
         int endpage = startpage + 10 - 1;
         if (endpage > maxpage) endpage = maxpage;
+        if (endpage == 0) endpage = 1;
 
         this.maxpage = maxpage;
         this.endpage = endpage;

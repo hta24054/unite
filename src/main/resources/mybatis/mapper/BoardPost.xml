@@ -289,8 +289,8 @@
     </select>
 
     <insert id="createBoard" parameterType="Board" useGeneratedKeys="true" keyProperty="boardId">
-        insert into board (board_name1, board_name2, dept_id)
-        values (#{boardName1}, #{boardName2}, #{deptId})
+        insert into board (board_name1, board_name2, board_description, dept_id)
+        values (#{boardName1}, #{boardName2}, #{boardDescription}, #{deptId})
     </insert>
     <insert id="insertBoardManagement" parameterType="Long">
         insert into board_management (board_id, board_manager)
@@ -301,7 +301,7 @@
     </insert>
 
     <select id="getBoardAndManagement" resultType="com.hta2405.unite.dto.BoardAndManagementDTO">
-        SELECT bm.board_id, b.board_name1, b.board_name2, bm.board_manager
+        SELECT bm.board_id, b.board_name1, b.board_name2, b.board_description, bm.board_manager
         FROM board_management bm
         INNER JOIN board b ON bm.board_id = b.board_id
         <where>
@@ -316,8 +316,9 @@
 
     <update id="updateBoard" parameterType="Board">
         update board
-        set board_name1 = #{boardName1},
-            board_name2 = #{boardName2}
+        set board_name1       = #{boardName1},
+            board_name2       = #{boardName2},
+            board_description = #{boardDescription}
         where board_id = #{boardId}
     </update>
 

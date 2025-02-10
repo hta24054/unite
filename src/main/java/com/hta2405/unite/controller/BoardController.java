@@ -84,8 +84,11 @@ public class BoardController {
         session.setAttribute("referer", "list");
 
         Long boardId = boardPostService.getBoardId(boardDTO);
+        String boardDescription = boardPostService.getBoardById(boardId).getBoardDescription();
         HashMap<String, Object> map = boardPostService.getBoardListAndListCount(page, limit, boardDTO);
         PaginationResult result = new PaginationResult(page, limit, (int) map.get("listCount"));
+
+        System.out.println("startPage = " + result.getStartpage() + "endPage = " + result.getEndpage());
 
         model.addAttribute("page", page);
         model.addAttribute("maxPage", result.getMaxpage());
@@ -98,7 +101,7 @@ public class BoardController {
         model.addAttribute("boardName2", boardDTO.getBoardName2());
         model.addAttribute("empMap", empService.getIdToENameMap());
         model.addAttribute("boardManagements", boardPostService.getBoardModify(boardId));
-        model.addAttribute("boardComment", null);
+        model.addAttribute("boardDescription", boardDescription);
         return "board/boardList";
     }
 

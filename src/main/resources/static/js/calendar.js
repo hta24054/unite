@@ -3,9 +3,12 @@ const contextPath = /*[[@{/}]]*/ '';
 $(document).ready(function () {
     let calendar;
     let events = [];
-    let isAllDayChk, startDate, endDate;
-    let isHolidayDataLoaded = false;  // 공휴일 데이터가 로드되었는지 여부를 추적하는 변수
     let holidayEvents = []; // 공휴일 이벤트 배열
+    let isAllDayChk, startDate, endDate;
+    let isHolidayDataLoaded = false;  // 공휴일 데이터 로드 여부
+
+    initCalendar();
+    fetchAllData();
 
     // 개인/공유/부서 일정, 공휴일 불러오기
     function fetchAllData() {
@@ -13,8 +16,6 @@ $(document).ready(function () {
 
         const startDate = moment().startOf('month').subtract(7, 'days').format('YYYY-MM-DD');
         const endDate = moment().endOf('month').add(7, 'days').format('YYYY-MM-DD');
-        // const startDate = moment(calendar.getDate()).startOf('month').subtract(7, 'days').format('YYYY-MM-DD');
-        // const endDate = moment(calendar.getDate()).endOf('month').add(7, 'days').format('YYYY-MM-DD');
 
         Promise.all([
             fetchListData(startDate, endDate),
@@ -22,13 +23,6 @@ $(document).ready(function () {
         ]).then(() => {
             holidayCurrentMonth();
         });
-
-        // if (calendar) {
-        //     const startMonth = moment(calendar.getDate()).startOf('month').format('YYYY-MM');
-        //     const endMonth = moment(calendar.getDate()).endOf('month').format('YYYY-MM');
-        //     isHolidayDataLoaded = false;
-        //     fetchHolidayData(startMonth, endMonth);
-        // }
     }
 
     // 공휴일 현재 달에 맞게 불러오기
@@ -36,13 +30,6 @@ $(document).ready(function () {
         const startMonth = moment().startOf('month').format('YYYY-MM');
         const endMonth = moment().endOf('month').format('YYYY-MM');
         fetchHolidayData(startMonth, endMonth);
-    }
-
-    // 일정 리스트 현재 달에 맞게 불러오기
-    function listDataCurrent() {
-        const startDate = moment().startOf('month');  // 현재 월의 첫 날
-        const endDate = moment().endOf('month');    // 현재 월의 마지막 날
-        fetchListData(startDate, endDate);
     }
 
     // 공휴일 불러오기
@@ -823,6 +810,4 @@ $(document).ready(function () {
         calendar.unselect();
         calendar.render();
     }
-
-    fetchAllData();
 });

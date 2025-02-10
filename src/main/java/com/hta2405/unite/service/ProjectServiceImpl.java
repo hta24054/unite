@@ -61,14 +61,14 @@ public class ProjectServiceImpl implements ProjectService {
         // 프로젝트 생성
         dao.createProject(project);
         int projectId = project.getProjectId();
-
+        log.info("프로젝트 생성");
         if (projectId <= 0) {
             throw new IllegalArgumentException("프로젝트 생성에 실패했습니다.");
         }
 
         // 매니저 추가
         addProjectMemberAndTask(projectId, managerName, managerId, "MANAGER");
-
+        log.info("매니저 생성");
         // 참여자 추가
         if (project.getParticipants() != null && !project.getParticipants().isEmpty()) {
             String[] participantArray = project.getParticipants().split(",");
@@ -81,7 +81,7 @@ public class ProjectServiceImpl implements ProjectService {
                 }
             }
         }
-
+        log.info("참여자 생성");
         // 열람자 추가
         if (project.getViewers() != null && !project.getViewers().isEmpty()) {
             String[] viewerArray = project.getViewers().split(",");
@@ -96,6 +96,7 @@ public class ProjectServiceImpl implements ProjectService {
                 }
             }
         }
+        log.info("열람ㅈ나 생성");
     }
 
     private void addProjectMemberAndTask(int projectId, String memberName, String memberId, String role) {

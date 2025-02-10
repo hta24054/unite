@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import static com.hta2405.unite.enums.Role.ROLE_ADMIN;
 import static com.hta2405.unite.enums.Role.ROLE_MANAGER;
@@ -69,7 +70,7 @@ public class EmpService {
         }
 
         try {
-            redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(resultMap));
+            redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(resultMap), 1, TimeUnit.HOURS);
         } catch (Exception e) {
             log.error("Redis cache error: {}", redisKey, e);
         }

@@ -11,4 +11,4 @@ COPY build/libs/*SNAPSHOT.jar app.jar
 RUN mkdir -p /app/logs
 
 # 5. 실행 명령어 (stdout 및 stderr를 파일로 리디렉션)
-CMD ["sh", "-c", "java -jar /app/app.jar > /app/logs/app.log 2>&1"]
+CMD ["sh", "-c", "java -jar /app/app.jar >> /app/logs/app.log 2>&1"]

@@ -15,7 +15,7 @@ public interface ProjectMapper {
 
     List<Map<Long, String>> getIdToJobNameMap();
 
-    int createProject(Project project);
+    void createProject(Project project);
 
     void addProjectMember(int projectId, String memberName, String memberId, String role);
 

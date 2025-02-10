@@ -41,6 +41,7 @@ public class ProjectController {
 
     @PostMapping("/create")
     public String doCreate(@ModelAttribute Project project, Model model) {
+        log.info("================================");
         try {
             projectService.createProject(project);
             model.addAttribute("message", "프로젝트가 성공적으로 생성되었습니다.");

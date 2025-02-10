@@ -22,7 +22,7 @@ $(document).ready(function () {
         }
 
         $.ajax({
-            url: "/api/project/updatetaskdesign",
+            url: "/api/project/updateTaskDesign",
             type: "POST",
             data: {
                 projectId: currentProjectId,

@@ -10,88 +10,94 @@
             <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js" type="text/javascript"></script>
         </head>
         <body>
-            <main>
-                <div class="container-fluid px-4">
-                    <h1 class="mt-4" style="color: #334466; font-weight: bold; padding-top: 30px;">[[${doneName}]] 프로젝트</h1><br>
-                    <br>
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <i class="fas fa-table me-1"></i>
-                            [[${memberName}]] [[${doneName}]] 프로젝트
-                        </div>
-
-                        <div class="card-body">
-                            <table id="completeTable" class="display table member">
-                                <thead>
-                                <tr>
-                                    <th>번호</th>
-                                    <th>코드명</th>
-                                    <th>프로젝트명</th>
-                                    <th>책임자</th>
-                                    <th>참여자</th>
-                                    <th>열람자</th>
-                                    <th>시작일</th>
-                                    <th:block th:if="${state} == 1">
-                                        <th>취소일</th>
-                                    </th:block>
-                                    <th:block th:if="${state} == 2">
-                                        <th>종료일</th>
-                                    </th:block>
-                                    <th>첨부파일</th>
-                                </tr>
-                                </thead>
-                                <tbody id="boardContent">
-                                <th:block th:each="project, status : ${boardlist}">
-                                    <tr>
-                                        <td th:text="${status.index + 1}">번호</td>
-                                        <td th:text="${project.projectId}">코드명</td>
-                                        <td th:text="${project.projectName}">프로젝트명</td>
-                                        <td th:text="${project.managerName}">책임자</td>
-                                        <td th:text="${project.participants}">참여자</td>
-                                        <td th:text="${project.viewers}">열람자</td>
-                                        <td th:text="${project.projectStartDate}">시작일</td>
-                                        <td th:text="${project.projectEndDate}">취소일</td>
-                                        <th:block th:if="${not #strings.isEmpty(project.projectFileOriginal)}">
-                                            <td>
-                                                <a th:href="@{/projectBoard/down(fileuuid=${project.projectFileUuid},originalFilename=${project.projectFileOriginal})}"
-                                                   th:title="${project.projectFileOriginal}" style="text-decoration: none; color: inherit;">
-                                                    <img th:src="@{/image/down.png}" style="width: 10px; vertical-align: middle;">&nbsp;
-                                                    <span th:text="${#strings.abbreviate(project.projectFileOriginal,10)}" style="color: inherit;"></span>
-                                                </a>
-                                            </td>
-                                        </th:block>
-                                        <th:block th:if="${#strings.isEmpty(project.projectFileOriginal)}">
-                                            <td></td>
-                                        </th:block>
-                                    </tr>
-                                </th:block>
-                                </tbody>
-                            </table>
-                        </div>
+        <main>
+            <div class="container-fluid px-4">
+                <h1 class="mt-4" style="color: #334466; font-weight: bold;">[[${doneName}]] 프로젝트</h1><br>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        [[${message}]]
                     </div>
                 </div>
-            </main>
-            <script th:inline="javascript">
-                const lang_kor = {
-                    "decimal": "",
-                    "emptyTable": "데이터가 없습니다.",
-                    "info": "_START_ - _END_ (총 _TOTAL_건)",
-                    "infoEmpty": "0건",
-                    "infoFiltered": "(전체 _MAX_건 중 검색 결과)",
-                    "infoPostFix": "",
-                    "thousands": ",",
-                    "lengthMenu": "_MENU_건씩 보기",
-                    "loadingRecords": "로딩중...",
-                    "processing": "처리중...",
-                    "search": "검색:",
-                    "zeroRecords": "검색된 데이터가 없습니다.",
-                    "paginate": {"first": "첫 페이지", "last": "마지막 페이지", "next": "다음", "previous": "이전"},
-                    "aria": {"sortAscending": ":오름차순 정렬", "sortDescending": ":내림차순 정렬"}
-                };
-                $('#completeTable').DataTable({
-                    language: lang_kor
-                });
-            </script>
+                <br>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-table me-1"></i>
+                        [[${memberName}]] [[${doneName}]] 프로젝트
+                    </div>
+
+                    <div class="card-body">
+                        <table id="completeTable" class="display table member">
+                            <thead>
+                            <tr>
+                                <th>번호</th>
+                                <th>코드명</th>
+                                <th>프로젝트명</th>
+                                <th>책임자</th>
+                                <th>참여자</th>
+                                <th>열람자</th>
+                                <th>시작일</th>
+                                <th:block th:if="${state} == 1">
+                                    <th>취소일</th>
+                                </th:block>
+                                <th:block th:if="${state} == 2">
+                                    <th>종료일</th>
+                                </th:block>
+                                <th>첨부파일</th>
+                            </tr>
+                            </thead>
+                            <tbody id="boardContent">
+                            <th:block th:each="project, status : ${boardlist}">
+                                <tr>
+                                    <td th:text="${status.index + 1}">번호</td>
+                                    <td th:text="${project.projectId}">코드명</td>
+                                    <td th:text="${project.projectName}">프로젝트명</td>
+                                    <td th:text="${project.managerName}">책임자</td>
+                                    <td th:text="${project.participants}">참여자</td>
+                                    <td th:text="${project.viewers}">열람자</td>
+                                    <td th:text="${project.projectStartDate}">시작일</td>
+                                    <td th:text="${project.projectEndDate}">취소일</td>
+                                    <th:block th:if="${not #strings.isEmpty(project.projectFileOriginal)}">
+                                        <td>
+                                            <a th:href="@{/projectBoard/down(fileuuid=${project.projectFileUuid},originalFilename=${project.projectFileOriginal})}"
+                                               th:title="${project.projectFileOriginal}" style="text-decoration: none; color: inherit;">
+                                                <img th:src="@{/image/down.png}" style="width: 10px; vertical-align: middle;">&nbsp;
+                                                <span th:text="${project.projectFileOriginal}" style="color: inherit;"></span>
+                                            </a>
+                                        </td>
+                                    </th:block>
+                                    <th:block th:if="${#strings.isEmpty(project.projectFileOriginal)}">
+                                        <td></td>
+                                    </th:block>
+
+                                </tr>
+                            </th:block>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <script th:inline="javascript">
+            const lang_kor = {
+                "decimal": "",
+                "emptyTable": "데이터가 없습니다.",
+                "info": "_START_-_END_ (총 _TOTAL_명)",
+                "infoEmpty": "0건",
+                "infoFiltered": "(전체 _MAX_건 중 검색 결과)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "_MENU_건씩 보기",
+                "loadingRecords": "로딩중...",
+                "processing": "처리중...",
+                "search": "검색:",
+                "zeroRecords": "검색된 데이터가 없습니다.",
+                "paginate": {"first": "첫 페이지", "last": "마지막 페이지", "next": "다음", "previous": "이전"},
+                "aria": {"sortAscending": ":오름차순 정렬", "sortDescending": ":내림차순 정렬"}
+            };
+            $('#completeTable').DataTable({
+                language: lang_kor
+            });
+        </script>
         </body>
         </html>
     </th:block>

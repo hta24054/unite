@@ -196,11 +196,13 @@ $(document).ready(function () {
 
         const selectedEmployees = $('#selectedEmployees .emp-line');
         const selectedEmpNames = [];
+        const selectedEmpIds = [];
         console.log(selectedEmpNames);
         selectedEmployees.each(function () {
             const empName = $(this).data('name');
             const empId = $(this).data('emp-id');
             selectedEmpNames.push(empName);
+            selectedEmpIds.push(empId);
         });
         console.log("selectEmpNames", selectedEmpNames);
         if (selectedEmpNames.length === 0) {
@@ -220,7 +222,7 @@ $(document).ready(function () {
         targetInput.prop('readonly', false);
 
         const formattedNamesAndIds = selectedEmpNames.map((name, index) => {
-            return `${name}`;
+            return `${name}(${selectedEmpIds[index]})`;
         }).join(', ');
 
         targetInput.val(formattedNamesAndIds);

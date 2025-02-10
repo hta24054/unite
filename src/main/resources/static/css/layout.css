@@ -12973,7 +12973,7 @@ body {
     display: inline-block;
 }
 
-.messenger-chat-room1{
+.messenger-chat-room1 {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -12982,7 +12982,7 @@ body {
     margin-bottom: 10px;
 }
 
-.messenger-chat-room1:hover{
+.messenger-chat-room1:hover {
     background: white;
     opacity: 50%;
     cursor: pointer;
@@ -13023,7 +13023,7 @@ body {
     overflow-y: auto;
 }
 
-#noMessengerMessage{
+#noMessengerMessage {
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -13038,11 +13038,11 @@ body {
     font-weight: 600;
 }
 
-.messenger-message-date{
+.messenger-message-date {
     margin-left: 10px;
 }
 
-.messenger-message-content{
+.messenger-message-content {
     font-size: 16px;
     font-weight: bold;
     white-space: nowrap;
@@ -13050,7 +13050,7 @@ body {
     text-overflow: ellipsis;
 }
 
-.messenger-message-title{
+.messenger-message-title {
     display: flex;
     justify-content: space-between;
     max-width: 296px;

@@ -76,6 +76,10 @@ public class BoardPostService {
         return boardPostMapper.findBoardIdByName1Name2(boardDTO);
     }
 
+    public Board getBoardById(Long boardId) {
+        return boardPostMapper.findBoardByBoardId(boardId);
+    }
+
     public List<BoardAndManagementDTO> getBoardAndManagement(String boardManager, Long boardId) {
         return boardPostMapper.getBoardAndManagement(boardManager, boardId);
     }
@@ -366,6 +370,7 @@ public class BoardPostService {
         Board board = Board.builder()
                 .boardName1(boardName1)
                 .boardName2(boardName2)
+                .boardDescription(boardRequestDTO.getBoardDescription())
                 .deptId(0L).build();
 
         int insertResult = boardPostMapper.createBoard(board);
@@ -424,7 +429,8 @@ public class BoardPostService {
         Board board = Board.builder()
                 .boardId(boardId)
                 .boardName1(boardName1)
-                .boardName2(boardName2).build();
+                .boardName2(boardName2)
+                .boardDescription(boardRequestDTO.getBoardDescription()).build();
 
         int updateResult = boardPostMapper.updateBoard(board);
 

@@ -15,5 +15,6 @@ public class BoardRequestDTO {
     private String OriginalBoardName1;
     private String boardName2;
     private String OriginalBoardName2;
+    private String boardDescription;
     private List<String> managerId;
 }

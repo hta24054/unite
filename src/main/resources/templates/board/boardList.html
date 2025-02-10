@@ -112,7 +112,7 @@
                 .content_info_wrap {
                     position: relative;
                     min-width: 500px;
-                    margin: 10px 24px;
+                    margin: 15px 24px;
                     padding: 10px 10px 14px;
                     background-color: #f9f9f9;
                     border: 1px solid #dcdcdc;
@@ -140,6 +140,17 @@
                     line-height: 1.5;
                     background-position: -1px 7px;
                 }
+
+                #boardUrl {
+                    border: none;
+                    background: #f9f9f9;
+                    color: black;
+                    width: 30%;
+                }
+
+                #copyBoardUrlBtn {
+                    border: 1px solid #ccc;
+                }
             </style>
             <script type="module" th:src="@{/js/boardList.js}"></script>
         </head>
@@ -152,7 +163,7 @@
                 <div class="content_info_wrap">
                     <div class="simple_info">
                         <span>게시판 주소:</span>
-                        <input type="text" id="boardUrl" style="border: none;background:#f9f9f9;color:black" readonly>
+                        <input type="text" id="boardUrl" readonly>
                         <button id="copyBoardUrlBtn">복사</button>
                     </div>
                     <div class="detail_info">
@@ -162,51 +173,53 @@
                                 [[${empMap.get(boardManagement.boardManager)}]]
                             </th:block>
                         </div>
-                        <div th:if="${boardComment == null}">
-                            [[${boardName2}]]
+                        <div th:if="${boardDescription != null}">
+                            [[${boardDescription}]]
                         </div>
                     </div>
                 </div>
                 <input type="hidden" id="boardName1" th:value="${boardName1}">
                 <input type="hidden" id="boardName2" th:value="${boardName2}">
                 <div class="container">
-                    <th:block th:if="${listCount > 0}">
-                        <table class="table" style="text-align: center">
-                            <thead>
-                            <tr>
-                                <th colspan="3" style="border-top: none;"></th>
-                                <th colspan="1" style="border-top: none;line-height: 2rem;">
-                                    <span>총 [[${listCount}]]건</span>
-                                </th>
-                                <th colspan="1" style="border-top: none;">
-                                    <select class="form-control" id="viewCount"
-                                            style="margin:0 auto;width:75px;appearance: auto;text-align: center;">
-                                        <option value="1">1</option>
-                                        <option value="5">5</option>
-                                        <option value="10" selected>10</option>
-                                        <option value="20">20</option>
-                                    </select>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 10%;">
-                                    <div>번호</div>
-                                </th>
-                                <th style="min-width: 250px;">
-                                    <div>제목</div>
-                                </th>
-                                <th style="width: 20%;">
-                                    <div>작성자</div>
-                                </th>
-                                <th style="width: 20%;">
-                                    <div>날짜</div>
-                                </th>
-                                <th style="width: 10%;">
-                                    <div>조회수</div>
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody>
+
+                    <table class="table" style="text-align: center;vertical-align: middle;">
+                        <thead>
+                        <tr>
+                            <th colspan="3" style="border-top: none;"></th>
+                            <th colspan="1" style="border-top: none;line-height: 2rem;">
+                                <span>총 [[${listCount}]]건</span>
+                            </th>
+                            <th colspan="1" style="border-top: none;">
+                                <select class="form-control" id="viewCount"
+                                        style="margin:0 auto;width:75px;appearance: auto;text-align: center;">
+                                    <option value="1">1</option>
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="20">20</option>
+                                </select>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="width: 10%;">
+                                <div>번호</div>
+                            </th>
+                            <th style="min-width: 250px;">
+                                <div>제목</div>
+                            </th>
+                            <th style="width: 20%;">
+                                <div>작성자</div>
+                            </th>
+                            <th style="width: 20%;">
+                                <div>날짜</div>
+                            </th>
+                            <th style="width: 10%;">
+                                <div>조회수</div>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <th:block th:if="${listCount > 0}">
+
                             <th:block th:with="num=${listCount - (page - 1) * limit}">
                                 <th:block th:each="p, iterStat : ${postList}">
                                     <tr class="tr-post" th:data-page="${page}"
@@ -249,31 +262,34 @@
                                     </tr>
                                 </th:block>
                             </th:block>
-                            </tbody>
-                        </table>
 
-                        <th:block
-                                th:replace="~{board/paging :: paging('boardList', '&boardName1=' + ${boardName1} + '&boardName2=' + ${boardName2} )}"/>
+                        </th:block><!-- <c:if test="${listcount > 0}"> end -->
 
-                        <div class="search-container">
-                            <div class="serach-main">
-                                <select id="search-category" name="category" class="search-category">
-                                    <option value="제목">제목</option>
-                                    <option value="내용">내용</option>
-                                    <option value="작성자">작성자</option>
-                                </select>
-                                <input type="text" id="search-input" name="query" class="search-input" placeholder="검색">
-                                <button id="search-button" class="search-button">
-                                    <i class="fa fa-search"></i> 검색
-                                </button>
-                            </div>
+                        <!-- 게시글이 없는 경우 -->
+                        <th:block th:if="${listCount==0}">
+                            <tr style="border-bottom:1px solid #dee2e6;">
+                                <td colspan="5" style="text-align: center;">검색 결과가 없습니다.</td>
+                            </tr>
+                        </th:block>
+                        </tbody>
+                    </table>
+
+                    <th:block
+                            th:replace="~{board/paging :: paging('boardList', '&boardName1=' + ${boardName1} + '&boardName2=' + ${boardName2} )}"/>
+
+                    <div class="search-container">
+                        <div class="serach-main">
+                            <select id="search-category" name="category" class="search-category">
+                                <option value="제목">제목</option>
+                                <option value="내용">내용</option>
+                                <option value="작성자">작성자</option>
+                            </select>
+                            <input type="text" id="search-input" name="query" class="search-input" placeholder="검색">
+                            <button id="search-button" class="search-button">
+                                <i class="fa fa-search"></i> 검색
+                            </button>
                         </div>
-                    </th:block><!-- <c:if test="${listcount > 0}"> end -->
-
-                    <!-- 게시글이 없는 경우 -->
-                    <th:block th:if="${listCount==0}">
-                        <h3 style="margin-top:40px;">등록된 게시글이 없습니다.</h3>
-                    </th:block>
+                    </div>
 
                 </div> <!-- <div class="container"> end -->
             </div>

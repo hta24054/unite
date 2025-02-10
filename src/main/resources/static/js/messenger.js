@@ -143,7 +143,18 @@ $(function () {
             // 초기 채팅방 구독
             initializeChatRoomSubscriptions(loggedInUser);
             // }
+        }, function (error){
+            console.log('STOMP connection error:', error);
+
+            setTimeout(function () {
+                console.log('Reconnecting...');
+                connectWebSocket();
+            }, 5000); // 5초 후 자동 재연결
         });
+
+        // Heartbeat 설정
+        stompClient.heartbeat.outgoing = 10000;  // 10초마다 Ping 전송
+        stompClient.heartbeat.incoming = 10000;  // 10초마다 Pong 수신
     }
 
 // 사용자가 초대된 모든 채팅방을 구독

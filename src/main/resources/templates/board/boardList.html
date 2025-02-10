@@ -167,7 +167,7 @@
                         <button id="copyBoardUrlBtn">복사</button>
                     </div>
                     <div class="detail_info">
-                        <div th:if="${boardManagements != null}">
+                        <div th:if="${boardManagements != null}" style="margin-bottom: 3px;">
                             운영자 :
                             <th:block th:each="boardManagement : ${boardManagements}">
                                 [[${empMap.get(boardManagement.boardManager)}]]

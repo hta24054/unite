@@ -204,6 +204,7 @@ public class BoardController {
             List<BoardAndManagementDTO> boardManagements = boardPostService.getBoardModify(postDetailDTO.getBoardId());
 
             model.addAttribute("empMap", empService.getIdToENameMap());
+            log.info("========ss{}",empService.getIdToENameMap());
             model.addAttribute("postDetailDTO", postDetailDTO);
             model.addAttribute("boardDTO", boardDTO);
             model.addAttribute("boardManagements", boardManagements);

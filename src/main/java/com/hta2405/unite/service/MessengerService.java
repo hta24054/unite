@@ -99,6 +99,7 @@ public class MessengerService {
                     messagingTemplate.convertAndSend("/topic/user/" + userId, chatRoom);
                 }
                 userIds.remove(empId);
+                System.out.println("empId = "+empId);
                 inviteMessage(chatRoom, userIds, empId);
             }
         } else {

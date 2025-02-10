@@ -1,5 +1,5 @@
 form[name=boardform] {
-    padding: 20px 60px;
+    padding: 40px 60px 10px;
 }
 
 h1 {
@@ -106,4 +106,9 @@ img {
 
 .hidden {
     display: block;
+}
+
+.form-group2-title {
+    height: 50px;
+    color: black;
 }

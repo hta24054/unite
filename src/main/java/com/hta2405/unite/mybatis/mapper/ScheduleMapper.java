@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper
 public interface ScheduleMapper {
     // 일정 리스트
-    public List<Schedule> getListSchedule(String id);
+    public List<Schedule> getListSchedule(String empId, String startDate, String endDate);
 
     // 오늘 일정 리스트
     List<Schedule> getDailyScheduleList(String empId, LocalDate date);

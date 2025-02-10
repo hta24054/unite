@@ -12,8 +12,19 @@
             <style>
                 .form-control2 {
                     border: 1px solid #ccc;
-                    border-radius: 10px;
+                    border-radius: 3px;
                     height: 34px;
+                }
+
+                #boardDescription {
+                    min-height: 50px;
+                    max-height: 200px;
+                    margin: 0;
+                    line-height: normal;
+                    width: 100%;
+                    resize: none;
+                    height: auto;
+                    padding: 6px 10px;
                 }
 
                 .registerBtn {
@@ -182,9 +193,9 @@
                     <form method="post" name="boardform" action="createProcess">
                         <table class="table" style="line-height: 10px">
                             <tbody>
-                            <tr>
+                            <tr style="border-top: 1px solid #dee2e6">
                                 <th class="labelName" style="width: 200px">게시판 그룹</th>
-                                <th>
+                                <th style="padding: 10px .75rem">
                                     <select id="boardName1" name="boardName1" class="boardName"
                                             style="margin-left: 0; border-radius: 10px"
                                             th:attr="disabled=${empId != 'admin'}">
@@ -205,9 +216,10 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th class="labelName">유형</th>
-                                <td>
-                                    미정
+                                <th class="labelName">설명</th>
+                                <td style="padding: 10px .75rem">
+                                    <textarea name="boardDescription" id="boardDescription" rows="5"
+                                              class="form-control2"></textarea>
                                 </td>
                             </tr>
                             <tr>

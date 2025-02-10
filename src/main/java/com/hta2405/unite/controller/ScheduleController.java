@@ -39,10 +39,9 @@ public class ScheduleController {
 
     @ResponseBody
     @GetMapping("/scheduleList")
-    public List<Schedule> getListSchedule(@AuthenticationPrincipal UserDetails user) {
-        String id = user.getUsername();
-        List<Schedule> schedules = scheduleService.getListSchedule(id);
-        return schedules;
+    public List<Schedule> getListSchedule(@AuthenticationPrincipal UserDetails user, String startDate, String endDate) {
+        String empId = user.getUsername();
+        return scheduleService.getListSchedule(empId, startDate, endDate);
     }
 
     @ResponseBody

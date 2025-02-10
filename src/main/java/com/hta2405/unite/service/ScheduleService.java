@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ScheduleService {
 
-    public List<Schedule> getListSchedule(String id);
+    public List<Schedule> getListSchedule(String empId, String startDate, String endDate);
 
     List<Schedule> getDailyScheduleList(String empId, LocalDate date);
 

@@ -284,8 +284,8 @@
                                 <th:block th:if="${not #lists.isEmpty(left)}">
                                     <a th:href="@{/project/detail(projectId=${projectId})}" th:text="|- ${left}|" class="nav-link"  style="padding:0px 0px 10px 20px;"></a>
                                 </th:block>
-                                <a class="nav-link" th:href="@{/api/project/done?state=2}">완료 프로젝트</a>
-                                <a class="nav-link" th:href="@{/api/project/done?state=1}">취소 프로젝트</a>
+                                <a class="nav-link" th:href="@{/api/project/doneProject?state=2}">완료 프로젝트</a>
+                                <a class="nav-link" th:href="@{/api/project/doneProject?state=1}">취소 프로젝트</a>
                                 <a class="nav-link" th:href="@{/project/create}">프로젝트 추가</a>
                             </nav>
                         </div>

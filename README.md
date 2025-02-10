@@ -12,7 +12,10 @@
 ---
 ##  🚩프로젝트 기능
 
- ### 김동하
+ <a href="https://github.com/DNGHKM">
+  <img src="https://img.shields.io/badge/GitHub-김동하-181717?style=flat-square&logo=github" alt="GitHub Badge" width="150">
+</a>
+
 - **계정 관리**: 로그인, 비밀번호 찾기, 비밀번호 변경
 - **근태 관리**: 출근/퇴근 처리, 근무 형태(외근, 출장 등) 확인, 근태 기록 조회
 - **인사 정보**: 인사 정보 조회 및 수정
@@ -37,14 +40,20 @@
 - **기타**: 경제지표(주가지수, 주요국 환율) 제공, 날씨 정보 제공
 ---
 
-### 강영훈
+<a href="https://github.com/HuYeoun">
+  <img src="https://img.shields.io/badge/GitHub-강영훈-181717?style=flat-square&logo=github" alt="GitHub Badge" width="150">
+</a>
+
 - **게시판**: 작성, 수정, 삭제, 댓글, 답글 기능, 게시판 관리(추가, 수정, 삭제)
    - 전사게시판
    - 일반게시판
    - 부서게시판
 - **메신저**: 실시간 채팅 기능
 ---
-### 윤한솔
+<a href="https://github.com/dontotl18">
+  <img src="https://img.shields.io/badge/GitHub-윤한솔-181717?style=flat-square&logo=github" alt="GitHub Badge" width="150">
+</a>
+
 - **프로젝트 관리**
    - 프로젝트 등록
    - Todo-List 관리
@@ -52,24 +61,25 @@
    - 일정 등록 및 코멘트 작성
 - **메인 화면**
 - **기타**: 생일자 정보
-
 ---
+<a href="https://github.com/choijiiyoung">
+  <img src="https://img.shields.io/badge/GitHub-최지영-181717?style=flat-square&logo=github" alt="GitHub Badge" width="150">
+</a>
 
-### 최지영
 - **캘린더**: 개인 일정, 공유 일정 관리
 - **자원 예약**: 회의실, 차량 등 자원 예약
 
 ---
 
 
-## 🔧 기술 스택
+## 🔧 사용 기술
 
-![TechStack](doc/tech_stack.png)
+![TechStack](doc/tech_stack1.png)
 
 
 ## 🏛 아키텍처
 
-![Architecture](doc/architecture.png)
+![Architecture](doc/architecture1.png)
 
 
 ## 🧩 ERD

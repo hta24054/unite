@@ -13,13 +13,13 @@
             SELECT 1
             FROM schedule_share ss
             WHERE ss.schedule_id = s.schedule_id
-              AND ss.dept_id IS NOT NULL  -- 부서 일정 제외
+              AND ss.dept_id IS NOT NULL -- 부서 일정 제외
         )
           AND NOT EXISTS (
             SELECT 1
             FROM schedule_share ss
             WHERE ss.schedule_id = s.schedule_id
-              AND (ss.share_emp IS NOT NULL)  -- 로그인한 사용자와 공유된 일정 제외
+              AND ss.share_emp IS NOT NULL -- 로그인한 사용자와 공유된 일정 제외
         );
     </select>
 

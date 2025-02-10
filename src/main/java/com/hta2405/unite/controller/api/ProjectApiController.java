@@ -95,7 +95,7 @@ public class ProjectApiController {
         return response;
     }
 
-    @GetMapping("/done")
+    @GetMapping("/doneProject")
     public ModelAndView done(@AuthenticationPrincipal UserDetails user, ModelAndView mv, int state) {
         mv.setViewName("project/endProject");
         mv.addObject("boardlist", projectService.getDoneList(user.getUsername(), state));
@@ -112,7 +112,7 @@ public class ProjectApiController {
         return mv;
     }
 
-    @PostMapping("/updatetaskdesign")
+    @PostMapping("/updateTaskDesign")
     public void updatetaskdesign(int projectId, String memberId, String taskContent, HttpServletResponse resp) throws IOException {
         boolean success = projectService.updateTaskContent(projectId, memberId, taskContent);
         sendJsonResponse(success, resp);
@@ -147,7 +147,7 @@ public class ProjectApiController {
         List<ProjectTodoDTO> todos = projectService.getTodoList(projectId, memberId);
         return todos;
     }
-    @PostMapping("/todoprogress")
+    @PostMapping("/todoProgress")
     public void todoprogress(int projectId, int todoId, int memberProgressRate, HttpServletResponse resp, @AuthenticationPrincipal UserDetails user) throws IOException {
         String userid = user.getUsername();
         boolean success = projectService.todoProgressRate(projectId, userid, todoId, memberProgressRate);

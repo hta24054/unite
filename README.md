@@ -62,14 +62,14 @@
 ---
 
 
-## 🔧 기술 스택
+## 🔧 사용 기술
 
-![TechStack](doc/tech_stack.png)
+![TechStack](doc/tech_stack1.png)
 
 
 ## 🏛 아키텍처
 
-![Architecture](doc/architecture.png)
+![Architecture](doc/architecture1.png)
 
 
 ## 🧩 ERD

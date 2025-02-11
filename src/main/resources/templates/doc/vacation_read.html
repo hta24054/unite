@@ -71,7 +71,7 @@
                         <th class="table-secondary font-weight-bold text-center">첨부 파일</th>
                         <td>
                             <th:block th:if="${docVacation.vacationFileOriginal != null}">
-                                <a th:href="@{/doc/download(fileName=${docVacation.vacationFileOriginal},fileUUID=${docVacation.vacationFileUUID})}">
+                                <a th:href="@{/api/doc/download(fileName=${docVacation.vacationFileOriginal},fileUUID=${docVacation.vacationFileUUID})}">
                                     [[${docVacation.vacationFileOriginal}]]
                                 </a>
                             </th:block>

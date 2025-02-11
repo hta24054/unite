@@ -28,11 +28,20 @@ $(document).ready(function () {
                     }
                 });
 
-                const firstResourceId = data[0].resourceId;
-                const firstResourceName = data[0].resourceName;
+                // 페이지 로드 시, resourceType에 맞는 자원명 목록 불러오기
+                const selectedCategory = $resourceTypeCategory.val();
+                $resourceNameCategory.empty();
+                data.forEach(function (resource) {
+                    if (resource.resourceType === selectedCategory) {
+                        $resourceNameCategory.append('<option value="' + resource.resourceId + '">' + resource.resourceName + '</option>');
+                    }
+                });
 
                 // 첫 번째 자원 예약 목록 불러오기
+                const firstResourceId = data[0].resourceId;
+                const firstResourceName = data[0].resourceName;
                 getReservationList(firstResourceId, firstResourceName);
+
             },
             error: function () {
                 alert("자원 목록 불러오기 실패");

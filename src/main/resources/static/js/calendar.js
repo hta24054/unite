@@ -407,11 +407,15 @@ $(document).ready(function () {
                 },
                 success: function (data) {
                     window.holidayDataLoaded = false;
-                    calendar.getEventById(eventData.schedule_id).remove();
 
-                    if (isDeptSchedule) {
-                        fetchDeptListData();
+                    const event = calendar.getEventById(eventData.schedule_id);
+                    if (event) {
+                        event.remove();
                     }
+
+                    fetchAllData();
+                    holidayCurrentMonth();
+                    initCalendar();
 
                     $("#scheduleModal").modal("hide");
                 },

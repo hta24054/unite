@@ -369,9 +369,9 @@ $(document).ready(function () {
                 if (event) {
                     // 이벤트 속성 한 번에 갱신
                     event.setProp({
-                        start: startAt,  // 시작 시간 업데이트
-                        end: endAt,      // 종료 시간 업데이트
-                        allDay: info.event.allDay // AllDay 설정 업데이트
+                        start: startAt,
+                        end: endAt,
+                        allDay: info.event.allDay
                     });
 
                     calendar.render();

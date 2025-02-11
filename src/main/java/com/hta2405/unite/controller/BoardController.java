@@ -88,8 +88,6 @@ public class BoardController {
         HashMap<String, Object> map = boardPostService.getBoardListAndListCount(page, limit, boardDTO);
         PaginationResult result = new PaginationResult(page, limit, (int) map.get("listCount"));
 
-        System.out.println("startPage = " + result.getStartpage() + "endPage = " + result.getEndpage());
-
         model.addAttribute("page", page);
         model.addAttribute("maxPage", result.getMaxpage());
         model.addAttribute("startPage", result.getStartpage());
@@ -204,7 +202,6 @@ public class BoardController {
             List<BoardAndManagementDTO> boardManagements = boardPostService.getBoardModify(postDetailDTO.getBoardId());
 
             model.addAttribute("empMap", empService.getIdToENameMap());
-            log.info("========ss{}",empService.getIdToENameMap());
             model.addAttribute("postDetailDTO", postDetailDTO);
             model.addAttribute("boardDTO", boardDTO);
             model.addAttribute("boardManagements", boardManagements);

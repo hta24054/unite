@@ -25,21 +25,21 @@ $(document).ready(function () {
         });
     }
 
-    // 공휴일 현재 달에 맞게 불러오기
+    // 공휴일 연도, 월
     function holidayCurrentMonth() {
-        const startMonth = moment().startOf('month').format('YYYY-MM');
-        const endMonth = moment().endOf('month').format('YYYY-MM');
-        fetchHolidayData(startMonth, endMonth);
+        const year = moment().startOf('year').format('YYYY');
+        const month = moment().endOf('month').format('MM');
+        fetchHolidayData(year, month);
     }
 
     // 공휴일 불러오기
-    function fetchHolidayData(startMonth, endMonth) {
+    function fetchHolidayData(year, month) {
         $.ajax({
             url: contextPath + "/schedule/getHoliday",
             type: "GET",
             data: {
-                start: startMonth,
-                end: endMonth
+                year: year,
+                month: month
             },
             dataType: "json",
             success: function (data) {
@@ -729,8 +729,8 @@ $(document).ready(function () {
                         calendar.prev();
 
                         // 캘린더에서 갱신된 날짜를 가져와서, 해당 날짜 기준으로 다음 달의 시작일과 종료일을 계산
-                        const startMonth = moment(calendar.getDate()).startOf('month').format('YYYY-MM');
-                        const endMonth = moment(calendar.getDate()).endOf('month').format('YYYY-MM');
+                        const startMonth = moment(calendar.getDate()).startOf('year').format('YYYY');
+                        const endMonth = moment(calendar.getDate()).endOf('month').format('MM');
                         isHolidayDataLoaded = false;
                         fetchHolidayData(startMonth, endMonth);
 
@@ -742,8 +742,10 @@ $(document).ready(function () {
                     click: function() {
                         calendar.next();
 
-                        const startMonth = moment(calendar.getDate()).startOf('month').format('YYYY-MM');
-                        const endMonth = moment(calendar.getDate()).endOf('month').format('YYYY-MM');
+
+                        // 캘린더에서 갱신된 날짜를 가져와서, 해당 날짜 기준으로 다음 달의 시작일과 종료일을 계산
+                        const startMonth = moment(calendar.getDate()).startOf('year').format('YYYY');
+                        const endMonth = moment(calendar.getDate()).endOf('month').format('MM');
                         isHolidayDataLoaded = false;
                         fetchHolidayData(startMonth, endMonth);
 

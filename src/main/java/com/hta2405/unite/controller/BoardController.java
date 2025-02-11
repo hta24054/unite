@@ -1,6 +1,5 @@
 package com.hta2405.unite.controller;
 
-import com.hta2405.unite.domain.BoardManagement;
 import com.hta2405.unite.domain.PaginationResult;
 import com.hta2405.unite.domain.PostFile;
 import com.hta2405.unite.dto.*;
@@ -87,8 +86,6 @@ public class BoardController {
         String boardDescription = boardPostService.getBoardById(boardId).getBoardDescription();
         HashMap<String, Object> map = boardPostService.getBoardListAndListCount(page, limit, boardDTO);
         PaginationResult result = new PaginationResult(page, limit, (int) map.get("listCount"));
-
-        System.out.println("startPage = " + result.getStartpage() + "endPage = " + result.getEndpage());
 
         model.addAttribute("page", page);
         model.addAttribute("maxPage", result.getMaxpage());

@@ -128,25 +128,51 @@ $(function () {
     let stompClient;
     let subscriptions = {};
     let empMap;
+    let reconnectAttempts = 0;
+    const maxReconnectAttempts = 10;  // 최대 재연결 시도 횟수
+    const reconnectInterval = 3000;   // 재연결 시도 간격 (3초)
+    const heartbeatInterval = 10000;  // 10초마다 Ping 메시지 전송
 
 // WebSocket 연결
     function connectWebSocket() {
         const socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
 
+        // Heartbeat 설정
+        stompClient.heartbeat.outgoing = heartbeatInterval;  // 10초마다 Ping 전송
+        stompClient.heartbeat.incoming = heartbeatInterval;  // 10초마다 Pong 수신
+
         stompClient.connect({}, () => {
-            console.log("Connected to WebSocket-Messenger");
+            console.log("✅ WebSocket 연결됨");
+            reconnectAttempts = 0; // 재연결 횟수 초기화
 
             subscribeToInvitations(loggedInUser);
 
-            // if (window.location.pathname === "/messenger") {
             // 초기 채팅방 구독
             initializeChatRoomSubscriptions(loggedInUser);
-            // }
+        }, function (error){
+            console.warn("❌ WebSocket 연결 끊어짐. 재연결 시도 중...");
+            attemptReconnect();
         });
     }
 
-// 사용자가 초대된 모든 채팅방을 구독
+    // 재연결 시도 함수
+    function attemptReconnect() {
+        if (reconnectAttempts >= maxReconnectAttempts) {
+            console.error("❌ 최대 재연결 횟수 도달.");
+            return;
+        }
+
+        let delay = Math.min(reconnectInterval * Math.pow(2, reconnectAttempts), 30000);  // 백오프 전략
+        console.log(`🔄 ${delay / 1000}초 후 재연결 시도 (${reconnectAttempts + 1}/${maxReconnectAttempts})`);
+
+        setTimeout(() => {
+            reconnectAttempts++;
+            connectWebSocket();
+        }, delay);
+    }
+
+    // 사용자가 초대된 모든 채팅방을 구독
     function initializeChatRoomSubscriptions(userId) {
         // AJAX 요청으로 사용자가 초대된 모든 채팅방 ID 가져오기
         $.ajax({

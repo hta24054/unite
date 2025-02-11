@@ -74,12 +74,6 @@ public class MessengerApiController {
         return ResponseEntity.ok(response); // JSON 형식으로 반환
     }
 
-//    @DeleteMapping("/rooms/{id}")
-//    public ResponseEntity<String> deleteRoom(@PathVariable Long id) {
-//        messengerService.deleteChatRoom(id);
-//        return ResponseEntity.ok("Chat room deleted successfully!");
-//    }
-
     // 메시지 전송 (STOMP 사용)
     @MessageMapping("/chatRoom/{chatRoomId}")
     public void sendMessage(@RequestBody ChatMessageDTO messageDTO,

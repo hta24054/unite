@@ -1,5 +1,6 @@
 package com.hta2405.unite.controller;
 
+import com.hta2405.unite.domain.Emp;
 import com.hta2405.unite.domain.PaginationResult;
 import com.hta2405.unite.domain.PostFile;
 import com.hta2405.unite.dto.*;
@@ -7,7 +8,9 @@ import com.hta2405.unite.service.BoardPostService;
 import com.hta2405.unite.service.EmpService;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.image.ImageResponse;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,8 +22,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Controller
@@ -176,13 +181,15 @@ public class BoardController {
             PostAddDTO postAddDTO,
             BoardDTO boardDTO,
             @AuthenticationPrincipal UserDetails user,
-            @RequestParam(value = "attachFiles", required = false) List<MultipartFile> files) {
+            @RequestParam(value = "uuidList", required = false) List<String> uuidList,
+            @RequestParam(value = "attachFiles", required = false) List<MultipartFile> files,
+            @RequestParam(value = "images", required = false) List<MultipartFile> images) {
 
         HashMap<String, Object> map = new HashMap<>();
         String postWriter = user.getUsername();
         postAddDTO.setPostWriter(postWriter);
 
-        map.put("postId", boardPostService.addPost(boardDTO, postAddDTO, files));
+        map.put("postId", boardPostService.addPost(boardDTO, postAddDTO, files, images, uuidList));
         map.put("boardDTO", boardDTO);
         return map;
     }
@@ -240,7 +247,7 @@ public class BoardController {
     public Object boardPostModifyProcess(PostModifyDTO postModifyDTO, BoardDTO boardDTO,
                                          @RequestParam(value = "addFiles", required = false) List<MultipartFile> addFiles,
                                          @RequestParam(value = "deletedFiles", required = false) List<String> deletedFiles) {
-        boolean result = boardPostService.modifyPost(postModifyDTO, addFiles, deletedFiles);
+        boolean result = boardPostService.modifyPost(boardDTO, postModifyDTO, addFiles, deletedFiles);
 
         HashMap<String, Object> map = new HashMap<>();
         if (result) {
@@ -412,5 +419,18 @@ public class BoardController {
             return ResponseEntity.badRequest().body("삭제 실패");
         }
         return ResponseEntity.ok("삭제 성공");
+    }
+
+    @GetMapping("/summernote-image")
+    public ResponseEntity<Resource> getProfileImage(String uuid) {
+        PostFile postFile = boardPostService.getPostFileByUUID(uuid);
+        return boardPostService.getSummerNoteImage(postFile);
+    }
+
+    @ResponseBody
+    @PostMapping("/post/upload")
+    public ResponseEntity<HashMap<String, Object>> uploadImages(@RequestParam("images") List<MultipartFile> images) {
+
+        return ResponseEntity.ok(boardPostService.insertSummerNoteImg(images));
     }
 }

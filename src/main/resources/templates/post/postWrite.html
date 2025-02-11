@@ -7,6 +7,10 @@
             <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs5.min.js"></script>
             <link rel="stylesheet" th:href="@{/css/boardHome.css}">
             <style>
+                form[name=boardform] {
+                    padding: 30px 60px 10px;
+                }
+
                 h1 {
                     font-size: 1.5rem;
                     text-align: center;
@@ -203,10 +207,85 @@
                     $('.file-list').toggleClass('hidden', filesArr.length !== 0);
                 }
 
+                // function submitForm() {
+                //     // let content = $('.summernote').summernote('code');
+                //     // var form = document.querySelector("form[name='boardform']");
+                //     // var formData = new FormData(form);
+                //
+                //     // 이미지 업로드를 위한 FormData 생성
+                //     let imageFormData = new FormData();
+                //     uploadedFiles.forEach(file => {
+                //         imageFormData.append("images", file);
+                //     });
+                //
+                //     // AJAX로 이미지 업로드
+                //     $.ajax({
+                //         method: 'POST',
+                //         url: 'upload',
+                //         data: imageFormData,
+                //         processData: false,
+                //         contentType: false,
+                //         success: function (response) {
+                //             if (response.urls && response.urls.length === uploadedFiles.length) {
+                //                 // 기존의 <img> 태그의 src를 업로드된 URL로 변경
+                //                 $('.summernote').next().find('img').each((index, img) => {
+                //                     let src = $(img).attr('src');
+                //                     if (src.startsWith('data:')) { // base64 이미지인 경우 변경
+                //                         $(img).attr('src', response.urls[index]); // 새로운 URL 적용
+                //                     }
+                //                 });
+                //
+                //                 // 수정된 내용으로 폼 제출
+                //                 submitPost();
+                //             }
+                //         }
+                //     });
+                // }
+
+                // function submitForm() {
+                //     let imageFormData = new FormData();
+                //
+                //     console.log("uploadedFiles 배열:", uploadedFiles);
+                //     uploadedFiles.forEach(file => console.log(file, file instanceof File));
+                //
+                //     // 업로드할 이미지 파일을 FormData에 추가
+                //     uploadedFiles.forEach((file, index) => {
+                //         imageFormData.append("images", file);
+                //     });
+                //
+                //     // FormData 내부에 파일이 잘 들어갔는지 확인
+                //     for (let pair of imageFormData.entries()) {
+                //         console.log(pair[0], pair[1]);  // 콘솔에 추가된 파일 출력
+                //     }
+                //
+                //     // AJAX 요청
+                //     $.ajax({
+                //         method: 'POST',
+                //         url: '/board/post/upload',
+                //         data: imageFormData,
+                //         processData: false,
+                //         contentType: false,
+                //         success: function (response) {
+                //             console.log("✅ 업로드 성공: ", response.urls);
+                //         },
+                //         error: function (xhr) {
+                //             console.error("❌ 업로드 실패:", xhr.responseText);
+                //         }
+                //     });
+                // }
+
                 /* 폼 전송 */
                 function submitForm() {
                     var form = document.querySelector("form[name='boardform']");
                     var formData = new FormData(form);
+
+                    uuidList.forEach(uuid => {
+                        formData.append("uuidList", uuid);
+                    })
+
+                    uploadedFiles.forEach(file => {
+                        formData.append("images", file);
+                    });
 
                     // 삭제되지 않은 파일만 폼데이터에 담기
                     filesArr.forEach(file => {
@@ -398,12 +477,77 @@
 
 
         <script>
+            let uploadedFiles = []; // 사용자가 업로드한 파일들을 저장할 배열
+            let uuidList = [];
+
             $(document).ready(function () {
                 $('.summernote').summernote({
                     height: 400,
                     minHeight: 400,
                     maxHeight: null,
-                    focus: true
+                    lang: 'ko-KR',
+                    toolbar: [
+                        ['fontname', ['fontname']],
+                        ['fontsize', ['fontsize']],
+                        ['style', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+                        ['color', ['forecolor', 'color']],
+                        ['table', ['table']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['height', ['height']],
+                        ['insert', ['picture', 'link']],
+                        ['view', ['fullscreen', 'help']]
+                    ],
+                    fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', '맑은 고딕', '궁서', '굴림체', '굴림', '돋움체', '바탕체'],
+                    fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '22', '24', '28', '30', '36', '50', '72'],
+                    focus: true,
+                    callbacks: {
+                        onImageUpload: function (files) {
+                            let imageFormData = new FormData();
+
+                            // 여러 파일을 처리하기 위해 반복문을 사용
+                            for (let file of files) {
+                                imageFormData.append("images", file);  // 여러 이미지 파일을 FormData에 추가
+                            }
+
+                            $.ajax({
+                                url: "/board/post/upload", // 이미지 업로드 처리 서버 URL
+                                type: "POST",
+                                data: imageFormData,
+                                processData: false,
+                                contentType: false,
+                                success: function (response) {
+                                    // 서버에서 반환된 URL을 배열로 받음 (여러 이미지 처리)
+                                    let imageUrls = response.urls;
+                                    uuidList = response.uuidList;
+
+                                    // 업로드된 각 이미지의 URL을 Summernote에 삽입
+                                    for (let i = 0; i < files.length; i++) {
+                                        let img = $('<img>')
+                                            .attr('src', imageUrls[i]) // 서버에서 받은 URL
+                                            .attr('data-filename', files[i].name) // 파일명을 저장
+                                            .css('width', '70%');
+
+                                        $('.summernote').summernote('insertNode', img[0]);
+                                        uploadedFiles.push(files[i]); // 업로드된 파일을 배열에 추가
+                                    }
+
+                                    console.log("📂 현재 uploadedFiles:", uploadedFiles);
+                                },
+                                error: function () {
+                                    alert("이미지 업로드 실패");
+                                }
+                            });
+                        },
+                        onImageDelete: function (target) {
+                            console.log("삭제 요청 중");
+                            let deletedFilename = $(target).attr('data-filename'); // ✅ 삭제할 이미지 파일명 추출
+                            console.log("🗑 삭제 요청된 파일:", deletedFilename);
+
+                            // ✅ 파일명으로 `uploadedFiles`에서 제거
+                            uploadedFiles = uploadedFiles.filter(file => file.name !== deletedFilename);
+                            console.log("📂 업데이트된 uploadedFiles:", uploadedFiles);
+                        }
+                    }
                 });
 
                 $('.boardContent .active').removeClass('active');

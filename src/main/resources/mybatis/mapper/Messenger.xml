@@ -35,6 +35,9 @@
         ) AS unread_counts
         ON chat_room.chat_room_id = unread_counts.chat_room_id
         WHERE chat_room_member.user_id = #{empId}
+        <if test="isHomeMessenger">
+            AND unread_counts.unread_count > 0
+        </if>
         ORDER BY chat_room.recent_message_date DESC, chat_room.chat_room_id DESC;
     </select>
 

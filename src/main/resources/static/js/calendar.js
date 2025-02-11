@@ -152,6 +152,9 @@ $(document).ready(function () {
                     for (let i = 0; i < data.length; i++) {
                         // 중복 체크: schedule_id로 중복 여부 확인
                         if (!events.some(event => event.id === data[i].scheduleId)) {
+                            const isEditable = data[i].empId === $("#emp_id").val();
+                            const isDroppable = isEditable;
+
                             events.push({
                                 id: data[i].scheduleId,
                                 title: data[i].scheduleName,
@@ -160,8 +163,8 @@ $(document).ready(function () {
                                 backgroundColor: data[i].scheduleColor,
                                 description: data[i].scheduleContent,
                                 allDay: data[i].scheduleAllDay,
-                                // editable: false, // 수정 불가
-                                droppable: false, // 드래그 불가
+                                editable: isEditable, // 등록자만 수정 가능
+                                droppable: isDroppable, // 등록자만 드래그 가능
                                 extendedProps: {
                                     isShared: true, // 공유 일정
                                     shareEmpNames: data[i].shareEmpNames, // 공유자 이름 목록
@@ -347,13 +350,6 @@ $(document).ready(function () {
             endAt = info.event.end ? moment(info.event.end).format('YYYY-MM-DD HH:mm') : startAt;
         }
 
-        // const isSharedEvent = info.event.extendedProps.isShared;
-        // // 만약 공유 일정이라면 드래그를 방지
-        // if (isSharedEvent) {
-        //     alert("공유 일정 참여자는 드래그할 수 없습니다.");
-        //     return;  // 드래그 동작을 막고 함수를 종료
-        // }
-
         $.ajax({
             url: contextPath + "/schedule/scheduleDragUpdate",
             type: "post",
@@ -372,7 +368,7 @@ $(document).ready(function () {
                 const event = calendar.getEventById(info.event.id);
                 if (event) {
                     // 이벤트 속성 한 번에 갱신
-                    event.setProps({
+                    event.setProp({
                         start: startAt,  // 시작 시간 업데이트
                         end: endAt,      // 종료 시간 업데이트
                         allDay: info.event.allDay // AllDay 설정 업데이트
@@ -411,6 +407,10 @@ $(document).ready(function () {
                     const event = calendar.getEventById(eventData.schedule_id);
                     if (event) {
                         event.remove();
+                    }
+
+                    if (isDeptSchedule) {
+                        fetchDeptListData();
                     }
 
                     fetchAllData();
@@ -472,8 +472,6 @@ $(document).ready(function () {
         const description = event.extendedProps && event.extendedProps.description ? event.extendedProps.description : '';
         $("#description").val(description);
 
-
-
         // 공유 일정
         if (event.extendedProps.isShared === true) {
             $(".modal-header").find("h5").text("공유 일정");
@@ -495,6 +493,7 @@ $(document).ready(function () {
                     <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
                     <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
                 `);
+
             } else { // 참여자일 경우
                 $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", true);
                 $(".modal-body").find(".btn_wrap").html(``);

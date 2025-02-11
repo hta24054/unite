@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -75,7 +74,7 @@ public class ReservationController {
     @ResponseBody
     @GetMapping("/getReservationModal")
     public ReservationDTO getReservationModal(@RequestParam Long reservationId) {
-         return reservationService.getReservationModal(reservationId);
+        return reservationService.getReservationModal(reservationId);
     }
 
     @ResponseBody

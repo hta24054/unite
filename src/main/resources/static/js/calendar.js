@@ -392,7 +392,7 @@ $(document).ready(function () {
                 },
                 success: function (data) {
                     window.holidayDataLoaded = false;
-                    fetchAllData();
+                    calendar.getEventById(eventData.schedule_id).remove();
                     $("#scheduleModal").modal("hide");
 
                     // 부서 일정 체크

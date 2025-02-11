@@ -195,7 +195,7 @@ $(document).ready(function () {
             initCalendar();
         }
 
-        holidayCurrentMonth();
+        fetchAllData();
     });
 
     // 부서 일정 리스트 불러오기
@@ -233,7 +233,6 @@ $(document).ready(function () {
                     }
                 }
 
-                holidayCurrentMonth();
                 initCalendar();
             },
             error: function (error) {
@@ -409,12 +408,12 @@ $(document).ready(function () {
                 success: function (data) {
                     window.holidayDataLoaded = false;
                     calendar.getEventById(eventData.schedule_id).remove();
-                    $("#scheduleModal").modal("hide");
 
-                    // 부서 일정 체크
                     if (isDeptSchedule) {
                         fetchDeptListData();
                     }
+
+                    $("#scheduleModal").modal("hide");
                 },
                 error: function (error) {
                     alert("일정 삭제 중 오류가 발생했습니다.");

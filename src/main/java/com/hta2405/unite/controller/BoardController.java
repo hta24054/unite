@@ -1,6 +1,5 @@
 package com.hta2405.unite.controller;
 
-import com.hta2405.unite.domain.BoardManagement;
 import com.hta2405.unite.domain.PaginationResult;
 import com.hta2405.unite.domain.PostFile;
 import com.hta2405.unite.dto.*;

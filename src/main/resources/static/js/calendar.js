@@ -348,6 +348,13 @@ $(document).ready(function () {
             endAt = info.event.end ? moment(info.event.end).format('YYYY-MM-DD HH:mm') : startAt;
         }
 
+        // const isSharedEvent = info.event.extendedProps.isShared;
+        // // 만약 공유 일정이라면 드래그를 방지
+        // if (isSharedEvent) {
+        //     alert("공유 일정 참여자는 드래그할 수 없습니다.");
+        //     return;  // 드래그 동작을 막고 함수를 종료
+        // }
+
         $.ajax({
             url: contextPath + "/schedule/scheduleDragUpdate",
             type: "post",
@@ -361,7 +368,19 @@ $(document).ready(function () {
             },
             success: function () {
                 window.holidayDataLoaded = false;
-                fetchAllData();
+
+                // 일정 수정 후 캘린더 업데이트
+                const event = calendar.getEventById(info.event.id);
+                if (event) {
+                    // 이벤트 속성 한 번에 갱신
+                    event.setProps({
+                        start: startAt,  // 시작 시간 업데이트
+                        end: endAt,      // 종료 시간 업데이트
+                        allDay: info.event.allDay // AllDay 설정 업데이트
+                    });
+
+                    calendar.render();
+                }
 
                 // 부서 일정 체크: isDeptSchedule이 true일 경우만 한 번 호출하도록 방지
                 if (isDeptSchedule) {
@@ -373,9 +392,6 @@ $(document).ready(function () {
             },
             error: function () {
                 alert("drag 일정 업데이트 중 오류가 발생했습니다.");
-            },
-            complete: function() {
-                window.isDeptListLoading = false;   // 요청 완료 후 부서 일정 상태 초기화
             }
         });
     }

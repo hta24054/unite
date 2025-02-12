@@ -78,4 +78,9 @@ public class LocalFileService implements FileService {
             log.info("{}", e.getMessage());
         }
     }
+
+    @Override
+    public long getFileSize(String subDirectory, String fileUUID, String fileName) {
+        return 0;
+    }
 }

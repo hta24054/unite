@@ -69,7 +69,9 @@ function renderData(items) {
                         ${data.boardName1} > ${data.boardName2}`;
 
         const postContent = data.postContent;
-        const truncatedContent = postContent.length > 500 ? postContent.substring(0, 500) + '...' : postContent;
+        const contentWithoutImages = $(postContent).find('img').remove().end().html();
+
+        const truncatedContent = contentWithoutImages.length > 500 ? contentWithoutImages.substring(0, 500) + '...' : contentWithoutImages;
 
         const postSubject = data.postSubject;
         const truncatedSubject = postSubject.length > 50 ? postSubject.substring(0, 50) + '...' : postSubject;

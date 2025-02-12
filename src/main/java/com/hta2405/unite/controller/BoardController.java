@@ -240,7 +240,7 @@ public class BoardController {
     public Object boardPostModifyProcess(PostModifyDTO postModifyDTO, BoardDTO boardDTO,
                                          @RequestParam(value = "addFiles", required = false) List<MultipartFile> addFiles,
                                          @RequestParam(value = "deletedFiles", required = false) List<String> deletedFiles) {
-        boolean result = boardPostService.modifyPost(postModifyDTO, addFiles, deletedFiles);
+        boolean result = boardPostService.modifyPost(boardDTO, postModifyDTO, addFiles, deletedFiles);
 
         HashMap<String, Object> map = new HashMap<>();
         if (result) {
@@ -412,5 +412,24 @@ public class BoardController {
             return ResponseEntity.badRequest().body("삭제 실패");
         }
         return ResponseEntity.ok("삭제 성공");
+    }
+
+    @GetMapping("/summernote-image")
+    public ResponseEntity<Resource> getProfileImage(String uuid) {
+        PostFile postFile = boardPostService.getPostFileByUUID(uuid);
+        return boardPostService.getSummerNoteImage(postFile);
+    }
+
+    @ResponseBody
+    @PostMapping("/post/upload")
+    public ResponseEntity<HashMap<String, Object>> uploadImages(@RequestParam("images") List<MultipartFile> images) {
+
+        return ResponseEntity.ok(boardPostService.insertSummerNoteImg(images));
+    }
+
+    @ResponseBody
+    @PostMapping("/post/deleteImage")
+    public void deleteImages(String uuid) {
+        boardPostService.deleteImageFile(uuid);
     }
 }

@@ -28,10 +28,6 @@ public class ProjectController {
         this.projectService = projectService;
         this.projectApiController = projectApiController;
     }
-    @GetMapping(value = "/birthday")
-    public String birthday() {
-        return "project/birthday";
-    }
 
     @GetMapping(value = "/main")
     public String main() {

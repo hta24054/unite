@@ -25,21 +25,21 @@ $(document).ready(function () {
         });
     }
 
-    // 공휴일 현재 달에 맞게 불러오기
+    // 공휴일 연도, 월
     function holidayCurrentMonth() {
-        const startMonth = moment().startOf('month').format('YYYY-MM');
-        const endMonth = moment().endOf('month').format('YYYY-MM');
-        fetchHolidayData(startMonth, endMonth);
+        const year = moment().startOf('year').format('YYYY');
+        const month = moment().endOf('month').format('MM');
+        fetchHolidayData(year, month);
     }
 
     // 공휴일 불러오기
-    function fetchHolidayData(startMonth, endMonth) {
+    function fetchHolidayData(year, month) {
         $.ajax({
             url: contextPath + "/schedule/getHoliday",
             type: "GET",
             data: {
-                start: startMonth,
-                end: endMonth
+                year: year,
+                month: month
             },
             dataType: "json",
             success: function (data) {
@@ -152,6 +152,9 @@ $(document).ready(function () {
                     for (let i = 0; i < data.length; i++) {
                         // 중복 체크: schedule_id로 중복 여부 확인
                         if (!events.some(event => event.id === data[i].scheduleId)) {
+                            const isEditable = data[i].empId === $("#emp_id").val();
+                            const isDroppable = isEditable;
+
                             events.push({
                                 id: data[i].scheduleId,
                                 title: data[i].scheduleName,
@@ -160,8 +163,8 @@ $(document).ready(function () {
                                 backgroundColor: data[i].scheduleColor,
                                 description: data[i].scheduleContent,
                                 allDay: data[i].scheduleAllDay,
-                                // editable: false, // 수정 불가
-                                droppable: false, // 드래그 불가
+                                editable: isEditable, // 등록자만 수정 가능
+                                droppable: isDroppable, // 등록자만 드래그 가능
                                 extendedProps: {
                                     isShared: true, // 공유 일정
                                     shareEmpNames: data[i].shareEmpNames, // 공유자 이름 목록
@@ -195,7 +198,7 @@ $(document).ready(function () {
             initCalendar();
         }
 
-        holidayCurrentMonth();
+        fetchAllData();
     });
 
     // 부서 일정 리스트 불러오기
@@ -233,7 +236,6 @@ $(document).ready(function () {
                     }
                 }
 
-                holidayCurrentMonth();
                 initCalendar();
             },
             error: function (error) {
@@ -361,21 +363,22 @@ $(document).ready(function () {
             },
             success: function () {
                 window.holidayDataLoaded = false;
-                fetchAllData();
 
-                // 부서 일정 체크: isDeptSchedule이 true일 경우만 한 번 호출하도록 방지
-                if (isDeptSchedule) {
-                    if (!window.isDeptListLoading) {
-                        window.isDeptListLoading = true;
-                        fetchDeptListData();
-                    }
+                // 일정 수정 후 캘린더 업데이트
+                const event = calendar.getEventById(info.event.id);
+                if (event) {
+                    // 이벤트 속성 한 번에 갱신
+                    event.setProp({
+                        start: startAt,
+                        end: endAt,
+                        allDay: info.event.allDay
+                    });
+
+                    calendar.render();
                 }
             },
             error: function () {
                 alert("drag 일정 업데이트 중 오류가 발생했습니다.");
-            },
-            complete: function() {
-                window.isDeptListLoading = false;   // 요청 완료 후 부서 일정 상태 초기화
             }
         });
     }
@@ -392,13 +395,21 @@ $(document).ready(function () {
                 },
                 success: function (data) {
                     window.holidayDataLoaded = false;
-                    fetchAllData();
-                    $("#scheduleModal").modal("hide");
 
-                    // 부서 일정 체크
+                    const event = calendar.getEventById(eventData.schedule_id);
+                    if (event) {
+                        event.remove();
+                    }
+
                     if (isDeptSchedule) {
                         fetchDeptListData();
                     }
+
+                    fetchAllData();
+                    holidayCurrentMonth();
+                    initCalendar();
+
+                    $("#scheduleModal").modal("hide");
                 },
                 error: function (error) {
                     alert("일정 삭제 중 오류가 발생했습니다.");
@@ -453,8 +464,6 @@ $(document).ready(function () {
         const description = event.extendedProps && event.extendedProps.description ? event.extendedProps.description : '';
         $("#description").val(description);
 
-
-
         // 공유 일정
         if (event.extendedProps.isShared === true) {
             $(".modal-header").find("h5").text("공유 일정");
@@ -476,6 +485,7 @@ $(document).ready(function () {
                     <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
                     <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
                 `);
+
             } else { // 참여자일 경우
                 $("form[name='scheduleEvent'] input, form[name='scheduleEvent'] select, form[name='scheduleEvent'] textarea").prop("disabled", true);
                 $(".modal-body").find(".btn_wrap").html(``);
@@ -711,8 +721,8 @@ $(document).ready(function () {
                         calendar.prev();
 
                         // 캘린더에서 갱신된 날짜를 가져와서, 해당 날짜 기준으로 다음 달의 시작일과 종료일을 계산
-                        const startMonth = moment(calendar.getDate()).startOf('month').format('YYYY-MM');
-                        const endMonth = moment(calendar.getDate()).endOf('month').format('YYYY-MM');
+                        const startMonth = moment(calendar.getDate()).startOf('year').format('YYYY');
+                        const endMonth = moment(calendar.getDate()).endOf('month').format('MM');
                         isHolidayDataLoaded = false;
                         fetchHolidayData(startMonth, endMonth);
 
@@ -724,8 +734,10 @@ $(document).ready(function () {
                     click: function() {
                         calendar.next();
 
-                        const startMonth = moment(calendar.getDate()).startOf('month').format('YYYY-MM');
-                        const endMonth = moment(calendar.getDate()).endOf('month').format('YYYY-MM');
+
+                        // 캘린더에서 갱신된 날짜를 가져와서, 해당 날짜 기준으로 다음 달의 시작일과 종료일을 계산
+                        const startMonth = moment(calendar.getDate()).startOf('year').format('YYYY');
+                        const endMonth = moment(calendar.getDate()).endOf('month').format('MM');
                         isHolidayDataLoaded = false;
                         fetchHolidayData(startMonth, endMonth);
 

@@ -127,15 +127,14 @@
                 var fileNo = 0;
                 var filesArr = [];
                 var maxFileCnt = 5;   // 첨부파일 최대 개수
+                let totalFileSize = 0;
 
                 let boardMap = /*[[${boardMap}]]*/ {};
-
-                // var companyBulletinBoards = ['공지사항', '주간식단표', 'FAQ'];
-                // var DepartmentBoards = ['솔루션영업팀'];
 
                 /* 첨부파일 추가 */
                 function addFiles(files) {
                     var attFileCnt = $('.filebox').length;
+                    attFileCnt += $('.summernoteImg').length;
                     var remainFileCnt = maxFileCnt - attFileCnt;
                     var curFileCnt = files.length;
 
@@ -182,21 +181,33 @@
 
                 /* 첨부파일 검증 */
                 function validation(file) {
-                    const maxSize = 100 * 1024 * 1024; // 100MB
+                    const maxSize = 10 * 1024 * 1024; // 10MB
+                    const totalMaxSize = 30 * 1024 * 1024; // 30MB
+                    totalFileSize += file.size;
+
                     if (file.name.length > 100) {
                         alert("파일명이 100자 이상인 파일은 제외되었습니다.");
                     } else if (file.size > maxSize) {
-                        alert("최대 파일 용량인 100MB를 초과한 파일은 제외되었습니다.");
+                        alert("최대 파일 용량인 10MB를 초과한 파일은 제외되었습니다.");
+                    } else if (totalFileSize > totalMaxSize) {
+                        alert("전체 파일 용량인 30MB를 초과하였습니다.");
                     } else if (!file.name.includes('.')) {
                         alert("확장자가 없는 파일은 제외되었습니다.");
                     } else {
                         return true;
                     }
+                    totalFileSize -= file.size;
                     return false;
                 }
 
                 /* 첨부파일 삭제 */
                 function deleteFile(deleteNo) {
+                    // 삭제할 파일 찾기
+                    let fileToDelete = filesArr.find(file => file.fileNo === deleteNo);
+
+                    if (fileToDelete) {
+                        totalFileSize -= fileToDelete.size; // 해당 file의 size만큼 빼기
+                    }
 
                     // filesArr 배열에서 삭제할 파일을 fileNo로 찾음
                     filesArr = filesArr.filter(file => file.fileNo !== deleteNo);
@@ -211,7 +222,6 @@
                 /* 파일 목록이 비어있으면 숨김 처리 */
                 function updateFileListVisibility() {
                     $('.file-list').toggleClass('hidden', filesArr.length !== 0);
-                    // updateDividerHeight();
                 }
 
 
@@ -228,9 +238,7 @@
                     for (let [key, value] of formData.entries()) {
                         if (key === 'files') {
                             formData.delete(key);
-                            console.log("delete = ", key)
                         }
-                        console.log(key, value);
                     }
 
                     $.ajax({
@@ -280,7 +288,6 @@
                 function filterBoardName2(boardName1) {
                     let filteredArray = []; // 결과를 담을 배열
                     for (const value of boardMap[boardName1]) {
-                        console.log("value = ", value)
                         filteredArray.push(value);
                     }
                     return filteredArray;
@@ -407,12 +414,145 @@
         </div>
 
         <script>
+            let uploadedFiles = []; // 사용자가 업로드한 파일들을 저장할 배열
+            let uuidList = [];
+            let imgFileNo = 0;
+
             $(document).ready(function () {
                 $('.summernote').summernote({
                     height: 400,
                     minHeight: 400,
                     maxHeight: null,
-                    focus: true
+                    lang: 'ko-KR',
+                    toolbar: [
+                        ['fontname', ['fontname']],
+                        ['fontsize', ['fontsize']],
+                        ['style', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+                        ['color', ['forecolor', 'color']],
+                        ['table', ['table']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['height', ['height']],
+                        ['insert', ['picture', 'link']],
+                        ['view', ['fullscreen', 'help']]
+                    ],
+                    fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', '맑은 고딕', '궁서', '굴림체', '굴림', '돋움체', '바탕체'],
+                    fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '22', '24', '28', '30', '36', '50', '72'],
+                    focus: true,
+                    callbacks: {
+                        onInit: function () {
+                            let targetNode = document.querySelector('.note-editable');
+
+                            if (!targetNode) {
+                                // console.warn("❌ targetNode (note-editable) 찾을 수 없음");
+                                return;
+                            }
+
+                            // console.log("✅ observer 시작", targetNode);
+
+                            // **MutationObserver로 이미지 삭제 감지**
+                            const observer = new MutationObserver(function (mutations) {
+                                mutations.forEach(function (mutation) {
+                                    mutation.removedNodes.forEach(function (removedNode) {
+                                        if (removedNode.nodeType === 1 && removedNode.tagName === 'IMG' && $(removedNode).hasClass('summernoteImg')) {
+                                            let deletedFilename = $(removedNode).attr('data-filename');
+                                            let deletedFileNo = $(removedNode).attr('data-fileNo');
+                                            let uuid = $(removedNode).attr('data-uuid');
+                                            // console.log("🗑 삭제 감지된 파일:", deletedFilename+"::"+deletedFileNo);
+
+                                            // 삭제할 파일 찾기
+                                            let fileToDeletes = uploadedFiles.filter(item => item.file.name === deletedFilename && String(item.fileNo) === String(deletedFileNo));
+                                            let fileToDelete = fileToDeletes.map(item => item.file);
+
+                                            if (fileToDelete[0]) {
+                                                totalFileSize -= fileToDelete[0].size; // 해당 file의 size만큼 빼기
+                                            }
+
+                                            // `uploadedFiles`에서 제거
+                                            uploadedFiles = uploadedFiles.filter(item => !(item.file.name === deletedFilename && String(item.fileNo) === String(deletedFileNo)));
+                                            // console.log("📂 업데이트된 uploadedFiles:", uploadedFiles);
+
+                                            // 서버에 삭제 요청
+                                            $.ajax({
+                                                url: `/board/post/deleteImage?uuid=${uuid}`,
+                                                type: "POST",
+                                                success: function (response) {
+                                                    console.log("✅ 서버에서 이미지 삭제 완료:");
+                                                },
+                                                error: function () {
+                                                    console.log("❌ 서버 이미지 삭제 실패");
+                                                }
+                                            });
+                                        }
+                                    });
+                                });
+                            });
+
+                            // **옵저버 감시 시작 (subtree: true 추가)**
+                            observer.observe(targetNode, {childList: true, subtree: true});
+                        },
+                        onImageUpload: function (files) {
+                            let attFileCnt = $('.filebox').length;
+                            attFileCnt += $('.summernoteImg').length;
+                            var remainFileCnt = maxFileCnt - attFileCnt;
+                            var curFileCnt = files.length;
+                            let imageFormData = new FormData();
+
+                            if (curFileCnt > remainFileCnt) {
+                                alert("첨부파일은 최대 " + maxFileCnt + "개 까지 첨부 가능합니다.");
+                                return;
+                            }
+
+                            // 여러 파일을 처리하기 위해 반복문을 사용
+                            let filesArray = Array.from(files); // FileList → 배열 변환
+                            let isAllValid = filesArray.every(file => validation(file));
+                            if (isAllValid) {
+                                for (const file of files) {
+                                    imageFormData.append("images", file);
+                                }
+                            }
+
+                            $.ajax({
+                                url: "/board/post/upload", // 이미지 업로드 처리 서버 URL
+                                type: "POST",
+                                data: imageFormData,
+                                processData: false,
+                                contentType: false,
+                                success: function (response) {
+                                    // 서버에서 반환된 URL을 배열로 받음 (여러 이미지 처리)
+                                    let imageUrls = response.urls;
+                                    let fileUUIDList = response.uuidList;
+
+                                    fileUUIDList.forEach(uuid => {
+                                        uuidList.push(uuid);
+                                    })
+
+                                    // 업로드된 각 이미지의 URL을 Summernote에 삽입
+                                    for (let i = 0; i < files.length; i++) {
+                                        imgFileNo += 1;
+
+                                        let img = $('<img>')
+                                            .attr('src', imageUrls[i]) // 서버에서 받은 URL
+                                            .attr('data-fileNo', imgFileNo)
+                                            .attr('data-filename', files[i].name) // 파일명을 저장
+                                            .attr('data-uuid', fileUUIDList[i])
+                                            .addClass('summernoteImg')
+                                            .css('width', '70%');
+
+                                        $('.summernote').summernote('insertNode', img[0]);
+                                        uploadedFiles.push({ // 업로드된 파일을 배열에 추가
+                                            file: files[i],        // 실제 파일 객체
+                                            fileNo: imgFileNo      // 고유한 fileNo 추가
+                                        });
+                                    }
+
+                                    // console.log("📂 현재 uploadedFiles:", uploadedFiles);
+                                },
+                                error: function () {
+                                    alert("이미지 업로드 실패");
+                                }
+                            });
+                        }
+                    }
                 });
 
                 $('.boardContent .active').removeClass('active');

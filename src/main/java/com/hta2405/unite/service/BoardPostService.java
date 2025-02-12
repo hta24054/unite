@@ -15,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -23,7 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -103,8 +101,7 @@ public class BoardPostService {
     }
 
     @Transactional
-    public Long addPost(BoardDTO boardDTO, PostAddDTO postAddDTO, List<MultipartFile> files,
-                        List<MultipartFile> images, List<String> uuidList) {
+    public Long addPost(BoardDTO boardDTO, PostAddDTO postAddDTO, List<MultipartFile> files) {
 
         // 1. 게시판 ID 가져오기
         Long boardId = boardPostMapper.findBoardIdByName1Name2(boardDTO);
@@ -133,18 +130,11 @@ public class BoardPostService {
             for (MultipartFile file : files) {
                 fileDTOList.add(fileService.uploadFile(file, UPLOAD_DIRECTORY));
             }
-        }
 
-        if (images != null && !images.isEmpty()) {
-            if (files == null) {
-                boardPostMapper.updatePostFile(post.getPostId(), uuidList);
-            }
-            if (files != null && !files.isEmpty()) {
-                int num = 0;
-                num += boardPostMapper.insertPostFile(post.getPostId(), fileDTOList);
-                if (num <= 0) {
-                    return -1L;
-                }
+            int num = 0;
+            num += boardPostMapper.insertPostFile(post.getPostId(), fileDTOList);
+            if (num <= 0) {
+                return -1L;
             }
         }
         return post.getPostId();
@@ -204,7 +194,17 @@ public class BoardPostService {
     public PostDetailDTO getDetail(Long postId) {
         PostDetailDTO postDetailDTO = boardPostMapper.getDetail(postId);
         List<PostFile> postFiles = boardPostMapper.getDetailPostFile(postId);
+
+        List<Long> postFileSizes = new ArrayList<>();
+        for (PostFile postFile : postFiles) {
+            long fileSize = fileService.getFileSize(UPLOAD_DIRECTORY, postFile.getPostFileUUID(), postFile.getPostFileOriginal());
+            postFileSizes.add(fileSize);
+        }
+
+        System.out.println("postFIleSize = " + postFileSizes);
+
         postDetailDTO.setPostFiles(postFiles);
+        postDetailDTO.setPostFileSizes(postFileSizes);
         return postDetailDTO;
     }
 
@@ -530,5 +530,14 @@ public class BoardPostService {
         map.put("urls", imageUrls);
         map.put("uuidList", fileUUIDList);
         return map;
+    }
+
+    public void deleteImageFile(String uuid) {
+        List<String> uuidList = new ArrayList<>();
+        uuidList.add(uuid);
+        PostFile postFile = boardPostMapper.getPostFileByUUID(uuid);
+        boardPostMapper.deletePostFile(uuidList);
+
+        fileService.deleteFile(uuid, UPLOAD_DIRECTORY, postFile.getPostFileOriginal());
     }
 }

@@ -11,4 +11,6 @@ public interface FileService {
     ResponseEntity<Resource> downloadFile(String subDirectory, String fileUUID, String fileName);
 
     void deleteFile(String fileUUID, String subDirectory, String originalFileName);
+
+    long getFileSize(String subDirectory, String fileUUID, String fileName);
 }

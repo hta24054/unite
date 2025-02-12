@@ -34,6 +34,7 @@ public class PostDetailDTO {
     private String imgType;
 
     private List<PostFile> postFiles;
+    private List<Long> postFileSizes;
 
     // 포맷된 날짜 문자열을 반환
     public String getFormattedPostDate() {

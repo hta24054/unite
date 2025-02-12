@@ -11,7 +11,7 @@ import lombok.ToString;
 @Builder(toBuilder = true)
 public class Birthday {
     private String empId;
-    private String eName;
+    private String ename;
     private String deptName;
     private String jobName;
 }

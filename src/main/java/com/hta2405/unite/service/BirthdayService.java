@@ -27,10 +27,12 @@ public class BirthdayService {
     private final EmpMapper empMapper;
     private final RedisTemplate<String, String> redisTemplate;
     private static final String REDIS_KEY_PREFIX = "birthday:";
-    private final ObjectMapper objectMapper = new ObjectMapper().configure(SerializationFeature.WRITE_NULL_MAP_VALUES, true);
+//    private final ObjectMapper objectMapper = new ObjectMapper().configure(SerializationFeature.WRITE_NULL_MAP_VALUES, true);
+    private final ObjectMapper objectMapper;
 
-    public BirthdayService(@Value("${birthday.apiKey}") String apiKey, EmpMapper empMapper, RedisTemplate<String, String> redisTemplate) {
+    public BirthdayService(@Value("${birthday.apiKey}") String apiKey, EmpMapper empMapper, RedisTemplate<String, String> redisTemplate, ObjectMapper objectMapper) {
         this.apiKey = apiKey;
+        this.objectMapper = objectMapper;
         this.empMapper = empMapper;
         this.redisTemplate = redisTemplate;
     }
@@ -57,12 +59,17 @@ public class BirthdayService {
         int lunarDay = lunar.getResponse().getBody().getItems().getItem().getLunarDay();
 
         try {
+            log.info("redis=========");
             String cachedBirthdays = redisTemplate.opsForValue().get(redisKey);
-            if (cachedBirthdays != null) return objectMapper.readValue(cachedBirthdays, new TypeReference<>(){});
+            if (cachedBirthdays != null) {
+                log.info("Redis Cache hit : {}", redisKey);
+                return objectMapper.readValue(cachedBirthdays, new TypeReference<>(){});
+            }
             List<Birthday> birthdays = empMapper.findTodayBirthdays(today.getMonthValue(), today.getDayOfMonth(), lunarMonth, lunarDay);
             redisTemplate.opsForValue().set(redisKey, objectMapper.writeValueAsString(birthdays), 24, TimeUnit.HOURS);
             return birthdays;
         } catch (Exception e) {
+            log.info(e.getMessage());
             return empMapper.findTodayBirthdays(today.getMonthValue(), today.getDayOfMonth(), lunarMonth, lunarDay);
         }
     }

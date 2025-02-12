@@ -1,3 +1,4 @@
+const contextPath = /*[[@{/}]]*/ '';
 $(document).ready(function () {
     $.ajax({
         url: contextPath + "/api/birthday",

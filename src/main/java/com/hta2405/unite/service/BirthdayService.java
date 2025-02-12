@@ -2,7 +2,6 @@ package com.hta2405.unite.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.hta2405.unite.domain.Birthday;
 import com.hta2405.unite.dto.BirthdayDTO;
 import com.hta2405.unite.mybatis.mapper.EmpMapper;

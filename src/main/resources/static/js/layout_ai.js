@@ -7,10 +7,10 @@ $(function () {
     const $aiBadge = $("#aiBadge");
 
     $chatBody.append(`<div class="chat-message chat-response">현재 지원 기능은 아래와 같습니다.
-                                                            <br>1. 일정확인
-                                                            <br>2. 일정추가
-                                                            <br>3. 사용자 연락처 조회
-                                                            <br>4. 휴가 신청</div>`);
+                                                            <br>- 일정확인
+                                                            <br>- 일정추가
+                                                            <br>- 사용자 연락처 조회
+                                                            <br>- 휴가 신청</div>`);
 
     // 뱃지 클릭 시 채팅창 표시/숨김
     $aiBadge.on("click", function () {

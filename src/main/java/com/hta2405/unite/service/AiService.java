@@ -73,9 +73,8 @@ public class AiService {
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            AiChatSummarizeDTO aiChatSummarizeDTO = objectMapper.readValue(content, AiChatSummarizeDTO.class);
-            log.info("aiResponse = {}", aiChatSummarizeDTO);
-            return aiChatSummarizeDTO;
+            log.info("aiResponse = {}", content);
+            return objectMapper.readValue(content, AiChatSummarizeDTO.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

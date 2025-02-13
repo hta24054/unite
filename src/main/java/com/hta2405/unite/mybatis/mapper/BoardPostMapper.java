@@ -20,6 +20,8 @@ public interface BoardPostMapper {
 
     int insertPostFile(Long postId, List<FileDTO> list);
 
+    void updatePostFile(Long postId, List<String> uuidList);
+
     int refUpdate(Long postId);
 
     Long findBoardIdByName1Name2(BoardDTO boardDTO);
@@ -38,6 +40,8 @@ public interface BoardPostMapper {
     PostDetailDTO getDetail(Long postId);
 
     PostFile getPostFile(Long postFileId);
+
+    PostFile getPostFileByUUID(String uuid);
 
     List<PostFile> getDetailPostFile(Long postId);
 

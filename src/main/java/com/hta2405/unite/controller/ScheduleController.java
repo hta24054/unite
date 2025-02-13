@@ -14,8 +14,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -117,16 +115,10 @@ public class ScheduleController {
     // 공휴일 불러오기
     @ResponseBody
     @GetMapping("/getHoliday")
-    public List<Holiday> getHoliday(String start, String end) {
-        String[] startString = start.split("-");
-        String[] endString = end.split("-");
-
-        LocalDate startDate = LocalDate.of(Integer.parseInt(startString[0]), Integer.parseInt(startString[1]), 1);
-        YearMonth endYearMonth = YearMonth.of(Integer.parseInt(endString[0]), Integer.parseInt(endString[1]));
-        LocalDate endDate = endYearMonth.atEndOfMonth();
+    public List<Holiday> getHoliday(int year, int month) {
 
         // 공휴일 목록 불러오기
-        List<Holiday> holidayList = holidayService.getHolidayList(startDate, endDate);
+        List<Holiday> holidayList = holidayService.getCalendarHolidayList(year, month);
 
         // 토요일, 일요일 제외
         return holidayList.stream()

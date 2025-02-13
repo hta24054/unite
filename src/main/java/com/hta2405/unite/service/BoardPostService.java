@@ -9,17 +9,17 @@ import com.hta2405.unite.mybatis.mapper.BoardPostMapper;
 import com.hta2405.unite.util.ConfigUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -124,9 +124,9 @@ public class BoardPostService {
             throw new RuntimeException("게시글 삽입 실패");
         }
 
+        List<FileDTO> fileDTOList = new ArrayList<>();
         //파일업로드
         if (files != null && !files.isEmpty()) {
-            List<FileDTO> fileDTOList = new ArrayList<>();
             for (MultipartFile file : files) {
                 fileDTOList.add(fileService.uploadFile(file, UPLOAD_DIRECTORY));
             }
@@ -194,16 +194,26 @@ public class BoardPostService {
     public PostDetailDTO getDetail(Long postId) {
         PostDetailDTO postDetailDTO = boardPostMapper.getDetail(postId);
         List<PostFile> postFiles = boardPostMapper.getDetailPostFile(postId);
+
+        List<Long> postFileSizes = new ArrayList<>();
+        for (PostFile postFile : postFiles) {
+            long fileSize = fileService.getFileSize(UPLOAD_DIRECTORY, postFile.getPostFileUUID(), postFile.getPostFileOriginal());
+            postFileSizes.add(fileSize);
+        }
+
+        System.out.println("postFIleSize = " + postFileSizes);
+
         postDetailDTO.setPostFiles(postFiles);
+        postDetailDTO.setPostFileSizes(postFileSizes);
         return postDetailDTO;
     }
 
     @Transactional
-    public boolean modifyPost(PostModifyDTO postModifyDTO,
+    public boolean modifyPost(BoardDTO boardDTO, PostModifyDTO postModifyDTO,
                               List<MultipartFile> addFiles, List<String> deletedFiles) {
         Long postId = postModifyDTO.getPostId();
         PostDetailDTO postDetailDTO = getDetail(postId);
-        Long boardId = postDetailDTO.getBoardId();
+        Long boardId = boardPostMapper.findBoardIdByName1Name2(boardDTO);
 
         postDetailDTO.setBoardId(boardId);
         postDetailDTO.setPostSubject(postModifyDTO.getPostSubject());
@@ -300,6 +310,10 @@ public class BoardPostService {
                 (int) map.get("post_re_lev"),
                 (int) map.get("post_re_seq"));
         return result >= 1; // 삭제 성공 여부 반환
+    }
+
+    public PostFile getPostFileByUUID(String uuid) {
+        return boardPostMapper.getPostFileByUUID(uuid);
     }
 
     public HashMap<String, Object> selectPostInfo(Long postId) {
@@ -464,5 +478,66 @@ public class BoardPostService {
     public int deleteBoard(Long boardId) {
         boardPostMapper.deleteBoardManagement(boardId);
         return boardPostMapper.deleteBoard(boardId);
+    }
+
+    @Transactional
+    public ResponseEntity<Resource> getSummerNoteImage(PostFile postFile) {
+//        String redisKey = REDIS_KEY_PREFIX + emp.getEmpId();
+//
+//        // Redis 캐시에서 이미지 가져오기
+//        ResponseEntity<Resource> cachedResponse = getCachedImageFromRedis(redisKey);
+//        if (cachedResponse != null) {
+//            return cachedResponse;
+//        }
+
+        // S3에서 이미지 다운로드
+        String fileUUID = postFile.getPostFileUUID();
+        String fileName = postFile.getPostFileOriginal();
+        ResponseEntity<Resource> s3Response = fileService.downloadFile(UPLOAD_DIRECTORY, fileUUID, fileName);
+
+        try {
+            byte[] imageData = Objects.requireNonNull(s3Response.getBody()).getInputStream().readAllBytes();
+
+//            // Redis에 이미지 저장
+//            cacheImage(redisKey, imageData);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_PNG)
+                    .body(new ByteArrayResource(imageData));
+        } catch (IOException e) {
+            log.error("이미지 처리 실패", e);
+            throw new RuntimeException("이미지 처리 중 오류 발생");
+        }
+    }
+
+    public HashMap<String, Object> insertSummerNoteImg(List<MultipartFile> files) {
+        List<String> imageUrls = new ArrayList<>();
+        List<FileDTO> fileDTOList = new ArrayList<>();
+        for (MultipartFile file : files) {
+            FileDTO fileDTO = fileService.uploadFile(file, UPLOAD_DIRECTORY);
+
+            String imageUrl = "/board/summernote-image?uuid=" + fileDTO.getFileUUID();
+            imageUrls.add(imageUrl);
+            fileDTOList.add(fileDTO);
+        }
+        boardPostMapper.insertPostFile(null, fileDTOList);
+
+        List<String> fileUUIDList = fileDTOList.stream()
+                .map(FileDTO::getFileUUID)
+                .toList();
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("urls", imageUrls);
+        map.put("uuidList", fileUUIDList);
+        return map;
+    }
+
+    public void deleteImageFile(String uuid) {
+        List<String> uuidList = new ArrayList<>();
+        uuidList.add(uuid);
+        PostFile postFile = boardPostMapper.getPostFileByUUID(uuid);
+        boardPostMapper.deletePostFile(uuidList);
+
+        fileService.deleteFile(uuid, UPLOAD_DIRECTORY, postFile.getPostFileOriginal());
     }
 }

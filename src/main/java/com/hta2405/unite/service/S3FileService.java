@@ -89,5 +89,21 @@ public class S3FileService implements FileService {
         log.info("delete filePath = {}", filePath);
         amazonS3Client.deleteObject(bucket, filePath);
     }
+
+    public long getFileSize(String subDirectory, String fileUUID, String fileName) {
+        String filePath = subDirectory.substring(1) + "/" + fileUUID + "_" + fileName;
+        try {
+            // S3에서 파일 메타데이터 가져오기
+            ObjectMetadata metadata = amazonS3Client.getObjectMetadata(bucket, filePath);
+
+            // 파일 사이즈 (Content-Length)
+            long fileSize = metadata.getContentLength();
+            log.info("파일 사이즈: {} bytes", fileSize);
+            return fileSize;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to get file size from S3");
+        }
+    }
 }
 

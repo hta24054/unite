@@ -66,7 +66,7 @@
   <img src="https://img.shields.io/badge/GitHub-최지영-181717?style=flat-square&logo=github" alt="GitHub Badge" width="150">
 </a>
 
-- **캘린더**: 개인 일정, 공유 일정 관리
+- **캘린더**: 개인 일정, 공유 일정 관리, 부서 일정 관리
 - **자원 예약**: 회의실, 차량 등 자원 예약
 
 ---

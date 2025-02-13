@@ -1,7 +1,7 @@
 <th:block th:replace="layout :: setContent(~{this::content})">
-	<th:block th:fragment="content">
-		<!DOCTYPE html>
-		<html xmlns:th="http://www.thymeleaf.org">
+    <th:block th:fragment="content">
+        <!DOCTYPE html>
+        <html xmlns:th="http://www.thymeleaf.org">
 			<head>
 				<title>캘린더 - 부서 일정 등록</title>
 				<style>
@@ -41,7 +41,8 @@
 						<div class="form-group row mb-3">
 							<label for="schedule_name" class="col-sm-2 col-form-label">일정명</label>
 							<div class="col-sm-8">
-								<input type="text" class="form-control" placeholder="일정명을 입력하세요" name="schedule_name" id="schedule_name">
+								<input type="text" class="form-control" placeholder="일정명을 입력하세요" name="schedule_name"
+									   id="schedule_name">
 							</div>
 						</div>
 
@@ -96,20 +97,20 @@
 				<script>
 					// 부서 정보
 					const departments = [
-						{ title: "경영기획본부", key: "1100" },
-						{ title: "재무관리팀", key: "1110" },
-						{ title: "인사관리팀", key: "1120" },
-						{ title: "SI사업본부", key: "1200" },
-						{ title: "신용평가팀", key: "1210" },
-						{ title: "금융SI팀", key: "1220" },
-						{ title: "비금융SI팀", key: "1230" },
-						{ title: "SM팀", key: "1240" },
-						{ title: "영업본부", key: "1300" },
-						{ title: "솔루션영업팀", key: "1310" },
-						{ title: "SI영업팀", key: "1320" },
-						{ title: "SM영업팀", key: "1330" },
-						{ title: "R&D본부", key: "1400" },
-						{ title: "연구개발팀", key: "1410" }
+						{title: "경영기획본부", key: "1100"},
+						{title: "재무관리팀", key: "1110"},
+						{title: "인사관리팀", key: "1120"},
+						{title: "SI사업본부", key: "1200"},
+						{title: "신용평가팀", key: "1210"},
+						{title: "금융SI팀", key: "1220"},
+						{title: "비금융SI팀", key: "1230"},
+						{title: "SM팀", key: "1240"},
+						{title: "영업본부", key: "1300"},
+						{title: "솔루션영업팀", key: "1310"},
+						{title: "SI영업팀", key: "1320"},
+						{title: "SM영업팀", key: "1330"},
+						{title: "R&D본부", key: "1400"},
+						{title: "연구개발팀", key: "1410"}
 					];
 
 					const selectElement = $('#department');
@@ -117,16 +118,16 @@
 
 					selectElement.append(new Option('부서', '', false, true));
 
-					departments.forEach(function(department) {
+					departments.forEach(function (department) {
 						selectElement.append(new Option(department.title, department.key));
 					});
 
-					$('#department').on('change', function() {
+					$('#department').on('change', function () {
 						const selectedDeptId = $(this).val(); // 선택된 부서의 key 값을 가져옴
 						$('#dept_id').val(selectedDeptId); // 해당 값으로 hidden input 업데이트
 					});
 
-					$('#btnShareRegister').on('click', function(e) {
+					$('#btnShareRegister').on('click', function (e) {
 						e.preventDefault();
 						if (!validateForm()) {
 							return;
@@ -153,7 +154,7 @@
 							dataType: 'json',
 							contentType: 'application/json',
 							data: JSON.stringify(deptData),
-							success: function(data) {
+							success: function (data) {
 								alert('부서 일정이 등록되었습니다.');
 								addEventToCalendar(deptData);
 
@@ -175,13 +176,13 @@
 									}
 								}
 
-								events.forEach(function(event) {
+								events.forEach(function (event) {
 									$('#calendar').fullCalendar('addEvent', event);
 								});
 
 								window.location.href = '/schedule/calender';
 							},
-							error: function() {
+							error: function () {
 								alert('부서 일정 등록 오류');
 							}
 						});
@@ -236,7 +237,7 @@
 						return true;
 					}
 
-					$('#resetButton').on('click', function() {
+					$('#resetButton').on('click', function () {
 						$('#schedule_name').val('');
 						$('#allDay').prop('checked', false);
 						$("#startAt, #endAt").prop("type", "datetime-local").val("");
@@ -245,6 +246,6 @@
 					});
 				</script>
 			</body>
-		</html>
-	</th:block>
+        </html>
+    </th:block>
 </th:block>

@@ -17,7 +17,7 @@ $(document).ready(function () {
                     <tr style="cursor: pointer;" onclick="window.location.href='/board/post/detail?no=${board.postId}&boardName1=${board.boardName1}&boardName2=${board.boardName2}&page=1'">
                         <td>
                             <span class="fw-bold text-primary">[${board.boardName2}]</span>
-                            ${board.postSubject}
+                            ${board.postSubject.length < 15 ? board.postSubject : board.postSubject.substring(0, 15) + ' ...'}
                         </td>
                         <td>
                             <div class="d-flex align-items-center">

@@ -92,6 +92,15 @@
         </foreach>
     </insert>
 
+    <update id="updatePostFile">
+        UPDATE post_file
+        SET post_id = #{postId}
+        WHERE post_file_uuid IN
+        <foreach collection="uuidList" item="uuid" open="(" separator="," close=")">
+            #{uuid}
+        </foreach>
+    </update>
+
     <select id="getListCountByBoardId" parameterType="Long" resultType="int">
         SELECT COUNT(*)
         FROM post
@@ -209,6 +218,12 @@
         SELECT *
         FROM post_file
         WHERE post_file_id = #{postFileId}
+    </select>
+
+    <select id="getPostFileByUUID" resultType="PostFile">
+        SELECT *
+        FROM post_file
+        WHERE post_file_uuid = #{uuid}
     </select>
 
     <update id="updatePost">

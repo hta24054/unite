@@ -12,13 +12,7 @@
         <body>
         <main>
             <div class="container-fluid px-4">
-                <h1 class="mt-4" style="color: #334466; font-weight: bold;">[[${doneName}]] 프로젝트</h1><br>
-                <div class="card mb-4">
-                    <div class="card-body">
-                        [[${message}]]
-                    </div>
-                </div>
-                <br>
+                <h1 class="mt-4" style="color: #334466; font-weight: bold; padding-top: 30px;">[[${doneName}]] 프로젝트</h1><br>
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-table me-1"></i>
@@ -61,7 +55,7 @@
                                             <a th:href="@{/projectBoard/down(fileuuid=${project.projectFileUuid},originalFilename=${project.projectFileOriginal})}"
                                                th:title="${project.projectFileOriginal}" style="text-decoration: none; color: inherit;">
                                                 <img th:src="@{/image/down.png}" style="width: 10px; vertical-align: middle;">&nbsp;
-                                                <span th:text="${project.projectFileOriginal}" style="color: inherit;"></span>
+                                                <span th:text="${#strings.abbreviate(project.projectFileOriginal, 10)}" style="color: inherit;"></span>
                                             </a>
                                         </td>
                                     </th:block>

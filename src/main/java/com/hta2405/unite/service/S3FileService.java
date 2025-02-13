@@ -25,7 +25,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Service
-@RestController
 @RequiredArgsConstructor
 @Slf4j
 public class S3FileService implements FileService {

@@ -225,10 +225,11 @@
                 }).then(response => {
                     if (response.ok) {
                         alert('해당 게시판이 삭제되었습니다.');
+                        location.href = '/board/home';
                     } else {
                         alert('게시판 삭제 실패');
+                        location.reload(true);
                     }
-                    location.reload(true);
                 }).catch(error => {
                     console.error('오류 발생:', error);
                 });

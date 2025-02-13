@@ -212,6 +212,11 @@ public class BoardPostService {
     public boolean modifyPost(BoardDTO boardDTO, PostModifyDTO postModifyDTO,
                               List<MultipartFile> addFiles, List<String> deletedFiles) {
         Long postId = postModifyDTO.getPostId();
+        if(boardDTO.getBoardName1() == null){
+            boardDTO.setBoardName1(boardDTO.getBoardName1Hidden());
+            boardDTO.setBoardName2(boardDTO.getBoardName2Hidden());
+        }
+
         PostDetailDTO postDetailDTO = getDetail(postId);
         Long boardId = boardPostMapper.findBoardIdByName1Name2(boardDTO);
 
@@ -372,9 +377,7 @@ public class BoardPostService {
 
         String boardName1 = boardRequestDTO.getBoardName1();
         String boardName2 = boardRequestDTO.getBoardName2();
-        if (boardName1 == null || boardName1.equals("일반게시판")) {
-            boardName1 = "일반게시판";
-
+        if (boardName1.equals("일반게시판")) {
             //일반게시판을 만들었을 경우 대표이사도 운영자 리스트에 추가
             if (!managerIdList.contains(ceoId)) {
                 managerIdList.add(ceoId);
@@ -408,6 +411,7 @@ public class BoardPostService {
             boardManagement.setBoardName1(board.getBoardName1());
             boardManagement.setBoardName2(board.getBoardName2());
             boardManagement.setBoardManager("admin");
+            boardManagement.setBoardDescription(board.getBoardDescription());
             boardManagementList.add(boardManagement);
         }
         return boardManagementList;
@@ -448,7 +452,13 @@ public class BoardPostService {
 
         int updateResult = boardPostMapper.updateBoard(board);
 
-        List<BoardAndManagementDTO> boardAndManagementDTOS = boardPostMapper.getBoardAndManagement(boardManager, boardId);
+        List<BoardAndManagementDTO> boardAndManagementDTOS;
+        if(boardManager.equals("admin")){
+            boardAndManagementDTOS = boardPostMapper.getBoardAndManagement(null, boardId);
+        }else{
+            boardAndManagementDTOS = boardPostMapper.getBoardAndManagement(boardManager, boardId);
+        }
+
         boolean check = false;
         for (BoardAndManagementDTO boardAndManagementDTO : boardAndManagementDTOS) {
             if (!managerIdList.contains(boardAndManagementDTO.getBoardManager())) {

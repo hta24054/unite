@@ -331,11 +331,16 @@ public class BoardController {
             }
         }
 
+        if(boardRequestDTO.getBoardName1() == null){
+            boardRequestDTO.setBoardName1("일반게시판");
+        }
+
         boolean result = boardPostService.createBoard(boardRequestDTO);
 
         if (result) {
-            rattr.addFlashAttribute("message", "success");
-            return "redirect:/board/home";
+            rattr.addAttribute("boardName1", boardRequestDTO.getBoardName1());
+            rattr.addAttribute("boardName2", boardRequestDTO.getBoardName2());
+            return "redirect:/board/boardList";
         } else {
             model.addAttribute("errorMessage", "게시판 추가 실패");
             return "error/error";
@@ -372,13 +377,13 @@ public class BoardController {
 
     @PostMapping("/modifyProcess")
     public String boardModifyProcess(@AuthenticationPrincipal UserDetails user, BoardRequestDTO boardRequestDTO,
-                                     RedirectAttributes rattr) {
+                                     Model model, RedirectAttributes rattr) {
         String empId = user.getUsername();
 
         if (!empId.equals("admin")) {
             if (Objects.equals(boardRequestDTO.getBoardName1(), "전사게시판")) {
-                rattr.addFlashAttribute("message", "fail");
-                return "redirect:/board/home";
+                model.addAttribute("errorMessage", "수정 실패");
+                return "/error/error";
             }
         }
 
@@ -389,7 +394,14 @@ public class BoardController {
         } else {
             rattr.addFlashAttribute("message", "수정 실패");
         }
-        return "redirect:/board/home";
+
+        if(boardRequestDTO.getBoardName1() == null){
+            boardRequestDTO.setBoardName1(boardRequestDTO.getOriginalBoardName1());
+        }
+
+        rattr.addAttribute("boardName1", boardRequestDTO.getBoardName1());
+        rattr.addAttribute("boardName2", boardRequestDTO.getBoardName2());
+        return "redirect:/board/boardList";
     }
 
     @PostMapping("/delete")

@@ -44,10 +44,10 @@ public class AiService {
                 -- 불필요한 백틱(`)은 사용하지 않습니다.
                 -- 아래의 요청에 대한 답변을 아래 AiChatSummarizeDTO JSON 구조로 반환하세요
                 #JSON 구조
-                        AiChatSummarizeDTO = [
+                        AiChatSummarizeDTO = {{
                                 "topic" : "대화 주제(String 타입)",
                                 "summary" : "대화 내용 요약(String 타입)",
-                            ]
+                            }}
                 -- 다음 대화 내용보고 대화 주제와, 전체적인 요약문을 200자 이내로 제공하세요
                 -- 답변은 한글로 합니다.
                 -- 이제 채팅방 대화 내용입니다. :

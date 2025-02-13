@@ -1,3 +1,5 @@
+let connectCheck = true;
+
 $(function () {
     const loggedInUser = $('#user-info').data('username'); // 로그인한 사용자
     let messengerMessages; // 전체 메신저 메시지 데이터
@@ -144,6 +146,7 @@ $(function () {
 
         stompClient.connect({}, () => {
             console.log("✅ WebSocket 연결됨");
+            connectCheck = true; // 연결 초기화
             reconnectAttempts = 0; // 재연결 횟수 초기화
 
             subscribeToInvitations(loggedInUser);
@@ -220,7 +223,11 @@ $(function () {
         return new Promise((resolve, reject) => {
             if (subscriptions[chatRoomId]) {
                 console.log(`Already subscribed to chatRoom ${chatRoomId}`);
-                return;
+                if(connectCheck){
+                    subscriptions[chatRoomId].unsubscribe();  // 기존 구독을 취소
+                }else{
+                    return;
+                }
             }
             console.log(`subscribing to chatRoom ${chatRoomId}`);
 
@@ -763,8 +770,11 @@ $(function () {
         $memberBody.append(html);
     }
 
-// 초기 WebSocket 연결
-    connectWebSocket();
+    // 초기 WebSocket 연결
+    if(connectCheck){
+        connectCheck = false;
+        connectWebSocket();
+    }
 
 
     // 현재 URL에서 쿼리 파라미터를 가져오기

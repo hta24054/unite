@@ -379,6 +379,9 @@ public class BoardPostService {
         String boardName2 = boardRequestDTO.getBoardName2();
         if (boardName1.equals("일반게시판")) {
             //일반게시판을 만들었을 경우 대표이사도 운영자 리스트에 추가
+            if (!managerIdList.contains("admin")){
+                managerIdList.add("admin");
+            }
             if (!managerIdList.contains(ceoId)) {
                 managerIdList.add(ceoId);
             }

@@ -377,16 +377,17 @@ $(function () {
     function displayStateMessage(chatMessage) {
         const $messengerContentBody = $('.messenger-content-body');
 
-        let html = `
-                <div class="text-center standardDay">
-                    <div class="leaveMessage">${chatMessage.chatMessageContent}</div>
-                </div>`;
+        let html = `<div class="text-center standardDay">`;
 
 
         if (chatMessage.chatMessageType === 'LEAVE') {
+            html +=`<div class="leaveMessage">${chatMessage.chatMessageContent}</div>
+                </div>`;
             console.log('content leave= ' + chatMessage.chatMessageContent)
             $('.member-' + chatMessage.senderId).remove();
         } else if (chatMessage.chatMessageType === 'INVITE') {
+            html +=`<div class="inviteMessage">${chatMessage.chatMessageContent}</div>
+                </div>`;
             console.log('content invite= ' + chatMessage.chatMessageContent)
             html += ``;
 
@@ -1035,15 +1036,16 @@ $(function () {
             url: `/api/messenger/chatRoom/${chatRoomId}/roomOut`,
             dataType: 'json', // 서버에서 JSON 응답을 기대
             success: function (response) {
-                console.log('Chat room created successfully:', response.status);
+                console.log('Chat room out successfully:', response.status);
             },
             error: function (xhr, status, error) {
-                console.error('Error creating chat room:', error);
+                console.error('Error out chat room:', error);
             }
         });
 
         //모달 요소 닫기
         modalInstance.hide();
+        location.reload(true);
     })
 
     $(document).on('click', '#addChat', function () {

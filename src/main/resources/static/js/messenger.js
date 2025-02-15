@@ -1,3 +1,5 @@
+let connectCheck = true;
+
 $(function () {
     const loggedInUser = $('#user-info').data('username'); // 로그인한 사용자
     let messengerMessages; // 전체 메신저 메시지 데이터
@@ -144,6 +146,7 @@ $(function () {
 
         stompClient.connect({}, () => {
             console.log("✅ WebSocket 연결됨");
+            connectCheck = true; // 연결 초기화
             reconnectAttempts = 0; // 재연결 횟수 초기화
 
             subscribeToInvitations(loggedInUser);
@@ -220,7 +223,11 @@ $(function () {
         return new Promise((resolve, reject) => {
             if (subscriptions[chatRoomId]) {
                 console.log(`Already subscribed to chatRoom ${chatRoomId}`);
-                return;
+                if(connectCheck){
+                    subscriptions[chatRoomId].unsubscribe();  // 기존 구독을 취소
+                }else{
+                    return;
+                }
             }
             console.log(`subscribing to chatRoom ${chatRoomId}`);
 
@@ -370,16 +377,17 @@ $(function () {
     function displayStateMessage(chatMessage) {
         const $messengerContentBody = $('.messenger-content-body');
 
-        let html = `
-                <div class="text-center standardDay">
-                    <div class="leaveMessage">${chatMessage.chatMessageContent}</div>
-                </div>`;
+        let html = `<div class="text-center standardDay">`;
 
 
         if (chatMessage.chatMessageType === 'LEAVE') {
+            html +=`<div class="leaveMessage">${chatMessage.chatMessageContent}</div>
+                </div>`;
             console.log('content leave= ' + chatMessage.chatMessageContent)
             $('.member-' + chatMessage.senderId).remove();
         } else if (chatMessage.chatMessageType === 'INVITE') {
+            html +=`<div class="inviteMessage">${chatMessage.chatMessageContent}</div>
+                </div>`;
             console.log('content invite= ' + chatMessage.chatMessageContent)
             html += ``;
 
@@ -763,8 +771,11 @@ $(function () {
         $memberBody.append(html);
     }
 
-// 초기 WebSocket 연결
-    connectWebSocket();
+    // 초기 WebSocket 연결
+    if(connectCheck){
+        connectCheck = false;
+        connectWebSocket();
+    }
 
 
     // 현재 URL에서 쿼리 파라미터를 가져오기
@@ -1025,15 +1036,16 @@ $(function () {
             url: `/api/messenger/chatRoom/${chatRoomId}/roomOut`,
             dataType: 'json', // 서버에서 JSON 응답을 기대
             success: function (response) {
-                console.log('Chat room created successfully:', response.status);
+                console.log('Chat room out successfully:', response.status);
             },
             error: function (xhr, status, error) {
-                console.error('Error creating chat room:', error);
+                console.error('Error out chat room:', error);
             }
         });
 
         //모달 요소 닫기
         modalInstance.hide();
+        location.reload(true);
     })
 
     $(document).on('click', '#addChat', function () {
